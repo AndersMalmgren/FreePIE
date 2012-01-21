@@ -1,0 +1,22 @@
+﻿<Window x:Class="FreePIE.GUI.Shells.MainShellView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FreePIE" Background="{DynamicResource WindowBackgroundBrush}">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0" IsMainMenu="True">
+            <MenuItem Header="_File">
+                <MenuItem x:Name="OpenScript" Header="_Open script"/>
+            </MenuItem>
+            <MenuItem Header="_Script">
+                <MenuItem x:Name="RunScript" Header="_Run script" />
+                <MenuItem x:Name="StopScript" Header="_Stop script" />
+            </MenuItem>
+        </Menu>
+        <ContentControl x:Name="ScriptEditor" Grid.Row="1"></ContentControl>
+    </Grid>
+</Window>
