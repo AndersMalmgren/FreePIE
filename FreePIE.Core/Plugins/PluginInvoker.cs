@@ -53,7 +53,6 @@ namespace FreePIE.Core.Plugins
         public void PopulatePluginSettings()
         {
             var settings = settingsManager.Settings;
-            settings.AddPluginSetting(new PluginSetting("Tuckel"));
 
             var pluginTypes = ListAllPluginTypes();
             var removedPluginSettings = settings.PluginSettings.Where(ps => !pluginTypes.Any(pt => pt.FullName == ps.PluginType)).ToList();
