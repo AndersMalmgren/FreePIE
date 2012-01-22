@@ -157,7 +157,8 @@ namespace FreePIE.Core.ScriptEngine
             stopSync.WaitOne();
             threadedPluginStopping = threadedPlugins;
             usedPlugins.ForEach(p => p.Stop());
-            stopSync.WaitOne();
+            if(threadedPlugins > 0)
+                stopSync.WaitOne();
             lua.Dispose();
         }
 
