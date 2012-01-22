@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine.Globals;
@@ -26,6 +27,7 @@ namespace FreePIE.Core.ScriptEngine
         private bool running = false;
         private string script;
         private IEnumerable<IOPlugin> usedPlugins;
+        
 
         public LuaEngine(IEnumerable<IGlobalProvider> globalProviders, IScriptParser scriptParser)
         {
@@ -42,7 +44,8 @@ namespace FreePIE.Core.ScriptEngine
             InitPlugins();
             var globals = InitGlobals();
             PrepareScriptForGlobals(globals);
-            
+
+            stopSync = new AutoResetEvent(false);
             luaWorker.DoWork += LuaWorker;
             luaWorker.RunWorkerAsync();
         }
@@ -64,7 +67,13 @@ namespace FreePIE.Core.ScriptEngine
 
                 Thread.Sleep(2);
             }
+
+            stopSync.Set();
         }
+
+        private int threadedPluginStarting;
+        private AutoResetEvent threadSync;
+        private AutoResetEvent stopSync;
 
         private void InitPlugins()
         {
@@ -85,8 +94,7 @@ namespace FreePIE.Core.ScriptEngine
                 threadSync.WaitOne();
         }
 
-        private int threadedPluginStarting;
-        private AutoResetEvent threadSync;
+
 
         private void StartPlugin(IOPlugin plugin)
         {
@@ -129,6 +137,8 @@ namespace FreePIE.Core.ScriptEngine
         public void Stop()
         {
             running = false;
+            stopSync.WaitOne();
+            usedPlugins.ForEach(p => p.Stop());
             lua.Dispose();
         }
 
