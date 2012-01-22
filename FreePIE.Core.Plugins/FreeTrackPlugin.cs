@@ -40,18 +40,18 @@ namespace FreePIE.Core.Plugins
     };
 
     [LuaGlobalType(Type = typeof(FreeTrackGlobal))]
-    public class FreeTrackPlugin : IOPlugin
+    public class FreeTrackPlugin : Plugin, IOPlugin
     {
         private MemoryMappedFile memoryMappedFile;
         private MemoryMappedViewAccessor accessor;
         public FreeTrackData WriteData { get; set; }
 
-        public object CreateGlobal()
+        public override object CreateGlobal()
         {
             return new FreeTrackGlobal(this);
         }
 
-        public Action Start()
+        public override Action Start()
         {
             memoryMappedFile = MemoryMappedFile.CreateOrOpen("FT_SharedMem", Marshal.SizeOf(typeof(FreeTrackData)));
             accessor = memoryMappedFile.CreateViewAccessor();
@@ -61,31 +61,11 @@ namespace FreePIE.Core.Plugins
             return null;
         }
 
-        public void Stop()
+        public override void Stop()
         {
             accessor.Dispose();
             memoryMappedFile.Dispose();
         }
-
-        protected virtual void OnStarted(object sender, EventArgs e)
-        {
-            if(Started != null)
-            {
-                Started(sender, e);
-            }
-        }
-
-        public bool GetProperty(int index, IPluginProperty property)
-        {
-            return false;
-        }
-
-        public bool SetProperties(Dictionary<string, object> properties)
-        {
-            return false;
-        }
-
-        public event EventHandler Started;
 
         public FreeTrackData Read()
         {
@@ -98,6 +78,7 @@ namespace FreePIE.Core.Plugins
         {
             var local = WriteData;
             local.DataID++;
+            WriteData = local;
             accessor.Write(0, ref local);
         }
     }
@@ -140,6 +121,54 @@ namespace FreePIE.Core.Plugins
         public float getZ()
         {
             return plugin.Read().Z;
+        }
+
+        public void setYaw(float yaw)
+        {
+            var data = plugin.WriteData;
+            data.Yaw = yaw;
+            plugin.WriteData = data;
+            plugin.Write();
+        }
+
+        public void setPitch(float pitch)
+        {
+            var data = plugin.WriteData;
+            data.Pitch = pitch;
+            plugin.WriteData = data;
+            plugin.Write();
+        }
+
+        public void setRoll(float roll)
+        {
+            var data = plugin.WriteData;
+            data.Roll = roll;
+            plugin.WriteData = data;
+            plugin.Write();
+        }
+
+        public void setX(float x)
+        {
+            var data = plugin.WriteData;
+            data.X = x;
+            plugin.WriteData = data;
+            plugin.Write();
+        }
+
+        public void setY(float y)
+        {
+            var data = plugin.WriteData;
+            data.Y = y;
+            plugin.WriteData = data;
+            plugin.Write();
+        }
+
+        public void setZ(float z)
+        {
+            var data = plugin.WriteData;
+            data.Z = z;
+            plugin.WriteData = data;
+            plugin.Write();
         }
     }
 }

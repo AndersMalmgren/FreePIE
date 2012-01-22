@@ -38,7 +38,7 @@ namespace FreePIE.Core.Plugins
 
             pluginTypes = dlls
                 .Select(Assembly.LoadFile)
-                .SelectMany(a => a.GetTypes().Where(t => typeof (IOPlugin).IsAssignableFrom(t) && t.IsClass));
+                .SelectMany(a => a.GetTypes().Where(t => typeof (IOPlugin).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract));
 
             return pluginTypes;
         }

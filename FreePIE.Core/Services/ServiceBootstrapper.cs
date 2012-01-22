@@ -109,7 +109,7 @@ namespace FreePIE.Core.Services
             }
         }
 
-        public class FunctionFactory<T, TCast> where TCast : class
+        public class FunctionFactory<T, TCast> where T : Type where TCast : class
         {
             private readonly IKernel kernel;
 
@@ -120,7 +120,7 @@ namespace FreePIE.Core.Services
 
             public Func<T, TCast> Create()
             {
-                return t => this.kernel.Get(t as Type) as TCast;
+                return t => this.kernel.Get(t) as TCast;
             }
         }
     }

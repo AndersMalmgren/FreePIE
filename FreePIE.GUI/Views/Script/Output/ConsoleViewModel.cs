@@ -52,8 +52,6 @@ namespace FreePIE.GUI.Views.Script.Output
                 output.Text = currentText;
                 Thread.Sleep(500);
             }
-
-
         }
 
         public override void WriteLine(string value)
@@ -64,10 +62,7 @@ namespace FreePIE.GUI.Views.Script.Output
                 lines = 0;
             }
             lines++;
-            currentText += value + "\r\n";
-
-            //newLines.Enqueue(value);
-        }
+            currentText += value + "\r\n";}
 
         public override Encoding Encoding
         {

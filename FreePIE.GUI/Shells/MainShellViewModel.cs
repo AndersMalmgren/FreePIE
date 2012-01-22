@@ -20,6 +20,7 @@ namespace FreePIE.GUI.Shells
         private readonly Func<IScriptEngine> scriptEngineFactory;
         private readonly IPersistanceManager persistanceManager;
         private IScriptEngine currentSCriptEngine;
+        private bool scriptRunning;
 
         public MainShellViewModel(IResultFactory resultFactory, 
             IEventAggregator eventAggregator, 
@@ -53,16 +54,20 @@ namespace FreePIE.GUI.Shells
 
         public void RunScript()
         {
+            scriptRunning = true;
+
             currentSCriptEngine = scriptEngineFactory();
-            CanRunScript = false;
-            CanStopScript = true;
+            CanRunScript = !scriptRunning;
+            CanStopScript = scriptRunning;
             currentSCriptEngine.Start(ScriptEditor.Script);
         }
 
         public void StopScript()
         {
-            CanRunScript = true;
-            CanStopScript = false;
+            scriptRunning = false;
+
+            CanRunScript = !scriptRunning;
+            CanStopScript = scriptRunning;
             currentSCriptEngine.Stop();
         }
 
@@ -98,6 +103,9 @@ namespace FreePIE.GUI.Shells
 
         public override void CanClose(Action<bool> callback)
         {
+            if(scriptRunning)
+                StopScript();
+
             persistanceManager.Save();
             base.CanClose(callback);
         }
