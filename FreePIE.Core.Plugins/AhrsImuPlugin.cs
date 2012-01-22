@@ -27,6 +27,7 @@ namespace FreePIE.Core.Plugins
 
         private void Init()
         {
+            running = true;
             OnStarted(this, new EventArgs());
 
             using (var serialPort = new SerialPort("COM3", 56700))
@@ -40,15 +41,11 @@ namespace FreePIE.Core.Plugins
                 serialPort.Write("#o1"); // Turn on continuous streaming output
                 serialPort.Write("#oe0"); // Disable error message output
                 serialPort.Write("#s00");
-
-
-
+                
                 while (serialPort.BytesToRead < "#SYNCH00\r\n".Length) { }
 
                 var sync = serialPort.ReadLine();
                 var buffer = new byte[4];
-
-                running = true;
 
                 var data = new AhrsData();
 

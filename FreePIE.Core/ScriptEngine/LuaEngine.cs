@@ -25,6 +25,7 @@ namespace FreePIE.Core.ScriptEngine
         private readonly Lua lua;
         private readonly BackgroundWorker luaWorker;
         private bool running = false;
+        private bool pluginsAreStarting = false;
         private string script;
         private IEnumerable<IOPlugin> usedPlugins;
         
@@ -71,15 +72,20 @@ namespace FreePIE.Core.ScriptEngine
             stopSync.Set();
         }
 
+        private int threadedPlugins;
         private int threadedPluginStarting;
+        private int threadedPluginStopping;
+
         private AutoResetEvent threadSync;
         private AutoResetEvent stopSync;
 
         private void InitPlugins()
         {
+            pluginsAreStarting = true;
             usedPlugins = scriptParser.InvokeAndConfigureAllScriptDependantPlugins(script);
 
             threadedPluginStarting = 0;
+            threadedPlugins = 0;
             threadSync = new AutoResetEvent(false);
 
             foreach (var plugin in usedPlugins)
@@ -92,19 +98,28 @@ namespace FreePIE.Core.ScriptEngine
 
             if (threadedPluginStarting > 0)
                 threadSync.WaitOne();
+
+            pluginsAreStarting = false;
         }
-
-
 
         private void StartPlugin(IOPlugin plugin)
         {
             var threadedAction = plugin.Start();
             if (threadedAction != null)
             {
+                threadedPlugins++;
                 threadedPluginStarting++;
                 plugin.Started += PluginStarted;
-                ThreadPool.QueueUserWorkItem((obj) => threadedAction());
+                ThreadPool.QueueUserWorkItem((obj) => ThreadedPluginHandler(threadedAction));
             }
+        }
+
+        private void ThreadedPluginHandler(Action pluginThreadedAction)
+        {
+            pluginThreadedAction();
+            threadedPluginStopping--;
+            if (threadedPluginStopping == 0)
+                stopSync.Set();
         }
 
         private void PluginStarted(object sender, EventArgs e)
@@ -136,11 +151,20 @@ namespace FreePIE.Core.ScriptEngine
 
         public void Stop()
         {
+            WaitForSlowStartingPlugins();
+            
             running = false;
             stopSync.WaitOne();
+            threadedPluginStopping = threadedPlugins;
             usedPlugins.ForEach(p => p.Stop());
+            stopSync.WaitOne();
             lua.Dispose();
         }
 
+        private void WaitForSlowStartingPlugins()
+        {
+            if (pluginsAreStarting)
+                threadSync.WaitOne();
+        }
     }
 }
