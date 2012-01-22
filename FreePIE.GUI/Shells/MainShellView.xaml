@@ -7,6 +7,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" IsMainMenu="True">
             <MenuItem Header="_File">
@@ -16,7 +17,8 @@
                 <MenuItem x:Name="RunScript" Header="_Run script" />
                 <MenuItem x:Name="StopScript" Header="_Stop script" />
             </MenuItem>
-        </Menu>
+        </Menu>        
         <ContentControl x:Name="ScriptEditor" Grid.Row="1"></ContentControl>
+        <ContentControl x:Name="Output" Grid.Row="2"></ContentControl>
     </Grid>
 </Window>

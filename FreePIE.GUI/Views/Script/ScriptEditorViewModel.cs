@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Caliburn.Micro;
+﻿using Caliburn.Micro;
 using FreePIE.GUI.Events;
 
-namespace FreePIE.GUI.Views
+namespace FreePIE.GUI.Views.Script
 {
     public class ScriptEditorViewModel : PropertyChangedBase
     {

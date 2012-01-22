@@ -65,7 +65,7 @@ namespace FreePIE.Core.ScriptEngine
                     lua["starting"] = starting;
                 }
 
-                Thread.Sleep(2);
+                Thread.Sleep(5);
             }
 
             stopSync.Set();

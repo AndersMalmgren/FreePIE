@@ -10,6 +10,8 @@ using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Views;
+using FreePIE.GUI.Views.Script;
+using FreePIE.GUI.Views.Script.Output;
 
 namespace FreePIE.GUI.Shells
 {
@@ -19,7 +21,12 @@ namespace FreePIE.GUI.Shells
         private readonly IPersistanceManager persistanceManager;
         private IScriptEngine currentSCriptEngine;
 
-        public MainShellViewModel(IResultFactory resultFactory, IEventAggregator eventAggregator, Func<IScriptEngine> scriptEngineFactory, IPersistanceManager persistanceManager, ScriptEditorViewModel scriptEditorViewModel)
+        public MainShellViewModel(IResultFactory resultFactory, 
+            IEventAggregator eventAggregator, 
+            Func<IScriptEngine> scriptEngineFactory, 
+            IPersistanceManager persistanceManager,
+            ScriptEditorViewModel scriptEditorViewModel,
+            OutputViewModel outputViewModel)
             : base(resultFactory)
         {
             eventAggregator.Subscribe(this);
@@ -29,6 +36,7 @@ namespace FreePIE.GUI.Shells
             persistanceManager.Load();
 
             ScriptEditor = scriptEditorViewModel;
+            Output = outputViewModel;
             DisplayName = "FreePIE - Programmable Input Emulator";
         }
 
@@ -86,6 +94,7 @@ namespace FreePIE.GUI.Shells
         }
 
         public ScriptEditorViewModel ScriptEditor { get; set; }
+        public OutputViewModel Output { get; set; }
 
         public override void CanClose(Action<bool> callback)
         {

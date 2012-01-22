@@ -75,10 +75,18 @@
     <Compile Include="Result\ShowDialogResult.cs" />
     <Compile Include="Shells\MainShellViewModel.cs" />
     <Compile Include="Shells\ShellPresentationModel.cs" />
-    <Compile Include="Views\ScriptEditorView.xaml.cs">
+    <Compile Include="Views\Script\Output\ConsoleView.xaml.cs">
+      <DependentUpon>ConsoleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Script\Output\ConsoleViewModel.cs" />
+    <Compile Include="Views\Script\Output\OutputView.xaml.cs">
+      <DependentUpon>OutputView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Script\Output\OutputViewModel.cs" />
+    <Compile Include="Views\Script\ScriptEditorView.xaml.cs">
       <DependentUpon>ScriptEditorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ScriptEditorViewModel.cs" />
+    <Compile Include="Views\Script\ScriptEditorViewModel.cs" />
     <Page Include="Shells\MainShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -96,9 +104,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ScriptEditorView.xaml">
+    <Page Include="Views\Script\Output\ConsoleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Script\Output\OutputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Script\ScriptEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

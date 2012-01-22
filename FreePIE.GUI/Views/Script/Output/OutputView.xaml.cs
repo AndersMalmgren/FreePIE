@@ -12,14 +12,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FreePIE.GUI.Views
+namespace FreePIE.GUI.Views.Script.Output
 {
     /// <summary>
-    /// Interaction logic for ScriptEditorView.xaml
+    /// Interaction logic for OutputView.xaml
     /// </summary>
-    public partial class ScriptEditorView : UserControl
+    public partial class OutputView : UserControl
     {
-        public ScriptEditorView()
+        public OutputView()
         {
             InitializeComponent();
         }
