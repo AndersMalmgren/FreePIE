@@ -152,14 +152,28 @@ namespace FreePIE.Core.ScriptEngine
         public void Stop()
         {
             WaitForSlowStartingPlugins();
-            
-            running = false;
-            stopSync.WaitOne();
+            StopLuaEngineAndWaitUntilStopped();
+            StopPlugins();
+            WaitForThreadedPluginsToStop();
+            lua.Dispose();
+        }
+
+        private void StopPlugins()
+        {
             threadedPluginStopping = threadedPlugins;
             usedPlugins.ForEach(p => p.Stop());
-            if(threadedPlugins > 0)
+        }
+
+        private void StopLuaEngineAndWaitUntilStopped()
+        {
+            running = false;
+            stopSync.WaitOne();
+        }
+
+        private void WaitForThreadedPluginsToStop()
+        {
+            if (threadedPlugins > 0)
                 stopSync.WaitOne();
-            lua.Dispose();
         }
 
         private void WaitForSlowStartingPlugins()

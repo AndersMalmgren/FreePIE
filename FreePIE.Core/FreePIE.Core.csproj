@@ -55,6 +55,8 @@
     <Compile Include="Common\IFileSystem.cs" />
     <Compile Include="Common\CurveMath.cs" />
     <Compile Include="Common\Utils.cs" />
+    <Compile Include="Model\Choice.cs" />
+    <Compile Include="Model\Choices.cs" />
     <Compile Include="Model\PluginProperty.cs" />
     <Compile Include="Model\PluginSetting.cs" />
     <Compile Include="Model\Settings.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,11 @@ using FreePIE.Core.Contracts;
 namespace FreePIE.Core.Plugins
 {
     [LuaGlobalType(Type = typeof(AhrsImuGlobal))]
-    public class AhrsImuPlugin : Plugin, IOPlugin
+    public class AhrsImuPlugin : Plugin
     {
         private bool running;
+        private string port;
+        private int baudRate;
 
         public override object CreateGlobal()
         {
@@ -30,7 +33,7 @@ namespace FreePIE.Core.Plugins
             running = true;
             OnStarted(this, new EventArgs());
 
-            using (var serialPort = new SerialPort("COM3", 56700))
+            using (var serialPort = new SerialPort(port, 57600))
             {
                 serialPort.Open();
 
@@ -66,18 +69,59 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        private float ReadFloat(SerialPort port, byte[] buffer)
-        {
-            port.Read(buffer, 0, buffer.Length);
-            var value = BitConverter.ToSingle(buffer, 0);
-            return (float)value;
-        }
-
         public override void Stop()
         {
             running = false;
         }
 
+        public override bool GetProperty(int index, IPluginProperty property)
+        {
+            switch(index)
+            {
+                case 0:
+                    property.Name = "Port";
+                    property.Caption = "Com port";
+                    property.DefaultValue = null;
+                    property.HelpText = "The com port of the FTDI device";
+
+                    foreach(var p in SerialPort.GetPortNames())
+                    {
+                        property.Choices.Add(p, p);
+                    }
+
+                    property.DefaultValue = "COM3";
+                    return true;
+                case 1:
+                    property.Name = "BaudRate";
+                    property.Caption = "Baud rate";
+                    property.DefaultValue = 57600;
+                    property.HelpText = "Baud rate, default on AHRS should be 57600";
+
+                    foreach(var rate in new int[] { 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200 })
+                    {
+                        property.Choices.Add(rate.ToString(CultureInfo.InvariantCulture), rate);
+                    }
+
+                    return true;
+            }
+
+            return false;
+        }
+
+        public override bool SetProperties(Dictionary<string, object> properties)
+        {
+            port = properties["Port"] as string;
+            baudRate = (int)properties["BaudRate"];
+
+            return true;
+        }
+
+        private float ReadFloat(SerialPort port, byte[] buffer)
+        {
+            port.Read(buffer, 0, buffer.Length);
+            var value = BitConverter.ToSingle(buffer, 0);
+            return value;
+        }
     }
 
     public struct AhrsData

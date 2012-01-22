@@ -40,7 +40,7 @@ namespace FreePIE.Core.Plugins
     };
 
     [LuaGlobalType(Type = typeof(FreeTrackGlobal))]
-    public class FreeTrackPlugin : Plugin, IOPlugin
+    public class FreeTrackPlugin : Plugin
     {
         private MemoryMappedFile memoryMappedFile;
         private MemoryMappedViewAccessor accessor;

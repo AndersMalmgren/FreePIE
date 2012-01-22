@@ -29,12 +29,12 @@ namespace FreePIE.Core.Plugins
         public virtual void Stop() { }
 
         public event EventHandler Started;
-        public bool GetProperty(int index, IPluginProperty property)
+        public virtual bool GetProperty(int index, IPluginProperty property)
         {
             return false;
         }
 
-        public bool SetProperties(Dictionary<string, object> properties)
+        public virtual bool SetProperties(Dictionary<string, object> properties)
         {
             return false;
         }
