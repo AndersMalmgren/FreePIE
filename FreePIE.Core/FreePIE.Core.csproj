@@ -72,7 +72,6 @@
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\DiagnosticHelper.cs" />
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\FilterHelper.cs" />
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\IScriptHelper.cs" />
-    <Compile Include="ScriptEngine\Globals\ScriptHelpers\MathHelper.cs" />
     <Compile Include="ScriptEngine\IScriptParser.cs" />
     <Compile Include="ScriptEngine\LuaEngine.cs" />
     <Compile Include="ScriptEngine\LuaScriptParser.cs" />
