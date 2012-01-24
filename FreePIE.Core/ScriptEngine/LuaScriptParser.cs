@@ -26,11 +26,10 @@ namespace FreePIE.Core.ScriptEngine
                         new
                             {
                                 Name = GlobalsInfo.GetGlobalName(pt),
-                                Methods = GlobalsInfo.GetGlobalMehods(pt),
                                 PluginType = pt
                             }
                 )
-                .Where(info => info.Methods.Any(m => script.Contains(string.Format("{0}:{1}", info.Name, m))))
+                .Where(info => script.Contains(info.Name))
                 .Select(info => info.PluginType);
 
             return pluginInvoker.InvokeAndConfigurePlugins(pluginTypes).ToList();
