@@ -45,6 +45,7 @@ namespace FreePIE.Core.Plugins
         private MemoryMappedFile memoryMappedFile;
         private MemoryMappedViewAccessor accessor;
         public FreeTrackData WriteData { get; set; }
+        private FreeTrackData readData;
 
         public override object CreateGlobal()
         {
@@ -67,10 +68,25 @@ namespace FreePIE.Core.Plugins
             memoryMappedFile.Dispose();
         }
 
+        private int sameDataCount = 0;
         public FreeTrackData Read()
         {
             FreeTrackData local;
             accessor.Read(0, out local);
+            if (local.DataID == readData.DataID)
+                sameDataCount++;
+            else
+                sameDataCount = 0;
+
+            if (sameDataCount > 20)
+            {
+                local = new FreeTrackData();
+                local.DataID = readData.DataID;
+            }
+
+
+            
+            readData = local;
             return local;
         }
 
