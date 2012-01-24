@@ -12,12 +12,6 @@ using LuaInterface;
 
 namespace FreePIE.Core.ScriptEngine
 {
-    public interface IScriptEngine
-    {
-        void Start(string script);
-        void Stop();
-    }
-
     public class LuaEngine : IScriptEngine
     {
         private readonly IEnumerable<IGlobalProvider> globalProviders;
@@ -25,6 +19,7 @@ namespace FreePIE.Core.ScriptEngine
         private readonly Lua lua;
         private readonly BackgroundWorker luaWorker;
         private bool running = false;
+        private bool error = false;
         private bool pluginsAreStarting = false;
         private string script;
         private IEnumerable<IOPlugin> usedPlugins;
@@ -51,6 +46,28 @@ namespace FreePIE.Core.ScriptEngine
             luaWorker.RunWorkerAsync();
         }
 
+        public void Stop()
+        {
+            WaitForSlowStartingPlugins();
+            StopLuaEngineAndWaitUntilStopped();
+            StopPlugins();
+            WaitForThreadedPluginsToStop();
+            lua.Dispose();
+        }
+
+        public event EventHandler<ScriptErrorEventArgs> Error;
+
+        protected virtual void OnError(object sender, ScriptErrorEventArgs e)
+        {
+            if (Error != null)
+                Error(sender, e);
+        }
+
+        private void TriggerErrorEventNotOnLuaThread(Exception e)
+        {
+            ThreadPool.QueueUserWorkItem(obj => OnError(this, new ScriptErrorEventArgs(e)));
+        }
+
         private void LuaWorker(object sender, DoWorkEventArgs e)
         {
             running = true;
@@ -58,12 +75,23 @@ namespace FreePIE.Core.ScriptEngine
             lua["starting"] = starting;
             while(running)
             {
-                lua.DoString(script);
-
-                if(starting)
+                if (!error)
                 {
-                    starting = false;
-                    lua["starting"] = starting;
+                    try
+                    {
+                        lua.DoString(script);
+                    }
+                    catch (Exception ex)
+                    {
+                        error = true;
+                        TriggerErrorEventNotOnLuaThread(ex);
+                    }
+
+                    if (starting)
+                    {
+                        starting = false;
+                        lua["starting"] = starting;
+                    }
                 }
 
                 Thread.Sleep(5);
@@ -116,7 +144,17 @@ namespace FreePIE.Core.ScriptEngine
 
         private void ThreadedPluginHandler(Action pluginThreadedAction)
         {
-            pluginThreadedAction();
+            try
+            {
+                pluginThreadedAction();
+            }
+            catch (Exception e)
+            {
+                TriggerErrorEventNotOnLuaThread(e);
+                error = true;
+                threadedPlugins--;
+            }
+            
             threadedPluginStopping--;
             if (threadedPluginStopping == 0)
                 stopSync.Set();
@@ -147,15 +185,6 @@ namespace FreePIE.Core.ScriptEngine
         private void PrepareScriptForGlobals(IEnumerable<object> globals)
         {
             script = scriptParser.FindAndInitMethodsThatNeedIndexer(script, globals);
-        }
-
-        public void Stop()
-        {
-            WaitForSlowStartingPlugins();
-            StopLuaEngineAndWaitUntilStopped();
-            StopPlugins();
-            WaitForThreadedPluginsToStop();
-            lua.Dispose();
         }
 
         private void StopPlugins()

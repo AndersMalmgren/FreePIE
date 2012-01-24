@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Caliburn.Micro;
 using FreePIE.Core.Services;
+using FreePIE.GUI.AvalonEdit;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
 using Ninject;

@@ -30,9 +30,9 @@ namespace FreePIE.Core.ScriptEngine
                             }
                 )
                 .Where(info => script.Contains(info.Name))
-                .Select(info => info.PluginType);
+                .Select(info => info.PluginType).ToList();
 
-            return pluginInvoker.InvokeAndConfigurePlugins(pluginTypes).ToList();
+            return pluginInvoker.InvokeAndConfigurePlugins(pluginTypes);
         }
 
         public string FindAndInitMethodsThatNeedIndexer(string script, IEnumerable<object> globals)

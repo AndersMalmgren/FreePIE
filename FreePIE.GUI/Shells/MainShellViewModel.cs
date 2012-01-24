@@ -17,6 +17,7 @@ namespace FreePIE.GUI.Shells
 {
     public class MainShellViewModel : ShellPresentationModel, IHandle<ScriptUpdatedEvent>
     {
+        private readonly IEventAggregator eventAggregator;
         private readonly Func<IScriptEngine> scriptEngineFactory;
         private readonly IPersistanceManager persistanceManager;
         private IScriptEngine currentSCriptEngine;
@@ -32,6 +33,7 @@ namespace FreePIE.GUI.Shells
         {
             eventAggregator.Subscribe(this);
 
+            this.eventAggregator = eventAggregator;
             this.scriptEngineFactory = scriptEngineFactory;
             this.persistanceManager = persistanceManager;
             persistanceManager.Load();
@@ -57,6 +59,7 @@ namespace FreePIE.GUI.Shells
             scriptRunning = true;
 
             currentSCriptEngine = scriptEngineFactory();
+            currentSCriptEngine.Error += new EventHandler<ScriptErrorEventArgs>(ScriptEngineError);
             CanRunScript = !scriptRunning;
             CanStopScript = scriptRunning;
             currentSCriptEngine.Start(ScriptEditor.Script);
@@ -69,6 +72,12 @@ namespace FreePIE.GUI.Shells
             CanRunScript = !scriptRunning;
             CanStopScript = scriptRunning;
             currentSCriptEngine.Stop();
+        }
+
+        private void ScriptEngineError(object sender, ScriptErrorEventArgs e)
+        {
+            StopScript();
+            eventAggregator.Publish(new ScriptErrorEvent(e.Exception));
         }
 
         private bool canStopScript;

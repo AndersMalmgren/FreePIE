@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Windows.Controls;
 using Caliburn.Micro;
 
 namespace FreePIE.GUI.Views.Script.Output
@@ -41,7 +37,7 @@ namespace FreePIE.GUI.Views.Script.Output
             this.output = output;
             var worker = new BackgroundWorker();
 
-            worker.DoWork += new DoWorkEventHandler(WorkerDoWork);
+            worker.DoWork += WorkerDoWork;
             worker.RunWorkerAsync();
         }
 
@@ -66,7 +62,7 @@ namespace FreePIE.GUI.Views.Script.Output
 
         public override Encoding Encoding
         {
-            get { return System.Text.Encoding.UTF8; }
+            get { return Encoding.UTF8; }
         }
     }
 }

@@ -33,7 +33,7 @@ namespace FreePIE.Core.Plugins
             running = true;
             OnStarted(this, new EventArgs());
 
-            using (var serialPort = new SerialPort(port, 57600))
+            using (var serialPort = new SerialPort(port, baudRate))
             {
                 serialPort.Open();
 
@@ -81,7 +81,6 @@ namespace FreePIE.Core.Plugins
                 case 0:
                     property.Name = "Port";
                     property.Caption = "Com port";
-                    property.DefaultValue = null;
                     property.HelpText = "The com port of the FTDI device";
 
                     foreach(var p in SerialPort.GetPortNames())

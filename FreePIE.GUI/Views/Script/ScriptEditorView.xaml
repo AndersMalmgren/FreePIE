@@ -2,13 +2,15 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d">
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:AvalonEdit="clr-namespace:FreePIE.GUI.AvalonEdit">
     <Grid>
-        <TextBox x:Name="Script" 
-            Height="Auto" 
-            TextWrapping="Wrap" 
-            VerticalScrollBarVisibility="Visible"
-            AcceptsReturn="True"></TextBox>
+        <AvalonEdit:BindableScriptEditor
+				x:Name="textEditor"
+				FontFamily="Consolas"
+				FontSize="10pt"
+				SyntaxHighlighting="Lua"   
+                Script="{ Binding Path=Script, Mode=TwoWay}"            >
+        </AvalonEdit:BindableScriptEditor>
     </Grid>
 </UserControl>

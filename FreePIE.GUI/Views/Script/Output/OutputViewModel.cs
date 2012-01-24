@@ -8,10 +8,12 @@ namespace FreePIE.GUI.Views.Script.Output
 {
     public class OutputViewModel : PropertyChangedBase
     {
-        public OutputViewModel(ConsoleViewModel consoleViewModel)
+        public OutputViewModel(ConsoleViewModel consoleViewModel, ErrorViewModel errorViewModel)
         {
             Console = consoleViewModel;
+            Error = errorViewModel;
         }
         public ConsoleViewModel Console { get; set; }
+        public ErrorViewModel Error { get; set; }
     }
 }

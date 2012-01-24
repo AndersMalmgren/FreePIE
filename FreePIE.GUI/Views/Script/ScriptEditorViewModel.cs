@@ -17,9 +17,9 @@ namespace FreePIE.GUI.Views.Script
         {
             get { return script; }
             set
-            { 
-                eventAggregator.Publish(new ScriptUpdatedEvent(value));
+            {
                 script = value; 
+                eventAggregator.Publish(new ScriptUpdatedEvent(value));
                 NotifyOfPropertyChange(() => Script);
             }
         }

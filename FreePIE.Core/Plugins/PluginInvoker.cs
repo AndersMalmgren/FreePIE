@@ -45,8 +45,8 @@ namespace FreePIE.Core.Plugins
 
         public IEnumerable<IOPlugin> InvokeAndConfigurePlugins(IEnumerable<Type> pluginTypes)
         {
-            var plugins = pluginTypes.Select(t => pluginFactory(t)).ForEach(SetPluginProperties);
-
+            var plugins = pluginTypes.Select(t => pluginFactory(t)).ToList();
+            plugins.ForEach(SetPluginProperties);
             return plugins;
         }
 

@@ -9,7 +9,9 @@
             <TabItem Header="Console">
                 <ContentControl x:Name="Console"></ContentControl>
             </TabItem>
-            <TabItem Header="Errors"></TabItem>
+            <TabItem Header="Errors" IsSelected="{Binding Error.Error }">
+                <ContentControl x:Name="Error"></ContentControl>
+            </TabItem>
         </TabControl>
     </Grid>
 </UserControl>
