@@ -17,9 +17,14 @@ namespace FreePIE.GUI.Result
             return kernel.Get<ShowDialogResult<TModel>>();
         }
 
-        public FileDialogResult ShowFileDialog(string title, string filter)
+        public FileDialogResult ShowFileDialog(string title, string filter, FileDialogMode mode)
         {
-            return new FileDialogResult(title, filter);
+            return ShowFileDialog(title, filter, mode, null);
+        }
+
+        public FileDialogResult ShowFileDialog(string title, string filter, FileDialogMode mode, string fileName)
+        {
+            return new FileDialogResult(title, filter, mode, fileName);
         }
 
         public CloseResult Close()

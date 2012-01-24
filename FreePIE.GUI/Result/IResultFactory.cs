@@ -6,6 +6,7 @@ namespace FreePIE.GUI.Result
     {
         ShowDialogResult<TModel> ShowDialogResult<TModel>() where TModel : ShellPresentationModel;
         CloseResult Close();
-        FileDialogResult ShowFileDialog(string title, string filter);
+        FileDialogResult ShowFileDialog(string title, string filter, FileDialogMode mode);
+        FileDialogResult ShowFileDialog(string title, string filter, FileDialogMode mode, string fileName);
     }
 }

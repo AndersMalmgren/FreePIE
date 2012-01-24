@@ -43,15 +43,43 @@ namespace FreePIE.GUI.Shells
             DisplayName = "FreePIE - Programmable Input Emulator";
         }
 
+        private string currentScriptFile;
+        private const string fileFilter = "Lua scripts (*.lua)|*.lua|All files (*.*)|*.*";
         public IEnumerable<IResult> OpenScript()
         {
-            var result = Result.ShowFileDialog("Open script", "Lua scripts (*.lua)|*.lua|All files (*.*)|*.*");
+            var result = Result.ShowFileDialog("Open script", fileFilter, FileDialogMode.Open);
             yield return result;
 
             if(!string.IsNullOrEmpty(result.File))
             {
+                currentScriptFile = result.File;
                 ScriptEditor.Script = File.ReadAllText(result.File);
+                NotifyOfPropertyChange(() => CanQuickSaveScript);
             }
+        }
+
+        public IEnumerable<IResult> SaveScript()
+        {
+            var result = Result.ShowFileDialog("Save script", fileFilter, FileDialogMode.Save, currentScriptFile);
+            yield return result;
+
+            if(!string.IsNullOrEmpty(result.File))
+                Save(result.File);
+        }
+
+        private void Save(string filename)
+        {
+            File.WriteAllText(filename, ScriptEditor.Script);
+        }
+
+        public void QuickSaveScript()
+        {
+            Save(currentScriptFile);
+        }
+
+        public bool CanQuickSaveScript
+        {
+            get { return !string.IsNullOrEmpty(currentScriptFile); }
         }
 
         public void RunScript()
