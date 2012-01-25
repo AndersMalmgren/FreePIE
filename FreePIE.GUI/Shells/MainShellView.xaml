@@ -13,7 +13,7 @@
             <MenuItem Header="_File">
                 <MenuItem x:Name="OpenScript" Header="_Open..."/>                
                 <MenuItem x:Name="QuickSaveScript" Header="_Save"/>
-                <MenuItem x:Name="SaveScript" Header="_Save as..."/>
+                <MenuItem x:Name="SaveScript" Header="Save _As..."/>
                 <MenuItem x:Name="TryClose" Header="E_xit"/>
             </MenuItem>
             <MenuItem Header="_Script">

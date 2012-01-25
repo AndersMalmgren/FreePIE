@@ -69,7 +69,9 @@ namespace FreePIE.GUI.Shells
 
         private void Save(string filename)
         {
+            currentScriptFile = filename;
             File.WriteAllText(filename, ScriptEditor.Script);
+            NotifyOfPropertyChange(() => CanQuickSaveScript);
         }
 
         public void QuickSaveScript()
