@@ -15,6 +15,7 @@ namespace FreePIE.Core.Plugins
         private bool running;
         private string port;
         private int baudRate;
+        private bool newData;
 
         public override object CreateGlobal()
         {
@@ -61,6 +62,7 @@ namespace FreePIE.Core.Plugins
                         data.Roll = ReadFloat(serialPort, buffer);
 
                         Data = data;
+                        newData = true;
                     }
 
                     Thread.Sleep(1);
@@ -72,6 +74,15 @@ namespace FreePIE.Core.Plugins
         public override void Stop()
         {
             running = false;
+        }
+
+        public override void DoBeforeNextExecute()
+        {
+            if(newData)
+            {
+                OnUpdate();
+                newData = false;
+            }
         }
 
         public override bool GetProperty(int index, IPluginProperty property)
@@ -131,11 +142,11 @@ namespace FreePIE.Core.Plugins
     }
 
     [LuaGlobal(Name = "ahrsImu")]
-    public class AhrsImuGlobal
+    public class AhrsImuGlobal : UpdateblePluginGlobal
     {
         private readonly AhrsImuPlugin plugin;
 
-        public AhrsImuGlobal(AhrsImuPlugin plugin)
+        public AhrsImuGlobal(AhrsImuPlugin plugin) : base(plugin)
         {
             this.plugin = plugin;
         }

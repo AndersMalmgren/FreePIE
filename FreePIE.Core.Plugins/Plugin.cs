@@ -12,6 +12,7 @@ namespace FreePIE.Core.Plugins
     public abstract class Plugin : IOPlugin
     {
         public abstract object CreateGlobal();
+        public Action OnUpdate { get; set; }
 
         public virtual Action Start() 
         { 
@@ -39,9 +40,24 @@ namespace FreePIE.Core.Plugins
             return false;
         }
 
-        public virtual void DoBeforeNextExecute()
+        public virtual void DoBeforeNextExecute() { }
+    }
+
+    public abstract class UpdateblePluginGlobal
+    {
+        public UpdateblePluginGlobal(Plugin plugin)
         {
-            
+            plugin.OnUpdate = OnUpdate;            
         }
+
+        private void OnUpdate()
+        {
+            if (Update != null)
+            {
+                Update(this, new EventArgs());
+            }
+        }
+
+        public event EventHandler Update;
     }
 }

@@ -93,7 +93,10 @@ namespace FreePIE.Core.Plugins
             if (local.DataID == Data.DataID)
                 sameDataCount++;
             else
+            {
                 sameDataCount = 0;
+                OnUpdate();
+            }
 
             if (sameDataCount > 20)
             {
@@ -113,15 +116,16 @@ namespace FreePIE.Core.Plugins
     }
 
     [LuaGlobal(Name = "freeTrack")]
-    public class FreeTrackGlobal
+    public class FreeTrackGlobal : UpdateblePluginGlobal
     {
         private readonly FreeTrackPlugin plugin;
 
-        public FreeTrackGlobal(FreeTrackPlugin plugin)
+        public FreeTrackGlobal(FreeTrackPlugin plugin) : base(plugin)
         {
             this.plugin = plugin;
-        }
 
+        }
+        
         public float getYaw()
         {
             return plugin.Data.Yaw;
