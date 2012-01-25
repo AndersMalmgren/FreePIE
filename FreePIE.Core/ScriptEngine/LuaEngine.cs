@@ -79,6 +79,8 @@ namespace FreePIE.Core.ScriptEngine
                 {
                     try
                     {
+                        usedPlugins.ForEach(p => p.DoBeforeNextExecute());
+
                         lua.DoString(script);
                     }
                     catch (Exception ex)

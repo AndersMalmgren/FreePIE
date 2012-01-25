@@ -3,14 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Xml;
+using FreePIE.GUI.Shells;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace FreePIE.GUI.AvalonEdit
 {
     public class BindableScriptEditor : TextEditor
     {
-        public BindableScriptEditor()
+        static BindableScriptEditor()
         {
+            // Load our custom highlighting definition
+            IHighlightingDefinition customHighlighting;
+            using (var s = typeof(MainShellView).Assembly.GetManifestResourceStream("FreePIE.GUI.AvalonEdit.Lua.xshd"))
+            {
+                if (s == null)
+                    throw new InvalidOperationException("Could not find embedded resource");
+                using (var reader = new XmlTextReader(s))
+                {
+                    customHighlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.
+                        HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                }
+            }
+            // and register it in the HighlightingManager
+            HighlightingManager.Instance.RegisterHighlighting("Lua", new string[] { ".lua" }, customHighlighting);
         }
 
         protected override void OnTextChanged(EventArgs e)

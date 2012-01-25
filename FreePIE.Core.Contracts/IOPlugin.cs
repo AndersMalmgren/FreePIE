@@ -14,5 +14,6 @@ namespace FreePIE.Core.Contracts
 
         bool GetProperty(int index, IPluginProperty property);
         bool SetProperties(Dictionary<string, object> properties);
+        void DoBeforeNextExecute();
     }
 }

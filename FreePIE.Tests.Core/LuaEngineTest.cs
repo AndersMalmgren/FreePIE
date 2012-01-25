@@ -136,6 +136,10 @@ testPlugin:dummy(""ping"")
         {
             return false;
         }
+
+        public void DoBeforeNextExecute()
+        {
+        }
     }
 
 

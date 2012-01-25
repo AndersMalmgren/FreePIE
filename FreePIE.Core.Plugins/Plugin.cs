@@ -38,5 +38,10 @@ namespace FreePIE.Core.Plugins
         {
             return false;
         }
+
+        public virtual void DoBeforeNextExecute()
+        {
+            
+        }
     }
 }

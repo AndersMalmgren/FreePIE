@@ -44,14 +44,13 @@ namespace FreePIE.Core.Plugins
     {
         private MemoryMappedFile memoryMappedFile;
         private MemoryMappedViewAccessor accessor;
-        public FreeTrackData WriteData { get; set; }
-        private FreeTrackData readData;
+        public FreeTrackData Data { get; set; }
 
         public override object CreateGlobal()
         {
             return new FreeTrackGlobal(this);
         }
-
+        
         public override Action Start()
         {
             memoryMappedFile = MemoryMappedFile.CreateOrOpen("FT_SharedMem", Marshal.SizeOf(typeof(FreeTrackData)));
@@ -68,12 +67,30 @@ namespace FreePIE.Core.Plugins
             memoryMappedFile.Dispose();
         }
 
+        public bool IsWriting { get; set; }
+        private int oldData;
+        public override void DoBeforeNextExecute()
+        {
+            if(IsWriting)
+            {
+                if(Data.DataID > oldData)
+                {
+                    Write();
+                    oldData = Data.DataID;
+                }
+            }
+            else
+            {
+                Read();
+            }
+        }
+
         private int sameDataCount = 0;
-        public FreeTrackData Read()
+        public void Read()
         {
             FreeTrackData local;
             accessor.Read(0, out local);
-            if (local.DataID == readData.DataID)
+            if (local.DataID == Data.DataID)
                 sameDataCount++;
             else
                 sameDataCount = 0;
@@ -81,20 +98,16 @@ namespace FreePIE.Core.Plugins
             if (sameDataCount > 20)
             {
                 local = new FreeTrackData();
-                local.DataID = readData.DataID;
+                local.DataID = Data.DataID;
             }
-
-
             
-            readData = local;
-            return local;
+            Data = local;
         }
 
         public void Write()
         {
-            var local = WriteData;
-            local.DataID++;
-            WriteData = local;
+            var local = Data;
+            Data = local;
             accessor.Write(0, ref local);
         }
     }
@@ -111,80 +124,70 @@ namespace FreePIE.Core.Plugins
 
         public float getYaw()
         {
-            return plugin.Read().Yaw;
+            return plugin.Data.Yaw;
         }
 
         public float getPitch()
         {
-            return plugin.Read().Pitch;
+            return plugin.Data.Pitch;
         }
 
         public float getRoll()
         {
-            return plugin.Read().Roll;
+            return plugin.Data.Roll;
         }
 
         public float getX()
         {
-            return plugin.Read().X;
+            return plugin.Data.X;
         }
 
         public float getY()
         {
-            return plugin.Read().Y;
+            return plugin.Data.Y;
         }
 
         public float getZ()
         {
-            return plugin.Read().Z;
+            return plugin.Data.Z;
+        }
+
+        private void Write(Func<FreeTrackData, FreeTrackData> setValue)
+        {
+            plugin.IsWriting = true;
+            var data = plugin.Data;
+            data.DataID++;
+            plugin.Data = setValue(data);
         }
 
         public void setYaw(float yaw)
         {
-            var data = plugin.WriteData;
-            data.Yaw = yaw;
-            plugin.WriteData = data;
-            plugin.Write();
+            Write(d => { d.Yaw = yaw; return d; });
         }
 
         public void setPitch(float pitch)
         {
-            var data = plugin.WriteData;
-            data.Pitch = pitch;
-            plugin.WriteData = data;
-            plugin.Write();
+            Write(d => { d.Pitch = pitch; return d; });
         }
 
         public void setRoll(float roll)
         {
-            var data = plugin.WriteData;
-            data.Roll = roll;
-            plugin.WriteData = data;
-            plugin.Write();
+            Write(d => { d.Roll = roll; return d; });
         }
 
         public void setX(float x)
         {
-            var data = plugin.WriteData;
-            data.X = x;
-            plugin.WriteData = data;
-            plugin.Write();
+            Write(d => { d.X = x; return d; });
         }
 
         public void setY(float y)
         {
-            var data = plugin.WriteData;
-            data.Y = y;
-            plugin.WriteData = data;
-            plugin.Write();
+            Write(d => { d.Y = y; return d; });
         }
 
         public void setZ(float z)
         {
-            var data = plugin.WriteData;
-            data.Z = z;
-            plugin.WriteData = data;
-            plugin.Write();
+            Write(d => { d.Z = z; return d; });
         }
     }
 }
