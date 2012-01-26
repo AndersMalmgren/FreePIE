@@ -83,7 +83,7 @@ namespace FreePIE.Core.ScriptEngine
 
                 index++;
 
-            } while (parenthesesCount > 0 || index >= script.Length);
+            } while (parenthesesCount > 0 && index < script.Length);
 
             return script.Substring(start, index - start);
         }
