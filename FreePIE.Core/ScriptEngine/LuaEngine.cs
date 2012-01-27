@@ -68,6 +68,19 @@ namespace FreePIE.Core.ScriptEngine
             ThreadPool.QueueUserWorkItem(obj => OnError(this, new ScriptErrorEventArgs(e)));
         }
 
+        private void ExecuteSafe(Action protectedAction)
+        {
+            try
+            {
+                protectedAction();
+            }
+            catch (Exception e)
+            {
+                error = true;
+                TriggerErrorEventNotOnLuaThread(e);
+            }
+        }
+
         private void LuaWorker(object sender, DoWorkEventArgs e)
         {
             running = true;
@@ -77,18 +90,12 @@ namespace FreePIE.Core.ScriptEngine
             {
                 if (!error)
                 {
-                    try
+                    ExecuteSafe(() =>
                     {
                         usedPlugins.ForEach(p => p.DoBeforeNextExecute());
-
                         lua.DoString(script);
-                    }
-                    catch (Exception ex)
-                    {
-                        error = true;
-                        TriggerErrorEventNotOnLuaThread(ex);
-                    }
-
+                    });
+                        
                     if (starting)
                     {
                         starting = false;
@@ -119,11 +126,14 @@ namespace FreePIE.Core.ScriptEngine
             threadSync = new AutoResetEvent(false);
 
             foreach (var plugin in usedPlugins)
-            {                
-                var name = GlobalsInfo.GetGlobalName(plugin);
-                lua[name] = plugin.CreateGlobal();
+            {
+                ExecuteSafe(() =>
+                    {
+                        var name = GlobalsInfo.GetGlobalName(plugin);
+                        lua[name] = plugin.CreateGlobal();
 
-                StartPlugin(plugin);
+                        StartPlugin(plugin);
+                    });
             }
 
             if (threadedPluginStarting > 0)
@@ -192,7 +202,7 @@ namespace FreePIE.Core.ScriptEngine
         private void StopPlugins()
         {
             threadedPluginStopping = threadedPlugins;
-            usedPlugins.ForEach(p => p.Stop());
+            usedPlugins.ForEach(p => ExecuteSafe(p.Stop));
         }
 
         private void StopLuaEngineAndWaitUntilStopped()
