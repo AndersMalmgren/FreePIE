@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using FreePIE.Core.Contracts;
-using Microsoft.DirectX.DirectInput;
+using SlimDX.DirectInput;
 
 namespace FreePIE.Core.Plugins {
 
@@ -79,38 +79,9 @@ namespace FreePIE.Core.Plugins {
       int DeltaXOut = 0;
       int DeltaYOut = 0;
       
-      Device Mouse;
-      MouseState? CurrentMouseState;
-
-      public int DeltaX {
-         set {
-            DeltaXOut = value;
-         }
-
-         get {
-            // Retrieve the mouse state only once per iteration to avoid getting
-            // zeros on subsequent calls
-            if (CurrentMouseState == null)
-               CurrentMouseState = Mouse.CurrentMouseState;
-
-            return CurrentMouseState.Value.X;
-         }
-      }
-
-      public int DeltaY {
-         set {
-            DeltaYOut = value;
-         }
-
-         get {
-            // Retrieve the mouse state only once per iteration to avoid getting
-            // zeros on subsequent calls
-            if (CurrentMouseState == null)
-               CurrentMouseState = Mouse.CurrentMouseState;
-
-            return CurrentMouseState.Value.Y;
-         }
-      }
+      DirectInput DirectInputInstance = new DirectInput();
+      Mouse MouseDevice;
+      MouseState CurrentMouseState;
 
       //-----------------------------------------------------------------------
       public override object CreateGlobal() {
@@ -126,15 +97,15 @@ namespace FreePIE.Core.Plugins {
             return null;
 // TODO: I should create a hidden window if the main window is unavailable (tray icon)
 
-         Mouse = new Device(SystemGuid.Mouse);
-         if (Mouse == null)
+         MouseDevice = new Mouse(DirectInputInstance);
+         if (MouseDevice == null)
             return null;  // fail
+// TODO: Investigate why I should use the newer RawInput model versus DirectInput
+         MouseDevice.SetCooperativeLevel(handle, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
+         MouseDevice.Properties.AxisMode = DeviceAxisMode.Relative;   // Get delta values
 
-         Mouse.SetCooperativeLevel(handle, CooperativeLevelFlags.Background | CooperativeLevelFlags.NonExclusive);
-         Mouse.Properties.AxisModeAbsolute = false;   // Get delta values
-         Mouse.SetDataFormat(DeviceDataFormat.Mouse);
          try {
-            Mouse.Acquire();
+            MouseDevice.Acquire();
          }
          catch (Exception err) {
             //System.Console.WriteLine(err);
@@ -147,9 +118,15 @@ namespace FreePIE.Core.Plugins {
 
       //-----------------------------------------------------------------------
       public override void Stop() {
-         if (Mouse != null) {
-            Mouse.Unacquire();
-            Mouse = null;
+         if (MouseDevice != null) {
+            MouseDevice.Unacquire();
+            MouseDevice.Dispose();
+            MouseDevice = null;
+         }
+
+         if (DirectInputInstance != null) {
+            DirectInputInstance.Dispose();
+            DirectInputInstance = null;
          }
       }
 
@@ -204,41 +181,52 @@ namespace FreePIE.Core.Plugins {
 
          CurrentMouseState = null;  // flush the mouse state
       }
-      /*
+      
       //-----------------------------------------------------------------------
-      public void SetX(int x) {
-         X = x;
-      }
+      public int DeltaX {
+         set {
+            DeltaXOut = value;
+         }
 
-      //----------------------------------------------------------------------
-      public void SetY(int y) {
-         Y = y;
-      }
+         get {
+            // Retrieve the mouse state only once per iteration to avoid getting
+            // zeros on subsequent calls
+            if (CurrentMouseState == null)
+               CurrentMouseState = MouseDevice.GetCurrentState();
 
-      //-----------------------------------------------------------------------
-      public void MoveX(int dx) {
-         DeltaX = dx;
+            return CurrentMouseState.X;
+         }
       }
-
-      //----------------------------------------------------------------------
-      public void MoveY(int dy) {
-         DeltaY = dy;
-      }
-       * */
 
       //-----------------------------------------------------------------------
-      public int GetDeltaX() {
-         return Mouse.CurrentMouseState.X;
+      public int DeltaY {
+         set {
+            DeltaYOut = value;
+         }
+
+         get {
+            // Retrieve the mouse state only once per iteration to avoid getting
+            // zeros on subsequent calls
+            if (CurrentMouseState == null)
+               CurrentMouseState = MouseDevice.GetCurrentState();
+
+            return CurrentMouseState.Y;
+         }
       }
 
-      //----------------------------------------------------------------------
-      public int GetDeltaY() {
-         return Mouse.CurrentMouseState.Y;
+      //-----------------------------------------------------------------------
+      public bool IsButtonPressed(int index) {
+
+         // Retrieve the mouse state only once per iteration to avoid getting
+         // zeros on subsequent calls
+         if (CurrentMouseState == null)
+            CurrentMouseState = MouseDevice.GetCurrentState();
+
+         return CurrentMouseState.IsPressed(index);
       }
    }
 
-
-   
+   //==========================================================================
    [LuaGlobal(Name = "mouse")]
    public class MouseGlobal : UpdateblePluginGlobal {
 
@@ -248,17 +236,7 @@ namespace FreePIE.Core.Plugins {
       public MouseGlobal(MousePlugin plugin) : base(plugin) {
          Mouse = plugin;
       }
-      /*
-      //-----------------------------------------------------------------------
-      public void setX(double x) {
-         Mouse.X = (int)Math.Round(x);
-      }
-
-      //-----------------------------------------------------------------------
-      public void setY(double y) {
-         Mouse.Y = (int)Math.Round(y);
-      }
-      */
+      
       //-----------------------------------------------------------------------
       public void setDeltaX(double x) {
          Mouse.DeltaX = (int)Math.Round(x);
@@ -277,6 +255,21 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public double getDeltaY() {
          return Mouse.DeltaY;
+      }
+
+      //-----------------------------------------------------------------------
+      public bool getLeftButton() {
+         return Mouse.IsButtonPressed(0);
+      }
+
+      //-----------------------------------------------------------------------
+      public bool getMiddleButton() {
+         return Mouse.IsButtonPressed(2);
+      }
+
+      //-----------------------------------------------------------------------
+      public bool getRightButton() {
+         return Mouse.IsButtonPressed(1);
       }
    }
 }
