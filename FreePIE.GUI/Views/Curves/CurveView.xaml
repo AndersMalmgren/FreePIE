@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="FreePIE.GUI.Views.Curves.CurveView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Charts="clr-namespace:Visiblox.Charts;assembly=Visiblox.Charts"
+             xmlns:Visiblox="clr-namespace:FreePIE.GUI.Common.Visiblox"
+             xmlns:Curves="clr-namespace:FreePIE.GUI.Views.Curves">
+    <Grid Margin="5">
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <Label Margin="0,0,5,0" VerticalAlignment="Center">Name</Label>
+                <TextBox x:Name="Name" Width="300" />
+                <Button x:Name="Delete">Delete</Button>
+            </StackPanel>
+            <Charts:Chart Background="White" Width="600" Height="400" Margin="0,2,0,0">
+                <Charts:Chart.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem>Tuckel</MenuItem>
+                    </ContextMenu>
+                </Charts:Chart.ContextMenu>
+                <Charts:Chart.Behaviour>
+                    <Charts:BehaviourManager AllowMultipleEnabled="True">
+                        <Visiblox:MovePointBehaviour OnPointMove="OnPointDragged" />
+                        <Charts:ZoomBehaviour />
+                    </Charts:BehaviourManager>
+                </Charts:Chart.Behaviour>
+                <Charts:Chart.XAxis>
+                    <Charts:LinearAxis ShowMinorTicks="True" ShowGridlines="True" Title="In" AutoScaleToVisibleData="False">
+                    </Charts:LinearAxis>
+                </Charts:Chart.XAxis>
+                <Charts:Chart.YAxis>
+                    <Charts:LinearAxis ShowMinorTicks="True" ShowGridlines="True" Title="Out"  AutoScaleToVisibleData="False">
+                    </Charts:LinearAxis>
+                </Charts:Chart.YAxis>
+                <Charts:Chart.Series>
+                    <Charts:LineSeries ShowPoints="True" ShowLine="False" ShowArea="false" IsDisplayedOnLegend="false">
+                        <Charts:LineSeries.DataSeries>
+                            <Charts:BindableDataSeries ItemsSource="{ Binding SelectablePoints  }" XValueBinding="{Binding Path=X}" YValueBinding="{Binding Path=Y}" />
+                        </Charts:LineSeries.DataSeries>
+                    </Charts:LineSeries>
+                    <Charts:LineSeries IsDisplayedOnLegend="false">
+                        <Charts:LineSeries.DataSeries>
+                            <Charts:BindableDataSeries 
+                                ItemsSource="{ Binding Points}" 
+                                XValueBinding="{Binding Path=X}"
+                                YValueBinding="{Binding Path=Y}" />
+                        </Charts:LineSeries.DataSeries>
+                    </Charts:LineSeries>
+                </Charts:Chart.Series>
+            </Charts:Chart>
+        </StackPanel>
+    </Grid>
+</UserControl>

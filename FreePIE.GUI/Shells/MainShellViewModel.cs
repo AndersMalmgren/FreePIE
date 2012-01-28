@@ -137,6 +137,11 @@ namespace FreePIE.GUI.Shells
             CanRunScript = message.Script.Length > 0;
         }
 
+        public IEnumerable<IResult> ShowCurveSettingsMenu()
+        {
+            yield return Result.ShowDialogResult<CurveSettingsViewModel>();
+        }
+
         public ScriptEditorViewModel ScriptEditor { get; set; }
         public OutputViewModel Output { get; set; }
 

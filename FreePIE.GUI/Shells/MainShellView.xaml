@@ -20,6 +20,9 @@
                 <MenuItem x:Name="RunScript" Header="_Run script" />
                 <MenuItem x:Name="StopScript" Header="_Stop script" />
             </MenuItem>
+            <MenuItem Header="S_ettings">
+                <MenuItem x:Name="ShowCurveSettingsMenu" Header="_Curves" />
+            </MenuItem>
         </Menu>        
         <ContentControl x:Name="ScriptEditor" Grid.Row="1"></ContentControl>
         <ContentControl x:Name="Output" Grid.Row="2"></ContentControl>

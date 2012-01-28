@@ -19,23 +19,21 @@ namespace FreePIE.Core.ScriptEngine.Globals
 
         public IEnumerable<object> ListGlobals()
         {
-            return settingsManager.Settings.Curves.Select(c => new CurveGlobal(c));
+            return settingsManager.Settings.Curves.Where(c => !string.IsNullOrEmpty(c.Name)).Select(c => new CurveGlobal(c));
         }
 
         private class CurveGlobal : IGlobalNameProvider
         {
             private readonly Curve curve;
-            private readonly List<Point> points;
 
             public CurveGlobal(Curve curve)
             {
-                points = new List<Point>(curve.Points);
                 this.curve = curve;
             }
 
             public double getY(double x)
             {
-                return CurveMath.SolveCubicSpline(points, x);
+                return CurveMath.SolveCubicSpline(curve.Points, x);
             }
 
             public string Name { get { return curve.Name; } }

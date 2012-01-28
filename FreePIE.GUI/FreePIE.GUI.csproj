@@ -59,6 +59,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Visiblox.Charts">
+      <HintPath>..\Lib\Visiblox\Visiblox.Charts.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -68,7 +71,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AvalonEdit\BindableScriptEditor.cs" />
+    <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
+    <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
+    <Compile Include="Events\DeleteCurveEvent.cs" />
     <Compile Include="Events\ScriptErrorEvent.cs" />
     <Compile Include="Events\ScriptUpdatedEvent.cs" />
     <Compile Include="Result\CloseResult.cs" />
@@ -78,8 +83,16 @@
     <Compile Include="Result\Result.cs" />
     <Compile Include="Result\ResultFactory.cs" />
     <Compile Include="Result\ShowDialogResult.cs" />
+    <Compile Include="Shells\CurveSettingsView.xaml.cs">
+      <DependentUpon>CurveSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shells\CurveSettingsViewModel.cs" />
     <Compile Include="Shells\MainShellViewModel.cs" />
     <Compile Include="Shells\ShellPresentationModel.cs" />
+    <Compile Include="Views\Curves\CurveView.xaml.cs">
+      <DependentUpon>CurveView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Curves\CurveViewModel.cs" />
     <Compile Include="Views\Script\Output\ConsoleView.xaml.cs">
       <DependentUpon>ConsoleView.xaml</DependentUpon>
     </Compile>
@@ -96,6 +109,10 @@
       <DependentUpon>ScriptEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Script\ScriptEditorViewModel.cs" />
+    <Page Include="Shells\CurveSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Shells\MainShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -112,6 +129,10 @@
     <Page Include="Themes\ExpressionDark.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Curves\CurveView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Script\Output\ConsoleView.xaml">
       <SubType>Designer</SubType>
@@ -148,7 +169,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="AvalonEdit\Lua.xshd" />
+    <EmbeddedResource Include="Common\AvalonEdit\Lua.xshd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -165,6 +186,7 @@
       <Name>FreePIE.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>md $(TargetDir)plugins

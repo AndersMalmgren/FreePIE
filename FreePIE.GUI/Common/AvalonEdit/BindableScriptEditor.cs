@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Xml;
 using FreePIE.GUI.Shells;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 
-namespace FreePIE.GUI.AvalonEdit
+namespace FreePIE.GUI.Common.AvalonEdit
 {
     public class BindableScriptEditor : TextEditor
     {
@@ -16,7 +13,7 @@ namespace FreePIE.GUI.AvalonEdit
         {
             // Load our custom highlighting definition
             IHighlightingDefinition customHighlighting;
-            using (var s = typeof(MainShellView).Assembly.GetManifestResourceStream("FreePIE.GUI.AvalonEdit.Lua.xshd"))
+            using (var s = typeof(MainShellView).Assembly.GetManifestResourceStream("FreePIE.GUI.Common.AvalonEdit.Lua.xshd"))
             {
                 if (s == null)
                     throw new InvalidOperationException("Could not find embedded resource");
