@@ -85,6 +85,11 @@ namespace FreePIE.Core.Plugins
             }
         }
 
+        public override string FriendlyName
+        {
+            get { return "AHRS IMU"; }
+        }
+
         public override bool GetProperty(int index, IPluginProperty property)
         {
             switch(index)

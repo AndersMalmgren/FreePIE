@@ -10,5 +10,6 @@ namespace FreePIE.Core.Persistence
         void Save();
         Settings Settings { get; }
         PluginSetting GetPluginSettings(IOPlugin plugin);
+        IEnumerable<PluginSetting> ListConfigurablePluginSettings();
     }
 }

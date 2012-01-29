@@ -48,6 +48,11 @@ namespace FreePIE.Core.Persistence
             return pluginSetting;
         }
 
+        public IEnumerable<PluginSetting> ListConfigurablePluginSettings()
+        {
+            return Settings.PluginSettings.Where(ps => ps.PluginProperties.Any()).ToList();
+        }
+
         public Settings Settings { get; private set; }
 
     }

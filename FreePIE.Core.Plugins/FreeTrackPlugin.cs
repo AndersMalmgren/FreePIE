@@ -67,6 +67,11 @@ namespace FreePIE.Core.Plugins
             memoryMappedFile.Dispose();
         }
 
+        public override string FriendlyName
+        {
+            get { return "FreeTrack"; }
+        }
+
         public bool IsWriting { get; set; }
         private int oldData;
         public override void DoBeforeNextExecute()

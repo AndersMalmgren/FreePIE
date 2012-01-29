@@ -1,6 +1,6 @@
 ﻿<Window x:Class="FreePIE.GUI.Shells.MainShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:cal="http://www.caliburnproject.org"
         Title="FreePIE" Background="{DynamicResource WindowBackgroundBrush}">
     
     <Grid>
@@ -21,6 +21,7 @@
                 <MenuItem x:Name="StopScript" Header="_Stop script" />
             </MenuItem>
             <MenuItem Header="S_ettings">
+                <MenuItem x:Name="Plugins" DisplayMemberPath="Name" Header="_Plugins" cal:Message.Attach="ShowPluginSettings($orignalsourcecontext)"></MenuItem>
                 <MenuItem x:Name="ShowCurveSettingsMenu" Header="_Curves" />
             </MenuItem>
         </Menu>        

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using Caliburn.Micro;
 using FreePIE.Core.Services;
 using FreePIE.GUI.Result;
@@ -20,6 +21,8 @@ namespace FreePIE.GUI.Bootstrap
             kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             kernel.Bind<IResultFactory>().To<ResultFactory>();
             kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
+
+            SetupCustomMessageBindings();
         }
 
         protected override object GetInstance(Type service, string key)
@@ -30,6 +33,26 @@ namespace FreePIE.GUI.Bootstrap
         protected override IEnumerable<object> GetAllInstances(Type service)
         {
             return kernel.GetAll(service);
+        }
+
+        private void SetupCustomMessageBindings()
+        {
+            MessageBinder.SpecialValues.Add("$orignalsourcecontext", context =>
+            {
+                var args = context.EventArgs as RoutedEventArgs;
+                if (args == null)
+                {
+                    return null;
+                }
+
+                var fe = args.OriginalSource as FrameworkElement;
+                if (fe == null)
+                {
+                    return null;
+                }
+
+                return fe.DataContext;
+            });            
         }
     }
 }

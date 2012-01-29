@@ -100,6 +100,8 @@ testPlugin:dummy(""ping"")
         private readonly Action<string> action;
         public bool Crash { get; set; }
         public double TestValue { get; set; }
+        private bool running;
+        
 
         public Plugin(Action<string> action)
         {
@@ -118,15 +120,25 @@ testPlugin:dummy(""ping"")
             return () =>
             {
                 Crash = false;
+                running = true;
+
                 Started(this, new EventArgs());
+                while(running) {}
             };
         }
 
         public void Stop()
         {
+            running = false;
         }
 
         public event EventHandler Started;
+
+        public string FriendlyName
+        {
+            get { return "Plugin"; }
+        }
+
         public bool GetProperty(int index, IPluginProperty property)
         {
             return false;
@@ -136,6 +148,8 @@ testPlugin:dummy(""ping"")
         {
             return false;
         }
+        
+        
 
         public void DoBeforeNextExecute()
         {

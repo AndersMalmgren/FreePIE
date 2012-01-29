@@ -4,6 +4,7 @@ namespace FreePIE.Core.Model
 {
     public class PluginSetting
     {
+        public string FriendlyName { get; set; }
         public string PluginType { get; set; }
         public List<PluginProperty> PluginProperties { get; set; }
 

@@ -12,6 +12,7 @@ namespace FreePIE.Core.Contracts
         void Stop();
         event EventHandler Started;
 
+        string FriendlyName { get; }
         bool GetProperty(int index, IPluginProperty property);
         bool SetProperties(Dictionary<string, object> properties);
         void DoBeforeNextExecute();

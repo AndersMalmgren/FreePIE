@@ -6,7 +6,7 @@ using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Model
 {
-    public class Choices : List<IChoice>, IChoices
+    public class Choices : List<Choice>, IChoices
     {
         public void Add(string caption, object value)
         {

@@ -88,11 +88,29 @@
     </Compile>
     <Compile Include="Shells\CurveSettingsViewModel.cs" />
     <Compile Include="Shells\MainShellViewModel.cs" />
+    <Compile Include="Shells\PluginSettingsView.xaml.cs">
+      <DependentUpon>PluginSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shells\PluginSettingsViewModel.cs" />
     <Compile Include="Shells\ShellPresentationModel.cs" />
     <Compile Include="Views\Curves\CurveView.xaml.cs">
       <DependentUpon>CurveView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Curves\CurveViewModel.cs" />
+    <Compile Include="Views\Plugin\PluginPropertyView.xaml.cs">
+      <DependentUpon>PluginPropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugin\PluginPropertyViewModel.cs" />
+    <Compile Include="Views\Plugin\PluginSettingsMenuViewModel.cs" />
+    <Compile Include="Views\Plugin\PropertyValueTypes\ChoicesPropertyViewModel.cs" />
+    <Compile Include="Views\Plugin\PropertyValueTypes\ChoicesPropertyView.xaml.cs">
+      <DependentUpon>ChoicesPropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugin\PropertyValueTypes\TextPropertyView.xaml.cs">
+      <DependentUpon>TextPropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugin\PropertyValueTypes\TextPropertyViewModel.cs" />
+    <Compile Include="Views\Plugin\PropertyValueTypes\ValueViewModel.cs" />
     <Compile Include="Views\Script\Output\ConsoleView.xaml.cs">
       <DependentUpon>ConsoleView.xaml</DependentUpon>
     </Compile>
@@ -126,11 +144,27 @@
       <DependentUpon>MainShellView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Shells\PluginSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\ExpressionDark.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Curves\CurveView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugin\PluginPropertyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugin\PropertyValueTypes\ChoicesPropertyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugin\PropertyValueTypes\TextPropertyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

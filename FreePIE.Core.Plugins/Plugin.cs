@@ -12,6 +12,8 @@ namespace FreePIE.Core.Plugins
     public abstract class Plugin : IOPlugin
     {
         public abstract object CreateGlobal();
+        public abstract string FriendlyName { get; }
+
         public Action OnUpdate { get; set; }
 
         public virtual Action Start() 

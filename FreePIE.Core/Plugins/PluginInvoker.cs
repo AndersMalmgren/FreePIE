@@ -60,13 +60,13 @@ namespace FreePIE.Core.Plugins
 
             removedPluginSettings.ForEach(ps => settings.PluginSettings.Remove(ps));
             settings.PluginSettings.AddRange(addedPluginTypes.Select(ps => new PluginSetting(ps.FullName)));
-
-
+            
             foreach(var pluginType in pluginTypes)
             {
                 var plugin = pluginFactory(pluginType);
                 var pluginSettings = settings.PluginSettings.First(ps => ps.PluginType == pluginType.FullName);
 
+                pluginSettings.FriendlyName = plugin.FriendlyName;
                 InitProperties(plugin, pluginSettings.PluginProperties);
             }
         }
