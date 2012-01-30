@@ -16,4 +16,7 @@ namespace FreePIE.Core.Contracts
     {
         public string Name { get; set; }
     }
+
+    [AttributeUsage(AttributeTargets.Enum)]
+    public class LuaGlobalEnum : Attribute { }
 }

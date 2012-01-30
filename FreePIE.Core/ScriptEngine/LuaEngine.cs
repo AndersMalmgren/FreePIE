@@ -196,7 +196,7 @@ namespace FreePIE.Core.ScriptEngine
 
         private void PrepareScriptForGlobals(IEnumerable<object> globals)
         {
-            script = scriptParser.FindAndInitMethodsThatNeedIndexer(script, globals);
+            script = scriptParser.PrepareScript(script, globals);
         }
 
         private void StopPlugins()

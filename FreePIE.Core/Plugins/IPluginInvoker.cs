@@ -9,5 +9,6 @@ namespace FreePIE.Core.Plugins
         IEnumerable<Type> ListAllPluginTypes();
         IEnumerable<IOPlugin> InvokeAndConfigurePlugins(IEnumerable<Type> pluginTypes);
         void PopulatePluginSettings();
+        IEnumerable<Type> ListAllGlobalEnumTypes();
     }
 }

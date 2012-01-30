@@ -35,7 +35,32 @@ namespace FreePIE.Core.ScriptEngine
             return pluginInvoker.InvokeAndConfigurePlugins(pluginTypes);
         }
 
-        public string FindAndInitMethodsThatNeedIndexer(string script, IEnumerable<object> globals)
+        public string PrepareScript(string script, IEnumerable<object> globals)
+        {
+            script = FindAndInitMethodsThatNeedIndexer(script, globals);
+            script = FindAndParseGlobalEnums(script);
+            return script;
+        }
+
+        private string FindAndParseGlobalEnums(string script)
+        {
+            var enumTypes = pluginInvoker.ListAllGlobalEnumTypes();
+            foreach (var type in enumTypes)
+            {
+                var values = Enum.GetValues(type);
+                var name = type.Name;
+                foreach(var value in values)
+                {
+                    var valueName = Enum.GetName(type, value);
+                    var searchFor = string.Format("{0}.{1}", name, valueName);
+                    script = script.Replace(searchFor, ((int)value).ToString());
+                }
+            }
+
+            return script;
+        }
+
+        private string FindAndInitMethodsThatNeedIndexer(string script, IEnumerable<object> globals)
         {
             var globalsThatNeedsIndex = globals
                 .SelectMany(g => g.GetType().GetMethods()

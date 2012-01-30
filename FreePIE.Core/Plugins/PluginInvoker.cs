@@ -20,6 +20,7 @@ namespace FreePIE.Core.Plugins
         private const string pluginFolder = "plugins";
 
         private IEnumerable<Type> pluginTypes;
+        private IEnumerable<Type> globalEnumTypes; 
 
         public PluginInvoker(ISettingsManager settingsManager, Func<Type, IOPlugin> pluginFactory, IFileSystem fileSystem)
         {
@@ -38,7 +39,7 @@ namespace FreePIE.Core.Plugins
 
             pluginTypes = dlls
                 .Select(Assembly.LoadFile)
-                .SelectMany(a => a.GetTypes().Where(t => typeof (IOPlugin).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract));
+                .SelectMany(a => a.GetTypes().Where(t => typeof (IOPlugin).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)).ToList();
 
             return pluginTypes;
         }
@@ -69,6 +70,18 @@ namespace FreePIE.Core.Plugins
                 pluginSettings.FriendlyName = plugin.FriendlyName;
                 InitProperties(plugin, pluginSettings.PluginProperties);
             }
+        }
+
+
+
+        public IEnumerable<Type> ListAllGlobalEnumTypes()
+        {
+            if(globalEnumTypes != null)
+                return globalEnumTypes;
+
+            globalEnumTypes = ListAllPluginTypes().Select(t => t.Assembly).SelectMany(a => a.GetTypes().Where(t => t.GetCustomAttributes(typeof (LuaGlobalEnum), false).Any())).Distinct().ToList();
+
+            return globalEnumTypes;
         }
 
         private void InitProperties(IOPlugin plugin, List<PluginProperty> properties)
