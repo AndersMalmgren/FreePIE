@@ -164,6 +164,9 @@ namespace FreePIE.Core.Common
 
                 x1 = z - previous;
 
+                if (gap > h.Length - 1)
+                    return z;
+
                 x2 = h[gap] - x1;
 
                 if (gap == 0)
