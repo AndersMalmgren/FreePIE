@@ -68,8 +68,6 @@ namespace FreePIE.Tests.Core.Plugins
                 Assert.IsTrue(global.getX() < 20);
                 Assert.IsTrue(global.getY() < 25);
                 Assert.IsTrue(global.getZ() < 30);
-
-                Thread.Sleep(5);
             }
 
             plugin.Stop();

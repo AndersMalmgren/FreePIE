@@ -5,8 +5,8 @@ using System.Text;
 
 namespace FreePIE.GUI.Events
 {
-    public class ScriptUpdatedEvent : ScriptEvent
+    public class ScriptLoadedEvent: ScriptEvent
     {
-        public ScriptUpdatedEvent(string script) : base(script) { }
+        public ScriptLoadedEvent(string script) : base(script) { }
     }
 }

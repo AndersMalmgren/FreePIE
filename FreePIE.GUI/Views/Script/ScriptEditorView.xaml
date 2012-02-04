@@ -10,7 +10,8 @@
 				FontFamily="Consolas"
 				FontSize="10pt"
 				SyntaxHighlighting="Lua"   
-                Script="{ Binding Path=Script, Mode=TwoWay}"            >
+                Script="{ Binding Path=Script, Mode=TwoWay}"    
+                IsEnabled="{ Binding Enabled}">
         </AvalonEdit:BindableScriptEditor>
     </Grid>
 </UserControl>

@@ -9,23 +9,8 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0" IsMainMenu="True">
-            <MenuItem Header="_File">
-                <MenuItem x:Name="OpenScript" Header="_Open..."/>                
-                <MenuItem x:Name="QuickSaveScript" Header="_Save"/>
-                <MenuItem x:Name="SaveScript" Header="Save _As..."/>
-                <MenuItem x:Name="TryClose" Header="E_xit"/>
-            </MenuItem>
-            <MenuItem Header="_Script">
-                <MenuItem x:Name="RunScript" Header="_Run script" />
-                <MenuItem x:Name="StopScript" Header="_Stop script" />
-            </MenuItem>
-            <MenuItem Header="S_ettings">
-                <MenuItem x:Name="Plugins" DisplayMemberPath="Name" Header="_Plugins" cal:Message.Attach="ShowPluginSettings($orignalsourcecontext)"></MenuItem>
-                <MenuItem x:Name="ShowCurveSettingsMenu" Header="_Curves" />
-            </MenuItem>
-        </Menu>        
-        <ContentControl x:Name="ScriptEditor" Grid.Row="1"></ContentControl>
-        <ContentControl x:Name="Output" Grid.Row="2"></ContentControl>
+        <ContentControl x:Name="Menu" Grid.Row="0"/>       
+        <ContentControl x:Name="ScriptEditor" Grid.Row="1"/>
+        <ContentControl x:Name="Output" Grid.Row="2"/>
     </Grid>
 </Window>

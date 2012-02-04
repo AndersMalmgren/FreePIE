@@ -3,13 +3,15 @@ using FreePIE.GUI.Events;
 
 namespace FreePIE.GUI.Views.Script
 {
-    public class ScriptEditorViewModel : PropertyChangedBase
+    public class ScriptEditorViewModel : PropertyChangedBase, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
     {
         private readonly IEventAggregator eventAggregator;
 
         public ScriptEditorViewModel(IEventAggregator eventAggregator)
         {
             this.eventAggregator = eventAggregator;
+            Enabled = true;
+            eventAggregator.Subscribe(this);
         }
 
         private string script;
@@ -22,6 +24,27 @@ namespace FreePIE.GUI.Views.Script
                 eventAggregator.Publish(new ScriptUpdatedEvent(value));
                 NotifyOfPropertyChange(() => Script);
             }
+        }
+
+        private bool enabled;
+        public bool Enabled
+        {
+            get { return enabled; }
+            set 
+            { 
+                enabled = value; 
+                NotifyOfPropertyChange(() => Enabled);
+            }
+        }
+
+        public void Handle(ScriptStateChangedEvent message)
+        {
+            Enabled = !message.Running;
+        }
+
+        public void Handle(ScriptLoadedEvent message)
+        {
+            Script = message.Script;
         }
     }
 }

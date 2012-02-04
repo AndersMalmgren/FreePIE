@@ -74,7 +74,12 @@
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
+    <Compile Include="Events\ExitingEvent.cs" />
+    <Compile Include="Events\RequestExitEvent.cs" />
     <Compile Include="Events\ScriptErrorEvent.cs" />
+    <Compile Include="Events\ScriptEvent.cs" />
+    <Compile Include="Events\ScriptLoadedEvent.cs" />
+    <Compile Include="Events\ScriptStateChangedEvent.cs" />
     <Compile Include="Events\ScriptUpdatedEvent.cs" />
     <Compile Include="Result\CloseResult.cs" />
     <Compile Include="Result\FileDialogResult.cs" />
@@ -97,6 +102,10 @@
       <DependentUpon>CurveView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Curves\CurveViewModel.cs" />
+    <Compile Include="Views\Main\MainMenuView.xaml.cs">
+      <DependentUpon>MainMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\MainMenuViewModel.cs" />
     <Compile Include="Views\Plugin\PluginPropertyView.xaml.cs">
       <DependentUpon>PluginPropertyView.xaml</DependentUpon>
     </Compile>
@@ -153,6 +162,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Curves\CurveView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Main\MainMenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
