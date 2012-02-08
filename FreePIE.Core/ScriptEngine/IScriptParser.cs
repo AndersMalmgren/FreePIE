@@ -5,7 +5,7 @@ namespace FreePIE.Core.ScriptEngine
 {
     public interface IScriptParser
     {
-        IEnumerable<IOPlugin> InvokeAndConfigureAllScriptDependantPlugins(string script);
+        IEnumerable<IPlugin> InvokeAndConfigureAllScriptDependantPlugins(string script);
         string PrepareScript(string script, IEnumerable<object> globals);
     }
 }

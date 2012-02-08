@@ -30,7 +30,7 @@ namespace FreePIE.Tests.Core
         {
             Action<string> callback = s => actualCallbackValue = s;
             var plugin = new Plugin(callback);
-            var plugins = new List<IOPlugin> {plugin};
+            var plugins = new List<IPlugin> {plugin};
 
 
         var points = new List<Point> {new Point(0, 0), new Point(1, 2), new Point(2, 2.5), new Point(3, 4)};
@@ -95,7 +95,7 @@ testPlugin:dummy(""ping"")
     }
 
     [LuaGlobalType(Type = typeof(PluginGlobal))]
-    public class Plugin : IOPlugin
+    public class Plugin : IPlugin
     {
         private readonly Action<string> action;
         public bool Crash { get; set; }

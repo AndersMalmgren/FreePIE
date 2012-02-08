@@ -9,7 +9,7 @@ namespace FreePIE.Core.Plugins
     /// <summary>
     /// External plugins not part of this assembly should not reference and use this class, they should only reference the Contracts asasembly
     /// </summary>
-    public abstract class Plugin : IOPlugin
+    public abstract class Plugin : IPlugin
     {
         public abstract object CreateGlobal();
         public abstract string FriendlyName { get; }

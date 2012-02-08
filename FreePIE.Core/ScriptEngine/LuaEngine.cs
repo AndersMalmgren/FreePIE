@@ -22,7 +22,7 @@ namespace FreePIE.Core.ScriptEngine
         private bool error = false;
         private bool pluginsAreStarting = false;
         private string script;
-        private IEnumerable<IOPlugin> usedPlugins;
+        private IEnumerable<IPlugin> usedPlugins;
         
 
         public LuaEngine(IEnumerable<IGlobalProvider> globalProviders, IScriptParser scriptParser)
@@ -142,7 +142,7 @@ namespace FreePIE.Core.ScriptEngine
             pluginsAreStarting = false;
         }
 
-        private void StartPlugin(IOPlugin plugin)
+        private void StartPlugin(IPlugin plugin)
         {
             var threadedAction = plugin.Start();
             if (threadedAction != null)
@@ -174,7 +174,7 @@ namespace FreePIE.Core.ScriptEngine
 
         private void PluginStarted(object sender, EventArgs e)
         {
-            var plugin = sender as IOPlugin;
+            var plugin = sender as IPlugin;
             plugin.Started -= PluginStarted;
 
             threadedPluginStarting--;

@@ -18,7 +18,7 @@ namespace FreePIE.Tests.Core
     {
         protected void StubDllAndSettings()
         {
-            WhenCalling<ISettingsManager>(x => x.GetPluginSettings(Arg<IOPlugin>.Is.Anything)).Return(new PluginSetting());
+            WhenCalling<ISettingsManager>(x => x.GetPluginSettings(Arg<IPlugin>.Is.Anything)).Return(new PluginSetting());
             var path = typeof(TestBase).Assembly.Location;
             path = Path.GetDirectoryName(path);
 
@@ -52,7 +52,7 @@ namespace FreePIE.Tests.Core
     [TestClass]
     public class When_finding_and_invoking_all_plugins : PluginInvokerTest
     {
-        private IEnumerable<IOPlugin> plugins;
+        private IEnumerable<IPlugin> plugins;
 
         [TestInitialize]
         public void Context()

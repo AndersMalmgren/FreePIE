@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FreePIE.Core.Contracts
 {
-    public interface IOPlugin
+    public interface IPlugin
     {
         object CreateGlobal();
         Action Start();

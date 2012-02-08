@@ -15,14 +15,14 @@ namespace FreePIE.Core.Plugins
     public class PluginInvoker : IPluginInvoker
     {
         private readonly ISettingsManager settingsManager;
-        private readonly Func<Type, IOPlugin> pluginFactory;
+        private readonly Func<Type, IPlugin> pluginFactory;
         private readonly IFileSystem fileSystem;
         private const string pluginFolder = "plugins";
 
         private IEnumerable<Type> pluginTypes;
         private IEnumerable<Type> globalEnumTypes; 
 
-        public PluginInvoker(ISettingsManager settingsManager, Func<Type, IOPlugin> pluginFactory, IFileSystem fileSystem)
+        public PluginInvoker(ISettingsManager settingsManager, Func<Type, IPlugin> pluginFactory, IFileSystem fileSystem)
         {
             this.settingsManager = settingsManager;
             this.pluginFactory = pluginFactory;
@@ -39,12 +39,12 @@ namespace FreePIE.Core.Plugins
 
             pluginTypes = dlls
                 .Select(Assembly.LoadFile)
-                .SelectMany(a => a.GetTypes().Where(t => typeof (IOPlugin).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)).ToList();
+                .SelectMany(a => a.GetTypes().Where(t => typeof (IPlugin).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)).ToList();
 
             return pluginTypes;
         }
 
-        public IEnumerable<IOPlugin> InvokeAndConfigurePlugins(IEnumerable<Type> pluginTypes)
+        public IEnumerable<IPlugin> InvokeAndConfigurePlugins(IEnumerable<Type> pluginTypes)
         {
             var plugins = pluginTypes.Select(t => pluginFactory(t)).ToList();
             plugins.ForEach(SetPluginProperties);
@@ -84,7 +84,7 @@ namespace FreePIE.Core.Plugins
             return globalEnumTypes;
         }
 
-        private void InitProperties(IOPlugin plugin, List<PluginProperty> properties)
+        private void InitProperties(IPlugin plugin, List<PluginProperty> properties)
         {
             int index = 0;
             bool moreProperties = false;
@@ -108,7 +108,7 @@ namespace FreePIE.Core.Plugins
             while (index < properties.Count || moreProperties);
         }
 
-        private void SetPluginProperties(IOPlugin plugin)
+        private void SetPluginProperties(IPlugin plugin)
         {
             var pluginSettings = settingsManager.GetPluginSettings(plugin);
             var properties = pluginSettings.PluginProperties;

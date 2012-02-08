@@ -19,7 +19,7 @@ namespace FreePIE.Core.ScriptEngine
             this.pluginInvoker = pluginInvoker;
         }
 
-        public IEnumerable<IOPlugin> InvokeAndConfigureAllScriptDependantPlugins(string script)
+        public IEnumerable<IPlugin> InvokeAndConfigureAllScriptDependantPlugins(string script)
         {
             var pluginTypes = pluginInvoker.ListAllPluginTypes()
                 .Select(pt =>

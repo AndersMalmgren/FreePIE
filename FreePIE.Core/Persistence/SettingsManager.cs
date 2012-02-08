@@ -41,7 +41,7 @@ namespace FreePIE.Core.Persistence
             }
         }
 
-        public PluginSetting GetPluginSettings(IOPlugin plugin)
+        public PluginSetting GetPluginSettings(IPlugin plugin)
         {
             var pluginTypeName = plugin.GetType().FullName;
             var pluginSetting = Settings.PluginSettings.Single(ps => ps.PluginType == pluginTypeName);
