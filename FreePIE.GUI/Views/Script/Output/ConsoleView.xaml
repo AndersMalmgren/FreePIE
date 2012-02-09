@@ -10,6 +10,7 @@
             Height="Auto" 
             TextWrapping="Wrap" 
             VerticalScrollBarVisibility="Visible"
-            AcceptsReturn="True"></TextBox>
+            AcceptsReturn="True"
+            IsReadOnly="true"/>
     </Grid>
 </UserControl>
