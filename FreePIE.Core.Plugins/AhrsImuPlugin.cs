@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO.Ports;
 using System.Linq;
@@ -45,8 +46,15 @@ namespace FreePIE.Core.Plugins
                 serialPort.Write("#o1"); // Turn on continuous streaming output
                 serialPort.Write("#oe0"); // Disable error message output
                 serialPort.Write("#s00");
-                
-                while (serialPort.BytesToRead < "#SYNCH00\r\n".Length) { }
+
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                while (serialPort.BytesToRead < "#SYNCH00\r\n".Length)
+                {
+                    if(stopwatch.ElapsedMilliseconds > 100)
+                        throw new Exception(string.Format("No hardware connected to port {0} with AHRS IMU protocol", port));
+                }
+                stopwatch.Stop();
 
                 var sync = serialPort.ReadLine();
                 var buffer = new byte[4];
