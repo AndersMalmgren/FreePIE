@@ -47,6 +47,7 @@ namespace FreePIE.Tests.Core
             Stub<ISettingsManager>().Expect(x => x.Settings).Return(settings);
             WhenCalling<IPluginInvoker>(x => x.InvokeAndConfigurePlugins(Arg<IEnumerable<Type>>.Is.Anything)).Return(plugins);
             WhenCalling<IPluginInvoker>(x => x.ListAllPluginTypes()).Return(plugins.Select(p => p.GetType()));
+            WhenCalling<IPluginInvoker>(x => x.ListAllGlobalEnumTypes()).Return(new List<Type> { typeof(TestPluginEnum)});
             Register<IGlobalProvider>(Get<ScriptHelpersGlobalProvider>());
             Register<IGlobalProvider>(Get<CurveGlobalProvider>());
             Register<IScriptParser>(Get<LuaScriptParser>());
@@ -67,6 +68,7 @@ z = 0.5
 z = filters:simple(z, 0.5)
 if(starting) then
     globalDummy:callback(""testIndexParser"", z)
+    globalDummy:callback(""enumTest"", TestPluginEnum.One) 
 end
 filters:simple(testCurve:getY(x), 0.5) --Test more complex parsing for NeedIndex algorithm
 --This needs to be last to test the other two
@@ -89,8 +91,9 @@ testPlugin:dummy(""ping"")
         [TestMethod]
         public void It_should_load_all_globals_and_init_startup_correctly()
         {
-            Assert.AreEqual(callbackValue, actualCallbackValue);
-            Assert.AreEqual(dummyCallbacks["testIndexParser"], 0.75);
+            Assert.AreEqual(actualCallbackValue, callbackValue);
+            Assert.AreEqual(0.75, dummyCallbacks["testIndexParser"]);
+            Assert.AreEqual((double)TestPluginEnum.One, dummyCallbacks["enumTest"]);
         }
     }
 
@@ -156,6 +159,12 @@ testPlugin:dummy(""ping"")
         }
     }
 
+    [LuaGlobalEnum]
+    public enum TestPluginEnum
+    {
+        One = 1,
+        Two = 2
+    }
 
     [LuaGlobal(Name = "testPlugin")]
     public class PluginGlobal
