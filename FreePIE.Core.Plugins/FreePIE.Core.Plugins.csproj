@@ -47,6 +47,8 @@
   <ItemGroup>
     <Compile Include="AhrsImuPlugin.cs" />
     <Compile Include="FreeTrackPlugin.cs" />
+    <Compile Include="KeyboardPlugin.cs" />
+    <Compile Include="MouseKeyIO.cs" />
     <Compile Include="MousePlugin.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

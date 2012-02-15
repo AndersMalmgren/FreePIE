@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -42,20 +44,23 @@ namespace FreePIE.Core.ScriptEngine
             return script;
         }
 
+        private static Regex enumRegex = new Regex(@"(?<enum>[a-zA-Z0-9]*)\.(?<value>[a-zA-Z0-9]*)");
+
         private string FindAndParseGlobalEnums(string script)
         {
-            var enumTypes = pluginInvoker.ListAllGlobalEnumTypes();
-            foreach (var type in enumTypes)
+            var enumTypes = pluginInvoker.ListAllGlobalEnumTypes().ToDictionary(t => t.Name);
+            script = enumRegex.Replace(script, match =>
             {
-                var values = Enum.GetValues(type);
-                var name = type.Name;
-                foreach(var value in values)
+                var value = match.Value;
+                var name = match.Groups["enum"].Value;
+                var valueName = match.Groups["value"].Value;
+                                                       
+                if(enumTypes.ContainsKey(name))
                 {
-                    var valueName = Enum.GetName(type, value);
-                    var searchFor = string.Format("{0}.{1}", name, valueName);
-                    script = script.Replace(searchFor, ((int)value).ToString());
+                    value = ((int) Enum.Parse(enumTypes[name], valueName)).ToString(CultureInfo.InvariantCulture);
                 }
-            }
+                return value;
+            });
 
             return script;
         }

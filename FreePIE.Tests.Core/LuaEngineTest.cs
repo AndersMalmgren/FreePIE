@@ -69,6 +69,7 @@ z = filters:simple(z, 0.5)
 if(starting) then
     globalDummy:callback(""testIndexParser"", z)
     globalDummy:callback(""enumTest"", TestPluginEnum.One) 
+    globalDummy:callback(""enumTestParser"", TestPluginEnum.La)
 end
 filters:simple(testCurve:getY(x), 0.5) --Test more complex parsing for NeedIndex algorithm
 --This needs to be last to test the other two
@@ -94,6 +95,7 @@ testPlugin:dummy(""ping"")
             Assert.AreEqual(actualCallbackValue, callbackValue);
             Assert.AreEqual(0.75, dummyCallbacks["testIndexParser"]);
             Assert.AreEqual((double)TestPluginEnum.One, dummyCallbacks["enumTest"]);
+            Assert.AreEqual((double)TestPluginEnum.La, dummyCallbacks["enumTestParser"]);
         }
     }
 
@@ -163,7 +165,9 @@ testPlugin:dummy(""ping"")
     public enum TestPluginEnum
     {
         One = 1,
-        Two = 2
+        Two = 2,
+        L = 3,
+        La = 4
     }
 
     [LuaGlobal(Name = "testPlugin")]
