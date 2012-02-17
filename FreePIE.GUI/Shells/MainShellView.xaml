@@ -11,6 +11,7 @@
         </Grid.RowDefinitions>
         <ContentControl x:Name="Menu" Grid.Row="0"/>       
         <ContentControl x:Name="ScriptEditor" Grid.Row="1"/>
-        <ContentControl x:Name="Output" Grid.Row="2"/>
+        <GridSplitter Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="2" />
+        <ContentControl x:Name="Output" Margin="0,2,0,0" Grid.Row="2"/>
     </Grid>
 </Window>
