@@ -57,7 +57,10 @@ namespace FreePIE.Core.ScriptEngine
                                                        
                 if(enumTypes.ContainsKey(name))
                 {
-                    value = ((int) Enum.Parse(enumTypes[name], valueName)).ToString(CultureInfo.InvariantCulture);
+                    if (Enum.IsDefined(enumTypes[name], valueName))
+                    {
+                        value = ((int) Enum.Parse(enumTypes[name], valueName)).ToString(CultureInfo.InvariantCulture);
+                    }
                 }
                 return value;
             });
