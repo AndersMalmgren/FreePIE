@@ -54,6 +54,7 @@ namespace FreePIE.Tests.Core
             WhenCallingNewInstance<IGlobalProvider>(x => x.ListGlobals()).Return(new List<object> {globalDummy});
             
             var engine = Get<LuaEngine>();
+            engine.Error += (s, e) => Assert.Fail(e.Exception.Message);
             const string simpleScript = @"
 if(starting) then
     x = 0.1;

@@ -11,132 +11,69 @@ using FreePIE.Core.Contracts;
 namespace FreePIE.Core.Plugins
 {
     [LuaGlobalType(Type = typeof(AhrsImuGlobal))]
-    public class AhrsImuPlugin : Plugin
+    public class AhrsImuPlugin : ComDevicePlugin
     {
-        private bool running;
-        private string port;
-        private int baudRate;
-        private bool newData;
+        private byte[] buffer;
 
         public override object CreateGlobal()
         {
             return new AhrsImuGlobal(this);
         }
 
-        public override Action Start()
+        protected override int DefaultBaudRate
         {
-            return Init;
+            get { return 57600; }
         }
 
         public AhrsData Data { get; private set; }
 
-        private void Init()
+        protected override void Init(SerialPort serialPort)
         {
-            running = true;
-            OnStarted(this, new EventArgs());
+            Thread.Sleep(3000); //Wait for IMU to self init
+            serialPort.ReadExisting();
 
-            using (var serialPort = new SerialPort(port, baudRate))
+            serialPort.Write("#ob"); // Turn on binary output
+            serialPort.Write("#o1"); // Turn on continuous streaming output
+            serialPort.Write("#oe0"); // Disable error message output
+            serialPort.Write("#s00"); //Request sync signal
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            while (serialPort.BytesToRead < "#SYNCH00\r\n".Length)
             {
-                serialPort.Open();
-
-                Thread.Sleep(3000); //Wait for IMU to self init
-                serialPort.ReadExisting();
-
-                serialPort.Write("#ob"); // Turn on binary output
-                serialPort.Write("#o1"); // Turn on continuous streaming output
-                serialPort.Write("#oe0"); // Disable error message output
-                serialPort.Write("#s00");
-
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-                while (serialPort.BytesToRead < "#SYNCH00\r\n".Length)
-                {
-                    if(stopwatch.ElapsedMilliseconds > 100)
-                        throw new Exception(string.Format("No hardware connected to port {0} with AHRS IMU protocol", port));
-                }
-                stopwatch.Stop();
-
-                var sync = serialPort.ReadLine();
-                var buffer = new byte[4];
-
-                var data = new AhrsData();
-
-                while (running)
-                {
-                    while (serialPort.BytesToRead >= 12)
-                    {
-                        data.Yaw = ReadFloat(serialPort, buffer);
-                        data.Pitch = ReadFloat(serialPort, buffer);
-                        data.Roll = ReadFloat(serialPort, buffer);
-
-                        Data = data;
-                        newData = true;
-                    }
-
-                    Thread.Sleep(1);
-                }
-                serialPort.Close();
+                if (stopwatch.ElapsedMilliseconds > 100)
+                    throw new Exception(string.Format("No hardware connected to port {0} with AHRS IMU protocol", port));
             }
+            stopwatch.Stop();
+
+            var sync = serialPort.ReadLine();
+            buffer = new byte[4];
         }
 
-        public override void Stop()
+        protected override void Read(SerialPort serialPort)
         {
-            running = false;
-        }
-
-        public override void DoBeforeNextExecute()
-        {
-            if(newData)
+            while (serialPort.BytesToRead >= 12)
             {
-                OnUpdate();
-                newData = false;
+                var data = Data;
+                data.Yaw = ReadFloat(serialPort, buffer);
+                data.Pitch = ReadFloat(serialPort, buffer);
+                data.Roll = ReadFloat(serialPort, buffer);
+
+                Data = data;
+                newData = true;
             }
+
+            Thread.Sleep(1);
         }
 
+        protected override string BaudRateHelpText
+        {
+            get { return "Baud rate, default on AHRS should be 57600"; }
+        }
+        
         public override string FriendlyName
         {
             get { return "AHRS IMU"; }
-        }
-
-        public override bool GetProperty(int index, IPluginProperty property)
-        {
-            switch(index)
-            {
-                case 0:
-                    property.Name = "Port";
-                    property.Caption = "Com port";
-                    property.HelpText = "The com port of the FTDI device";
-
-                    foreach(var p in SerialPort.GetPortNames())
-                    {
-                        property.Choices.Add(p, p);
-                    }
-
-                    property.DefaultValue = "COM3";
-                    return true;
-                case 1:
-                    property.Name = "BaudRate";
-                    property.Caption = "Baud rate";
-                    property.DefaultValue = 57600;
-                    property.HelpText = "Baud rate, default on AHRS should be 57600";
-
-                    foreach(var rate in new int[] { 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200 })
-                    {
-                        property.Choices.Add(rate.ToString(CultureInfo.InvariantCulture), rate);
-                    }
-
-                    return true;
-            }
-
-            return false;
-        }
-
-        public override bool SetProperties(Dictionary<string, object> properties)
-        {
-            port = properties["Port"] as string;
-            baudRate = (int)properties["BaudRate"];
-
-            return true;
         }
 
         private float ReadFloat(SerialPort port, byte[] buffer)
