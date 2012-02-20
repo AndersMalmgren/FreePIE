@@ -113,11 +113,7 @@ namespace FreePIE.Core.Plugins
             var pluginSettings = settingsManager.GetPluginSettings(plugin);
             var properties = pluginSettings.PluginProperties;
 
-            var props = new Dictionary<string, object>();
-
-            properties.ForEach(p => props.Add(p.Name, p.Value));
-
-            plugin.SetProperties(props);
+            plugin.SetProperties(properties.ToDictionary(p => p.Name, p => p.Value));
         }
 
 
