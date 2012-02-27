@@ -71,6 +71,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\VersionInfo.cs">
+      <Link>VersionInfo.cs</Link>
+    </Compile>
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />

@@ -45,6 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\VersionInfo.cs">
+      <Link>VersionInfo.cs</Link>
+    </Compile>
     <Compile Include="AhrsImuPlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="FreeImuPlugin.cs" />

@@ -73,15 +73,16 @@ namespace FreePIE.Core.Plugins
         }
 
         public bool IsWriting { get; set; }
-        private int oldData;
+        public bool NewDataToWrite { get; set; }
+
         public override void DoBeforeNextExecute()
         {
             if(IsWriting)
             {
-                if(Data.DataID > oldData)
+                if (NewDataToWrite)
                 {
                     Write();
-                    oldData = Data.DataID;
+                    NewDataToWrite = false;
                 }
             }
             else
@@ -107,6 +108,7 @@ namespace FreePIE.Core.Plugins
             {
                 local = new FreeTrackData();
                 local.DataID = Data.DataID;
+                OnUpdate();
             }
             
             Data = local;
@@ -115,6 +117,7 @@ namespace FreePIE.Core.Plugins
         public void Write()
         {
             var local = Data;
+            local.DataID++;
             Data = local;
             accessor.Write(0, ref local);
         }
@@ -164,8 +167,9 @@ namespace FreePIE.Core.Plugins
         private void Write(Func<FreeTrackData, FreeTrackData> setValue)
         {
             plugin.IsWriting = true;
+            plugin.NewDataToWrite = true;
+
             var data = plugin.Data;
-            data.DataID++;
             plugin.Data = setValue(data);
         }
 
