@@ -239,8 +239,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>md $(TargetDir)plugins
-copy $(SolutionDir)\FreePIE.Core.Plugins\$(OutDir)*.dll $(TargetDir)plugins</PostBuildEvent>
+    <PostBuildEvent>md "$(TargetDir)plugins"
+copy "$(SolutionDir)\FreePIE.Core.Plugins\$(OutDir)*.dll" "$(TargetDir)plugins"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

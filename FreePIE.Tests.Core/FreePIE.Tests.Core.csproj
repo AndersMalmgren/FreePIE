@@ -74,8 +74,8 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>md $(TargetDir)plugins
-copy $(TargetDir)FreePIE.Core.Plugins.dll $(TargetDir)plugins\FreePIE.Core.Plugins.dll</PostBuildEvent>
+    <PostBuildEvent>md "$(TargetDir)plugins"
+copy "$(TargetDir)FreePIE.Core.Plugins.dll" "$(TargetDir)plugins\FreePIE.Core.Plugins.dll"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
