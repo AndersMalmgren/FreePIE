@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("FreePIE.GUI")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Agero")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("FreePIE.GUI")]
-[assembly: AssemblyCopyright("Copyright © Agero 2012")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

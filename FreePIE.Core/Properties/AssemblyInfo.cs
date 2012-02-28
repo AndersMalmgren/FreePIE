@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("FreePIE.Core")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Agero")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("FreePIE.Core")]
-[assembly: AssemblyCopyright("Copyright © Agero 2012")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
