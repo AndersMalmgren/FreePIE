@@ -222,7 +222,7 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
-      public void setDataMode(int mode) {
+      public void setDataUnit(int mode) {
          Vuzix.SetDataMode((VuzixDataUnit)mode);
       }
 
