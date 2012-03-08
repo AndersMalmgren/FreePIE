@@ -33,10 +33,10 @@ namespace FreePIE.Core.Plugins {
 
    //==========================================================================
    [LuaGlobalEnum]
-   public enum VuzixDataMode {
+   public enum VuzixDataUnit {
       RAW = 0,
-      ANGLE = 1,
-      RADIAN = 2
+      DEGREES = 1,
+      RADIANS = 2
    }
 
    //==========================================================================
@@ -58,7 +58,7 @@ namespace FreePIE.Core.Plugins {
 
       //-----------------------------------------------------------------------
       public VuzixTrackerPlugin() {
-         SetDataMode(VuzixDataMode.ANGLE);
+         SetDataMode(VuzixDataUnit.DEGREES);
       }
 
       //----------------------------------------------------------------------- 
@@ -113,18 +113,18 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
-      public void SetDataMode(VuzixDataMode mode) {
+      public void SetDataMode(VuzixDataUnit mode) {
          
          switch (mode) {
-            case VuzixDataMode.RAW:
+            case VuzixDataUnit.RAW:
                DataModeScale = 1.0;
                break;
 
-            case VuzixDataMode.ANGLE:
+            case VuzixDataUnit.DEGREES:
                DataModeScale = 180.0 / 32768.0;
                break;
 
-            case VuzixDataMode.RADIAN:
+            case VuzixDataUnit.RADIANS:
                DataModeScale = Math.PI / 32768.0;
                break;
 
@@ -223,7 +223,7 @@ namespace FreePIE.Core.Plugins {
 
       //-----------------------------------------------------------------------
       public void setDataMode(int mode) {
-         Vuzix.SetDataMode((VuzixDataMode)mode);
+         Vuzix.SetDataMode((VuzixDataUnit)mode);
       }
 
       //-----------------------------------------------------------------------
