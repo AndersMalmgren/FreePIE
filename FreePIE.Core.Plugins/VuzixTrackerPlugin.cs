@@ -33,7 +33,7 @@ namespace FreePIE.Core.Plugins {
 
    //==========================================================================
    [LuaGlobalEnum]
-   public enum VuzixDataUnit {
+   public enum VuzixDataUnits {
       RAW = 0,
       DEGREES = 1,
       RADIANS = 2
@@ -46,19 +46,20 @@ namespace FreePIE.Core.Plugins {
    public class VuzixTrackerPlugin : Plugin {
 
       bool Sampled = false;
-      int YawSample;
-      int YawSpins = 0;
+      int YawSample = 0;
+      int ContinuousYaw = 0;
       int PitchSample;
       int RollSample;
       int XSample;
       int YSample;
       int ZSample;
-      bool ContinousYaw = false;
+
+      bool ContinousYawMode = false;
       double DataModeScale;
 
       //-----------------------------------------------------------------------
       public VuzixTrackerPlugin() {
-         SetDataMode(VuzixDataUnit.DEGREES);
+         SetDataUnits(VuzixDataUnits.DEGREES);
       }
 
       //----------------------------------------------------------------------- 
@@ -72,7 +73,7 @@ namespace FreePIE.Core.Plugins {
          int err = VuzixAPI.IWROpenTracker();
          if (err == 0) {
             // Turn on Vuzix signal filtering
-            // TODO: I should expose this to allow scripts to do their own filtering
+            // TODO: Expose this to allow scripts to do their own filtering
             VuzixAPI.IWRSetFilterState(true); 
 
             // Grab a single test sample just to make sure everything is linked up properly
@@ -113,18 +114,18 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
-      public void SetDataMode(VuzixDataUnit mode) {
+      public void SetDataUnits(VuzixDataUnits mode) {
          
          switch (mode) {
-            case VuzixDataUnit.RAW:
+            case VuzixDataUnits.RAW:
                DataModeScale = 1.0;
                break;
 
-            case VuzixDataUnit.DEGREES:
+            case VuzixDataUnits.DEGREES:
                DataModeScale = 180.0 / 32768.0;
                break;
 
-            case VuzixDataUnit.RADIANS:
+            case VuzixDataUnits.RADIANS:
                DataModeScale = Math.PI / 32768.0;
                break;
 
@@ -135,13 +136,28 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
-      public void SetContinousYaw(bool continous) {
-// TODO: finish continuous yaw
+      public void SetContinousYawMode(bool continous) {
+         ContinousYawMode = continous;
       }
 
       //-----------------------------------------------------------------------
       void SampleVuzixTracker() {
+         
+         int previous_yaw = YawSample;
          VuzixAPI.IWRGet6DTracking(out YawSample, out PitchSample, out RollSample, out XSample, out YSample, out ZSample);
+         
+         int delta = YawSample - previous_yaw;
+         int HALF_CIRCLE = 32768;
+         if (Math.Abs(delta) > HALF_CIRCLE) {
+            // We turned across the discontinuity at 180 degrees so modify the delta to 
+            // reflect the probable angular motion
+            if (delta > 0)
+               delta -= (2 * HALF_CIRCLE);
+            else
+               delta += (2 * HALF_CIRCLE);
+         }
+         ContinuousYaw += delta;
+
          Sampled = true;
       }
 
@@ -151,7 +167,12 @@ namespace FreePIE.Core.Plugins {
             if (!Sampled)
                SampleVuzixTracker();
 
-            double yaw = YawSample * DataModeScale;
+            double yaw;
+            if (ContinousYawMode)
+               yaw = ContinuousYaw * DataModeScale;
+            else
+               yaw = YawSample * DataModeScale;
+               
             return yaw;
          }
       }
@@ -222,13 +243,13 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
-      public void setDataUnit(int mode) {
-         Vuzix.SetDataMode((VuzixDataUnit)mode);
+      public void setDataUnits(int units) {
+         Vuzix.SetDataUnits((VuzixDataUnits)units);
       }
 
       //-----------------------------------------------------------------------
-      public void setContinuousYaw(int continuous) {
-         Vuzix.SetContinousYaw((continuous != 0));
+      public void setContinuousYawMode(bool continuous) {
+         Vuzix.SetContinousYawMode(continuous);
       }
 
       //-----------------------------------------------------------------------
