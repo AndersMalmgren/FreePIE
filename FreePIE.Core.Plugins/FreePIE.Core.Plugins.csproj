@@ -49,6 +49,7 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="AhrsImuPlugin.cs" />
+    <Compile Include="ApplePlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="FreeImuPlugin.cs" />
     <Compile Include="FreeTrackPlugin.cs" />
