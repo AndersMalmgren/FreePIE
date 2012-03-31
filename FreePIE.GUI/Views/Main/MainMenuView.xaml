@@ -20,6 +20,9 @@
                 <MenuItem x:Name="Plugins" DisplayMemberPath="Name" Header="_Plugins" cal:Message.Attach="ShowPluginSettings($orignalsourcecontext)"></MenuItem>
                 <MenuItem x:Name="ShowCurveSettingsMenu" Header="_Curves" />
             </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem x:Name="ShowAbout" Header="_About"></MenuItem>
+            </MenuItem>
         </Menu>
     </Grid>
 </UserControl>

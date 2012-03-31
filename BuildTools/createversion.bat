@@ -21,7 +21,7 @@ GOTO end
 )
 
 ECHO using System.Reflection; > %file%
-ECHO [assembly: AssemblyVersion("0.1.%SVN_REV%.0")]     >>  %file%
-ECHO [assembly: AssemblyFileVersion("0.1.%SVN_REV%.0")] >> %file%
+ECHO [assembly: AssemblyVersion("0.2.%SVN_REV%.0")]     >>  %file%
+ECHO [assembly: AssemblyFileVersion("0.2.%SVN_REV%.0")] >> %file%
 
 :end

@@ -99,6 +99,11 @@ namespace FreePIE.GUI.Views.Main
             PublishScriptStateChange();
         }
 
+        public IEnumerable<IResult> ShowAbout()
+        {
+            yield return resultFactory.ShowDialogResult<AboutViewModel>();
+        }
+
         private void PublishScriptStateChange()
         {
             eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning));

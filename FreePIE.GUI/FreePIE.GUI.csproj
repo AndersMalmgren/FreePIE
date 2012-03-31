@@ -91,6 +91,10 @@
     <Compile Include="Result\Result.cs" />
     <Compile Include="Result\ResultFactory.cs" />
     <Compile Include="Result\ShowDialogResult.cs" />
+    <Compile Include="Shells\AboutView.xaml.cs">
+      <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shells\AboutViewModel.cs" />
     <Compile Include="Shells\CurveSettingsView.xaml.cs">
       <DependentUpon>CurveSettingsView.xaml</DependentUpon>
     </Compile>
@@ -139,6 +143,10 @@
       <DependentUpon>ScriptEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Script\ScriptEditorViewModel.cs" />
+    <Page Include="Shells\AboutView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Shells\CurveSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -236,7 +244,11 @@
       <Name>FreePIE.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>md "$(TargetDir)plugins"

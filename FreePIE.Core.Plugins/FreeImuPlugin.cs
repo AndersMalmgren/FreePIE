@@ -42,6 +42,7 @@ namespace FreePIE.Core.Plugins
             data.Pitch = ParseFloat(values[1]);
             data.Roll = ParseFloat(values[2]);
             Data = data;
+            newData = true;
         }
 
         private float ParseFloat(string value)
