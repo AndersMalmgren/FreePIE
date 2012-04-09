@@ -17,8 +17,6 @@ namespace FreePIE.Core.Plugins {
       int UdpPort = 10552;
       UdpClient UdpSock = null;
 
-      bool Degrees = false;
-      double DataUnitScale = 1.0;
       bool ContinousYawMode = false;
 
       int PitchIndex = 4;
@@ -34,23 +32,12 @@ namespace FreePIE.Core.Plugins {
 
       //-----------------------------------------------------------------------
       public ApplePlugin() {
-         EnableDegrees(true);
       }
 
       //-----------------------------------------------------------------------
       public override Action Start() {
          
          return RunSensorPoll;
-      }
-
-      //-----------------------------------------------------------------------
-      public void EnableDegrees(bool val) {
-         Degrees = val;
-
-         if (Degrees)
-            DataUnitScale = 180.0 / Math.PI;
-         else
-            DataUnitScale = 1.0;
       }
 
       //-----------------------------------------------------------------------
@@ -142,8 +129,8 @@ namespace FreePIE.Core.Plugins {
                   double delta = YawSample - previous_yaw;
                   double HALF_CIRCLE = Math.PI;
                   if (Math.Abs(delta) > HALF_CIRCLE) {
-                     // We turned across the discontinuity at 180 degrees so modify the delta to 
-                     // reflect the probable angular motion
+                     // We turned across the discontinuity at 180 degrees so increment
+                     // the period counter in the probably direction of angular motion
                      if (delta > 0)
                         YawPeriod--;
                      else
@@ -152,11 +139,11 @@ namespace FreePIE.Core.Plugins {
                }
             }
          }
-         catch (Exception err) {
-            if (err.Message == "A blocking operation was interrupted by a call to WSACancelBlockingCall")
-               ;  // this is a graceful shutdown initated by Stop()
-            else
-               System.Console.WriteLine(err);
+         catch (SocketException err) {
+            // A graceful shutdown calls close socket and throws an exception while blocked in Receive()
+            // Ignore this exception unless it was not generated during shutdown sequence
+            if (!Stopped)
+               throw err;
          }
       }
 
@@ -168,12 +155,13 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public double Yaw {
          get {
-
+            // TODO: synchronize thread access to the sample variables
+// Hmmm I wonder if contention could cause some of the drift that I am experiencing
             double yaw;
             if (ContinousYawMode)
-               yaw = ((YawPeriod * 2 * Math.PI) + YawSample) * DataUnitScale;
+               yaw = (YawPeriod * 2 * Math.PI) + YawSample;
             else
-               yaw = YawSample * DataUnitScale;
+               yaw = YawSample;
 
                
             return yaw;
@@ -183,7 +171,7 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public double Roll {
          get {
-            double roll = RollSample * DataUnitScale;
+            double roll = RollSample;
             return roll;
          }
       }
@@ -191,7 +179,7 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public double Pitch {
          get {
-            double pitch = PitchSample * DataUnitScale;
+            double pitch = PitchSample;
             return pitch;
          }
       }
@@ -206,11 +194,6 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public ApplePluginGlobal(ApplePlugin plugin) {
          Device = plugin;
-      }
-
-      //-----------------------------------------------------------------------
-      public void setDegrees(bool val) {
-         Device.EnableDegrees(val);
       }
 
       //-----------------------------------------------------------------------
