@@ -78,7 +78,6 @@
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
-    <Compile Include="Events\RequestExitEvent.cs" />
     <Compile Include="Events\ScriptErrorEvent.cs" />
     <Compile Include="Events\ScriptEvent.cs" />
     <Compile Include="Events\ScriptLoadedEvent.cs" />

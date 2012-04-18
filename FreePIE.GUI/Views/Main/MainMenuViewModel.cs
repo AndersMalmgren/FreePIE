@@ -151,9 +151,9 @@ namespace FreePIE.GUI.Views.Main
                 StopScript();
         }
 
-        public void Close()
+        public IEnumerable<IResult> Close()
         {
-            eventAggregator.Publish(new RequestExitEvent());
+            yield return resultFactory.Close();
         }
 
         public IEnumerable<IResult> ShowCurveSettingsMenu()

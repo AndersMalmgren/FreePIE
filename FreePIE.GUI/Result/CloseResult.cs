@@ -7,11 +7,8 @@ namespace FreePIE.GUI.Result
     {
         public override void Execute(ActionExecutionContext context)
         {
-            var window = context.View as Window;
-            if(window != null)
-            {
-                window.Close();
-            }
+            var window = Window.GetWindow(context.View);
+            window.Close();
             
             base.Execute(context);
         }

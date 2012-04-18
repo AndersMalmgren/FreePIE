@@ -7,6 +7,7 @@ using Caliburn.Micro;
 using FreePIE.Core.Persistence;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine;
+using FreePIE.Core.ScriptEngine.Globals;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Views;
@@ -17,7 +18,7 @@ using FreePIE.GUI.Views.Script.Output;
 
 namespace FreePIE.GUI.Shells
 {
-    public class MainShellViewModel : ShellPresentationModel, IHandle<RequestExitEvent>
+    public class MainShellViewModel : ShellPresentationModel
     {
         private readonly IEventAggregator eventAggregator;
         private readonly IPersistanceManager persistanceManager;
@@ -28,7 +29,8 @@ namespace FreePIE.GUI.Shells
             ISettingsManager settingsManager,
             MainMenuViewModel mainMenuViewModel,
             ScriptEditorViewModel scriptEditorViewModel,
-            OutputViewModel outputViewModel)
+            OutputViewModel outputViewModel,
+            IGlobalsIntellisenseProvider globalsIntellisenseProvider)
             : base(resultFactory)
         {
             persistanceManager.Load();
@@ -41,6 +43,8 @@ namespace FreePIE.GUI.Shells
             ScriptEditor = scriptEditorViewModel;
             Output = outputViewModel;
             DisplayName = "FreePIE - Programmable Input Emulator";
+
+            var globalINfops = globalsIntellisenseProvider.ListLuaGlobalInfo();
         }
 
         public ScriptEditorViewModel ScriptEditor { get; set; }
@@ -53,11 +57,6 @@ namespace FreePIE.GUI.Shells
 
             persistanceManager.Save();
             base.CanClose(callback);
-        }
-
-        public void Handle(RequestExitEvent message)
-        {
-            TryClose();
         }
     }
 }
