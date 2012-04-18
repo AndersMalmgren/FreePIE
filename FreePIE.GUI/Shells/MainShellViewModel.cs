@@ -29,9 +29,7 @@ namespace FreePIE.GUI.Shells
             ISettingsManager settingsManager,
             MainMenuViewModel mainMenuViewModel,
             ScriptEditorViewModel scriptEditorViewModel,
-            OutputViewModel outputViewModel,
-            IGlobalsIntellisenseProvider globalsIntellisenseProvider)
-            : base(resultFactory)
+            OutputViewModel outputViewModel) : base(resultFactory)
         {
             persistanceManager.Load();
             this.eventAggregator = eventAggregator;
@@ -43,8 +41,6 @@ namespace FreePIE.GUI.Shells
             ScriptEditor = scriptEditorViewModel;
             Output = outputViewModel;
             DisplayName = "FreePIE - Programmable Input Emulator";
-
-            var globalINfops = globalsIntellisenseProvider.ListLuaGlobalInfo();
         }
 
         public ScriptEditorViewModel ScriptEditor { get; set; }
