@@ -20,7 +20,7 @@ namespace FreePIE.GUI.Bootstrap
             kernel = ServiceBootstrapper.Create();
             kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             kernel.Bind<IResultFactory>().To<ResultFactory>();
-            kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
+            kernel.Bind<Core.Common.Events.IEventAggregator>().To<Core.Common.Events.EventAggregator>().InSingletonScope();
 
             SetupCustomMessageBindings();
         }

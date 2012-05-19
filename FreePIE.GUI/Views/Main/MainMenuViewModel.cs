@@ -12,10 +12,11 @@ using FreePIE.GUI.Shells;
 using FreePIE.GUI.Views.Plugin;
 using FreePIE.GUI.Views.Script;
 using FreePIE.GUI.Views.Script.Output;
+using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Main
 {
-    public class MainMenuViewModel : PropertyChangedBase, IHandle<ScriptUpdatedEvent>, IHandle<ExitingEvent>
+    public class MainMenuViewModel : PropertyChangedBase, Core.Common.Events.IHandle<ScriptUpdatedEvent>, Core.Common.Events.IHandle<ExitingEvent>
     {
         private readonly IResultFactory resultFactory;
         private readonly IEventAggregator eventAggregator;

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using Caliburn.Micro;
 using FreePIE.GUI.Events;
+using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Script.Output
 {
-    public class ErrorViewModel : PropertyChangedBase, IHandle<ScriptErrorEvent>
+    public class ErrorViewModel : PropertyChangedBase, Core.Common.Events.IHandle<ScriptErrorEvent>
     {
         private readonly IEventAggregator eventAggregator;
 

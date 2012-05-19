@@ -8,10 +8,11 @@ using FreePIE.Core.Persistence;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Views.Curves;
+using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Shells
 {
-    public class CurveSettingsViewModel : ShellPresentationModel, IHandle<DeleteCurveEvent>
+    public class CurveSettingsViewModel : ShellPresentationModel, Core.Common.Events.IHandle<DeleteCurveEvent>
     {
         private readonly ISettingsManager settingsManager;
         private readonly Func<CurveViewModel> curveModelFactory;

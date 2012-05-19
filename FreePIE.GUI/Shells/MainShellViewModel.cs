@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using Caliburn.Micro;
 using FreePIE.Core.Persistence;
-using FreePIE.Core.Plugins;
-using FreePIE.Core.ScriptEngine;
-using FreePIE.Core.ScriptEngine.Globals;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
-using FreePIE.GUI.Views;
 using FreePIE.GUI.Views.Main;
 using FreePIE.GUI.Views.Plugin;
 using FreePIE.GUI.Views.Script;
 using FreePIE.GUI.Views.Script.Output;
+using FreePIE.Core.Common.Events;
 
 namespace FreePIE.GUI.Shells
 {

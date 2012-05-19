@@ -12,6 +12,9 @@
             <TabItem Header="Errors" IsSelected="{Binding Error.Error }">
                 <ContentControl x:Name="Error"></ContentControl>
             </TabItem>
+            <TabItem Header="Watch">
+                <ContentControl x:Name="Watch"></ContentControl>
+            </TabItem>
         </TabControl>
     </Grid>
 </UserControl>

@@ -7,6 +7,7 @@ using FreePIE.Core.Common;
 using FreePIE.Core.Model;
 using FreePIE.GUI.Common.Visiblox;
 using FreePIE.GUI.Events;
+using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Curves
 {

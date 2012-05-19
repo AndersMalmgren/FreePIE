@@ -138,10 +138,18 @@
       <DependentUpon>OutputView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Script\Output\OutputViewModel.cs" />
+    <Compile Include="Views\Script\Output\WatchesView.xaml.cs">
+      <DependentUpon>WatchesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Script\Output\WatchesViewModel.cs" />
+    <Compile Include="Views\Script\Output\WatchViewModel.cs" />
     <Compile Include="Views\Script\ScriptEditorView.xaml.cs">
       <DependentUpon>ScriptEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Script\ScriptEditorViewModel.cs" />
+    <Compile Include="Views\Script\Output\WatchView.xaml.cs">
+      <DependentUpon>WatchView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Shells\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -203,9 +211,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Script\Output\WatchesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Script\ScriptEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Script\Output\WatchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -1,9 +1,9 @@
-﻿using Caliburn.Micro;
-using FreePIE.GUI.Events;
+﻿using FreePIE.GUI.Events;
+using FreePIE.Core.Common.Events;
 
 namespace FreePIE.GUI.Views.Script
 {
-    public class ScriptEditorViewModel : PropertyChangedBase, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
+    public class ScriptEditorViewModel : Caliburn.Micro.PropertyChangedBase, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
     {
         private readonly IEventAggregator eventAggregator;
 

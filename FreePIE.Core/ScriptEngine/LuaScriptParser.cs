@@ -89,7 +89,7 @@ namespace FreePIE.Core.ScriptEngine
                         var arguments = ExtractArguments(script, argumentStart);
                         int argumentEnd = argumentStart + arguments.Length;
 
-                        var newArguments = string.Format(@"{0}, ""{1}"")", arguments.Substring(0, arguments.Length - 1), arguments);
+                        var newArguments = string.Format(@"{0}, ""{1}"")", arguments.Substring(0, arguments.Length - 1), arguments.Substring(1, arguments.Length - 2));
 
                         script = script.Substring(0, argumentStart) +
                                  newArguments + script.Substring(argumentEnd, script.Length - argumentEnd);
