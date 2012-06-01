@@ -62,6 +62,9 @@
     <Reference Include="Visiblox.Charts">
       <HintPath>..\Lib\Visiblox\Visiblox.Charts.dll</HintPath>
     </Reference>
+    <Reference Include="WiimoteLib">
+      <HintPath>..\Lib\Wiimote\WiimoteLib.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
