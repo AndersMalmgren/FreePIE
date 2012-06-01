@@ -1,0 +1,7 @@
+Copyright 2007-2009 Brian Peek
+http://www.brianpeek.com/
+http://www.codeplex.com/WiimoteLib
+http://www.wiimotelib.org/
+
+Licensed under the terms of the Microsoft Permissive License (Ms-PL).
+See license.txt for details.
