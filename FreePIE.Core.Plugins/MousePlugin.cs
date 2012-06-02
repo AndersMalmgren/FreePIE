@@ -20,6 +20,9 @@ namespace FreePIE.Core.Plugins
         DirectInput DirectInputInstance = new DirectInput();
         Mouse MouseDevice;
         MouseState CurrentMouseState;
+        bool LeftPressed = false;
+        bool RightPressed = false;
+        bool MiddlePressed = false;
 
         //-----------------------------------------------------------------------
         public override object CreateGlobal()
@@ -161,6 +164,62 @@ namespace FreePIE.Core.Plugins
 
             return CurrentMouseState.IsPressed(index);
         }
+
+        //----------------------------------------------------------------------
+        public void SetButtonPressed(int index, bool pressed)
+        {
+            uint btn_flag = 0;
+            if (index == 0)
+            {
+               if (pressed)
+               {
+                  if (!LeftPressed)
+                     btn_flag = MouseKeyIO.MOUSEEVENTF_LEFTDOWN;
+               }
+               else
+               {
+                  if (LeftPressed)
+                     btn_flag = MouseKeyIO.MOUSEEVENTF_LEFTUP;
+               }
+               LeftPressed = pressed;
+            }
+            else if (index == 1)
+            {
+               if (pressed)
+               {
+                  if (!RightPressed)
+                     btn_flag = MouseKeyIO.MOUSEEVENTF_RIGHTDOWN;
+               }
+               else
+               {
+                  if (RightPressed)
+                     btn_flag = MouseKeyIO.MOUSEEVENTF_RIGHTUP;
+               }
+               RightPressed = pressed;
+            }
+            else
+            {
+               if (pressed)
+               {
+                  if (!MiddlePressed)
+                     btn_flag = MouseKeyIO.MOUSEEVENTF_MIDDLEDOWN;
+               }
+               else
+               {
+                  if (MiddlePressed)
+                     btn_flag = MouseKeyIO.MOUSEEVENTF_MIDDLEUP;
+               }
+               MiddlePressed = pressed;
+            }
+           
+            if (btn_flag != 0) {
+               MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
+               input[0].type = MouseKeyIO.INPUT_MOUSE;
+               input[0].mi = MouseInput(0, 0, 0, 0, btn_flag);
+            
+               MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
+            }
+        }
     }
 
     //==========================================================================
@@ -205,6 +264,12 @@ namespace FreePIE.Core.Plugins
         {
             return Mouse.IsButtonPressed(0);
         }
+       
+        //-----------------------------------------------------------------------
+        public void setLeftButton(bool pressed)
+        {
+            Mouse.SetButtonPressed(0, pressed);
+        }
 
         //-----------------------------------------------------------------------
         public bool getMiddleButton()
@@ -213,9 +278,21 @@ namespace FreePIE.Core.Plugins
         }
 
         //-----------------------------------------------------------------------
+        public void setMiddleButton(bool pressed)
+        {
+            Mouse.SetButtonPressed(2, pressed);
+        }
+
+        //-----------------------------------------------------------------------
         public bool getRightButton()
         {
             return Mouse.IsButtonPressed(1);
+        }
+
+        //-----------------------------------------------------------------------
+        public void setRightButton(bool pressed)
+        {
+            Mouse.SetButtonPressed(1, pressed);
         }
     }
 }
