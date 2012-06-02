@@ -62,9 +62,6 @@
     <Reference Include="Visiblox.Charts">
       <HintPath>..\Lib\Visiblox\Visiblox.Charts.dll</HintPath>
     </Reference>
-    <Reference Include="WiimoteLib">
-      <HintPath>..\Lib\Wiimote\WiimoteLib.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -270,7 +267,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>md "$(TargetDir)plugins"
-copy "$(SolutionDir)\FreePIE.Core.Plugins\$(OutDir)*.dll" "$(TargetDir)plugins"</PostBuildEvent>
+copy "$(SolutionDir)\FreePIE.Core.Plugins\$(OutDir)*.dll" "$(TargetDir)plugins"
+
+copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
