@@ -465,6 +465,7 @@ namespace FreePIE.Core.Plugins {
       DirectInput DirectInputInstance = new DirectInput();
       Keyboard KeyboardDevice;
       KeyboardState KeyState = new KeyboardState();
+      bool[] MyKeyDown = new bool[150];
       bool[] Pressed = new bool[150];
       List<int> PressKeys = new List<int>(16);
       List<int> ReleaseKeys = new List<int>(16);
@@ -502,6 +503,12 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public override void Stop() {
 
+         // Don't leave any keys pressed
+         for (int i=0; i<MyKeyDown.Length; i++) {
+            if (MyKeyDown[i])
+               KeyUp(i);
+         }
+         
          if (KeyboardDevice != null) {
             KeyboardDevice.Unacquire();
             KeyboardDevice.Dispose();
@@ -550,7 +557,7 @@ namespace FreePIE.Core.Plugins {
       public bool IsKeyDown(int keycode) {
          // Returns true if the key is currently being pressed
          SlimDX.DirectInput.Key key = (SlimDX.DirectInput.Key)keycode;
-         bool down = KeyState.IsPressed(key);
+         bool down = KeyState.IsPressed(key) || MyKeyDown[keycode];
          return down;
       }
 
@@ -558,7 +565,7 @@ namespace FreePIE.Core.Plugins {
       public bool IsKeyUp(int keycode) {
          // Returns true if the key is currently being pressed
          SlimDX.DirectInput.Key key = (SlimDX.DirectInput.Key)keycode;
-         bool up = KeyState.IsReleased(key);
+         bool up = KeyState.IsReleased(key) && !MyKeyDown[keycode];
          return up;
       }
 
@@ -584,17 +591,6 @@ namespace FreePIE.Core.Plugins {
       }
 
       //--------------------------------------------------------------------------
-      //private MouseKeyIO.KEYBDINPUT KeyInput(ushort keycode, uint flag) {
-      //   MouseKeyIO.KEYBDINPUT i = new MouseKeyIO.KEYBDINPUT();
-      //   i.wVk = keycode;
-      //   i.wScan = 0;
-      //   i.time = 0;
-      //   i.dwExtraInfo = IntPtr.Zero;
-      //   i.dwFlags = flag;
-      //   return i;
-      //}
-
-      //--------------------------------------------------------------------------
       private MouseKeyIO.KEYBDINPUT KeyInput(ushort code, uint flag) {
          MouseKeyIO.KEYBDINPUT i = new MouseKeyIO.KEYBDINPUT();
          i.wVk = 0;
@@ -608,27 +604,36 @@ namespace FreePIE.Core.Plugins {
       //--------------------------------------------------------------------------
       public void KeyDown(int code) {
 
-         //code = KeyCodeMap[code];  // convert the keycode for SendInput
-         code = ScanCodeMap[code];
+         if (!MyKeyDown[code]) {
+            //System.Console.Out.WriteLine("keydown");
+            MyKeyDown[code] = true;
+            code = ScanCodeMap[code];    // convert the keycode for SendInput
          
-         MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
-         input[0].type = MouseKeyIO.INPUT_KEYBOARD;
-         input[0].ki = KeyInput((ushort)code, 0);
+            MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
+            input[0].type = MouseKeyIO.INPUT_KEYBOARD;
+            input[0].ki = KeyInput((ushort)code, 0);
     
-         MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
+            MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
+            
+         }
       }
 
       //--------------------------------------------------------------------------
        public void KeyUp(int code) {
 
-         //code = KeyCodeMap[code];  // convert the keycode for SendInput
-         code = ScanCodeMap[code];
+         if (MyKeyDown[code]) {
+            //System.Console.Out.WriteLine("keyup");
+            MyKeyDown[code] = false;
 
-         MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
-         input[0].type = MouseKeyIO.INPUT_KEYBOARD;
-         input[0].ki = KeyInput((ushort)code, MouseKeyIO.KEYEVENTF_KEYUP);
+            code = ScanCodeMap[code];    // convert the keycode for SendInput
+
+            MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
+            input[0].type = MouseKeyIO.INPUT_KEYBOARD;
+            input[0].ki = KeyInput((ushort)code, MouseKeyIO.KEYEVENTF_KEYUP);
     
-         MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
+            MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
+            
+         }
       }
 
       //-----------------------------------------------------------------------
@@ -667,6 +672,14 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public void setKeyUp(int key) {
          Keyboard.KeyUp(key);
+      }
+
+      //-----------------------------------------------------------------------
+      public void setKey(int key, bool down) {
+         if (down)
+            Keyboard.KeyDown(key);
+         else
+            Keyboard.KeyUp(key);
       }
 
       //-----------------------------------------------------------------------
