@@ -1,6 +1,13 @@
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
 bin
 obj
+*.suo
 
 # mstest test results
 TestResults
+
+# Resharper
+_Resharper*
+
+# Dynamic created files
+VersionInfo.cs

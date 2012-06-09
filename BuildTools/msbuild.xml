@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <MajorVersion>0.2</MajorVersion>
+    <Filename>VersionInfo</Filename>
+  </PropertyGroup>
+
+  <UsingTask TaskName="GitVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <ParameterGroup>
+      <LocalPath ParameterType="System.String" />
+      <Path ParameterType="System.String" />
+      <CommitCount ParameterType="System.Int32" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <!--<Reference Include="" />-->
+      <Using Namespace="System"/>
+      <Using Namespace="System.Diagnostics"/>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+LocalPath = LocalPath ?? ".";
+Path = Path ?? "master";
+Log.LogMessage(MessageImportance.Low, "LocalPath is {0}", LocalPath);
+Log.LogMessage(MessageImportance.Low, "Path is {0}", Path);
+var psi = new ProcessStartInfo("cmd", "/c git rev-list " + Path + " --count") {
+UseShellExecute = false,
+ErrorDialog = false,
+CreateNoWindow = false,
+WorkingDirectory = LocalPath,
+RedirectStandardOutput = true,
+RedirectStandardError = true
+};
+
+string result;
+using (var p = Process.Start(psi)) {
+p.WaitForExit();
+if (p.ExitCode != 0) {
+using (var standardError = p.StandardError) {
+Log.LogError(standardError.ReadToEnd());
+}
+return false;
+}
+
+using (var standardOutput = p.StandardOutput) {
+CommitCount = Int32.Parse(standardOutput.ReadToEnd());
+}
+}
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="WriteFileIfNewRevision" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <ParameterGroup>
+      <FilePath ParameterType="System.String" />
+      <Version ParameterType="System.Int32" />
+
+    </ParameterGroup>
+    <Task>
+      <!--<Reference Include="" />-->
+      <Using Namespace="System"/>
+      <Using Namespace="System.IO"/>      
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        if(!File.Exists(FilePath) || !File.ReadAllText(FilePath).Contains("." + Version + ".")) {
+          File.WriteAllText(FilePath, string.Format(@"using System.Reflection;  
+[assembly: AssemblyVersion(""$(MajorVersion).{0}.0"")]
+[assembly: AssemblyFileVersion(""$(MajorVersion).{0}.0"")]", Version));
+        }
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="MyTaskTarget">
+    <GitVersion Path="master">
+      <Output PropertyName="GitCommitCount" TaskParameter="CommitCount" />
+    </GitVersion>
+
+    <WriteFileIfNewRevision Version="$(GitCommitCount)" FilePath="..\VersionInfo.cs">
+    </WriteFileIfNewRevision>
+  </Target>
+</Project>
