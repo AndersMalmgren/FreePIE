@@ -264,7 +264,8 @@
     <PostBuildEvent>md "$(TargetDir)plugins"
 copy "$(SolutionDir)\FreePIE.Core.Plugins\$(OutDir)*.dll" "$(TargetDir)plugins"
 
-copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"</PostBuildEvent>
+copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

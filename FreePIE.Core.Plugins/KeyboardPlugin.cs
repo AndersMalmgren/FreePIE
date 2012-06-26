@@ -5,6 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
 
 namespace FreePIE.Core.Plugins {
@@ -469,8 +470,9 @@ namespace FreePIE.Core.Plugins {
       bool[] Pressed = new bool[150];
       List<int> PressKeys = new List<int>(16);
       List<int> ReleaseKeys = new List<int>(16);
+       private SetPressedStrategy setKeyPressedStrategy;
 
-      //-----------------------------------------------------------------------
+       //-----------------------------------------------------------------------
       public override object CreateGlobal() {
          return new KeyboardGlobal(this);
       }
@@ -495,7 +497,9 @@ namespace FreePIE.Core.Plugins {
          KeyboardDevice.Acquire();
 
          KeyboardDevice.GetCurrentState(ref KeyState);
-         
+
+          setKeyPressedStrategy = new SetPressedStrategy(KeyDown, KeyUp);
+
          OnStarted(this, new EventArgs());
          return null;
       }
@@ -538,19 +542,7 @@ namespace FreePIE.Core.Plugins {
 // input model to handle out-of-sync key presses
          KeyboardDevice.GetCurrentState(ref KeyState);
 
-         // Execute automated key presses
-         for (int i=0; i<ReleaseKeys.Count; i++) {
-            int key = ReleaseKeys[i];
-            KeyUp(key);
-         }
-         ReleaseKeys.Clear();
-         
-         for (int i=0; i<PressKeys.Count; i++) {
-            int key = PressKeys[i];
-            KeyDown(key);
-            ReleaseKeys.Add(key);
-         }
-         PressKeys.Clear();
+         setKeyPressedStrategy.Do();
       }
 
       //-----------------------------------------------------------------------
@@ -638,8 +630,7 @@ namespace FreePIE.Core.Plugins {
 
       //-----------------------------------------------------------------------
       public void PressAndRelease(int keycode) {
-         if (!PressKeys.Contains(keycode))
-            PressKeys.Add(keycode);
+         setKeyPressedStrategy.Add(keycode);
       }
    }
 
