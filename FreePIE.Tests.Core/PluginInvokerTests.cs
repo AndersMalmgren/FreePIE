@@ -45,7 +45,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void It_finds_all_core_plugin_types()
         {
-            Assert.AreEqual(1, plugins.Count());
+            Assert.IsTrue(plugins.Any());
         }
     }
 

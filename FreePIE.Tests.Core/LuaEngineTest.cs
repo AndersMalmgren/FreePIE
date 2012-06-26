@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FreePIE.Core.Common;
+using FreePIE.Core.Common.Events;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model;
 using FreePIE.Core.Persistence;
@@ -45,6 +46,7 @@ namespace FreePIE.Tests.Core
             });
 
             Stub<ISettingsManager>().Expect(x => x.Settings).Return(settings);
+            Stub<IEventAggregator>();
             WhenCalling<IPluginInvoker>(x => x.InvokeAndConfigurePlugins(Arg<IEnumerable<Type>>.Is.Anything)).Return(plugins);
             WhenCalling<IPluginInvoker>(x => x.ListAllPluginTypes()).Return(plugins.Select(p => p.GetType()));
             WhenCalling<IPluginInvoker>(x => x.ListAllGlobalEnumTypes()).Return(new List<Type> { typeof(TestPluginEnum)});

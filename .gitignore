@@ -2,6 +2,7 @@
 bin
 obj
 *.suo
+*.user
 
 # mstest test results
 TestResults
