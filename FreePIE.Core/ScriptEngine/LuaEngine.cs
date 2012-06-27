@@ -65,6 +65,11 @@ namespace FreePIE.Core.ScriptEngine
 
         private void TriggerErrorEventNotOnLuaThread(Exception e)
         {
+            if(e.InnerException != null)
+            {
+                TriggerErrorEventNotOnLuaThread(e.InnerException);
+                return;
+            }
             ThreadPool.QueueUserWorkItem(obj => OnError(this, new ScriptErrorEventArgs(e)));
         }
 
