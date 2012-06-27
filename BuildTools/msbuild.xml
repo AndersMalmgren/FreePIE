@@ -35,14 +35,13 @@ string result;
 using (var p = Process.Start(psi)) {
 p.WaitForExit();
 if (p.ExitCode != 0) {
-using (var standardError = p.StandardError) {
-Log.LogError(standardError.ReadToEnd());
-}
-return false;
-}
+Log.LogMessage("Could not get Git rev.number");
+CommitCount = 0;
 
+} else {
 using (var standardOutput = p.StandardOutput) {
 CommitCount = Int32.Parse(standardOutput.ReadToEnd());
+}
 }
 }
 ]]>
@@ -59,7 +58,7 @@ CommitCount = Int32.Parse(standardOutput.ReadToEnd());
     <Task>
       <!--<Reference Include="" />-->
       <Using Namespace="System"/>
-      <Using Namespace="System.IO"/>      
+      <Using Namespace="System.IO"/>
       <Code Type="Fragment" Language="cs">
         <![CDATA[
         if(!File.Exists(FilePath) || !File.ReadAllText(FilePath).Contains("." + Version + ".")) {
