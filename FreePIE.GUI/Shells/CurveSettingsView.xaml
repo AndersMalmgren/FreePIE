@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="CurveSettingsView" Background="{DynamicResource WindowBackgroundBrush}" SizeToContent="WidthAndHeight" MinHeight="200" MinWidth="200"
     Width="{Binding ElementName=ThisView, Path=WindowWidth}"
-    Height="{Binding ElementName=ThisView, Path=WindowHeight}">
+    Height="{Binding ElementName=ThisView, Path=WindowHeight}"
+        Icon="{StaticResource IconCurve}">
     
     <Grid>
         <Grid.RowDefinitions>
