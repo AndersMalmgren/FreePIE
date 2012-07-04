@@ -120,5 +120,47 @@ namespace FreePIE.Core.ScriptEngine
 
             return script.Substring(start, index - start);
         }
+
+        private static readonly char[] ExpressionDelimiters = "() \r\n".ToArray();
+        private static readonly char[] TokenDelimiters = ".:".ToArray();
+
+        private int GetStartOfExpression(string script, int offset)
+        {
+            for(int i = offset; i > 0; i--)
+            {
+                if (ExpressionDelimiters.Contains(script[i - 1]))
+                    return i;
+            }
+
+            return 0;
+        }
+
+        public IEnumerable<string> GetTokensFromExpression(string script, int offset)
+        {
+            int start = GetStartOfExpression(script, offset);
+
+            var token = new StringBuilder();
+
+            for(int i = start; i < offset; i++)
+            {
+                if(!TokenDelimiters.Contains(script[i]))
+                    token.Append(script[i]);
+                else yield return token.Extract();
+            }
+
+            yield return token.ToString();
+        }
+    }
+
+    internal static class StringBuilderExtensions
+    {
+        public static string Extract(this StringBuilder builder)
+        {
+            string retVal = builder.ToString();
+
+            builder.Length = 0;
+
+            return retVal;
+        }
     }
 }

@@ -9,6 +9,8 @@ namespace FreePIE.Core.Contracts
     public class LuaGlobalType : Attribute
     {
         public Type Type { get; set; }
+
+        public bool IsIndexed { get; set; }
     }
 
     [AttributeUsage(AttributeTargets.Class)]

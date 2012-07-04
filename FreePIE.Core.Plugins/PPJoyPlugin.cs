@@ -21,7 +21,7 @@ namespace FreePIE.Core.Plugins
         Dial        = 7
     }
 
-    [LuaGlobalType(Type = typeof(PPJoyGlobal))]
+    [LuaGlobalType(Type = typeof(PPJoyGlobal), IsIndexed = true)]
     public class PPJoyPlugin : Plugin
     {
         private Device[] devices;

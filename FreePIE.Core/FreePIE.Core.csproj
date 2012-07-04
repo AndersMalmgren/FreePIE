@@ -73,6 +73,14 @@
     <Compile Include="Plugins\IPluginInvoker.cs" />
     <Compile Include="Plugins\PluginInvoker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\CodeCompletionProvider.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\CodeSuggestion.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\ExpressionInfo.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\IndexedExpressionInfo.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\InfoTransformHelper.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\IRuntimeInfoProvider.cs" />
+    <Compile Include="Model\Node.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\RuntimeInfoProvider.cs" />
     <Compile Include="ScriptEngine\Globals\GlobalsInfo.cs" />
     <Compile Include="ScriptEngine\Globals\CurveGlobalProvider.cs" />
     <Compile Include="ScriptEngine\Globals\IGlobalProvider.cs" />
@@ -80,6 +88,7 @@
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\DiagnosticHelper.cs" />
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\FilterHelper.cs" />
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\IScriptHelper.cs" />
+    <Compile Include="ScriptEngine\ICodeCompletionProvider.cs" />
     <Compile Include="ScriptEngine\IScriptEngine.cs" />
     <Compile Include="ScriptEngine\IScriptParser.cs" />
     <Compile Include="ScriptEngine\LuaEngine.cs" />

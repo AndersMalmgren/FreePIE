@@ -21,18 +21,21 @@ namespace FreePIE.GUI.Views.Main
         private readonly IResultFactory resultFactory;
         private readonly IEventAggregator eventAggregator;
         private readonly Func<IScriptEngine> scriptEngineFactory;
+        private readonly ICodeCompletionProvider completionProvider;
         private IScriptEngine currentScriptEngine;
         private bool scriptRunning;
 
         public MainMenuViewModel(IResultFactory resultFactory, 
-            IEventAggregator eventAggregator, 
-            Func<IScriptEngine> scriptEngineFactory)
+            IEventAggregator eventAggregator,
+            Func<IScriptEngine> scriptEngineFactory,
+            ICodeCompletionProvider completionProvider)
         {
             eventAggregator.Subscribe(this);
            
             this.resultFactory = resultFactory;
             this.eventAggregator = eventAggregator;
             this.scriptEngineFactory = scriptEngineFactory;
+            this.completionProvider = completionProvider;
         }
 
         private string currentScriptFile;
@@ -142,6 +145,11 @@ namespace FreePIE.GUI.Views.Main
 
         public void Handle(ScriptUpdatedEvent message)
         {
+            var suggestions = completionProvider.GetSuggestionsForExpression(message.Script, message.Script.Length).ToList();
+
+            if(suggestions.Count > 0)
+                System.Diagnostics.Debug.Print(suggestions.Select(x => x.GetCompletion()).Aggregate((x, y) => x + ", " + y));
+
             CanRunScript = message.Script.Length > 0;
             script = message.Script;
         }

@@ -1,4 +1,6 @@
-﻿using FreePIE.GUI.Events;
+﻿using System.Linq;
+using FreePIE.Core.ScriptEngine;
+using FreePIE.GUI.Events;
 using FreePIE.Core.Common.Events;
 
 namespace FreePIE.GUI.Views.Script
