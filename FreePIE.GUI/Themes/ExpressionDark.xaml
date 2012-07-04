@@ -12,6 +12,16 @@
   mc:Ignorable="d"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
 
+    <BitmapImage x:Key="IconOpen" UriSource="../Resources/open-16.png" />
+    <BitmapImage x:Key="IconSave" UriSource="../Resources/save-16.png" />
+    <BitmapImage x:Key="IconSaveAs" UriSource="../Resources/save-as-16.png" />
+    <BitmapImage x:Key="IconExit" UriSource="../Resources/exit-16.png" />
+    <BitmapImage x:Key="IconPlay" UriSource="../Resources/play-16.png" />
+    <BitmapImage x:Key="IconStop" UriSource="../Resources/stop-16.png" />
+    <BitmapImage x:Key="IconSettings" UriSource="../Resources/settings-16.png" />
+    <BitmapImage x:Key="IconCurve" UriSource="../Resources/curve-16.png" />
+    <BitmapImage x:Key="IconAbout" UriSource="../Resources/about-16.png" />
+    
     <!-- Main Colors -->
 
     <Color x:Key="MainColor">#FF595959</Color>

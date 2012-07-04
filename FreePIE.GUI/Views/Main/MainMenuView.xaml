@@ -7,21 +7,57 @@
     <Grid>
         <Menu IsMainMenu="True">
             <MenuItem Header="_File">
-                <MenuItem x:Name="OpenScript" Header="_Open..."/>
-                <MenuItem x:Name="QuickSaveScript" Header="_Save"/>
-                <MenuItem x:Name="SaveScript" Header="Save _As..."/>
-                <MenuItem x:Name="Close" Header="E_xit"/>
+                <MenuItem x:Name="OpenScript" Header="_Open...">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconOpen}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="QuickSaveScript" Header="_Save">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconSave}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="SaveScript" Header="Save _As...">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconSaveAs}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="Close" Header="E_xit">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconExit}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_Script">
-                <MenuItem x:Name="RunScript" Header="_Run script" />
-                <MenuItem x:Name="StopScript" Header="_Stop script" />
+                <MenuItem x:Name="RunScript" Header="_Run script">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconPlay}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="StopScript" Header="_Stop script">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconStop}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="S_ettings">
-                <MenuItem x:Name="Plugins" DisplayMemberPath="Name" Header="_Plugins" cal:Message.Attach="ShowPluginSettings($orignalsourcecontext)"></MenuItem>
-                <MenuItem x:Name="ShowCurveSettingsMenu" Header="_Curves" />
+                <MenuItem x:Name="Plugins" DisplayMemberPath="Name" Header="_Plugins" cal:Message.Attach="ShowPluginSettings($orignalsourcecontext)">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconSettings}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="ShowCurveSettingsMenu" Header="_Curves">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconCurve}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem x:Name="ShowAbout" Header="_About"></MenuItem>
+                <MenuItem x:Name="ShowAbout" Header="_About">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconAbout}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
         </Menu>
     </Grid>

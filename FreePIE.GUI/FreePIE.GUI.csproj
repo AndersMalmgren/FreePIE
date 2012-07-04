@@ -259,13 +259,27 @@
       <Name>FreePIE.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\about-16.png" />
+    <Resource Include="Resources\exit-16.png" />
+    <Resource Include="Resources\open-16.png" />
+    <Resource Include="Resources\play-16.png" />
+    <Resource Include="Resources\save-16.png" />
+    <Resource Include="Resources\save-as-16.png" />
+    <Resource Include="Resources\settings-16.png" />
+    <Resource Include="Resources\stop-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\curve-16.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>md "$(TargetDir)plugins"
 copy "$(SolutionDir)\FreePIE.Core.Plugins\$(OutDir)*.dll" "$(TargetDir)plugins"
 
 copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"
-copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"</PostBuildEvent>
+copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\SlimDX\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
