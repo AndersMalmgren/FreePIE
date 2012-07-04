@@ -108,7 +108,7 @@ namespace FreePIE.Core.ScriptEngine
                     }
                 }
 
-                Thread.Sleep(5);
+                Thread.Sleep(1);
             }
 
             stopSync.Set();
