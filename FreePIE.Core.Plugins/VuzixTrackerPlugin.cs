@@ -243,8 +243,9 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
-      public void setDataUnits(int units) {
-         Vuzix.SetDataUnits((VuzixDataUnits)units);
+      public void setDataUnits(VuzixDataUnits units)
+      {
+         Vuzix.SetDataUnits(units);
       }
 
       //-----------------------------------------------------------------------

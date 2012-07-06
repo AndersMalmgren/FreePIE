@@ -646,41 +646,48 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
-      public bool getKeyDown(int key) {
-         return Keyboard.IsKeyDown(key);
+      public bool getKeyDown(Key key)
+      {
+          return Keyboard.IsKeyDown((int)key);
       }
 
       //-----------------------------------------------------------------------
-      public void setKeyDown(int key) {
-         Keyboard.KeyDown(key);
+      public void setKeyDown(Key key)
+      {
+          Keyboard.KeyDown((int)key);
       }
 
       //-----------------------------------------------------------------------
-      public bool getKeyUp(int key) {
-         return Keyboard.IsKeyUp(key);
+      public bool getKeyUp(Key key)
+      {
+          return Keyboard.IsKeyUp((int)key);
       }
 
       //-----------------------------------------------------------------------
-      public void setKeyUp(int key) {
-         Keyboard.KeyUp(key);
+      public void setKeyUp(Key key)
+      {
+          Keyboard.KeyUp((int)key);
       }
 
       //-----------------------------------------------------------------------
-      public void setKey(int key, bool down) {
+      public void setKey(Key key, bool down)
+      {
          if (down)
-            Keyboard.KeyDown(key);
+             Keyboard.KeyDown((int)key);
          else
-            Keyboard.KeyUp(key);
+             Keyboard.KeyUp((int)key);
       }
 
       //-----------------------------------------------------------------------
-      public bool getPressed(int key) {
-         return Keyboard.WasKeyPressed(key);
+      public bool getPressed(Key key)
+      {
+          return Keyboard.WasKeyPressed((int)key);
       }
 
       //-----------------------------------------------------------------------
-      public void setPressed(int key) {
-         Keyboard.PressAndRelease(key);
+      public void setPressed(Key key)
+      {
+         Keyboard.PressAndRelease((int)key);
       }
    }
 

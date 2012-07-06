@@ -40,33 +40,10 @@ namespace FreePIE.Core.ScriptEngine
         public string PrepareScript(string script, IEnumerable<object> globals)
         {
             script = FindAndInitMethodsThatNeedIndexer(script, globals);
-            script = FindAndParseGlobalEnums(script);
             return script;
         }
 
         private static Regex enumRegex = new Regex(@"(?<enum>[a-zA-Z0-9]*)\.(?<value>[a-zA-Z0-9]*)");
-
-        private string FindAndParseGlobalEnums(string script)
-        {
-            var enumTypes = pluginInvoker.ListAllGlobalEnumTypes().ToDictionary(t => t.Name);
-            script = enumRegex.Replace(script, match =>
-            {
-                var value = match.Value;
-                var name = match.Groups["enum"].Value;
-                var valueName = match.Groups["value"].Value;
-                                                       
-                if(enumTypes.ContainsKey(name))
-                {
-                    if (Enum.IsDefined(enumTypes[name], valueName))
-                    {
-                        value = ((int) Enum.Parse(enumTypes[name], valueName)).ToString(CultureInfo.InvariantCulture);
-                    }
-                }
-                return value;
-            });
-
-            return script;
-        }
 
         private string FindAndInitMethodsThatNeedIndexer(string script, IEnumerable<object> globals)
         {

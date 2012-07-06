@@ -16,6 +16,7 @@ namespace FreePIE.Core.ScriptEngine
     {
         private readonly IEnumerable<IGlobalProvider> globalProviders;
         private readonly IScriptParser scriptParser;
+        private readonly IPluginInvoker pluginInvoker;
         private readonly Lua lua;
         private readonly BackgroundWorker luaWorker;
         private bool running = false;
@@ -25,10 +26,11 @@ namespace FreePIE.Core.ScriptEngine
         private IEnumerable<IPlugin> usedPlugins;
         
 
-        public LuaEngine(IEnumerable<IGlobalProvider> globalProviders, IScriptParser scriptParser)
+        public LuaEngine(IEnumerable<IGlobalProvider> globalProviders, IScriptParser scriptParser, IPluginInvoker pluginInvoker)
         {
             this.globalProviders = globalProviders;
             this.scriptParser = scriptParser;
+            this.pluginInvoker = pluginInvoker;
             luaWorker = new BackgroundWorker();
             lua = new Lua();  
         }
@@ -40,6 +42,7 @@ namespace FreePIE.Core.ScriptEngine
             InitPlugins();
             var globals = InitGlobals();
             PrepareScriptForGlobals(globals);
+            RegisterEnumerations();
 
             stopSync = new AutoResetEvent(false);
             luaWorker.DoWork += LuaWorker;
@@ -202,6 +205,27 @@ namespace FreePIE.Core.ScriptEngine
         private void PrepareScriptForGlobals(IEnumerable<object> globals)
         {
             script = scriptParser.PrepareScript(script, globals);
+        }
+
+        private void RegisterEnumerations()
+        {
+            pluginInvoker.ListAllGlobalEnumTypes().ForEach(RegisterEnumeration);
+        }
+
+        private void RegisterEnumeration(Type type)
+        {
+
+            if (!type.IsEnum) throw new ArgumentException("The type must be an enumeration!");
+
+            string[] names = Enum.GetNames(type);
+            var values = Enum.GetValues(type);
+
+            lua.NewTable(type.Name);
+            for (int i = 0; i < names.Length; i++)
+            {
+                string path = type.Name + "." + names[i];
+                lua[path] = values.GetValue(i);
+            }
         }
 
         private void StopPlugins()

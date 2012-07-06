@@ -97,8 +97,8 @@ testPlugin:dummy(""ping"")
         {
             Assert.AreEqual(actualCallbackValue, callbackValue);
             Assert.AreEqual(0.75, dummyCallbacks["testIndexParser"]);
-            Assert.AreEqual((double)TestPluginEnum.One, dummyCallbacks["enumTest"]);
-            Assert.AreEqual((double)TestPluginEnum.La, dummyCallbacks["enumTestParser"]);
+            Assert.AreEqual(TestPluginEnum.One, dummyCallbacks["enumTest"]);
+            Assert.AreEqual(TestPluginEnum.La, dummyCallbacks["enumTestParser"]);
         }
     }
 
