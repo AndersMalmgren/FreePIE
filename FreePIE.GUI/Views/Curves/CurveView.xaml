@@ -54,11 +54,11 @@
                     <StackPanel Orientation="Vertical">
                         <CheckBox x:Name="SetDefault" IsEnabled="{ Binding CanSetDefault }">Set points to default</CheckBox>
                         <StackPanel Orientation="Horizontal">
-                            <Label Margin="0,0,5,0" VerticalAlignment="Center">X</Label>
+                            <Label Margin="0,0,5,0" VerticalAlignment="Center" Width="30">In</Label>
                             <TextBox x:Name="SelectedPointX" IsEnabled="{ Binding CanSetSelectedPointX }" Width="80" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Margin="0,0,5,0" VerticalAlignment="Center">Y</Label>
+                            <Label Margin="0,0,5,0" VerticalAlignment="Center" Width="30">Out</Label>
                             <TextBox x:Name="SelectedPointY" Width="80" />
                         </StackPanel>
                     </StackPanel>
