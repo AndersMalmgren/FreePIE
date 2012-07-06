@@ -19,15 +19,34 @@ namespace FreePIE.GUI.Views.Script.Output
 
         public void Handle(WatchEvent message)
         {
+            AddWatch(message, false);
+        }
+
+        private void AddWatch(WatchEvent message, bool locked)
+        {
             var watch = Watches.FirstOrDefault(w => w.Name == message.Name);
-            if(watch == null)
+            
+            if (watch == null)
             {
-                watch = new WatchViewModel();
-                watch.Name = message.Name;
-                Watches.Add(watch);
+                if (locked)
+                {
+                    watch = new WatchViewModel();
+                    watch.Name = message.Name;
+                    Watches.Add(watch);
+                }
+                else
+                {
+                    lock (Watches)
+                    {
+                        AddWatch(message, true);
+                    }
+                }
             }
 
-            watch.Value = message.Value;
+            if (watch != null)
+            {
+                watch.Value = message.Value;
+            }
         }
 
         public void Handle(ScriptStateChangedEvent message)
