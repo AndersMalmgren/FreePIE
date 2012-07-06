@@ -3,7 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:AvalonEdit="clr-namespace:FreePIE.GUI.Common.AvalonEdit">
+             xmlns:AvalonEdit="clr-namespace:FreePIE.GUI.Common.AvalonEdit"
+             xmlns:Completion="clr-namespace:CompletionWindow;assembly=CompletionWindow"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:Script="clr-namespace:FreePIE.GUI.Views.Script">
     <Grid>
         <AvalonEdit:BindableScriptEditor
 				x:Name="textEditor"
@@ -13,5 +16,23 @@
                 Script="{ Binding Path=Script, Mode=TwoWay}"    
                 IsEnabled="{ Binding Enabled}">
         </AvalonEdit:BindableScriptEditor>
+      <Completion:CompletionPopupView cal:Bind.Model="{ Binding RelativeSource={RelativeSource FindAncestor,
+                                                                                               AncestorType={x:Type Script:ScriptEditorView}},
+                                                                                               Path=DataContext.CompletionWindow }"
+                                      Target="{Binding ElementName=textEditor, Path=TextArea, Converter={Completion:EditorAdapterConverter}}">
+        <Completion:CompletionPopupView.DataContext>
+          <Completion:CompletionPopupViewModel />
+        </Completion:CompletionPopupView.DataContext>
+        <Completion:CompletionPopupView.DisplayActions>
+          <Completion:BackspaceHideAction />
+          <Completion:SelectionChangedHideAction />
+          <Completion:CustomKeyAction Action="Show" Key="Space" Modifiers="LeftCtrl" ShouldSwallow="True" />
+          <Completion:CustomKeyAction Action="Hide" Key="Escape" ShouldSwallow="True" />
+        </Completion:CompletionPopupView.DisplayActions>
+        <Completion:CompletionPopupView.ListBoxActions>
+          <Completion:ElementChangedKeyAction Key="Up" ShouldSwallow="true" />
+          <Completion:ElementChangedKeyAction Key="Down" ShouldSwallow="true" />
+        </Completion:CompletionPopupView.ListBoxActions>
+      </Completion:CompletionPopupView>
     </Grid>
 </UserControl>

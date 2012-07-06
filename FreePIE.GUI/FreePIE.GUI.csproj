@@ -39,6 +39,10 @@
     <Reference Include="Caliburn.Micro">
       <HintPath>..\Lib\Caliburn.Micro\Caliburn.Micro.dll</HintPath>
     </Reference>
+    <Reference Include="CompletionWindow, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\CompletionWindow\CompletionWindow.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.AvalonEdit">
       <HintPath>..\Lib\AvalonEdit\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
@@ -75,6 +79,7 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
+    <Compile Include="Common\CollectionExtensions.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />

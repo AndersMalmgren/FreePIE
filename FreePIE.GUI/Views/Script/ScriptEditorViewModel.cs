@@ -1,20 +1,31 @@
 ﻿using System.Linq;
+using Caliburn.Micro;
+using CompletionWindow;
 using FreePIE.Core.ScriptEngine;
+using FreePIE.GUI.Common;
 using FreePIE.GUI.Events;
-using FreePIE.Core.Common.Events;
+using FreePIE.GUI.Result;
+using FreePIE.GUI.Shells;
+using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Script
 {
-    public class ScriptEditorViewModel : Caliburn.Micro.PropertyChangedBase, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
+    public class ScriptEditorViewModel : PropertyChangedBase, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
     {
         private readonly IEventAggregator eventAggregator;
+        private readonly ICodeCompletionProvider provider;
 
-        public ScriptEditorViewModel(IEventAggregator eventAggregator)
+
+        public ScriptEditorViewModel(IEventAggregator eventAggregator, ICodeCompletionProvider provider, CompletionPopupViewModel completionModel)
         {
             this.eventAggregator = eventAggregator;
+            this.provider = provider;
+            CompletionWindow = completionModel;
             Enabled = true;
             eventAggregator.Subscribe(this);
         }
+
+        public CompletionPopupViewModel CompletionWindow { get; set; }
 
         private string script;
         public string Script
@@ -37,6 +48,42 @@ namespace FreePIE.GUI.Views.Script
                 enabled = value; 
                 NotifyOfPropertyChange(() => Enabled);
             }
+        }
+
+        private int caretPosition;
+        public int CaretPosition
+        {
+            get { return caretPosition; }
+
+            set
+            {
+                caretPosition = value;
+                UpdateCompletionItems();
+            }
+        }
+
+        private void UpdateCompletionItems()
+        {
+            var suggestions = provider.GetSuggestionsForExpression(script, caretPosition)
+                                           .Select(sugg => new CompletionItem(sugg.Name, sugg.Description));
+
+            CompletionWindow.CompletionItems.SyncCollectionTo(suggestions);
+        }
+
+        public class CompletionItem : ICompletionItem
+        {
+            public CompletionItem(string name, string description)
+            {
+                Name = name;
+                Description = description;
+            }
+
+            public void Insert()
+            { }
+
+            public string Name { get; set; }
+
+            public string Description { get; set; }
         }
 
         public void Handle(ScriptStateChangedEvent message)

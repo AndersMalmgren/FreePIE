@@ -21,6 +21,8 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             root.AddChildren(invoker.ListAllGlobalEnumTypes().Select(type => type.ToExpressionInfo()));
             root.AddChildren(providers.SelectMany(gp => gp.ListGlobals().Select(obj => obj.ToExpressionInfo())));
 
+            root.SortChildrenRecursive((a, b) => a.Name.CompareTo(b.Name));
+
             return root;
         }
 

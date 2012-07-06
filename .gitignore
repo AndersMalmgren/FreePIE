@@ -12,3 +12,7 @@ _Resharper*
 
 # Dynamic created files
 VersionInfo.cs
+
+# ncrunch test settings
+*.ncrunchsolution
+*.ncrunchproject

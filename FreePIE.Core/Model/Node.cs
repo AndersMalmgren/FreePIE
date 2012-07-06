@@ -44,6 +44,13 @@ namespace FreePIE.Core.Model
 
         public T Value { get; set; }
 
+        public void SortChildrenRecursive(Comparison<T> comparer)
+        {
+            children.Sort((a, b) => comparer(a.Value, b.Value));
+
+            children.ForEach(x => x.SortChildrenRecursive(comparer));
+        }
+
         public IEnumerable<Node<T>> Children { get { return children; } }
 
         public Node<T> FindSequence<TKey>(IEnumerable<TKey> sequence, Func<T, TKey, bool> equals)
@@ -55,9 +62,9 @@ namespace FreePIE.Core.Model
 
             Node<T> current = this;
 
-            for(int i = 0; i < list.Count; i++)
+            foreach (TKey t in list)
             {
-                current = current.children.FirstOrDefault(c => equals(c.Value, list[i]));
+                current = current.children.FirstOrDefault(c => equals(c.Value, t));
 
                 if (current == null)
                     return null;

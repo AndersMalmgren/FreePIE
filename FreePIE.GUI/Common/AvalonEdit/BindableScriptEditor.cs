@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Xml;
 using FreePIE.GUI.Shells;
+using FreePIE.GUI.Views.Script;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 
@@ -25,6 +26,21 @@ namespace FreePIE.GUI.Common.AvalonEdit
             }
             // and register it in the HighlightingManager
             HighlightingManager.Instance.RegisterHighlighting("Lua", new string[] { ".lua" }, customHighlighting);
+        }
+
+        public BindableScriptEditor()
+        {
+            TextArea.Caret.PositionChanged += CaretPositionChanged;
+        }
+
+        private void CaretPositionChanged(object sender, EventArgs e)
+        {
+            ViewModel.CaretPosition = CaretOffset;
+        }
+
+        public ScriptEditorViewModel ViewModel
+        {
+            get { return DataContext as ScriptEditorViewModel; }
         }
 
         protected override void OnTextChanged(EventArgs e)
