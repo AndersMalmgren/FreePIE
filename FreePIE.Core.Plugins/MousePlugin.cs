@@ -230,69 +230,40 @@ namespace FreePIE.Core.Plugins
         private readonly MousePlugin Mouse;
 
         //-----------------------------------------------------------------------
-        public MouseGlobal(MousePlugin plugin) : base(plugin)
+        public MouseGlobal(MousePlugin plugin)
+            : base(plugin)
         {
             Mouse = plugin;
         }
 
-        //-----------------------------------------------------------------------
-        public void setDeltaX(double x)
+        public double DeltaX
         {
-            Mouse.DeltaX = (int)Math.Round(x);
+            get { return Mouse.DeltaX; }
+            set { Mouse.DeltaX = (int) Math.Round(value); }
         }
 
-        //-----------------------------------------------------------------------
-        public void setDeltaY(double y)
+        public double DeltaY
         {
-            Mouse.DeltaY = (int)Math.Round(y);
+            get { return Mouse.DeltaY; }
+            set { Mouse.DeltaY = (int) Math.Round(value); }
         }
 
-        //-----------------------------------------------------------------------
-        public double getDeltaX()
+        public bool LeftButton
         {
-            return Mouse.DeltaX;
+            get { return Mouse.IsButtonPressed(0); }
+            set { Mouse.SetButtonPressed(0, value); }
         }
 
-        //-----------------------------------------------------------------------
-        public double getDeltaY()
+        public bool MiddleButton
         {
-            return Mouse.DeltaY;
+            get { return Mouse.IsButtonPressed(2); }
+            set { Mouse.SetButtonPressed(2, value); }
         }
 
-        //-----------------------------------------------------------------------
-        public bool getLeftButton()
+        public bool RightButton
         {
-            return Mouse.IsButtonPressed(0);
-        }
-       
-        //-----------------------------------------------------------------------
-        public void setLeftButton(bool pressed)
-        {
-            Mouse.SetButtonPressed(0, pressed);
-        }
-
-        //-----------------------------------------------------------------------
-        public bool getMiddleButton()
-        {
-            return Mouse.IsButtonPressed(2);
-        }
-
-        //-----------------------------------------------------------------------
-        public void setMiddleButton(bool pressed)
-        {
-            Mouse.SetButtonPressed(2, pressed);
-        }
-
-        //-----------------------------------------------------------------------
-        public bool getRightButton()
-        {
-            return Mouse.IsButtonPressed(1);
-        }
-
-        //-----------------------------------------------------------------------
-        public void setRightButton(bool pressed)
-        {
-            Mouse.SetButtonPressed(1, pressed);
+            get { return Mouse.IsButtonPressed(1); }
+            set { Mouse.SetButtonPressed(1, value); }
         }
     }
 }

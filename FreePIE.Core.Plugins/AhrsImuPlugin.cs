@@ -25,8 +25,6 @@ namespace FreePIE.Core.Plugins
             get { return 57600; }
         }
 
-        public AhrsData Data { get; private set; }
-
         protected override void Init(SerialPort serialPort)
         {
             Thread.Sleep(3000); //Wait for IMU to self init
@@ -84,36 +82,9 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    public struct AhrsData
-    {
-        public float Yaw;
-        public float Pitch;
-        public float Roll;
-    }
-
     [LuaGlobal(Name = "ahrsImu")]
-    public class AhrsImuGlobal : UpdateblePluginGlobal
+    public class AhrsImuGlobal : DofGlobal<AhrsImuPlugin>
     {
-        private readonly AhrsImuPlugin plugin;
-
-        public AhrsImuGlobal(AhrsImuPlugin plugin) : base(plugin)
-        {
-            this.plugin = plugin;
-        }
-
-        public float getYaw()
-        {
-            return plugin.Data.Yaw;
-        }
-
-        public float getPitch()
-        {
-            return plugin.Data.Pitch;
-        }
-
-        public float getRoll()
-        {
-            return plugin.Data.Roll;
-        }
+        public AhrsImuGlobal(AhrsImuPlugin plugin) : base(plugin) { }
     }
 }

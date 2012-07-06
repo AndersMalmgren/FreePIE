@@ -17,7 +17,6 @@ namespace FreePIE.Core.Plugins {
       int UdpPort = 10552;
       UdpClient UdpSock = null;
 
-      bool ContinousYawMode = false;
 
       int PitchIndex = 4;
       int RollIndex = 5;
@@ -147,11 +146,8 @@ namespace FreePIE.Core.Plugins {
          }
       }
 
-      //-----------------------------------------------------------------------
-      public void SetContinousYawMode(bool continous) {
-         ContinousYawMode = continous;
-      }
-
+      public bool ContinousYawMode { get; set; }
+       
       //-----------------------------------------------------------------------
       public double Yaw {
          get {
@@ -188,36 +184,40 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          AppleGlobal
    //==========================================================================
-   public class ApplePluginGlobal {
-      private readonly ApplePlugin Device;
+    public class ApplePluginGlobal
+    {
+        private readonly ApplePlugin Device;
 
-      //-----------------------------------------------------------------------
-      public ApplePluginGlobal(ApplePlugin plugin) {
-         Device = plugin;
-      }
+        //-----------------------------------------------------------------------
+        public ApplePluginGlobal(ApplePlugin plugin)
+        {
+            Device = plugin;
+        }
 
-      //-----------------------------------------------------------------------
-      public void setContinuousYawMode(bool continuous) {
-         Device.SetContinousYawMode(continuous);
-      }
 
-      //-----------------------------------------------------------------------
-      public double getYaw() {
-         return Device.Yaw;
-      }
+        public bool ContinuousYawMode
+        {
+            get { return Device.ContinousYawMode; }
+            set { Device.ContinousYawMode = value; }
+        }
 
-      //-----------------------------------------------------------------------
-      public double getPitch() {
-         return Device.Pitch;
-      }
+        public double Yaw
+        {
+            get { return Device.Yaw; }
+        }
 
-      //-----------------------------------------------------------------------
-      public double getRoll() {
-         return Device.Roll;
-      }
-   }
+        public double Pitch
+        {
+            get { return Device.Pitch; }
+        }
 
-   //==========================================================================
+        public double Roll
+        {
+            get { return Device.Roll; }
+        }
+    }
+
+    //==========================================================================
    //                          iPhonePlugin
    //==========================================================================
    [LuaGlobalType(Type = typeof(iPhonePluginGlobal))]

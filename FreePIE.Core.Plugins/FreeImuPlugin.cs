@@ -23,8 +23,6 @@ namespace FreePIE.Core.Plugins
             get { return 115200; }
         }
 
-        public FreeImuData Data { get; private set; }
-
         protected override void Init(SerialPort serialPort)
         {
         }
@@ -61,36 +59,9 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    public struct FreeImuData
-    {
-        public float Yaw;
-        public float Pitch;
-        public float Roll;
-    }
-
     [LuaGlobal(Name = "freeImu")]
-    public class FreeImuGlobal : UpdateblePluginGlobal
+    public class FreeImuGlobal : DofGlobal<FreeImuPlugin>
     {
-        private readonly FreeImuPlugin plugin;
-
-        public FreeImuGlobal(FreeImuPlugin plugin) : base(plugin)
-        {
-            this.plugin = plugin;
-        }
-
-        public float getYaw()
-        {
-            return plugin.Data.Yaw;
-        }
-
-        public float getPitch()
-        {
-            return plugin.Data.Pitch;
-        }
-
-        public float getRoll()
-        {
-            return plugin.Data.Roll;
-        }
+        public FreeImuGlobal(FreeImuPlugin plugin) : base(plugin) { }
     }
 }

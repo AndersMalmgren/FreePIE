@@ -133,36 +133,6 @@ namespace FreePIE.Core.Plugins
             this.plugin = plugin;
 
         }
-        
-        public float getYaw()
-        {
-            return plugin.Data.Yaw;
-        }
-
-        public float getPitch()
-        {
-            return plugin.Data.Pitch;
-        }
-
-        public float getRoll()
-        {
-            return plugin.Data.Roll;
-        }
-
-        public float getX()
-        {
-            return plugin.Data.X;
-        }
-
-        public float getY()
-        {
-            return plugin.Data.Y;
-        }
-
-        public float getZ()
-        {
-            return plugin.Data.Z;
-        }
 
         private void Write(Func<FreeTrackData, FreeTrackData> setValue)
         {
@@ -173,34 +143,40 @@ namespace FreePIE.Core.Plugins
             plugin.Data = setValue(data);
         }
 
-        public void setYaw(float yaw)
+        public float Yaw
         {
-            Write(d => { d.Yaw = yaw; return d; });
+            get { return plugin.Data.Yaw; }
+            set { Write(d => { d.Yaw = value; return d; }); }
         }
 
-        public void setPitch(float pitch)
+        public float Pitch
         {
-            Write(d => { d.Pitch = pitch; return d; });
+            get { return plugin.Data.Pitch; }
+            set { Write(d => { d.Pitch = value; return d; }); }
         }
 
-        public void setRoll(float roll)
+        public float Roll
         {
-            Write(d => { d.Roll = roll; return d; });
+            get { return plugin.Data.Roll; }
+            set { Write(d => { d.Roll = value; return d; }); }
         }
 
-        public void setX(float x)
+        public float X
         {
-            Write(d => { d.X = x; return d; });
+            get { return plugin.Data.X; }
+            set { Write(d => { d.X = value; return d; }); }
         }
 
-        public void setY(float y)
+        public float Y
         {
-            Write(d => { d.Y = y; return d; });
+            get { return plugin.Data.Y; }
+            set { Write(d => { d.Y = value; return d; }); }
         }
 
-        public void setZ(float z)
+        public float Z
         {
-            Write(d => { d.Z = z; return d; });
+            get { return plugin.Data.Z; }
+            set { Write(d => { d.Z = value; return d; }); }
         }
     }
 }
