@@ -43,11 +43,16 @@ namespace FreePIE.Core.ScriptEngine
             var globals = InitGlobals();
             PrepareScriptForGlobals(globals);
             RegisterEnumerations();
-            lua.DoString("luanet = nil");
+            RemoveLuaAccessToDotNetSystem();
 
             stopSync = new AutoResetEvent(false);
             luaWorker.DoWork += LuaWorker;
             luaWorker.RunWorkerAsync();
+        }
+
+        private void RemoveLuaAccessToDotNetSystem()
+        {
+            lua.DoString("luanet = nil");
         }
 
         public void Stop()

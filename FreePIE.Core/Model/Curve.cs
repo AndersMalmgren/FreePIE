@@ -13,6 +13,35 @@ namespace FreePIE.Core.Model
 
         public List<Point> Points { get; set; }
         public string Name { get; set; }
+        public int IndexOf(Point point)
+        {
+            return Points.FindIndex(p => p == point);
+        }
+
+        public void Reset(double y)
+        {
+            Points = CalculateDefault(y);
+        }
+
+        public static Curve Create()
+        {
+            return new Curve(CalculateDefault(180));
+        }
+
+        private static List<Point> CalculateDefault(double y)
+        {
+            int pointCount = 6;
+            var points = new List<Point>();
+
+            var step = y / (pointCount - 1);
+            for (int i = 0; i < pointCount; i++)
+            {
+                var point = new Point(i * step, i * step);
+                points.Add(point);
+            }
+
+            return points;
+        }
     }
 
     public struct Point

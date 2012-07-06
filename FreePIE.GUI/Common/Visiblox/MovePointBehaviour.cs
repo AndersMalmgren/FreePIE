@@ -143,6 +143,12 @@ namespace FreePIE.GUI.Common.Visiblox
             public Core.Model.Point NewPoint { get; set; }
         }
 
+        public event EventHandler<PointSelectedEventArgs> OnPointSelected;
+        public class PointSelectedEventArgs : EventArgs
+        {
+            public Core.Model.Point Point { get; set; }
+        }
+
         /// <summary>
         /// Handle the situation where we are moving a point (or have clicked on a point) and the
         /// behaviour becomes disabled.
@@ -169,6 +175,8 @@ namespace FreePIE.GUI.Common.Visiblox
                     IsClickPositionCloseToPoint(position.Y, Chart.YAxis.GetDataValueAsRenderPositionWithZoom(dp.Y)))
                 {
                     _selectedPoint = dp;
+                    var point = new Core.Model.Point((double)_selectedPoint.XValue, (double)_selectedPoint.XValue);
+                    OnPointSelected(this, new PointSelectedEventArgs { Point = point});
                     break;
                 }
             }
