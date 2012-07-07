@@ -188,9 +188,9 @@ namespace FreePIE.Core.Plugins
             this.plugin = plugin;
         }
 
-        public void setAxis(int axisType, int value)
+        public void setAxis(AxisTypes axisType, int value)
         {
-            plugin.SetAxis(index, (AxisTypes)axisType, value);
+            plugin.SetAxis(index, axisType, value);
         }
 
         public void setRange(int lowerRange, int upperRange)

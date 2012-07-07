@@ -31,8 +31,8 @@ namespace FreePIE.Tests.Core.Plugins
     {
         protected override void DoTest(PPJoyGlobal global)
         {
-            global.setAxis((int)AxisTypes.X, 1000);
-            global.setAxis((int)AxisTypes.Y, 1000);
+            global.setAxis(AxisTypes.X, 1000);
+            global.setAxis(AxisTypes.Y, 1000);
         }
 
         [TestMethod]
@@ -48,8 +48,8 @@ namespace FreePIE.Tests.Core.Plugins
     {
         protected override void DoTest(PPJoyGlobal global)
         {
-            global.setAxis((int)AxisTypes.X, -1000);
-            global.setAxis((int)AxisTypes.Y, -1000);
+            global.setAxis(AxisTypes.X, -1000);
+            global.setAxis(AxisTypes.Y, -1000);
         }
 
         [TestMethod]
@@ -65,8 +65,8 @@ namespace FreePIE.Tests.Core.Plugins
     {
         protected override void DoTest(PPJoyGlobal global)
         {
-            global.setAxis((int)AxisTypes.X, -450);
-            global.setAxis((int)AxisTypes.Y, 450);
+            global.setAxis(AxisTypes.X, -450);
+            global.setAxis(AxisTypes.Y, 450);
         }
 
         [TestMethod]

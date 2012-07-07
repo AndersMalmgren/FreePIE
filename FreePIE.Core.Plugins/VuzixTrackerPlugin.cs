@@ -53,8 +53,7 @@ namespace FreePIE.Core.Plugins {
       int XSample;
       int YSample;
       int ZSample;
-
-      bool ContinousYawMode = false;
+       
       double DataModeScale;
 
       //-----------------------------------------------------------------------
@@ -135,10 +134,7 @@ namespace FreePIE.Core.Plugins {
          }
       }
 
-      //-----------------------------------------------------------------------
-      public void SetContinousYawMode(bool continous) {
-         ContinousYawMode = continous;
-      }
+      public bool ContinousYawMode { get; set; }
 
       //-----------------------------------------------------------------------
       void SampleVuzixTracker() {
@@ -233,53 +229,57 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          VuzixTrackerPluginGlobal
    //==========================================================================
-   [LuaGlobal(Name = "vuzix")]
-   public class VuzixTrackerPluginGlobal {
-      private readonly VuzixTrackerPlugin Vuzix;
+    [LuaGlobal(Name = "vuzix")]
+    public class VuzixTrackerPluginGlobal
+    {
+        private readonly VuzixTrackerPlugin vuzix;
 
-      //-----------------------------------------------------------------------
-      public VuzixTrackerPluginGlobal(VuzixTrackerPlugin plugin) {
-         Vuzix = plugin;
-      }
+        //-----------------------------------------------------------------------
+        public VuzixTrackerPluginGlobal(VuzixTrackerPlugin plugin)
+        {
+            vuzix = plugin;
+        }
 
-      //-----------------------------------------------------------------------
-      public void setDataUnits(int units) {
-         Vuzix.SetDataUnits((VuzixDataUnits)units);
-      }
+        //-----------------------------------------------------------------------
+        public void setDataUnits(VuzixDataUnits units)
+        {
+            vuzix.SetDataUnits(units);
+        }
 
-      //-----------------------------------------------------------------------
-      public void setContinuousYawMode(bool continuous) {
-         Vuzix.SetContinousYawMode(continuous);
-      }
+        public bool ContinuousYawMode
+        {
+            get { return vuzix.ContinousYawMode; }
+            set { vuzix.ContinousYawMode = value; }
+        }
 
-      //-----------------------------------------------------------------------
-      public double getYaw() {
-         return Vuzix.Yaw;
-      }
+        public double Yaw
+        {
+            get { return vuzix.Yaw; }
+        }
 
-      //-----------------------------------------------------------------------
-      public double getPitch() {
-         return Vuzix.Pitch;
-      }
+        public double Pitch
+        {
+            get { return vuzix.Pitch; }
+        }
 
-      //-----------------------------------------------------------------------
-      public double getRoll() {
-         return Vuzix.Roll;
-      }
+        public double Roll
+        {
+            get { return vuzix.Roll; }
+        }
 
-      //-----------------------------------------------------------------------
-      public double getX() {
-         return Vuzix.X;
-      }
+        public double X
+        {
+            get { return vuzix.X; }
+        }
 
-      //-----------------------------------------------------------------------
-      public double getY() {
-         return Vuzix.Y;
-      }
+        public double Y
+        {
+            get { return vuzix.Y; }
+        }
 
-      //-----------------------------------------------------------------------
-      public double getZ() {
-         return Vuzix.Z;
-      }
-   }
+        public double Z
+        {
+            get { return vuzix.Z; }
+        }
+    }
 }

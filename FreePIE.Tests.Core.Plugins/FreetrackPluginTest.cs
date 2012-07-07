@@ -62,12 +62,12 @@ namespace FreePIE.Tests.Core.Plugins
 
             for (int i = 0; i < 10; i++)
             {
-                Assert.IsTrue(global.getYaw() < 5);
-                Assert.IsTrue(global.getPitch() < 10);
-                Assert.IsTrue(global.getRoll() < 15);
-                Assert.IsTrue(global.getX() < 20);
-                Assert.IsTrue(global.getY() < 25);
-                Assert.IsTrue(global.getZ() < 30);
+                Assert.IsTrue(global.Yaw < 5);
+                Assert.IsTrue(global.Pitch < 10);
+                Assert.IsTrue(global.Roll < 15);
+                Assert.IsTrue(global.X < 20);
+                Assert.IsTrue(global.Y < 25);
+                Assert.IsTrue(global.Z < 30);
             }
 
             plugin.Stop();

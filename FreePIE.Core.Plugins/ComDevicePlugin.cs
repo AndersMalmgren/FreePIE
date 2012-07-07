@@ -99,5 +99,39 @@ namespace FreePIE.Core.Plugins
 
             return true;
         }
+
+        public DofData Data { get; protected set; }
+
+        public struct DofData
+        {
+            public float Yaw;
+            public float Pitch;
+            public float Roll;
+        }
+    }
+
+    public abstract class DofGlobal<TPlugin> : UpdateblePluginGlobal where TPlugin : ComDevicePlugin
+    {
+        private readonly TPlugin plugin;
+
+        public DofGlobal(TPlugin plugin) : base(plugin)
+        {
+            this.plugin = plugin;
+        }
+
+        public float Yaw
+        {
+            get { return plugin.Data.Yaw; }
+        }
+
+        public float Pitch
+        {
+            get { return plugin.Data.Pitch; }
+        }
+
+        public float Roll
+        {
+            get { return plugin.Data.Roll; }
+        }
     }
 }

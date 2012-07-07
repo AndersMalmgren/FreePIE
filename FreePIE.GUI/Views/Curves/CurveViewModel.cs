@@ -15,6 +15,7 @@ namespace FreePIE.GUI.Views.Curves
     {
         private readonly IEventAggregator eventAggregator;
         public Curve Curve { get; private set; }
+        public int? selectedPointIndex;
 
         public CurveViewModel(IEventAggregator eventAggregator)
         {
@@ -24,12 +25,22 @@ namespace FreePIE.GUI.Views.Curves
         public CurveViewModel Configure(Curve curve)
         {
             this.Curve = curve;
-            SelectablePoints = curve.Points.Skip(1);
-            Points = CalculateNewPoints();
+            InitCurve();
 
             return this;
         }
-        
+
+        private void InitCurve()
+        {
+            SetSelectablePoints();
+            Points = CalculateNewPoints();
+        }
+
+        private void SetSelectablePoints()
+        {
+            SelectablePoints = Curve.Points.Skip(1);
+        }
+
         public string Name
         {
             get { return Curve.Name; }
@@ -45,12 +56,104 @@ namespace FreePIE.GUI.Views.Curves
             eventAggregator.Publish(new DeleteCurveEvent(this));
         }
 
-        public void OnPointDragged(object sender, MovePointBehaviour.PointMoveEventArgs e)
+        public bool HasSelectedPoint
+        {
+            get { return selectedPointIndex.HasValue; }
+        }
+
+        private bool setDefault;
+        public bool SetDefault
+        {
+            get { return setDefault; }
+            set
+            {
+                setDefault = value;
+                NotifyOfPropertyChange(() => SetDefault);
+                NotifyOfPropertyChange(() => CanSetSelectedPointX);
+            }
+        }
+
+        private bool canSetDefault;
+        public bool CanSetDefault
+        {
+            get { return canSetDefault; }
+            set
+            {
+                canSetDefault = value;
+                NotifyOfPropertyChange(() => canSetDefault);
+            }
+        }
+
+        public bool CanSetSelectedPointX { get { return !SetDefault; } }
+
+        public void OnPointSelected(MovePointBehaviour.PointSelectedEventArgs e)
+        {
+            var index = Curve.IndexOf(e.Point);
+            if(index != selectedPointIndex)
+                SetDefault = false;
+
+            selectedPointIndex = index;
+
+            CanSetDefault = selectedPointIndex == Curve.Points.Count - 1;
+            NotifyOfPropertyChange(() => HasSelectedPoint);
+            NotifyOfPropertyChange(() => SelectedPointX);
+            NotifyOfPropertyChange(() => SelectedPointY);
+        }
+
+        public double SelectedPointX
+        {
+            get { return GetSelectedPoint().X; }
+
+            set
+            {
+                SetSelectedPoint(new Point(value, SelectedPointY));
+            }
+        }
+        
+        public double SelectedPointY
+        {
+            get { return GetSelectedPoint().Y; }
+
+            set
+            {
+                SetSelectedPoint(new Point(SelectedPointX, value));
+            }
+        }
+
+        private void SetSelectedPoint(Point newPoint)
+        {
+            if(SetDefault)
+            {
+                Curve.Reset(newPoint.Y);
+                InitCurve();
+                return;
+            }
+
+            var args = new MovePointBehaviour.PointMoveEventArgs
+            {
+                OldPoint = GetSelectedPoint(),
+                NewPoint = newPoint
+            };
+            OnPointDragged(args);
+            SetSelectablePoints();
+            NotifyOfPropertyChange(() => SelectedPointX);
+            NotifyOfPropertyChange(() => SelectedPointY);    
+        }
+
+        private Point GetSelectedPoint()
+        {
+            if (selectedPointIndex.HasValue)
+                return Curve.Points[selectedPointIndex.Value];
+
+            return new Point();
+        }
+
+        public void OnPointDragged(MovePointBehaviour.PointMoveEventArgs e)
         {
             var oldPoint = e.OldPoint;
             var newPoint = e.NewPoint;
 
-            var index = Curve.Points.FindIndex(p => p == e.OldPoint);
+            var index = Curve.IndexOf(e.OldPoint);
             var prevPoint = Curve.Points[index - 1];
             var biggestValueForY = double.MinValue;
 
@@ -105,5 +208,6 @@ namespace FreePIE.GUI.Views.Curves
                 NotifyOfPropertyChange(() => SelectablePoints);
             }
         }
+
     }
 }

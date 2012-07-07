@@ -40,33 +40,10 @@ namespace FreePIE.Core.ScriptEngine
         public string PrepareScript(string script, IEnumerable<object> globals)
         {
             script = FindAndInitMethodsThatNeedIndexer(script, globals);
-            script = FindAndParseGlobalEnums(script);
             return script;
         }
 
         private static Regex enumRegex = new Regex(@"(?<enum>[a-zA-Z0-9]*)\.(?<value>[a-zA-Z0-9]*)");
-
-        private string FindAndParseGlobalEnums(string script)
-        {
-            var enumTypes = pluginInvoker.ListAllGlobalEnumTypes().ToDictionary(t => t.Name);
-            script = enumRegex.Replace(script, match =>
-            {
-                var value = match.Value;
-                var name = match.Groups["enum"].Value;
-                var valueName = match.Groups["value"].Value;
-                                                       
-                if(enumTypes.ContainsKey(name))
-                {
-                    if (Enum.IsDefined(enumTypes[name], valueName))
-                    {
-                        value = ((int) Enum.Parse(enumTypes[name], valueName)).ToString(CultureInfo.InvariantCulture);
-                    }
-                }
-                return value;
-            });
-
-            return script;
-        }
 
         private string FindAndInitMethodsThatNeedIndexer(string script, IEnumerable<object> globals)
         {
@@ -89,7 +66,7 @@ namespace FreePIE.Core.ScriptEngine
                         var arguments = ExtractArguments(script, argumentStart);
                         int argumentEnd = argumentStart + arguments.Length;
 
-                        var newArguments = string.Format(@"{0}, ""{1}"")", arguments.Substring(0, arguments.Length - 1), arguments.Substring(1, arguments.Length - 2));
+                        var newArguments = string.Format(@"{0}, ""{1}"")", arguments.Substring(0, arguments.Length - 1), arguments.Substring(1, arguments.Length - 2).Replace(@"""", @"'" ));
 
                         script = script.Substring(0, argumentStart) +
                                  newArguments + script.Substring(argumentEnd, script.Length - argumentEnd);
