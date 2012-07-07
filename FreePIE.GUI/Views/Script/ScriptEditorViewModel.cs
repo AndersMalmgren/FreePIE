@@ -3,6 +3,7 @@ using Caliburn.Micro;
 using CompletionWindow;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Common;
+using FreePIE.GUI.Common.CodeCompletion;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
@@ -65,25 +66,9 @@ namespace FreePIE.GUI.Views.Script
         private void UpdateCompletionItems()
         {
             var suggestions = provider.GetSuggestionsForExpression(script, caretPosition)
-                                           .Select(sugg => new CompletionItem(sugg.Name, sugg.Description));
+                                           .Select(sugg => new CompletionItem(sugg));
 
             CompletionWindow.CompletionItems.SyncCollectionTo(suggestions);
-        }
-
-        public class CompletionItem : ICompletionItem
-        {
-            public CompletionItem(string name, string description)
-            {
-                Name = name;
-                Description = description;
-            }
-
-            public void Insert()
-            { }
-
-            public string Name { get; set; }
-
-            public string Description { get; set; }
         }
 
         public void Handle(ScriptStateChangedEvent message)

@@ -79,6 +79,7 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
+    <Compile Include="Common\CodeCompletion\CompletionItem.cs" />
     <Compile Include="Common\CollectionExtensions.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
