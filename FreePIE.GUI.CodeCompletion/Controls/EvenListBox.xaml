@@ -4,4 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
               mc:Ignorable="d">
+  <ListBox.Style>
+    <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=Items.Count}" Value="0">
+          <Setter Property="Template">
+            <Setter.Value>
+              <ControlTemplate>
+                <ListBox IsEnabled="false">
+                  <ListBoxItem>No suggestions for the expression</ListBoxItem>
+                </ListBox>
+              </ControlTemplate>
+            </Setter.Value>
+          </Setter>
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+  </ListBox.Style>
 </ListBox>

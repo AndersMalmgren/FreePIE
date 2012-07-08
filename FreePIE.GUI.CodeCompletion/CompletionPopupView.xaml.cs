@@ -76,7 +76,11 @@ namespace FreePIE.GUI.CodeCompletion
 
         public void PerformElementChanged(KeyEventArgs args)
         {
+            if (CompletionElements.Items.Count <= 0) 
+                return;
+
             CompletionElements.Focus();
+            (CompletionElements.ItemContainerGenerator.ContainerFromIndex(0) as UIElement).Focus();
             CompletionElements.RaiseEvent(args);
         }
 

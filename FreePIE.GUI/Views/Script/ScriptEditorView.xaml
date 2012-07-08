@@ -27,7 +27,7 @@
         <CodeCompletion:CompletionPopupView.DisplayActions>
           <CodeCompletion:BackspaceHideAction />
           <CodeCompletion:SelectionChangedHideAction />
-          <CodeCompletion:CustomKeyAction Action="Show" Key="Space" Modifiers="LeftCtrl" ShouldSwallow="True" />
+          <CodeCompletion:CustomKeyAction Action="ForceShow" Key="Space" Modifiers="LeftCtrl" ShouldSwallow="True" />
           <CodeCompletion:CustomKeyAction Action="Hide" Key="Escape" ShouldSwallow="True" />
         </CodeCompletion:CompletionPopupView.DisplayActions>
         <CodeCompletion:CompletionPopupView.ListBoxActions>
