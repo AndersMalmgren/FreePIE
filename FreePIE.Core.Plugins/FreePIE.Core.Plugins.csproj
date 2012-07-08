@@ -58,6 +58,7 @@
     <Compile Include="ApplePlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="FreeImuPlugin.cs" />
+    <Compile Include="FreeSpacePlugin.cs" />
     <Compile Include="FreeTrackPlugin.cs" />
     <Compile Include="KeyboardPlugin.cs" />
     <Compile Include="MouseKeyIO.cs" />
