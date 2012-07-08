@@ -14,7 +14,8 @@
 				FontSize="10pt"
 				SyntaxHighlighting="Lua"   
                 Script="{ Binding Path=Script, Mode=TwoWay}"    
-                IsEnabled="{ Binding Enabled}">
+                IsEnabled="{ Binding Enabled}"
+                Caret="{ Binding Path=CaretPosition, Mode=TwoWay }">
         </AvalonEdit:BindableScriptEditor>
       <Completion:CompletionPopupView cal:Bind.Model="{ Binding RelativeSource={RelativeSource FindAncestor,
                                                                                                AncestorType={x:Type Script:ScriptEditorView}},

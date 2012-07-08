@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using FreePIE.Core.Common;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.Tests.Test;
@@ -23,14 +24,35 @@ namespace FreePIE.Tests.Core
 
             IScriptParser parser = new LuaScriptParser(Get<IPluginInvoker>());
 
-            parser.GetTokensFromExpression(Expression1, Expression1.IndexOf('T'))
-                .AssertSequenceEqual(new[] { "static", "test", "Expression", "for", "pars" });
+            TestTokens(parser,
+                       Expression1,
+                       Expression1.IndexOf('T'),
+                       new[] { "static", "test", "Expression", "for", "pars" },
+                       new Range(27, 4));
 
-            parser.GetTokensFromExpression(Expression2, Expression2.IndexOf('T'))
-                .AssertSequenceEqual(new [] { "for", "pars"});
+            TestTokens(parser,
+                       Expression2,
+                       Expression2.IndexOf('T'),
+                       new [] { "for", "pars"},
+                       new Range(27, 4));
 
-            parser.GetTokensFromExpression(Expression3, Expression3.IndexOf('T'))
+           TestTokens(parser,
+                      Expression3,
+                      Expression3.IndexOf('T'),
+                      new[] { "he" },
+                      new Range(36, 2));
+            
+            parser.GetTokensFromExpression(Expression3, Expression3.IndexOf('T')).Tokens
                 .AssertSequenceEqual(new[] { "he" });
+        }
+
+        public void TestTokens(IScriptParser parser, string expression, int index, string[] resultTokens, Range range)
+        {
+            var result = parser.GetTokensFromExpression(expression, index);
+
+            result.Tokens.AssertSequenceEqual(resultTokens);
+            Assert.AreEqual(range.NumberOfElements, result.LastToken.NumberOfElements);
+            Assert.AreEqual(range.Start, result.LastToken.Start);
         }
     }
 

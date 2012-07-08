@@ -61,6 +61,7 @@
     <Compile Include="Common\Events\IEventAggregator.cs" />
     <Compile Include="Common\IFileSystem.cs" />
     <Compile Include="Common\CurveMath.cs" />
+    <Compile Include="Common\Range.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Model\Choice.cs" />
     <Compile Include="Model\Choices.cs" />
@@ -74,7 +75,8 @@
     <Compile Include="Plugins\PluginInvoker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\CodeCompletionProvider.cs" />
-    <Compile Include="ScriptEngine\CodeCompletion\CodeSuggestion.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\CodeCompletionResult.cs" />
+    <Compile Include="ScriptEngine\TokenResult.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\ExpressionInfo.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\IndexedExpressionInfo.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\InfoTransformHelper.cs" />

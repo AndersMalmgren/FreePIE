@@ -3,6 +3,7 @@ using Caliburn.Micro;
 using CompletionWindow;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Common;
+using FreePIE.GUI.Common.AvalonEdit;
 using FreePIE.GUI.Common.CodeCompletion;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
@@ -58,17 +59,28 @@ namespace FreePIE.GUI.Views.Script
 
             set
             {
+                if (caretPosition == value) return;
+
                 caretPosition = value;
                 UpdateCompletionItems();
+                NotifyOfPropertyChange(() => CaretPosition);
             }
         }
 
         private void UpdateCompletionItems()
         {
-            var suggestions = provider.GetSuggestionsForExpression(script, caretPosition)
-                                           .Select(sugg => new CompletionItem(sugg));
+            var codeResults = provider.GetSuggestionsForExpression(script, caretPosition);
+
+            var suggestions = codeResults.ExpressionInfos.Select(x =>
+                new CompletionItem(x, codeResults.ReplaceRange, script, OnInsertion));
 
             CompletionWindow.CompletionItems.SyncCollectionTo(suggestions);
+        }
+
+        private void OnInsertion(string script, int caretOffset)
+        {
+            Script = script;
+            CaretPosition = caretOffset;
         }
 
         public void Handle(ScriptStateChangedEvent message)

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using FreePIE.Core.Common;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine.Globals;
@@ -112,8 +113,10 @@ namespace FreePIE.Core.ScriptEngine
             return 0;
         }
 
-        public IEnumerable<string> GetTokensFromExpression(string script, int offset)
+        public TokenResult GetTokensFromExpression(string script, int offset)
         {
+            var tokens = new List<string>();
+
             int start = GetStartOfExpression(script, offset);
 
             var token = new StringBuilder();
@@ -122,10 +125,14 @@ namespace FreePIE.Core.ScriptEngine
             {
                 if(!TokenDelimiters.Contains(script[i]))
                     token.Append(script[i]);
-                else yield return token.Extract();
+                else tokens.Add(token.Extract());
             }
 
-            yield return token.ToString();
+            tokens.Add(token.ToString());
+
+            string lastToken = tokens.Last();
+
+            return new TokenResult(tokens, new Range(offset - lastToken.Length, lastToken.Length));
         }
     }
 

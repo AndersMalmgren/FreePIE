@@ -16,13 +16,13 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             this.infoProvider = infoProvider;
         }
 
-        public IEnumerable<ExpressionInfo> GetSuggestionsForExpression(string script, int offset)
+        public CodeCompletionResult GetSuggestionsForExpression(string script, int offset)
         {
-            var tokens = parser.GetTokensFromExpression(script, offset);
+            var tokenResult = parser.GetTokensFromExpression(script, offset);
 
-            var info = infoProvider.AnalyzeExpression(tokens);
+            var info = infoProvider.AnalyzeExpression(tokenResult.Tokens);
 
-            return info.Select(x => x.Value);
+            return new CodeCompletionResult(info.Select(x => x.Value), tokenResult.LastToken);
         }
     }
 }

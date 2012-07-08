@@ -8,6 +8,6 @@ namespace FreePIE.Core.ScriptEngine
 {
     public interface ICodeCompletionProvider
     {
-        IEnumerable<ExpressionInfo> GetSuggestionsForExpression(string script, int offset);
+        CodeCompletionResult GetSuggestionsForExpression(string script, int offset);
     }
 }

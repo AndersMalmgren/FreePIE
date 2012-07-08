@@ -35,7 +35,7 @@ namespace FreePIE.GUI.Common.AvalonEdit
 
         private void CaretPositionChanged(object sender, EventArgs e)
         {
-            ViewModel.CaretPosition = CaretOffset;
+            Caret = CaretOffset;
         }
 
         public ScriptEditorViewModel ViewModel
@@ -46,6 +46,22 @@ namespace FreePIE.GUI.Common.AvalonEdit
         protected override void OnTextChanged(EventArgs e)
         {
             Script = Text;
+        }
+
+        public static readonly DependencyProperty CaretProperty =
+            DependencyProperty.Register("Caret", typeof (int), typeof (BindableScriptEditor), new PropertyMetadata(default(int), OnCaretPositionChanged));
+
+        private static void OnCaretPositionChanged(object sender, DependencyPropertyChangedEventArgs caretChangedEventArgs)
+        {
+            var editor = sender as BindableScriptEditor;
+            if (editor.CaretOffset != (int)caretChangedEventArgs.NewValue)
+                editor.CaretOffset = (int) caretChangedEventArgs.NewValue;
+        }
+
+        public int Caret
+        {
+            get { return (int) GetValue(CaretProperty); }
+            set { SetValue(CaretProperty, value); }
         }
 
         public string Script
