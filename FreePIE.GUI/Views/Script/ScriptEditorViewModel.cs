@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using Caliburn.Micro;
-using CompletionWindow;
+using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.ScriptEngine;
+using FreePIE.GUI.CodeCompletion;
 using FreePIE.GUI.Common;
 using FreePIE.GUI.Common.AvalonEdit;
 using FreePIE.GUI.Common.CodeCompletion;

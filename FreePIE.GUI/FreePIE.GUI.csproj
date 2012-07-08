@@ -39,10 +39,6 @@
     <Reference Include="Caliburn.Micro">
       <HintPath>..\Lib\Caliburn.Micro\Caliburn.Micro.dll</HintPath>
     </Reference>
-    <Reference Include="CompletionWindow, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\CompletionWindow\CompletionWindow.dll</HintPath>
-    </Reference>
     <Reference Include="ICSharpCode.AvalonEdit">
       <HintPath>..\Lib\AvalonEdit\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
@@ -80,8 +76,6 @@
     </Compile>
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
     <Compile Include="Common\CodeCompletion\CompletionItem.cs" />
-    <Compile Include="Common\CollectionExtensions.cs" />
-    <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
@@ -264,6 +258,10 @@
     <ProjectReference Include="..\FreePIE.Core\FreePIE.Core.csproj">
       <Project>{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}</Project>
       <Name>FreePIE.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FreePIE.GUI.CodeCompletion\FreePIE.GUI.CodeCompletion.csproj">
+      <Project>{8487DD8C-896C-4597-A377-5620DCA04C62}</Project>
+      <Name>FreePIE.GUI.CodeCompletion</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

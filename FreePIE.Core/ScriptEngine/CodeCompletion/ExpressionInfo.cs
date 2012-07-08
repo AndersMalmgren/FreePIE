@@ -15,6 +15,17 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return string.Format("{0} --:-- {1}", Name, Description ?? string.Empty);
         }
 
+        public virtual string GetFormattedDescription()
+        {
+            StringBuilder b = new StringBuilder(Name + Description + 5);
+
+            b.AppendLine(Name);
+            b.AppendLine();
+            b.Append(Description);
+
+            return b.ToString();
+        }
+
         public virtual bool IsCompleteMatch(string str)
         {
             return Name == str;

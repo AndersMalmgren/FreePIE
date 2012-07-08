@@ -1,12 +1,12 @@
 using System;
-using CompletionWindow;
 using FreePIE.Core.Common;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
+using FreePIE.GUI.CodeCompletion;
 
 namespace FreePIE.GUI.Common.CodeCompletion
 {
-    public class CompletionItem : ICompletionItem
+    public class CompletionItem : ICompletionItem 
     {
         private readonly ExpressionInfo info;
         private readonly Range replaceRange;

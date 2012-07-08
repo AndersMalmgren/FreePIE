@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:AvalonEdit="clr-namespace:FreePIE.GUI.Common.AvalonEdit"
-             xmlns:Completion="clr-namespace:CompletionWindow;assembly=CompletionWindow"
              xmlns:cal="http://www.caliburnproject.org"
-             xmlns:Script="clr-namespace:FreePIE.GUI.Views.Script">
+             xmlns:Script="clr-namespace:FreePIE.GUI.Views.Script"
+             xmlns:CodeCompletion="clr-namespace:FreePIE.GUI.CodeCompletion;assembly=FreePIE.GUI.CodeCompletion">
     <Grid>
         <AvalonEdit:BindableScriptEditor
 				x:Name="textEditor"
@@ -17,23 +17,23 @@
                 IsEnabled="{ Binding Enabled}"
                 Caret="{ Binding Path=CaretPosition, Mode=TwoWay }">
         </AvalonEdit:BindableScriptEditor>
-      <Completion:CompletionPopupView cal:Bind.Model="{ Binding RelativeSource={RelativeSource FindAncestor,
+      <CodeCompletion:CompletionPopupView cal:Bind.Model="{ Binding RelativeSource={RelativeSource FindAncestor,
                                                                                                AncestorType={x:Type Script:ScriptEditorView}},
                                                                                                Path=DataContext.CompletionWindow }"
-                                      Target="{Binding ElementName=textEditor, Path=TextArea, Converter={Completion:EditorAdapterConverter}}">
-        <Completion:CompletionPopupView.DataContext>
-          <Completion:CompletionPopupViewModel />
-        </Completion:CompletionPopupView.DataContext>
-        <Completion:CompletionPopupView.DisplayActions>
-          <Completion:BackspaceHideAction />
-          <Completion:SelectionChangedHideAction />
-          <Completion:CustomKeyAction Action="Show" Key="Space" Modifiers="LeftCtrl" ShouldSwallow="True" />
-          <Completion:CustomKeyAction Action="Hide" Key="Escape" ShouldSwallow="True" />
-        </Completion:CompletionPopupView.DisplayActions>
-        <Completion:CompletionPopupView.ListBoxActions>
-          <Completion:ElementChangedKeyAction Key="Up" ShouldSwallow="true" />
-          <Completion:ElementChangedKeyAction Key="Down" ShouldSwallow="true" />
-        </Completion:CompletionPopupView.ListBoxActions>
-      </Completion:CompletionPopupView>
+                                      Target="{Binding ElementName=textEditor, Path=TextArea, Converter={CodeCompletion:EditorAdapterConverter}}">
+        <CodeCompletion:CompletionPopupView.DataContext>
+          <CodeCompletion:CompletionPopupViewModel />
+        </CodeCompletion:CompletionPopupView.DataContext>
+        <CodeCompletion:CompletionPopupView.DisplayActions>
+          <CodeCompletion:BackspaceHideAction />
+          <CodeCompletion:SelectionChangedHideAction />
+          <CodeCompletion:CustomKeyAction Action="Show" Key="Space" Modifiers="LeftCtrl" ShouldSwallow="True" />
+          <CodeCompletion:CustomKeyAction Action="Hide" Key="Escape" ShouldSwallow="True" />
+        </CodeCompletion:CompletionPopupView.DisplayActions>
+        <CodeCompletion:CompletionPopupView.ListBoxActions>
+          <CodeCompletion:ElementChangedKeyAction Key="Up" ShouldSwallow="true" />
+          <CodeCompletion:ElementChangedKeyAction Key="Down" ShouldSwallow="true" />
+        </CodeCompletion:CompletionPopupView.ListBoxActions>
+      </CodeCompletion:CompletionPopupView>
     </Grid>
 </UserControl>

@@ -30,7 +30,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         public IEnumerable<Node<ExpressionInfo>> AnalyzeExpression(IEnumerable<string> tokensEnum)
         {
             var tokens = tokensEnum.ToList();
-
+            
             string incompleteToken = tokens.Last();
             var sequence = tokens.Take(tokens.Count() - 1);
 

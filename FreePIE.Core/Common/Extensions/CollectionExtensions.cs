@@ -19,5 +19,11 @@ namespace FreePIE.Core.Common.Extensions
 
             return collection;
         }
+
+        public static void SyncCollectionTo<T>(this IList<T> collection, IEnumerable<T> other)
+        {
+            collection.Clear();
+            other.ToList().ForEach(collection.Add);
+        }
     }
 }

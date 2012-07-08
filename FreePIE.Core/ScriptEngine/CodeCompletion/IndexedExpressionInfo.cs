@@ -32,7 +32,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         public override string GetCompletion()
         {
-            return Name + "[]";
+            return Name + "[";
         }
     }
 }
