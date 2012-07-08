@@ -27,9 +27,14 @@ namespace FreePIE.GUI.Common.CodeCompletion
             insertionCallback(script.Replace(replaceRange, info.GetCompletion()), newOffset);
         }
 
-        public string Name { get { return info.Name; } }
+        public string Name
+        {
+            get { return info.Name; }
+        }
 
-        public string Description { get { return info.Description; }
+        public string Description
+        {
+            get { return info.Description; }
         }
     }
 }
