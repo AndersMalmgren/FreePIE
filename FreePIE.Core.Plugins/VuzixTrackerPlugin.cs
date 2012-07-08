@@ -77,7 +77,7 @@ namespace FreePIE.Core.Plugins {
 
             // Grab a single test sample just to make sure everything is linked up properly
             SampleVuzixTracker();
-            
+            OnStarted(this, new EventArgs());
          }
          else {
             throw new Exception("Failed to connect to Vuzix Tracker");
