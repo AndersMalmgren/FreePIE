@@ -42,6 +42,13 @@ namespace FreePIE.Core.Model
             return newChild;
         }
 
+        public Node<T> AddChild(Node<T> child)
+        {
+            this.children.Add(child);
+
+            return child;
+        }
+
         public T Value { get; set; }
 
         public void SortChildrenRecursive(Comparison<T> comparer)

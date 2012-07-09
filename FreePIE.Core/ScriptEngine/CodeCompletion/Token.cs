@@ -2,6 +2,8 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
     public class Token
     {
+        public static readonly Token Empty = new Token(TokenType.Identifier, string.Empty);
+
         public Token(TokenType type, string value)
         {
             Type = type;
@@ -14,12 +16,12 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         public virtual bool IsCompleteMatch(Token token)
         {
-            return Value == token.Value;
+            return this == token;
         }
 
         public virtual bool IsPartialMatch(Token token)
         {
-            return Value.StartsWith(token.Value);
+            return Type == token.Type && Value.StartsWith(token.Value);
         }
 
         public override bool Equals(object obj)

@@ -15,38 +15,46 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
     {
         public static Node<TokenInfo> ConstructExpressionInfoTree(IPluginInvoker invoker, IEnumerable<IGlobalProvider> providers)
         {
-            var root = new Node<ExpressionInfo>();
+            var root = new Node<TokenInfo>();
 
-            root.AddChildren(invoker.ListAllPluginTypes().Select(type => type.ToExpressionInfo()));
-            root.AddChildren(invoker.ListAllGlobalEnumTypes().Select(type => type.ToExpressionInfo()));
-            root.AddChildren(providers.SelectMany(gp => gp.ListGlobals().Select(obj => obj.ToExpressionInfo())));
+            root.AddChildren(invoker.ListAllPluginTypes().Select(type => type.ToTokenInfo()));
+            root.AddChildren(invoker.ListAllGlobalEnumTypes().Select(type => type.ToTokenInfo()));
+            root.AddChildren(providers.SelectMany(gp => gp.ListGlobals().Select(obj => obj.ToTokenInfo())));
 
-            root.SortChildrenRecursive((a, b) => a.Name.CompareTo(b.Name));
+            root.SortChildrenRecursive((a, b) => a.Identifier.Value.CompareTo(b.Identifier.Value));
 
-            return new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Identifier, "PLACEHOLDER"), new ExpressionInfo()));
+            return root;
         }
 
-        private static Node<ExpressionInfo> ToExpressionInfo(this Type type)
+        private static Node<TokenInfo> ToTokenInfo(this Type type)
         {
             return type.IsEnum ? MapEnum(type) : MapClass(type);
         }
 
-        private static Node<ExpressionInfo> ToExpressionInfo(this object obj)
+        private static Node<TokenInfo> ToTokenInfo(this object obj)
         {
             Type type = obj.GetType();
 
             return type.IsEnum ? MapEnum(type) : MapClass(obj);
         }
 
-        private static Node<ExpressionInfo> MapClass(Type type)
+        private static Node<TokenInfo> MapClass(Type type)
         {
             var node = MapClassType(type);
 
-            node.Value.Name = GlobalsInfo.GetGlobalName(type);
+            var name = GlobalsInfo.GetGlobalName(type);
+
+            node.SetName(name);
 
             AddClassMembers(node, type);
 
             return node;
+        }
+
+        private static void SetName(this Node<TokenInfo> node, string name)
+        {
+            node.Value.Identifier = new Token(TokenType.Identifier, name);
+            node.Value.Info.Name = name;
         }
 
         private static bool HasIndexer(Type type)
@@ -56,44 +64,61 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return globalType != null && globalType.IsIndexed;
         }
 
-        private static void AddClassMembers(Node<ExpressionInfo> node, Type type)
+        private static void AddClassMembers(Node<TokenInfo> node, Type type)
         {
             var globalMembers = GlobalsInfo.GetGlobalMembers(type).ToList();
 
-            node.AddChildren(globalMembers.Where(m => m.MemberType == MemberTypes.Event).Select(m => MapEvent(m as EventInfo)));
-            node.AddChildren(globalMembers.Where(m => m.MemberType == MemberTypes.Method).Select(m => MapMethod(m as MethodInfo)));
+            var eventDelim = node.AddChild(ConstructDelimiterNode('.'));
+
+            eventDelim.AddChildren(globalMembers.Where(m => m.MemberType == MemberTypes.Event).Select(m => MapEvent(m as EventInfo)));
+
+            var methodDelim = node.AddChild(ConstructDelimiterNode(':'));
+
+            methodDelim.AddChildren(globalMembers.Where(m => m.MemberType == MemberTypes.Method).Select(m => MapMethod(m as MethodInfo)));
         }
 
-        private static Node<ExpressionInfo> MapClassType(Type type)
+        private static Node<TokenInfo> MapClassType(Type type)
         {
-            return HasIndexer(type) ? new Node<ExpressionInfo>(new IndexedExpressionInfo()) : new Node<ExpressionInfo>(new ExpressionInfo());
+            var expInfo = HasIndexer(type) ? new IndexedExpressionInfo() : new ExpressionInfo();
+
+            return new Node<TokenInfo>(new TokenInfo(Token.Empty, expInfo));
         }
 
-        private static Node<ExpressionInfo> MapClass(object obj)
+        private static Node<TokenInfo> MapClass(object obj)
         {
             Type type = obj.GetType();
 
             string name = GlobalsInfo.GetGlobalName(type) ?? (obj as IGlobalNameProvider).Name;
 
-            Node<ExpressionInfo> node = MapClassType(type);
+            Node<TokenInfo> node = MapClassType(type);
 
-            node.Value.Name = name;
+            node.SetName(name);
 
             AddClassMembers(node, type);
 
             return node;
         }
 
-        private static ExpressionInfo MapEvent(EventInfo ei)
+        private static Node<TokenInfo> ConstructDelimiterNode(char delimiter)
+        {
+            return new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Delimiter, delimiter.ToString()), new ExpressionInfo() { Name = delimiter.ToString() } ));
+        }
+
+        private static Node<TokenInfo> MapEvent(EventInfo ei)
         {
             var expInfo = new ExpressionInfo();
             expInfo.Name = ei.Name;
             expInfo.Description = "Event";
 
-            return expInfo;
+            var delimiter = ConstructDelimiterNode('.');
+
+            delimiter.AddChild(new TokenInfo(new Token(TokenType.Identifier, ei.Name), expInfo));
+
+
+            return delimiter;
         }
 
-        private static ExpressionInfo MapMethod(MethodInfo mi)
+        private static TokenInfo MapMethod(MethodInfo mi)
         {
             var expInfo = new ExpressionInfo();
             expInfo.Name = mi.Name;
@@ -101,7 +126,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             var parameters = string.Join(",", GetParametersWithoutIndexer(mi).Select(pi => string.Format("{0} {1}", pi.ParameterType.Name, pi.Name)));
             expInfo.Description = string.Format("{0} {1} ({2})", mi.ReturnType.Name == "Void" ? "void" : mi.ReturnType.Name, mi.Name, parameters);
 
-            return expInfo;
+            return new TokenInfo(new Token(TokenType.Identifier, mi.Name), expInfo);
         }
 
         private static IEnumerable<ParameterInfo> GetParametersWithoutIndexer(MethodInfo mi)
@@ -110,13 +135,31 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return mi.GetCustomAttributes(typeof(NeedIndexer), false).Length > 0 ? parameters.Take(parameters.Length - 1) : parameters;
         }
 
-        private static Node<ExpressionInfo> MapEnum(Type type)
+        private static ExpressionInfo MapEnumInfo(Type type, string name)
         {
-            var expInfo = new Node<ExpressionInfo>(new ExpressionInfo { Name = type.Name, Description = "Enum" });
+            return new ExpressionInfo
+                       {
+                           Name = name,
+                           Description = string.Format("{0} = {1}", name, (int)Enum.Parse(type, name))
+                       };
+        }
 
-            expInfo.AddChildren(Enum.GetNames(type).Select(name => new ExpressionInfo { Name = name, Description = string.Format("{0} = {1}", name, (int)Enum.Parse(type, name)) }));
+        private static Node<TokenInfo> MapEnumMember(Type type, string name)
+        {
+            return new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Identifier, name), MapEnumInfo(type, name)));
+        }
 
-            return expInfo;
+        private static Node<TokenInfo> MapEnum(Type type)
+        {
+            var expInfo = new ExpressionInfo {Name = type.Name, Description = "Enum"};
+
+            var node = new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Identifier, type.Name), expInfo));
+
+            var delimiter = node.AddChild(ConstructDelimiterNode('.'));
+            
+            delimiter.AddChildren(Enum.GetNames(type).Select(name => MapEnumMember(type, name)));
+
+            return node;
         }
     }
 }
