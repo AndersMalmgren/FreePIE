@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using FreePIE.GUI.CodeCompletion.Controls;
 
 namespace FreePIE.GUI.CodeCompletion
 {
@@ -21,6 +22,20 @@ namespace FreePIE.GUI.CodeCompletion
                                                          CheckForTriggeredKeyActions(DisplayActions, args);
                                                          CheckForElementInsertion(args);
                                                      };
+
+            CompletionElements.ItemClicked += CompletionElementsItemClicked;
+        }
+
+        void CompletionElementsItemClicked(object sender, EventArgs<object, MouseButtonEventArgs> e)
+        {
+            var completionItem = (e.Arg1 as ICompletionItem);
+
+            if(completionItem == null)
+                throw new InvalidOperationException("ICompletionItem is null. Something is wrong with the hackish ItemClicked event.");
+
+            InsertItem(completionItem);
+
+            e.Arg2.Handled = true;
         }
 
         private void CheckForElementInsertion(KeyEventArgs args)
@@ -28,12 +43,14 @@ namespace FreePIE.GUI.CodeCompletion
             if (CompletionElements.SelectedItem == null || args.Key != Key.Enter)
                 return;
 
-            var item = CompletionElements.SelectedItem as ICompletionItem;
-
-            item.Insert();
+            InsertItem(CompletionElements.SelectedItem as ICompletionItem);
 
             args.Handled = true;
+        }
 
+        private void InsertItem(ICompletionItem item)
+        {
+            item.Insert();
             PopupViewActions.Hide(this);
         }
 

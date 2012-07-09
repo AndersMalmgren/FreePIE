@@ -2,9 +2,22 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Collections.Specialized;
+using System.Windows.Input;
 
 namespace FreePIE.GUI.CodeCompletion.Controls
 {
+    public class EventArgs<T, K> : EventArgs
+    {
+        public T Arg1 { get; private set; }
+        public K Arg2 { get; private set; }
+
+        public EventArgs(T arg1, K arg2)
+        {
+            Arg1 = arg1;
+            Arg2 = arg2;
+        }
+    }
+
     /// <summary>
     /// Interaction logic for EvenListBox.xaml
     /// </summary>
@@ -19,7 +32,28 @@ namespace FreePIE.GUI.CodeCompletion.Controls
                               this.itemHeight = CalculateItemHeight();
                               UpdateHeight();
                           };
+
+            PreviewMouseLeftButtonDown += OnMouseLeftButtonDown;
+
         }
+
+        void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var source = e.OriginalSource as FrameworkElement;
+
+            if (this == source.TemplatedParent)
+                return;
+            
+            OnItemClicked(source.DataContext, e);
+        }
+
+        private void OnItemClicked(object dataContext, MouseButtonEventArgs e)
+        {
+            if (ItemClicked != null)
+                ItemClicked(this, new EventArgs<object, MouseButtonEventArgs>(dataContext, e));
+        }
+
+        public event EventHandler<EventArgs<object, MouseButtonEventArgs>> ItemClicked; 
 
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
