@@ -11,9 +11,9 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
     {
         private readonly IEnumerable<IGlobalProvider> providers;
         private readonly IPluginInvoker invoker;
-        private Node<ExpressionInfo> runtimeInfo;
+        private Node<TokenInfo> runtimeInfo;
 
-        private Node<ExpressionInfo> RuntimeInfo 
+        private Node<TokenInfo> RuntimeInfo 
         { 
             get
             {
@@ -27,16 +27,18 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             this.invoker = invoker;
         }
 
-        public IEnumerable<Node<ExpressionInfo>> AnalyzeExpression(IEnumerable<Token> tokensEnum)
+        public IEnumerable<ExpressionInfo> AnalyzeExpression(IEnumerable<Token> tokensEnum)
         {
             var tokens = tokensEnum.ToList();
             
             Token incompleteToken = tokens.Last();
             var sequence = tokens.Take(tokens.Count() - 1);
 
-            Node<ExpressionInfo> parent = RuntimeInfo.FindSequence(sequence, (exp, token) => exp.IsCompleteMatch(token));
+            Node<TokenInfo> parent = RuntimeInfo.FindSequence(sequence, (tokenInfo, token) => tokenInfo.Identifier.IsCompleteMatch(token));
 
-            return parent == null ? Enumerable.Empty<Node<ExpressionInfo>>() : parent.Children.Where(child => child.Value.IsPartialMatch(incompleteToken));
+            return parent == null ? Enumerable.Empty<ExpressionInfo>() : parent.Children.Where(child =>
+                                                                                    child.Value.Identifier.IsPartialMatch(incompleteToken))
+                                                                                    .Select(child => child.Value.Info);
         }
 
         

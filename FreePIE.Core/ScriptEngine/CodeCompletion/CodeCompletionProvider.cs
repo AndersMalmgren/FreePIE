@@ -20,9 +20,9 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         {
             var tokenResult = parser.GetTokensFromExpression(script, offset);
 
-            var info = infoProvider.AnalyzeExpression(tokenResult.Tokens);
+            var infos = infoProvider.AnalyzeExpression(tokenResult.Tokens);
 
-            return new CodeCompletionResult(info.Select(x => x.Value), tokenResult.LastToken);
+            return new CodeCompletionResult(infos, tokenResult.LastToken);
         }
     }
 }

@@ -20,22 +20,27 @@ namespace FreePIE.Tests.Core
 
         private static readonly Token[] Expression1Result = new []
                                                                 {
-                                                                    new Token(TokenContext.Global, "static"),
-                                                                    new Token(TokenContext.Static, "test"),
-                                                                    new Token(TokenContext.Instance, "Expression"),
-                                                                    new Token(TokenContext.Instance, "for"),
-                                                                    new Token(TokenContext.Instance, "pars") 
+                                                                    new Token(TokenType.Identifier, "static"),
+                                                                    new Token(TokenType.Delimiter, "."), 
+                                                                    new Token(TokenType.Identifier, "test"),
+                                                                    new Token(TokenType.Delimiter, ":"), 
+                                                                    new Token(TokenType.Identifier, "Expression"),
+                                                                    new Token(TokenType.Delimiter, ":"), 
+                                                                    new Token(TokenType.Identifier, "for"),
+                                                                    new Token(TokenType.Delimiter, ":"), 
+                                                                    new Token(TokenType.Identifier, "pars") 
                                                                 };
 
         private static readonly Token[] Expression2Result = new []
                                                                 {
-                                                                    new Token(TokenContext.Global, "for"),
-                                                                    new Token(TokenContext.Instance, "pars") 
+                                                                    new Token(TokenType.Identifier, "for"),
+                                                                    new Token(TokenType.Delimiter, ":"), 
+                                                                    new Token(TokenType.Identifier, "pars") 
                                                                 };
 
         private static readonly Token[] Expression3Result = new []
                                                                 {
-                                                                    new Token(TokenContext.Global, "he")
+                                                                    new Token(TokenType.Identifier, "he")
                                                                 };
 
         [TestMethod]

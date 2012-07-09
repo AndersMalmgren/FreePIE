@@ -13,7 +13,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
     internal static class InfoTransformHelper
     {
-        public static Node<ExpressionInfo> ConstructExpressionInfoTree(IPluginInvoker invoker, IEnumerable<IGlobalProvider> providers)
+        public static Node<TokenInfo> ConstructExpressionInfoTree(IPluginInvoker invoker, IEnumerable<IGlobalProvider> providers)
         {
             var root = new Node<ExpressionInfo>();
 
@@ -23,7 +23,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
             root.SortChildrenRecursive((a, b) => a.Name.CompareTo(b.Name));
 
-            return root;
+            return new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Identifier, "PLACEHOLDER"), new ExpressionInfo()));
         }
 
         private static Node<ExpressionInfo> ToExpressionInfo(this Type type)

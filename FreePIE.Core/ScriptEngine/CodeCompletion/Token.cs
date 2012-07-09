@@ -2,14 +2,25 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
     public class Token
     {
-        public Token(TokenContext context, string value)
+        public Token(TokenType type, string value)
         {
-            Context = context;
+            Type = type;
             Value = value;
         }
 
         public string Value { get; private set; }
-        public TokenContext Context { get; private set; }
+
+        public TokenType Type { get; private set; }
+
+        public virtual bool IsCompleteMatch(Token token)
+        {
+            return Value == token.Value;
+        }
+
+        public virtual bool IsPartialMatch(Token token)
+        {
+            return Value.StartsWith(token.Value);
+        }
 
         public override bool Equals(object obj)
         {
@@ -23,7 +34,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.Value, Value) && Equals(other.Context, Context);
+            return Equals(other.Value, Value) && Equals(other.Type, Type);
         }
 
         public static bool operator ==(Token one, Token two)
@@ -40,7 +51,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         {
             unchecked
             {
-                return ((Value != null ? Value.GetHashCode() : 0)*397) ^ Context.GetHashCode();
+                return ((Value != null ? Value.GetHashCode() : 0)*397) ^ Type.GetHashCode();
             }
         }
     }

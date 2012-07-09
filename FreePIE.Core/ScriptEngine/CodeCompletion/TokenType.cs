@@ -1,7 +1,8 @@
 namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
-    public enum TokenContext
+    public enum TokenType
     {
-        Instance, Static, Global, All
+        Delimiter,
+        Identifier
     }
 }

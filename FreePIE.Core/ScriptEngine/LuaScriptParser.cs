@@ -102,14 +102,6 @@ namespace FreePIE.Core.ScriptEngine
 
         private static readonly char[] ExpressionDelimiters = "() \r\n".ToArray();
         private static readonly char[] TokenDelimiters = ".:".ToArray();
-        private static readonly Dictionary<char, TokenContext> ContextByDelimiter =
-            new Dictionary<char, TokenContext>
-                {
-                    { '.', TokenContext.Static },
-                    { ':', TokenContext.Instance },
-                    { '\0', TokenContext.Global }
-                };
-            
 
         private int GetStartOfExpression(string script, int offset)
         {
@@ -122,9 +114,15 @@ namespace FreePIE.Core.ScriptEngine
             return 0;
         }
 
-        private Token ExtractToken(StringBuilder currentToken, char delimiter)
+        private IEnumerable<Token> ExtractTokens(StringBuilder currentToken, char delimiter)
         {
-            return new Token(ContextByDelimiter[delimiter], currentToken.Extract());
+            yield return new Token(TokenType.Identifier, currentToken.Extract());
+            yield return new Token(TokenType.Delimiter, delimiter.ToString());
+        }
+
+        private Token ExtractToken(StringBuilder currentToken)
+        {
+            return new Token(TokenType.Identifier, currentToken.Extract());
         }
 
         public TokenResult GetTokensFromExpression(string script, int offset)
@@ -132,7 +130,6 @@ namespace FreePIE.Core.ScriptEngine
             var tokens = new List<Token>();
 
             int start = GetStartOfExpression(script, offset);
-            char lastDelimiter = '\0';
 
             var token = new StringBuilder();
 
@@ -142,12 +139,11 @@ namespace FreePIE.Core.ScriptEngine
                     token.Append(script[i]);
                 else 
                 {
-                    tokens.Add(ExtractToken(token, lastDelimiter));
-                    lastDelimiter = script[i];
+                    tokens.AddRange(ExtractTokens(token, script[i]));
                 }
             }
 
-            tokens.Add(ExtractToken(token, lastDelimiter));
+            tokens.Add(ExtractToken(token));
 
             Token lastToken = tokens.Last();
 
