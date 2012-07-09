@@ -2,7 +2,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
     public class Token
     {
-        public static readonly Token Empty = new Token(TokenType.Identifier, string.Empty);
+        public static Token Empty() { return new Token(TokenType.Identifier, string.Empty); }
 
         public Token(TokenType type, string value)
         {
@@ -10,9 +10,9 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             Value = value;
         }
 
-        public string Value { get; private set; }
+        public string Value { get; set; }
 
-        public TokenType Type { get; private set; }
+        public TokenType Type { get; set; }
 
         public virtual bool IsCompleteMatch(Token token)
         {

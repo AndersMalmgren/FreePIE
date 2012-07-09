@@ -17,6 +17,11 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         public Token Identifier { get; set; }
 
+        public override string ToString()
+        {
+            return Identifier.Value;
+        }
+
         public ExpressionInfo Info { get; set; }
     }
 }

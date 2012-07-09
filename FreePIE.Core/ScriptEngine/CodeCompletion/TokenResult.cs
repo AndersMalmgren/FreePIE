@@ -8,10 +8,10 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         public TokenResult(IEnumerable<Token> tokens, Range lastToken)
         {
             this.Tokens = tokens;
-            this.LastToken = lastToken;
+            this.LastTokenRange = lastToken;
         }
 
         public IEnumerable<Token> Tokens { get; private set; }
-        public Range LastToken { get; private set; }
+        public Range LastTokenRange { get; private set; }
     }
 }

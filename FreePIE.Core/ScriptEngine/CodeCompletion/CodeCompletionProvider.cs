@@ -22,7 +22,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
             var infos = infoProvider.AnalyzeExpression(tokenResult.Tokens);
 
-            return new CodeCompletionResult(infos, tokenResult.LastToken);
+            return new CodeCompletionResult(infos, tokenResult.Tokens.Last(), tokenResult.LastTokenRange);
         }
     }
 }

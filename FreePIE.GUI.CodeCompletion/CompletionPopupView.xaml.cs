@@ -96,9 +96,14 @@ namespace FreePIE.GUI.CodeCompletion
             if (CompletionElements.Items.Count <= 0) 
                 return;
 
+            FocusFirstElement();
+            CompletionElements.RaiseEvent(args);
+        }
+
+        public void FocusFirstElement()
+        {
             CompletionElements.Focus();
             (CompletionElements.ItemContainerGenerator.ContainerFromIndex(0) as UIElement).Focus();
-            CompletionElements.RaiseEvent(args);
         }
 
         private void CheckForTriggeredKeyActions(IEnumerable<IPopupAction> actions, KeyEventArgs args)

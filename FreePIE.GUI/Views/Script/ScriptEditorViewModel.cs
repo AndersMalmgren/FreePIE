@@ -73,7 +73,7 @@ namespace FreePIE.GUI.Views.Script
             var codeResults = provider.GetSuggestionsForExpression(script, caretPosition);
 
             var suggestions = codeResults.ExpressionInfos.Select(x =>
-                new CompletionItem(x, codeResults.ReplaceRange, script, OnInsertion));
+                new CompletionItem(x, codeResults.ActiveToken.Value, codeResults.ReplaceRange, script, OnInsertion));
 
             CompletionWindow.CompletionItems.SyncCollectionTo(suggestions);
         }

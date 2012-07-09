@@ -74,8 +74,8 @@ namespace FreePIE.Tests.Core
             var result = parser.GetTokensFromExpression(expression, index);
 
             result.Tokens.AssertSequenceEqual(resultTokens);
-            Assert.AreEqual(range.NumberOfElements, result.LastToken.NumberOfElements);
-            Assert.AreEqual(range.Start, result.LastToken.Start);
+            Assert.AreEqual(range.NumberOfElements, result.LastTokenRange.NumberOfElements);
+            Assert.AreEqual(range.Start, result.LastTokenRange.Start);
         }
     }
 

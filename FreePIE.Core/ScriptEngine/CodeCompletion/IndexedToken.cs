@@ -8,6 +8,10 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
     public class IndexedToken : Token
     {
+        public static Token EmptyIndexed()
+        {
+            return new IndexedToken(string.Empty);
+        }
         private const string Pattern = @"{0}\[.*\]";
 
 
