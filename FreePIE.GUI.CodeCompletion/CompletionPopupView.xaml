@@ -28,8 +28,10 @@
             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
               <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=CompletionItems.Count}" Value="0">
-                  <Setter Property="Visibility" Value="Collapsed">
-                  </Setter>
+                  <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=CompletionElements, Path=SelectedItem}" Value="{x:Null}">
+                  <Setter Property="Visibility" Value="Collapsed" />
                 </DataTrigger>
               </Style.Triggers>
             </Style>
