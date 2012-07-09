@@ -53,7 +53,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static void SetName(this Node<TokenInfo> node, string name)
         {
-            node.Value.Identifier = new Token(TokenType.Identifier, name);
+            node.Value.Identifier.Value = name;
             node.Value.Info.Name = name;
         }
 
@@ -68,20 +68,37 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         {
             var globalMembers = GlobalsInfo.GetGlobalMembers(type).ToList();
 
-            var eventDelim = node.AddChild(ConstructDelimiterNode('.'));
+            var dotDelim = node.AddChild(ConstructDelimiterNode('.'));
 
-            eventDelim.AddChildren(globalMembers.Where(m => m.MemberType == MemberTypes.Event).Select(m => MapEvent(m as EventInfo)));
+            AddEvents(dotDelim, globalMembers);
+            AddProperties(dotDelim, globalMembers);
 
+            AddMethods(node, globalMembers);
+        }
+
+        private static void AddProperties(Node<TokenInfo> propDelim, List<MemberInfo> members)
+        {
+            propDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Property).Select(m => MapProperty(m as PropertyInfo)));
+        }
+
+        private static void AddEvents(Node<TokenInfo> eventDelim, IEnumerable<MemberInfo> members)
+        {
+            eventDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Event).Select(m => MapEvent(m as EventInfo)));
+        }
+
+        private static void AddMethods(Node<TokenInfo> node, IEnumerable<MemberInfo> members)
+        {
             var methodDelim = node.AddChild(ConstructDelimiterNode(':'));
-
-            methodDelim.AddChildren(globalMembers.Where(m => m.MemberType == MemberTypes.Method).Select(m => MapMethod(m as MethodInfo)));
+            methodDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Method && !(m as MethodInfo).IsSpecialName).Select(m => MapMethod(m as MethodInfo)));
         }
 
         private static Node<TokenInfo> MapClassType(Type type)
         {
-            var expInfo = HasIndexer(type) ? new IndexedExpressionInfo() : new ExpressionInfo();
+            var tokenInfo = HasIndexer(type)
+                                ? new TokenInfo(IndexedToken.EmptyIndexed(), new IndexedExpressionInfo())
+                                : new TokenInfo(Token.Empty(), new ExpressionInfo());
 
-            return new Node<TokenInfo>(new TokenInfo(Token.Empty, expInfo));
+            return new Node<TokenInfo>(tokenInfo);
         }
 
         private static Node<TokenInfo> MapClass(object obj)
@@ -104,18 +121,21 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Delimiter, delimiter.ToString()), new ExpressionInfo() { Name = delimiter.ToString() } ));
         }
 
-        private static Node<TokenInfo> MapEvent(EventInfo ei)
+        private static TokenInfo MapEvent(EventInfo ei)
         {
-            var expInfo = new ExpressionInfo();
-            expInfo.Name = ei.Name;
-            expInfo.Description = "Event";
+            var expInfo = new ExpressionInfo { Name = ei.Name, Description = "Event" };
 
-            var delimiter = ConstructDelimiterNode('.');
+            return new TokenInfo(new Token(TokenType.Identifier, ei.Name), expInfo);
+        }
 
-            delimiter.AddChild(new TokenInfo(new Token(TokenType.Identifier, ei.Name), expInfo));
-
-
-            return delimiter;
+        private static TokenInfo MapProperty(PropertyInfo propertyInfo)
+        {
+            return new TokenInfo(new Token(TokenType.Identifier, propertyInfo.Name),
+                new ExpressionInfo
+                    {
+                        Name = propertyInfo.Name,
+                        Description = string.Format("{0} {1}", propertyInfo.PropertyType.Name, propertyInfo.Name)
+                    } );
         }
 
         private static TokenInfo MapMethod(MethodInfo mi)
