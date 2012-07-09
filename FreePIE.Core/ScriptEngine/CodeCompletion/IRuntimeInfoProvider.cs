@@ -8,6 +8,6 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
     public interface IRuntimeInfoProvider
     {
-        IEnumerable<Node<ExpressionInfo>> AnalyzeExpression(IEnumerable<string> tokens);
+        IEnumerable<Node<ExpressionInfo>> AnalyzeExpression(IEnumerable<Token> tokens);
     }
 }

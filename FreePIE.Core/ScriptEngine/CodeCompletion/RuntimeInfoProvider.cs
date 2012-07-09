@@ -27,14 +27,14 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             this.invoker = invoker;
         }
 
-        public IEnumerable<Node<ExpressionInfo>> AnalyzeExpression(IEnumerable<string> tokensEnum)
+        public IEnumerable<Node<ExpressionInfo>> AnalyzeExpression(IEnumerable<Token> tokensEnum)
         {
             var tokens = tokensEnum.ToList();
             
-            string incompleteToken = tokens.Last();
+            Token incompleteToken = tokens.Last();
             var sequence = tokens.Take(tokens.Count() - 1);
 
-            Node<ExpressionInfo> parent = RuntimeInfo.FindSequence(sequence, (exp, str) => exp.IsCompleteMatch(str));
+            Node<ExpressionInfo> parent = RuntimeInfo.FindSequence(sequence, (exp, token) => exp.IsCompleteMatch(token));
 
             return parent == null ? Enumerable.Empty<Node<ExpressionInfo>>() : parent.Children.Where(child => child.Value.IsPartialMatch(incompleteToken));
         }

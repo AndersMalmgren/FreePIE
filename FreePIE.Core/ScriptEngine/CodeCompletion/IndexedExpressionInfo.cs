@@ -10,22 +10,28 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
     {
         private const string Pattern = @"{0}\[.*\]";
 
-        public override bool IsCompleteMatch(string str)
+        public override bool IsCompleteMatch(Token token)
         {
-            var regex = new Regex(string.Format(Pattern, Name));
-            return regex.IsMatch(str);
-        }
-
-        public override bool IsPartialMatch(string token)
-        {
-            if (token.Length < Name.Length)
-                return Name.StartsWith(token);
-
-            if (!token.StartsWith(Name))
+            if (!IsContextMatch(token.Context))
                 return false;
 
-            if (token.Length > Name.Length)
-                return token[Name.Length] == '[';
+            var regex = new Regex(string.Format(Pattern, Name));
+            return regex.IsMatch(token.Value);
+        }
+
+        public override bool IsPartialMatch(Token token)
+        {
+            if (!IsContextMatch(token.Context))
+                return false;
+
+            if (token.Value.Length < Name.Length)
+                return Name.StartsWith(token.Value);
+
+            if (!token.Value.StartsWith(Name))
+                return false;
+
+            if (token.Value.Length > Name.Length)
+                return token.Value[Name.Length] == '[';
 
             return true;
         }

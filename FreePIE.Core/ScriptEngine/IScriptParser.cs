@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.ScriptEngine.CodeCompletion;
 
 namespace FreePIE.Core.ScriptEngine
 {

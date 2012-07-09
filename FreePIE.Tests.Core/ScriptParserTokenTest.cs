@@ -5,6 +5,7 @@ using System.Linq;
 using FreePIE.Core.Common;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine;
+using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.Tests.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -13,9 +14,29 @@ namespace FreePIE.Tests.Core
     [TestClass]
     public class ScriptParserTokenTest : TestBase
     {
-        private const string Expression1 = @"static:test:Expression:for:parsTing";
-        private const string Expression2 = @"static:test:expression(for:parsTing)";
-        private const string Expression3 = "static:test:Expression:for:parsing\r\nheTj";
+        private const string Expression1 = @"static.test:Expression:for:parsTing";
+        private const string Expression2 = @"static.test:expression(for:parsTing)";
+        private const string Expression3 = "static.test:Expression:for:parsing\r\nheTj";
+
+        private static readonly Token[] Expression1Result = new []
+                                                                {
+                                                                    new Token(TokenContext.Global, "static"),
+                                                                    new Token(TokenContext.Static, "test"),
+                                                                    new Token(TokenContext.Instance, "Expression"),
+                                                                    new Token(TokenContext.Instance, "for"),
+                                                                    new Token(TokenContext.Instance, "pars") 
+                                                                };
+
+        private static readonly Token[] Expression2Result = new []
+                                                                {
+                                                                    new Token(TokenContext.Global, "for"),
+                                                                    new Token(TokenContext.Instance, "pars") 
+                                                                };
+
+        private static readonly Token[] Expression3Result = new []
+                                                                {
+                                                                    new Token(TokenContext.Global, "he")
+                                                                };
 
         [TestMethod]
         public void GetTokensFromExpression()
@@ -27,26 +48,23 @@ namespace FreePIE.Tests.Core
             TestTokens(parser,
                        Expression1,
                        Expression1.IndexOf('T'),
-                       new[] { "static", "test", "Expression", "for", "pars" },
+                       Expression1Result,
                        new Range(27, 4));
 
             TestTokens(parser,
                        Expression2,
                        Expression2.IndexOf('T'),
-                       new [] { "for", "pars"},
+                       Expression2Result,
                        new Range(27, 4));
 
            TestTokens(parser,
                       Expression3,
                       Expression3.IndexOf('T'),
-                      new[] { "he" },
+                      Expression3Result,
                       new Range(36, 2));
-            
-            parser.GetTokensFromExpression(Expression3, Expression3.IndexOf('T')).Tokens
-                .AssertSequenceEqual(new[] { "he" });
         }
 
-        public void TestTokens(IScriptParser parser, string expression, int index, string[] resultTokens, Range range)
+        public void TestTokens(IScriptParser parser, string expression, int index, Token[] resultTokens, Range range)
         {
             var result = parser.GetTokensFromExpression(expression, index);
 
