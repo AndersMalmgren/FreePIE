@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace FreePIE.GUI.CodeCompletion.Event
+namespace FreePIE.GUI.CodeCompletion.Event.Actions
 {
     public class SelectionChangedHideAction : IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>
     {

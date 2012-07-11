@@ -9,10 +9,12 @@ namespace FreePIE.GUI.CodeCompletion.Event.Events
     public class KeyEvent : ICancellablePopupEvent
     {
         private KeyEventArgs args;
+        private readonly EventSource source;
 
-        public KeyEvent(KeyEventArgs args)
+        public KeyEvent(KeyEventArgs args, EventSource source)
         {
             this.args = args;
+            this.source = source;
         }
 
         public void Cancel()
@@ -33,6 +35,11 @@ namespace FreePIE.GUI.CodeCompletion.Event.Events
         public object EventArgs
         {
             get { return args; }
+        }
+
+        public EventSource Source
+        {
+            get { return source; }
         }
     }
 }

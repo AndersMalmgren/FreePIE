@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace FreePIE.GUI.CodeCompletion.Event
+namespace FreePIE.GUI.CodeCompletion.Event.Actions
 {
     public class CustomKeyAction : KeyAction
     {

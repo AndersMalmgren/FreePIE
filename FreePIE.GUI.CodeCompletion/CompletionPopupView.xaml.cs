@@ -10,6 +10,7 @@ using Caliburn.Micro;
 using FreePIE.GUI.CodeCompletion.Controls;
 using FreePIE.GUI.CodeCompletion.Data;
 using FreePIE.GUI.CodeCompletion.Event;
+using FreePIE.GUI.CodeCompletion.Event.Actions;
 using FreePIE.GUI.CodeCompletion.Event.Events;
 
 namespace FreePIE.GUI.CodeCompletion
@@ -25,7 +26,9 @@ namespace FreePIE.GUI.CodeCompletion
             Observers = new List<IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>>();
             events = new FixedSizeStack<IPopupEvent>(15);
             AddObservers();
-            CompletionElements.ItemClicked += CompletionElementsItemClicked;
+
+            CompletionElements.PreviewKeyDown += (sender, args) => Publish(new KeyEvent(args, EventSource.Popup));
+            CompletionElements.ItemClicked += (sender, args) => Publish(new ItemClickedEvent(args.Arg2, (ICompletionItem)args.Arg1));
         }
 
         private void AddObservers()
@@ -37,41 +40,21 @@ namespace FreePIE.GUI.CodeCompletion
                               {
                                   Action = x => PopupActions.ForceShow(this),
                                   Key = Key.Space,
-                                  Modifiers = new[] {Key.LeftCtrl}
+                                  Modifiers = new[] { Key.LeftCtrl },
+                                  ShouldSwallow = true
                               });
 
             Observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemSemicolon));
-            Observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true});
-            Observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true});
-            Observers.Add(new ElementChangedKeyAction { Key = Key.Enter, ShouldSwallow = true});
+            Observers.Add(new InsertionAction());
+            Observers.Add(new InsertOnItemClicked());
+            
+            Observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true, IsTargetSource = IsEditor});
+            Observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true, IsTargetSource = IsEditor });
         }
 
-        void CompletionElementsItemClicked(object sender, EventArgs<object, MouseButtonEventArgs> e)
+        private bool IsEditor(EventSource source)
         {
-            var completionItem = (e.Arg1 as ICompletionItem);
-
-            if(completionItem == null)
-                throw new InvalidOperationException("ICompletionItem is null. Something is wrong with the hackish ItemClicked event.");
-
-            InsertItem(completionItem);
-
-            e.Arg2.Handled = true;
-        }
-
-        private void CheckForElementInsertion(KeyEventArgs args)
-        {
-            if (CompletionElements.SelectedItem == null || args.Key != Key.Enter)
-                return;
-
-            InsertItem(CompletionElements.SelectedItem as ICompletionItem);
-
-            args.Handled = true;
-        }
-
-        private void InsertItem(ICompletionItem item)
-        {
-            item.Insert();
-            PopupActions.Hide(this);
+            return source == EventSource.Editor;
         }
 
         [TypeConverter(typeof(EditorAdapterConverter))]
@@ -95,7 +78,7 @@ namespace FreePIE.GUI.CodeCompletion
             CompletionPopupView view = obj as CompletionPopupView;
             
             EventHandler selectionChanged = (sender, args) => view.OnEditorSelectionChanged();
-            KeyEventHandler keyDown = (sender, args) => view.Publish(view.CreateKeyEvent(args));
+            KeyEventHandler keyDown = (sender, args) => view.Publish(new KeyEvent(args, EventSource.Editor));
 
             if (target != null)
             {
@@ -122,12 +105,6 @@ namespace FreePIE.GUI.CodeCompletion
 
             foreach (var observer in Observers)
                 observer.Handle(events, this);
-        }
-
-
-        private KeyEvent CreateKeyEvent(KeyEventArgs args)
-        {
-            return new KeyEvent(args);
         }
 
         public void PerformElementChanged(KeyEventArgs args)

@@ -1,4 +1,4 @@
-﻿namespace FreePIE.GUI.CodeCompletion.Event
+﻿namespace FreePIE.GUI.CodeCompletion.Event.Actions
 {
     public static class PopupActions
     {
