@@ -241,9 +241,10 @@ namespace FreePIE.Core.Plugins {
         }
 
         //-----------------------------------------------------------------------
-        public void setDataUnits(VuzixDataUnits units)
+
+        public VuzixDataUnits DataUnits
         {
-            vuzix.SetDataUnits(units);
+            set { vuzix.SetDataUnits(value); }
         }
 
         public bool ContinuousYawMode
