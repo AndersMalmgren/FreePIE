@@ -13,7 +13,8 @@ namespace FreePIE.GUI.CodeCompletion.Data
         public FixedSizeStack(int size)
         {
             array = new T[size];
-            head = tail = 0;
+            head = 0;
+            tail = -1;
         }
 
         private event EventHandler<EventArgs> Invalidated;
@@ -27,6 +28,9 @@ namespace FreePIE.GUI.CodeCompletion.Data
         private int UpdateIndex()
         {
             int lastIndex = array.Length - 1;
+
+            if (tail == -1)
+                return ++tail;
 
             if(head - tail <= 0 && tail != lastIndex) //we are not full
                 return ++tail;

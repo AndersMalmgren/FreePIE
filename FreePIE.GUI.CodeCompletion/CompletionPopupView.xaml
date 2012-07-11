@@ -8,13 +8,6 @@
     Placement="Bottom"
     MaxHeight="202"
     AllowsTransparency="true">
-    <Popup.PlacementRectangle>
-        <MultiBinding Converter="{CompletionWindow:EditorAdapterToRectValueConverter}">
-            <Binding RelativeSource="{RelativeSource Self}" Path="Target" />
-            <Binding RelativeSource="{RelativeSource Self}" Path="IsOpen" />
-            <Binding RelativeSource="{RelativeSource Self}" Path="PlacementRectangle" />
-        </MultiBinding>
-    </Popup.PlacementRectangle>
   <DockPanel>
     <Controls:EvenListBox MinWidth="100" MaxWidth="200" DockPanel.Dock="Left" x:Name="CompletionElements"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"

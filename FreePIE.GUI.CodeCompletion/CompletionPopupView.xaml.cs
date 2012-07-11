@@ -29,6 +29,9 @@ namespace FreePIE.GUI.CodeCompletion
 
             CompletionElements.PreviewKeyDown += (sender, args) => Publish(new KeyEvent(args, EventSource.Popup));
             CompletionElements.ItemClicked += (sender, args) => Publish(new ItemClickedEvent(args.Arg2, (ICompletionItem)args.Arg1));
+
+            Opened += (obj, args) => Publish(new PopupStateChanged(PopupState.Open));
+            Closed += (obj, args) => Publish(new PopupStateChanged(PopupState.Closed));
         }
 
         private void AddObservers()
@@ -38,7 +41,11 @@ namespace FreePIE.GUI.CodeCompletion
             
             Observers.Add(new CustomKeyAction
                               {
-                                  Action = x => PopupActions.ForceShow(this),
+                                  Action = x =>
+                                               {
+                                                   x.InvalidatePosition();
+                                                   x.IsOpen = true;
+                                               },
                                   Key = Key.Space,
                                   Modifiers = new[] { Key.LeftCtrl },
                                   ShouldSwallow = true
@@ -47,6 +54,7 @@ namespace FreePIE.GUI.CodeCompletion
             Observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemSemicolon));
             Observers.Add(new InsertionAction());
             Observers.Add(new InsertOnItemClicked());
+            Observers.Add(new PositionAction());
             
             Observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true, IsTargetSource = IsEditor});
             Observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true, IsTargetSource = IsEditor });
@@ -76,8 +84,8 @@ namespace FreePIE.GUI.CodeCompletion
             EditorAdapterBase target = e.NewValue as EditorAdapterBase;
             EditorAdapterBase oldTarget = e.OldValue as EditorAdapterBase;
             CompletionPopupView view = obj as CompletionPopupView;
-            
-            EventHandler selectionChanged = (sender, args) => view.OnEditorSelectionChanged();
+
+            EventHandler selectionChanged = (sender, args) => view.Publish(new SelectionChangedEvent());
             KeyEventHandler keyDown = (sender, args) => view.Publish(new KeyEvent(args, EventSource.Editor));
 
             if (target != null)
@@ -91,6 +99,16 @@ namespace FreePIE.GUI.CodeCompletion
                 oldTarget.SelectionChanged -= selectionChanged;
                 target.PreviewKeyDown -= keyDown;
             }
+        }
+
+        private void Publish(IPopupEvent @event)
+        {
+            System.Diagnostics.Debug.WriteLine("publishing:" + @event.Type);
+
+            events.Push(@event);
+
+            foreach(var observer in Observers)
+                observer.Handle(events, this);
         }
 
         private void Publish(ICancellablePopupEvent @event)
@@ -107,31 +125,9 @@ namespace FreePIE.GUI.CodeCompletion
                 observer.Handle(events, this);
         }
 
-        public void PerformElementChanged(KeyEventArgs args)
+        internal void InvalidatePosition()
         {
-            if (CompletionElements.Items.Count <= 0) 
-                return;
-
-            FocusFirstElement();
-            CompletionElements.RaiseEvent(args);
-        }
-
-        public void FocusFirstElement()
-        {
-            CompletionElements.Focus();
-            (CompletionElements.ItemContainerGenerator.ContainerFromIndex(0) as UIElement).Focus();
-        }
-
-        private void OnEditorSelectionChanged()
-        {
-            UpdatePlacementRectangle();
-        }
-
-        private void UpdatePlacementRectangle()
-        {
-            var binding = BindingOperations.GetMultiBindingExpression(this, PlacementRectangleProperty);
-            if (binding != null)
-                binding.UpdateTarget();
+            Publish(new PositionInvalidatedEvent());
         }
     }
 }

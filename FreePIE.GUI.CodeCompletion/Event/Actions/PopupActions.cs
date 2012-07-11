@@ -10,9 +10,12 @@
 
         public static void ForceShow(CompletionPopupView view)
         {
-            if (view.IsOpen)
-                view.IsOpen = false;
             view.IsOpen = true;
+        }
+
+        public static void InvalidatePosition(CompletionPopupView view)
+        {
+            view.InvalidatePosition();
         }
 
         public static void Show(CompletionPopupView view)

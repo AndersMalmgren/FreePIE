@@ -102,24 +102,26 @@
     </Compile>
     <Compile Include="Data\FixedSizeStack.cs" />
     <Compile Include="Event\Actions\InsertOnItemClicked.cs" />
+    <Compile Include="Event\Actions\PositionAction.cs" />
     <Compile Include="Event\EventSource.cs" />
     <Compile Include="Event\Actions\ElementChangedKeyAction.cs" />
     <Compile Include="Event\Events\KeyEvent.cs" />
+    <Compile Include="Event\Events\PopupStateChanged.cs" />
     <Compile Include="Event\EventType.cs" />
     <Compile Include="Event\ICancellablePopupEvent.cs" />
     <Compile Include="Event\IPopupEvent.cs" />
     <Compile Include="Event\IEventObserver.cs" />
     <Compile Include="Event\Actions\KeyAction.cs" />
     <Compile Include="Event\Actions\InsertionAction.cs" />
-    <Compile Include="ItemClickedEvent.cs" />
-    <Compile Include="ItemClickedEventArgs.cs" />
-    <Compile Include="PopupOpenConverter.cs" />
+    <Compile Include="Event\Events\ItemClickedEvent.cs" />
+    <Compile Include="Event\Events\ItemClickedEventArgs.cs" />
     <Compile Include="Event\Actions\SelectionChangedHideAction.cs" />
+    <Compile Include="Event\Events\PositionInvalidatedEvent.cs" />
+    <Compile Include="Event\Events\SelectionChangedEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvalonEdit\AvalonAdapter.cs" />
     <Compile Include="Event\Actions\BackspaceHideAction.cs" />
-    <Compile Include="EditorAdapterToRectValueConverter.cs" />
     <Compile Include="CompletionPopupView.xaml.cs">
       <DependentUpon>CompletionPopupView.xaml</DependentUpon>
     </Compile>

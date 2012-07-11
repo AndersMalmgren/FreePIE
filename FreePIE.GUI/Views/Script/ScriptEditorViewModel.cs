@@ -75,7 +75,8 @@ namespace FreePIE.GUI.Views.Script
             var suggestions = codeResults.ExpressionInfos.Select(x =>
                 new CompletionItem(x, codeResults.ActiveToken.Value, codeResults.ReplaceRange, script, OnInsertion));
 
-            CompletionWindow.CompletionItems.SyncCollectionTo(suggestions);
+            CompletionWindow.CompletionItems.Clear();
+            CompletionWindow.CompletionItems.AddRange(suggestions);
         }
 
         private void OnInsertion(string script, int caretOffset)

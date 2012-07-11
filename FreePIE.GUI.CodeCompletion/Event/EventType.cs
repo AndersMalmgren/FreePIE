@@ -4,6 +4,8 @@ namespace FreePIE.GUI.CodeCompletion.Event
     {
         KeyPress,
         SelectionChanged,
-        ItemClicked
+        ItemClicked,
+        PopupStateChanged,
+        PositionInvalidated
     }
 }
