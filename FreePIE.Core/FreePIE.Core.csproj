@@ -53,6 +53,7 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Common\FixedSizeStack.cs" />
     <Compile Include="Common\Events\EventAggregator.cs" />
     <Compile Include="Common\Events\IHandle.cs" />
     <Compile Include="Common\Events\WeakReferenceList.cs" />
