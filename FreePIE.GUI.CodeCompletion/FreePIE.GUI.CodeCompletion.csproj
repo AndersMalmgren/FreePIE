@@ -100,14 +100,20 @@
     <Compile Include="Controls\EvenListBox.xaml.cs">
       <DependentUpon>EvenListBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ElementChangedKeyAction.cs" />
-    <Compile Include="KeyAction.cs" />
+    <Compile Include="Data\FixedSizeStack.cs" />
+    <Compile Include="Event\ElementChangedKeyAction.cs" />
+    <Compile Include="Event\Events\KeyEvent.cs" />
+    <Compile Include="Event\EventType.cs" />
+    <Compile Include="Event\ICancellablePopupEvent.cs" />
+    <Compile Include="Event\IPopupEvent.cs" />
+    <Compile Include="Event\IEventObserver.cs" />
+    <Compile Include="Event\KeyAction.cs" />
     <Compile Include="PopupOpenConverter.cs" />
-    <Compile Include="SelectionChangedHideAction.cs" />
+    <Compile Include="Event\SelectionChangedHideAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvalonEdit\AvalonAdapter.cs" />
-    <Compile Include="BackspaceHideAction.cs" />
+    <Compile Include="Event\BackspaceHideAction.cs" />
     <Compile Include="EditorAdapterToRectValueConverter.cs" />
     <Compile Include="CompletionPopupView.xaml.cs">
       <DependentUpon>CompletionPopupView.xaml</DependentUpon>
@@ -115,9 +121,9 @@
     <Compile Include="CompletionPopupViewModel.cs" />
     <Compile Include="ICompletionItem.cs" />
     <Compile Include="EditorAdapterConverter.cs" />
-    <Compile Include="IPopupAction.cs" />
+    <Compile Include="Event\PopupActions.cs" />
     <Compile Include="EditorAdapterBase.cs" />
-    <Compile Include="CustomKeyAction.cs" />
+    <Compile Include="Event\CustomKeyAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

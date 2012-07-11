@@ -6,24 +6,44 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using Caliburn.Micro;
 using FreePIE.GUI.CodeCompletion.Controls;
+using FreePIE.GUI.CodeCompletion.Data;
+using FreePIE.GUI.CodeCompletion.Event;
+using FreePIE.GUI.CodeCompletion.Event.Events;
 
 namespace FreePIE.GUI.CodeCompletion
 {
     public partial class CompletionPopupView
     {
+        public IList<IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>> Observers { get; private set; }
+        private readonly FixedSizeStack<IPopupEvent> events;
+
         public CompletionPopupView()
         {
-            this.DisplayActions = new PopupActionList();
-            this.ListBoxActions = new PopupActionList();
             InitializeComponent();
-            CompletionElements.PreviewKeyDown += (sender, args) =>
-                                                     {
-                                                         CheckForTriggeredKeyActions(DisplayActions, args);
-                                                         CheckForElementInsertion(args);
-                                                     };
-
+            Observers = new List<IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>>();
+            events = new FixedSizeStack<IPopupEvent>(15);
+            AddObservers();
             CompletionElements.ItemClicked += CompletionElementsItemClicked;
+        }
+
+        private void AddObservers()
+        {
+            Observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemPeriod));
+            Observers.Add(new CustomKeyAction(x => PopupActions.Hide(this), Enumerable.Empty<Key>(), Key.Escape));
+            
+            Observers.Add(new CustomKeyAction
+                              {
+                                  Action = x => PopupActions.ForceShow(this),
+                                  Key = Key.Space,
+                                  Modifiers = new[] {Key.LeftCtrl}
+                              });
+
+            Observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemSemicolon));
+            Observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true});
+            Observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true});
+            Observers.Add(new ElementChangedKeyAction { Key = Key.Enter, ShouldSwallow = true});
         }
 
         void CompletionElementsItemClicked(object sender, EventArgs<object, MouseButtonEventArgs> e)
@@ -51,7 +71,7 @@ namespace FreePIE.GUI.CodeCompletion
         private void InsertItem(ICompletionItem item)
         {
             item.Insert();
-            PopupViewActions.Hide(this);
+            PopupActions.Hide(this);
         }
 
         [TypeConverter(typeof(EditorAdapterConverter))]
@@ -71,24 +91,43 @@ namespace FreePIE.GUI.CodeCompletion
                 return;
 
             EditorAdapterBase target = e.NewValue as EditorAdapterBase;
+            EditorAdapterBase oldTarget = e.OldValue as EditorAdapterBase;
             CompletionPopupView view = obj as CompletionPopupView;
             
             EventHandler selectionChanged = (sender, args) => view.OnEditorSelectionChanged();
-            KeyEventHandler keyDown = (sender, args) => view.CheckForTriggeredKeyActions(view.CurrentActions, args);
+            KeyEventHandler keyDown = (sender, args) => view.Publish(view.CreateKeyEvent(args));
 
-            if (e.NewValue != null)
+            if (target != null)
             {
-                EditorAdapterBase editorAdapterBase = e.NewValue as EditorAdapterBase;
-                editorAdapterBase.SelectionChanged += selectionChanged;
-                editorAdapterBase.PreviewKeyDown += keyDown;
+                target.SelectionChanged += selectionChanged;
+                target.PreviewKeyDown += keyDown;
             }
 
-            if (e.OldValue != null)
+            if (oldTarget != null)
             {
-                EditorAdapterBase editorAdapterBase = e.OldValue as EditorAdapterBase;
-                editorAdapterBase.SelectionChanged -= selectionChanged;
-                editorAdapterBase.PreviewKeyDown -= keyDown;
+                oldTarget.SelectionChanged -= selectionChanged;
+                target.PreviewKeyDown -= keyDown;
             }
+        }
+
+        private void Publish(ICancellablePopupEvent @event)
+        {
+            foreach(var observer in Observers)
+                observer.Preview(events, @event, this);
+
+            if (@event.IsCancelled)
+                return;
+
+            events.Push(@event);
+
+            foreach (var observer in Observers)
+                observer.Handle(events, this);
+        }
+
+
+        private KeyEvent CreateKeyEvent(KeyEventArgs args)
+        {
+            return new KeyEvent(args);
         }
 
         public void PerformElementChanged(KeyEventArgs args)
@@ -106,26 +145,9 @@ namespace FreePIE.GUI.CodeCompletion
             (CompletionElements.ItemContainerGenerator.ContainerFromIndex(0) as UIElement).Focus();
         }
 
-        private void CheckForTriggeredKeyActions(IEnumerable<IPopupAction> actions, KeyEventArgs args)
-        {
-            CheckForTriggeredActions(EventType.KeyPress, args, actions);
-        }
-
-        private void CheckForTriggeredActions(EventType type, object args, IEnumerable<IPopupAction> actions)
-        {
-            foreach(IPopupAction action in actions)
-                action.Act(type, this, args);
-        }
-
         private void OnEditorSelectionChanged()
         {
             UpdatePlacementRectangle();
-            CheckForTriggeredActions(EventType.SelectionChanged, Target.CaretIndex, CurrentActions);
-        }
-
-        private IEnumerable<IPopupAction> CurrentActions
-        {
-            get{ return IsOpen ? DisplayActions.Union(ListBoxActions) : DisplayActions; }
         }
 
         private void UpdatePlacementRectangle()
@@ -134,26 +156,5 @@ namespace FreePIE.GUI.CodeCompletion
             if (binding != null)
                 binding.UpdateTarget();
         }
-
-        public static readonly DependencyProperty KeyActionsProperty =
-            DependencyProperty.Register("DisplayActions", typeof(PopupActionList), typeof(CompletionPopupView), new PropertyMetadata(null));
-
-        public static readonly DependencyProperty ListBoxActionsProperty =
-            DependencyProperty.Register("ListBoxActions", typeof (PopupActionList), typeof (CompletionPopupView), new PropertyMetadata(default(PopupActionList)));
-
-        public PopupActionList ListBoxActions
-        {
-            get { return (PopupActionList) GetValue(ListBoxActionsProperty); }
-            set { SetValue(ListBoxActionsProperty, value); }
-        }
-
-        public PopupActionList DisplayActions
-        {
-            get { return (PopupActionList)GetValue(KeyActionsProperty); }
-            set { SetValue(KeyActionsProperty, value); }
-        }
-
-        public class PopupActionList : ObservableCollection<IPopupAction>
-        { }
     }
 }

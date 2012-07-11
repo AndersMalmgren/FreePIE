@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace FreePIE.GUI.CodeCompletion
+namespace FreePIE.GUI.CodeCompletion.Event
 {
     public class CustomKeyAction : KeyAction
     {
@@ -38,7 +38,7 @@ namespace FreePIE.GUI.CodeCompletion
         {
             string val = value as string;
 
-            return Delegate.CreateDelegate(typeof (Action<CompletionPopupView>), typeof (PopupViewActions), val);
+            return Delegate.CreateDelegate(typeof (Action<CompletionPopupView>), typeof (PopupActions), val);
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace FreePIE.Core.Common
+namespace FreePIE.GUI.CodeCompletion.Data
 {
     public class FixedSizeStack<T> : IEnumerable<T>
     {
@@ -80,7 +80,7 @@ namespace FreePIE.Core.Common
             {
                 this.buffer = buffer;
                 this.buffer.Invalidated += BackingBufferInvalidated;
-                this.current = buffer.head;
+                this.current = buffer.tail;
             }
 
             void BackingBufferInvalidated(object sender, EventArgs e)
@@ -98,13 +98,13 @@ namespace FreePIE.Core.Common
             {
                 CheckForInvalidated();
 
-                if (current == buffer.tail)
+                if (current == buffer.head)
                     return false;
 
-                if (current == buffer.array.Length - 1)
-                    current = 0;
+                if (current == 0)
+                    current = buffer.array.Length - 1;
                 else if(started)
-                    current++;
+                    current--;
                 else
                 {
                     started = true;
@@ -117,7 +117,7 @@ namespace FreePIE.Core.Common
             {
                 started = false;
                 invalid = false;
-                this.current = 0;
+                this.current = buffer.tail;
             }
 
             public T Current

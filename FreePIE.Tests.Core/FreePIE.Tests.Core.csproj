@@ -46,7 +46,6 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircularBufferTest.cs" />
     <Compile Include="RuntimeInfoTest.cs" />
     <Compile Include="LuaEngineTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

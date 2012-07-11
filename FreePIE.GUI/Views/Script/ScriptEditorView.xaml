@@ -21,21 +21,6 @@
                                                                                                AncestorType={x:Type Script:ScriptEditorView}},
                                                                                                Path=DataContext.CompletionWindow }"
                                       Target="{Binding ElementName=textEditor, Path=TextArea, Converter={CodeCompletion:EditorAdapterConverter}}">
-        <CodeCompletion:CompletionPopupView.DataContext>
-          <CodeCompletion:CompletionPopupViewModel />
-        </CodeCompletion:CompletionPopupView.DataContext>
-        <CodeCompletion:CompletionPopupView.DisplayActions>
-          <CodeCompletion:BackspaceHideAction />
-          <CodeCompletion:SelectionChangedHideAction />
-          <CodeCompletion:CustomKeyAction Action="ForceShow" Key="Space" Modifiers="LeftCtrl" ShouldSwallow="True" />
-          <CodeCompletion:CustomKeyAction Action="ForceShow" Key="OemPeriod" />
-          <CodeCompletion:CustomKeyAction Action="Hide" Key="Escape" ShouldSwallow="True" />
-        </CodeCompletion:CompletionPopupView.DisplayActions>
-        <CodeCompletion:CompletionPopupView.ListBoxActions>
-          <CodeCompletion:ElementChangedKeyAction Key="Up" ShouldSwallow="true" />
-          <CodeCompletion:ElementChangedKeyAction Key="Down" ShouldSwallow="true" />
-          <CodeCompletion:ElementChangedKeyAction Key="Enter" ShouldSwallow="true" />
-        </CodeCompletion:CompletionPopupView.ListBoxActions>
       </CodeCompletion:CompletionPopupView>
     </Grid>
 </UserControl>

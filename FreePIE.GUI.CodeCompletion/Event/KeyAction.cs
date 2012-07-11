@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 
-namespace FreePIE.GUI.CodeCompletion
+namespace FreePIE.GUI.CodeCompletion.Event
 {
-    public abstract class KeyAction : IPopupAction
+    public abstract class KeyAction : IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>
     {
         protected KeyAction(IEnumerable<Key> modifiers, Key key)
         {
@@ -31,24 +31,27 @@ namespace FreePIE.GUI.CodeCompletion
 
         protected abstract void DoAct(CompletionPopupView view, KeyEventArgs args);
 
-        public void Act(EventType type, CompletionPopupView view, object args)
-        {
-            if (!IsTriggered(type, args))
-                return;
-
-            var keyArgs = args as KeyEventArgs;
-
-            DoAct(view, keyArgs);
-
-            if (ShouldSwallow)
-                keyArgs.Handled = true;
-        }
-
         public Key Key { get; set; }
         public bool ShouldSwallow { get; set; }
 
         [TypeConverter(typeof (KeyActionListConverter))]
         public IEnumerable<Key> Modifiers { get; set; }
+
+        public void Preview(IEnumerable<IPopupEvent> events, ICancellablePopupEvent current, CompletionPopupView view)
+        {
+            if (!IsTriggered(current.Type, current.EventArgs))
+                return;
+
+            var keyArgs = current.EventArgs as KeyEventArgs;
+
+            DoAct(view, keyArgs);
+
+            if (ShouldSwallow)
+                current.Cancel();
+        }
+
+        public void Handle(IEnumerable<IPopupEvent> events, CompletionPopupView view)
+        { }
     }
 
     public class KeyActionListConverter : TypeConverter

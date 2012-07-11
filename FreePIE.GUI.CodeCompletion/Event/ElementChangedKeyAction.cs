@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace FreePIE.GUI.CodeCompletion
+namespace FreePIE.GUI.CodeCompletion.Event
 {
     public class ElementChangedKeyAction : KeyAction
     {
