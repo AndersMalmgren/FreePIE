@@ -17,7 +17,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
 
         private bool IsTriggered(ICancellablePopupEvent current, CompletionPopupView view)
         {
-            if (current.Type != EventType.KeyPress || !view.IsOpen)
+            if (current.Type != EventType.KeyPress || !view.IsOpen || view.CompletionItems.SelectedItem == null)
                 return false;
 
             return ((KeyEventArgs)current.EventArgs).Key == Key.Enter;
@@ -25,9 +25,6 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
 
         private void InsertElement(CompletionPopupView view)
         {
-            if (view.CompletionItems.SelectedItem == null)
-                return;
-
             InsertItem(view.Model.SelectedCompletionItem, view);
         }
 

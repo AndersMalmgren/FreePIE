@@ -24,8 +24,13 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
         {
             var current = events.First();
 
+            if (current.Type != EventType.SelectionChanged)
+                return;
+
             if (!IsTriggered(current.Type, current.EventArgs, view.Target))
                 return;
+
+            PopupActions.Hide(view);
 
             int caretIndex = (int)current.EventArgs;
             lastIndex = caretIndex;

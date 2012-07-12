@@ -5,6 +5,11 @@ namespace FreePIE.GUI.CodeCompletion
 {
     public class SelectionChangedEvent : IPopupEvent
     {
+        public SelectionChangedEvent(int offset)
+        {
+            this.EventArgs = offset;
+        }
+
         public EventType Type
         {
             get { return EventType.SelectionChanged; }
@@ -15,9 +20,6 @@ namespace FreePIE.GUI.CodeCompletion
             get { return EventSource.Editor; }
         }
 
-        public object EventArgs
-        {
-            get { throw new InvalidOperationException("No state associated with SelectionChangedEvent"); }
-        }
+        public object EventArgs { get; private set; }
     }
 }

@@ -63,6 +63,7 @@ namespace FreePIE.GUI.CodeCompletion
             
             observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true, IsTargetSource = IsEditor});
             observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true, IsTargetSource = IsEditor });
+            observers.Add(new SelectionChangedHideAction());
         }
 
         private bool IsEditor(EventSource source)
@@ -95,7 +96,7 @@ namespace FreePIE.GUI.CodeCompletion
             EditorAdapterBase oldTarget = e.OldValue as EditorAdapterBase;
             CompletionPopupView view = obj as CompletionPopupView;
 
-            EventHandler selectionChanged = (sender, args) => view.Publish(new SelectionChangedEvent());
+            EventHandler selectionChanged = (sender, args) => view.Publish(new SelectionChangedEvent(target.CaretIndex));
             KeyEventHandler previewKeyDown = (sender, args) => view.Publish(new CancellableKeyEvent(args, EventSource.Editor));
             KeyEventHandler keyDown = (sender, args) => view.Publish(new KeyEvent(args, EventSource.Editor));
 

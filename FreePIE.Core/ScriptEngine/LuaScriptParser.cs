@@ -100,7 +100,7 @@ namespace FreePIE.Core.ScriptEngine
             return script.Substring(start, index - start);
         }
 
-        private static readonly char[] ExpressionDelimiters = "() \r\n".ToArray();
+        private static readonly char[] ExpressionDelimiters = "(){}\t \r\n".ToArray();
         private static readonly char[] TokenDelimiters = ".:".ToArray();
 
         private int GetStartOfExpression(string script, int offset)

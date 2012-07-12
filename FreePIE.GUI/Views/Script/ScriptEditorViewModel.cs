@@ -79,6 +79,8 @@ namespace FreePIE.GUI.Views.Script
 
             CompletionWindow.CompletionItems.Clear();
             CompletionWindow.CompletionItems.AddRange(suggestions);
+            if (CompletionWindow.CompletionItems.Any())
+                CompletionWindow.SelectedCompletionItem = CompletionWindow.CompletionItems.First();
         }
 
         private void OnInsertion(string script, int caretOffset)
