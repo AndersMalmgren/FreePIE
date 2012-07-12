@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FreePIE.Core.Common.Events;
 using FreePIE.Core.Model;
+using FreePIE.Core.Model.Events;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine.Globals;
 
 namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
-    public class RuntimeInfoProvider : IRuntimeInfoProvider
+    public class RuntimeInfoProvider : IRuntimeInfoProvider, IHandle<CurveChangedNameEvent>
     {
         private readonly IEnumerable<IGlobalProvider> providers;
         private readonly IPluginInvoker invoker;
@@ -21,10 +23,11 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             }
         }
 
-        public RuntimeInfoProvider(IPluginInvoker invoker, IEnumerable<IGlobalProvider> providers)
+        public RuntimeInfoProvider(IPluginInvoker invoker, IEnumerable<IGlobalProvider> providers, IEventAggregator eventAggregator)
         {
             this.providers = providers;
             this.invoker = invoker;
+            eventAggregator.Subscribe(this);
         }
 
         public IEnumerable<ExpressionInfo> AnalyzeExpression(IEnumerable<Token> tokensEnum)
@@ -41,6 +44,10 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
                                                                                     .Select(child => child.Value.Info);
         }
 
-        
+
+        public void Handle(CurveChangedNameEvent message)
+        {
+            runtimeInfo = null;
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Model;
+using FreePIE.Core.Model.Events;
 using FreePIE.GUI.Common.Visiblox;
 using FreePIE.GUI.Events;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
@@ -46,7 +47,8 @@ namespace FreePIE.GUI.Views.Curves
             get { return Curve.Name; }
             set 
             { 
-                Curve.Name = value; 
+                Curve.Name = value;
+                eventAggregator.Publish(new CurveChangedNameEvent(Curve));
                 NotifyOfPropertyChange(() => Name);
             }
         }
