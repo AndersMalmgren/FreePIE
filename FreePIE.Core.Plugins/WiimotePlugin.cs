@@ -12,7 +12,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          WiimotePlugin
    //==========================================================================
-   [LuaGlobalType(Type = typeof(WiimotePluginGlobal))]
+   [LuaGlobalType(Type = typeof(WiimotePluginGlobal), IsIndexed = true)]
    public class WiimotePlugin : Plugin {
 
       const int MAX_WIIMOTES = 4;
