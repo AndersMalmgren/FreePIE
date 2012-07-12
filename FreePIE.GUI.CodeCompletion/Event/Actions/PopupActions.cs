@@ -20,7 +20,7 @@
 
         public static void Show(CompletionPopupView view)
         {
-            if(view.CompletionElements.HasItems)
+            if(view.CompletionItems.HasItems)
                 ForceShow(view);
         }
     }

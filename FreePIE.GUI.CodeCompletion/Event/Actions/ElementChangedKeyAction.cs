@@ -10,19 +10,16 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
             PerformElementChanged(view, args);
         }
 
-        public void PerformElementChanged(CompletionPopupView view, KeyEventArgs args)
+        private void PerformElementChanged(CompletionPopupView view, KeyEventArgs args)
         {
-            if (view.CompletionElements.Items.Count <= 0)
+            if (view.CompletionItems.Items.Count <= 0)
                 return;
 
-            FocusFirstElement(view);
-            view.CompletionElements.RaiseEvent(args);
-        }
+            if (args.Key == Key.Down)
+                view.Model.SelectNextCompletionItem();
+            else view.Model.SelectPreviousCompletionItem();
 
-        public void FocusFirstElement(CompletionPopupView view)
-        {
-            view.CompletionElements.Focus();
-            (view.CompletionElements.ItemContainerGenerator.ContainerFromIndex(0) as UIElement).Focus();
+            view.CompletionItems.ScrollIntoView(view.Model.SelectedCompletionItem);
         }
 
         protected override bool IsTriggeredAddon(IPopupEvent @event, CompletionPopupView view)

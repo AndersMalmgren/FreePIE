@@ -27,8 +27,8 @@ namespace FreePIE.GUI.CodeCompletion
             events = new FixedSizeStack<IPopupEvent>(15);
             AddObservers();
 
-            CompletionElements.PreviewKeyDown += (sender, args) => Publish(new KeyEvent(args, EventSource.Popup));
-            CompletionElements.ItemClicked += (sender, args) => Publish(new ItemClickedEvent(args.Arg2, (ICompletionItem)args.Arg1));
+            CompletionItems.PreviewKeyDown += (sender, args) => Publish(new KeyEvent(args, EventSource.Popup));
+            CompletionItems.ItemClicked += (sender, args) => Publish(new ItemClickedEvent(args.Arg2, (ICompletionItem)args.Arg1));
 
             Opened += (obj, args) => Publish(new PopupStateChanged(PopupState.Open));
             Closed += (obj, args) => Publish(new PopupStateChanged(PopupState.Closed));
@@ -70,6 +70,11 @@ namespace FreePIE.GUI.CodeCompletion
         {
             get { return (EditorAdapterBase)GetValue(TargetProperty); }
             set { SetValue(TargetProperty, value); }
+        }
+
+        public CompletionPopupViewModel Model
+        {
+            get { return this.DataContext as CompletionPopupViewModel; }
         }
 
         [TypeConverter(typeof(EditorAdapterConverter))]

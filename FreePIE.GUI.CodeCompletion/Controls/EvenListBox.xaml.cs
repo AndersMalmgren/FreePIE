@@ -34,7 +34,6 @@ namespace FreePIE.GUI.CodeCompletion.Controls
                           };
 
             PreviewMouseLeftButtonDown += OnMouseLeftButtonDown;
-
         }
 
         void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
