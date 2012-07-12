@@ -17,29 +17,34 @@ namespace FreePIE.GUI.CodeCompletion
 {
     public partial class CompletionPopupView
     {
-        public IList<IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>> Observers { get; private set; }
+        
         private readonly FixedSizeStack<IPopupEvent> events;
 
         public CompletionPopupView()
         {
             InitializeComponent();
-            Observers = new List<IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>>();
             events = new FixedSizeStack<IPopupEvent>(15);
-            AddObservers();
 
-            CompletionItems.PreviewKeyDown += (sender, args) => Publish(new KeyEvent(args, EventSource.Popup));
+            CompletionItems.PreviewKeyDown += (sender, args) => Publish(new CancellableKeyEvent(args, EventSource.Popup));
             CompletionItems.ItemClicked += (sender, args) => Publish(new ItemClickedEvent(args.Arg2, (ICompletionItem)args.Arg1));
 
             Opened += (obj, args) => Publish(new PopupStateChanged(PopupState.Open));
             Closed += (obj, args) => Publish(new PopupStateChanged(PopupState.Closed));
+            DataContextChanged += OnDataContextChanged;
         }
 
-        private void AddObservers()
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            Observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemPeriod));
-            Observers.Add(new CustomKeyAction(x => PopupActions.Hide(this), Enumerable.Empty<Key>(), Key.Escape));
+            if(e.NewValue as CompletionPopupViewModel != null)
+                AddObservers(Model.Observers);
+        }
+
+        private void AddObservers(IList<IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>> observers )
+        {
+            observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemPeriod));
+            observers.Add(new CustomKeyAction(x => PopupActions.Hide(this), Enumerable.Empty<Key>(), Key.Escape));
             
-            Observers.Add(new CustomKeyAction
+            observers.Add(new CustomKeyAction
                               {
                                   Action = x =>
                                                {
@@ -51,13 +56,13 @@ namespace FreePIE.GUI.CodeCompletion
                                   ShouldSwallow = true
                               });
 
-            Observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemSemicolon));
-            Observers.Add(new InsertionAction());
-            Observers.Add(new InsertOnItemClicked());
-            Observers.Add(new PositionAction());
+            observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemSemicolon));
+            observers.Add(new InsertionAction());
+            observers.Add(new InsertOnItemClicked());
+            observers.Add(new PositionAction());
             
-            Observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true, IsTargetSource = IsEditor});
-            Observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true, IsTargetSource = IsEditor });
+            observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true, IsTargetSource = IsEditor});
+            observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true, IsTargetSource = IsEditor });
         }
 
         private bool IsEditor(EventSource source)
@@ -91,18 +96,21 @@ namespace FreePIE.GUI.CodeCompletion
             CompletionPopupView view = obj as CompletionPopupView;
 
             EventHandler selectionChanged = (sender, args) => view.Publish(new SelectionChangedEvent());
+            KeyEventHandler previewKeyDown = (sender, args) => view.Publish(new CancellableKeyEvent(args, EventSource.Editor));
             KeyEventHandler keyDown = (sender, args) => view.Publish(new KeyEvent(args, EventSource.Editor));
 
             if (target != null)
             {
                 target.SelectionChanged += selectionChanged;
-                target.PreviewKeyDown += keyDown;
+                target.PreviewKeyDown += previewKeyDown;
+                target.KeyDown += keyDown;
             }
 
             if (oldTarget != null)
             {
                 oldTarget.SelectionChanged -= selectionChanged;
-                target.PreviewKeyDown -= keyDown;
+                target.PreviewKeyDown -= previewKeyDown;
+                target.KeyDown -= keyDown;
             }
         }
 
@@ -112,21 +120,21 @@ namespace FreePIE.GUI.CodeCompletion
 
             events.Push(@event);
 
-            foreach(var observer in Observers)
+            foreach(var observer in Model.Observers)
                 observer.Handle(events, this);
         }
 
         private void Publish(ICancellablePopupEvent @event)
         {
-            foreach(var observer in Observers)
+            foreach(var observer in Model.Observers)
                 observer.Preview(events, @event, this);
 
-            if (@event.IsCancelled)
+            if (@event.IsCancelled && !@event.IsTransient)
                 return;
 
             events.Push(@event);
 
-            foreach (var observer in Observers)
+            foreach (var observer in Model.Observers)
                 observer.Handle(events, this);
         }
 

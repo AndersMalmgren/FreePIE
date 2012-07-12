@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Caliburn.Micro;
+using FreePIE.GUI.CodeCompletion.Event;
 
 namespace FreePIE.GUI.CodeCompletion
 {
@@ -13,6 +15,7 @@ namespace FreePIE.GUI.CodeCompletion
         public CompletionPopupViewModel()
         {
             this.completionItems = new BindableCollection<ICompletionItem>();
+            Observers = new List<IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>>();
         }
 
         public BindableCollection<ICompletionItem> CompletionItems
@@ -35,6 +38,9 @@ namespace FreePIE.GUI.CodeCompletion
                 NotifyOfPropertyChange(() => SelectedCompletionItem);
             }
         }
+
+        public IList<IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>> Observers 
+        { get; private set; }
 
         public void SelectNextCompletionItem()
         {

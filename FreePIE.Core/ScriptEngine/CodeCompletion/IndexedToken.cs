@@ -27,9 +27,9 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         public override bool IsPartialMatch(Token token)
         {
             if (token.Value.Length < Value.Length)
-                return Value.StartsWith(token.Value);
+                return Value.StartsWith(token.Value, StringComparison.InvariantCultureIgnoreCase);
 
-            if (!token.Value.StartsWith(Value))
+            if (!token.Value.StartsWith(Value, StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
             if (token.Value.Length > Value.Length)

@@ -1,3 +1,5 @@
+using System;
+
 namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
     public class Token
@@ -21,7 +23,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         public virtual bool IsPartialMatch(Token token)
         {
-            return Type == token.Type && Value.StartsWith(token.Value);
+            return Type == token.Type && Value.StartsWith(token.Value, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public override bool Equals(object obj)

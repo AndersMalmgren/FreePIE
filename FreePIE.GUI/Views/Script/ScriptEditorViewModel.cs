@@ -3,6 +3,7 @@ using Caliburn.Micro;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.CodeCompletion;
+using FreePIE.GUI.CodeCompletion.Event.Actions;
 using FreePIE.GUI.Common;
 using FreePIE.GUI.Common.AvalonEdit;
 using FreePIE.GUI.Common.CodeCompletion;
@@ -26,6 +27,7 @@ namespace FreePIE.GUI.Views.Script
             CompletionWindow = completionModel;
             Enabled = true;
             eventAggregator.Subscribe(this);
+            completionModel.Observers.Add(new OpenOnWriteAction(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
         }
 
         public CompletionPopupViewModel CompletionWindow { get; set; }

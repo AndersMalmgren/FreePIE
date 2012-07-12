@@ -102,10 +102,11 @@
     </Compile>
     <Compile Include="Data\FixedSizeStack.cs" />
     <Compile Include="Event\Actions\InsertOnItemClicked.cs" />
+    <Compile Include="Event\Actions\OpenOnWriteAction.cs" />
     <Compile Include="Event\Actions\PositionAction.cs" />
     <Compile Include="Event\EventSource.cs" />
     <Compile Include="Event\Actions\ElementChangedKeyAction.cs" />
-    <Compile Include="Event\Events\KeyEvent.cs" />
+    <Compile Include="Event\Events\CancellableKeyEvent.cs" />
     <Compile Include="Event\Events\PopupStateChanged.cs" />
     <Compile Include="Event\EventType.cs" />
     <Compile Include="Event\ICancellablePopupEvent.cs" />

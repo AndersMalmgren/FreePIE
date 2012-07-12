@@ -4,5 +4,6 @@ namespace FreePIE.GUI.CodeCompletion.Event
     {
         void Cancel();
         bool IsCancelled { get; }
+        bool IsTransient { get; }
     }
 }

@@ -35,5 +35,11 @@ namespace FreePIE.GUI.CodeCompletion.Event.Events
         {
             get { return args.Args.Handled; }
         }
+
+
+        public bool IsTransient
+        {
+            get { return false; }
+        }
     }
 }

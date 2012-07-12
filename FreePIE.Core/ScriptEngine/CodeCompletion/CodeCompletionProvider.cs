@@ -24,5 +24,16 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
             return new CodeCompletionResult(infos, tokenResult.Tokens.Last(), tokenResult.LastTokenRange);
         }
+
+
+        public bool IsBeginningOfExpression(string script, int caretPosition)
+        {
+            var tokens = parser.GetTokensFromExpression(script, caretPosition).Tokens;
+
+            if (!tokens.Any())
+                return true;
+
+            return tokens.Last().Value.Length == 0;
+        }
     }
 }

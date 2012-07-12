@@ -9,5 +9,6 @@ namespace FreePIE.Core.ScriptEngine
     public interface ICodeCompletionProvider
     {
         CodeCompletionResult GetSuggestionsForExpression(string script, int offset);
+        bool IsBeginningOfExpression(string script, int caretPosition);
     }
 }
