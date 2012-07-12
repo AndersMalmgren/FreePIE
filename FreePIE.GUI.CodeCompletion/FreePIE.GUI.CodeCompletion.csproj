@@ -101,6 +101,7 @@
       <DependentUpon>EvenListBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\FixedSizeStack.cs" />
+    <Compile Include="Event\Actions\CloseOnSteppingIntoEndOfExpression.cs" />
     <Compile Include="Event\Actions\InsertOnItemClicked.cs" />
     <Compile Include="Event\Actions\OpenOnWriteAction.cs" />
     <Compile Include="Event\Actions\PositionAction.cs" />

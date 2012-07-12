@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Caliburn.Micro;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.ScriptEngine;
@@ -19,6 +20,10 @@ namespace FreePIE.GUI.Views.Script
         private readonly IEventAggregator eventAggregator;
         private readonly ICodeCompletionProvider provider;
 
+        private int ClampToZero(int i)
+        {
+            return i < 0 ? 0 : i;
+        }
 
         public ScriptEditorViewModel(IEventAggregator eventAggregator, ICodeCompletionProvider provider, CompletionPopupViewModel completionModel)
         {
@@ -28,6 +33,7 @@ namespace FreePIE.GUI.Views.Script
             Enabled = true;
             eventAggregator.Subscribe(this);
             completionModel.Observers.Add(new OpenOnWriteAction(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
+            completionModel.Observers.Add(new CloseOnSteppingIntoEndOfExpression(() => provider.IsBeginningOfExpression(Script, ClampToZero(CaretPosition - 1))));
         }
 
         public CompletionPopupViewModel CompletionWindow { get; set; }
