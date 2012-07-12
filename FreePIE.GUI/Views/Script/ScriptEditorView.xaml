@@ -3,7 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:AvalonEdit="clr-namespace:FreePIE.GUI.Common.AvalonEdit">
+             xmlns:AvalonEdit="clr-namespace:FreePIE.GUI.Common.AvalonEdit"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:Script="clr-namespace:FreePIE.GUI.Views.Script"
+             xmlns:CodeCompletion="clr-namespace:FreePIE.GUI.CodeCompletion;assembly=FreePIE.GUI.CodeCompletion">
     <Grid>
         <AvalonEdit:BindableScriptEditor
 				x:Name="textEditor"
@@ -11,7 +14,13 @@
 				FontSize="10pt"
 				SyntaxHighlighting="Lua"   
                 Script="{ Binding Path=Script, Mode=TwoWay}"    
-                IsEnabled="{ Binding Enabled}">
+                IsEnabled="{ Binding Enabled}"
+                Caret="{ Binding Path=CaretPosition, Mode=TwoWay }">
         </AvalonEdit:BindableScriptEditor>
+      <CodeCompletion:CompletionPopupView cal:Bind.Model="{ Binding RelativeSource={RelativeSource FindAncestor,
+                                                                                               AncestorType={x:Type Script:ScriptEditorView}},
+                                                                                               Path=DataContext.CompletionWindow }"
+                                      Target="{Binding ElementName=textEditor, Path=TextArea, Converter={CodeCompletion:EditorAdapterConverter}}">
+      </CodeCompletion:CompletionPopupView>
     </Grid>
 </UserControl>

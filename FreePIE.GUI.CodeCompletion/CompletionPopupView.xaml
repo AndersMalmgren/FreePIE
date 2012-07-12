@@ -1,0 +1,39 @@
+<Popup x:Class="FreePIE.GUI.CodeCompletion.CompletionPopupView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:Controls="clr-namespace:FreePIE.GUI.CodeCompletion.Controls"
+  xmlns:cal="http://www.caliburnproject.org"
+  StaysOpen="False"
+  Placement="Bottom"
+  MaxHeight="202"
+  AllowsTransparency="true">
+  <DockPanel>
+    <Controls:EvenListBox MinWidth="100" MaxWidth="200" DockPanel.Dock="Left"
+                          x:Name="CompletionItems"
+                          ItemsSource ="{Binding CompletionItems }"
+                          SelectedItem="{Binding SelectedCompletionItem, Mode=TwoWay }"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          DisplayMemberPath="Name"
+                          DisplayedRows="7">
+    </Controls:EvenListBox>
+    <StackPanel Margin="1">
+        <TextBox Width="300" IsTabStop="false" IsReadOnly="true" Focusable="false">
+          <TextBox.Style>
+            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=CompletionItems.Count}" Value="0">
+                  <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=CompletionItems, Path=SelectedItem}" Value="{x:Null}">
+                  <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </TextBox.Style>
+          <TextBox.Text>
+            <Binding ElementName="CompletionItems" Path="SelectedItem.Description" Mode="OneWay" />            
+          </TextBox.Text>
+        </TextBox>
+    </StackPanel>
+  </DockPanel>
+</Popup>

@@ -6,6 +6,7 @@ using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine;
+using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.Core.ScriptEngine.Globals;
 using Ninject;
 using Ninject.Activation;
@@ -22,6 +23,8 @@ namespace FreePIE.Core.Services
 
             kernel.Bind<IScriptEngine>().To<LuaEngine>();
             kernel.Bind<IScriptParser>().To<LuaScriptParser>();
+            kernel.Bind<ICodeCompletionProvider>().To<CodeCompletionProvider>();
+            kernel.Bind<IRuntimeInfoProvider>().To<RuntimeInfoProvider>();
 
             kernel.Bind<ISettingsManager>().To<SettingsManager>().InSingletonScope();
             kernel.Bind<IPersistanceManager>().To<PersistanceManager>();
