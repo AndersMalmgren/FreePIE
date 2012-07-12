@@ -29,6 +29,23 @@ namespace FreePIE.Core.ScriptEngine.Globals
             return luaGlobalAttribute != null ? luaGlobalAttribute.Name : null;
         }
 
+        public static IEnumerable<MemberInfo> GetGlobalMembers(Type pluginType)
+        {
+            var globalType = GetAttribute<LuaGlobalType>(pluginType);
+            pluginType = globalType != null ? globalType.Type : pluginType;
+
+            return GetMembers(pluginType, new List<MemberInfo>());
+        }
+
+        private static IEnumerable<MemberInfo> GetMembers(Type type, List<MemberInfo> members)
+        {
+            if (type == typeof(object))
+                return members;
+
+            members.AddRange(type.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
+            return GetMembers(type.BaseType, members);
+        }
+
         public static IEnumerable<string> GetGlobalMehods(Type pluginType)
         {
             var globalType = GetAttribute<LuaGlobalType>(pluginType).Type;

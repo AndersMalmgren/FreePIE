@@ -75,6 +75,7 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
+    <Compile Include="Common\CodeCompletion\CompletionItem.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
@@ -257,6 +258,10 @@
     <ProjectReference Include="..\FreePIE.Core\FreePIE.Core.csproj">
       <Project>{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}</Project>
       <Name>FreePIE.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FreePIE.GUI.CodeCompletion\FreePIE.GUI.CodeCompletion.csproj">
+      <Project>{8487DD8C-896C-4597-A377-5620DCA04C62}</Project>
+      <Name>FreePIE.GUI.CodeCompletion</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

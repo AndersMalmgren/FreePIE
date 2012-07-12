@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Tests.Test", "FreeP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.GUI", "FreePIE.GUI\FreePIE.GUI.csproj", "{EF29A2A3-A29C-4D9A-A8E2-A59925DEA82D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.GUI.CodeCompletion", "FreePIE.GUI.CodeCompletion\FreePIE.GUI.CodeCompletion.csproj", "{8487DD8C-896C-4597-A377-5620DCA04C62}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = FreePIE.vsmdi
@@ -107,6 +109,16 @@ Global
 		{EF29A2A3-A29C-4D9A-A8E2-A59925DEA82D}.Release|Mixed Platforms.Build.0 = Release|x86
 		{EF29A2A3-A29C-4D9A-A8E2-A59925DEA82D}.Release|x86.ActiveCfg = Release|x86
 		{EF29A2A3-A29C-4D9A-A8E2-A59925DEA82D}.Release|x86.Build.0 = Release|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Debug|x86.ActiveCfg = Debug|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Debug|x86.Build.0 = Debug|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Release|Any CPU.ActiveCfg = Release|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Release|Mixed Platforms.Build.0 = Release|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Release|x86.ActiveCfg = Release|x86
+		{8487DD8C-896C-4597-A377-5620DCA04C62}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

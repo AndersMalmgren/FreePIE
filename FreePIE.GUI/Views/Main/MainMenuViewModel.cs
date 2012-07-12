@@ -25,7 +25,7 @@ namespace FreePIE.GUI.Views.Main
         private bool scriptRunning;
 
         public MainMenuViewModel(IResultFactory resultFactory, 
-            IEventAggregator eventAggregator, 
+            IEventAggregator eventAggregator,
             Func<IScriptEngine> scriptEngineFactory)
         {
             eventAggregator.Subscribe(this);
