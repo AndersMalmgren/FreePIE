@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <MajorVersion>0.2</MajorVersion>
+    <MajorVersion>0.3</MajorVersion>
     <Filename>VersionInfo</Filename>
   </PropertyGroup>
 
@@ -53,6 +53,7 @@ CommitCount = Int32.Parse(standardOutput.ReadToEnd());
     <ParameterGroup>
       <FilePath ParameterType="System.String" />
       <Version ParameterType="System.Int32" />
+      <MajorVersion ParameterType="System.String" />
 
     </ParameterGroup>
     <Task>
@@ -61,7 +62,7 @@ CommitCount = Int32.Parse(standardOutput.ReadToEnd());
       <Using Namespace="System.IO"/>
       <Code Type="Fragment" Language="cs">
         <![CDATA[
-        if(!File.Exists(FilePath) || !File.ReadAllText(FilePath).Contains("." + Version + ".")) {
+        if(!File.Exists(FilePath) || !File.ReadAllText(FilePath).Contains(MajorVersion + "." + Version + ".")) {
           File.WriteAllText(FilePath, string.Format(@"using System.Reflection;  
 [assembly: AssemblyVersion(""$(MajorVersion).{0}.0"")]
 [assembly: AssemblyFileVersion(""$(MajorVersion).{0}.0"")]", Version));
@@ -76,7 +77,7 @@ CommitCount = Int32.Parse(standardOutput.ReadToEnd());
       <Output PropertyName="GitCommitCount" TaskParameter="CommitCount" />
     </GitVersion>
 
-    <WriteFileIfNewRevision Version="$(GitCommitCount)" FilePath="..\VersionInfo.cs">
+    <WriteFileIfNewRevision Version="$(GitCommitCount)" MajorVersion="$(MajorVersion)" FilePath="..\VersionInfo.cs">
     </WriteFileIfNewRevision>
   </Target>
 </Project>
