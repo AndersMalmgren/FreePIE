@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Caliburn.Micro;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.CodeCompletion;
@@ -11,11 +10,11 @@ using FreePIE.GUI.Common.CodeCompletion;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
-using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
+using FreePIE.Core.Common.Events;
 
 namespace FreePIE.GUI.Views.Script
 {
-    public class ScriptEditorViewModel : PropertyChangedBase, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
+    public class ScriptEditorViewModel : Caliburn.Micro.PropertyChangedBase, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
     {
         private readonly IEventAggregator eventAggregator;
         private readonly ICodeCompletionProvider provider;
