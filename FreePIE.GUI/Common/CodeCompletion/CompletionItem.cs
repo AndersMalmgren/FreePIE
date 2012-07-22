@@ -12,9 +12,9 @@ namespace FreePIE.GUI.Common.CodeCompletion
         private readonly string token;
         private readonly Range replaceRange;
         private readonly string script;
-        private readonly Action<string, int> insertionCallback;
+        private readonly Action<string, int, int> insertionCallback;
 
-        public CompletionItem(ExpressionInfo info, string token, Range replaceRange, string script, Action<string, int> insertionCallback)
+        public CompletionItem(ExpressionInfo info, string token, Range replaceRange, string script, Action<string, int, int> insertionCallback)
         {
             this.info = info;
             this.token = token;
@@ -25,8 +25,7 @@ namespace FreePIE.GUI.Common.CodeCompletion
 
         public void Insert()
         {
-            int newOffset = replaceRange.Start + info.GetCompletion(token).Length;
-            insertionCallback(script.Replace(replaceRange, info.GetCompletion(token)), newOffset);
+            insertionCallback(info.GetCompletion(token), replaceRange.Start, replaceRange.NumberOfElements);
         }
 
         public string Name

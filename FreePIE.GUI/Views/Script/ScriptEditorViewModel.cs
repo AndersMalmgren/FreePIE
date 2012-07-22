@@ -60,6 +60,13 @@ namespace FreePIE.GUI.Views.Script
             }
         }
 
+        private Action<int, int, string> replace;
+        public Action<int, int, string> Replace
+        {
+            get { return replace; }
+            set { replace = value; }
+        }
+
         private int caretPosition;
         public int CaretPosition
         {
@@ -88,10 +95,9 @@ namespace FreePIE.GUI.Views.Script
                 CompletionWindow.SelectedCompletionItem = CompletionWindow.CompletionItems.First();
         }
 
-        private void OnInsertion(string script, int caretOffset)
+        private void OnInsertion(string script, int caretOffset, int range)
         {
-            Script = script;
-            CaretPosition = caretOffset;
+            Replace(caretOffset, range, script);
         }
 
         public void Handle(ScriptStateChangedEvent message)

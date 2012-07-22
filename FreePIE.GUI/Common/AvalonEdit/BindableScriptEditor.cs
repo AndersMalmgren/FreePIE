@@ -32,7 +32,7 @@ namespace FreePIE.GUI.Common.AvalonEdit
         {
             TextArea.Caret.PositionChanged += CaretPositionChanged;
         }
-
+        
         private void CaretPositionChanged(object sender, EventArgs e)
         {
             Caret = CaretOffset;
@@ -70,14 +70,37 @@ namespace FreePIE.GUI.Common.AvalonEdit
             set { this.SetValue(ScriptProperty, value); }
         }
 
+        public Action<int, int, string> Replace
+        {
+            get { return this.GetValue(InsertProperty) as Action<int, int, string>; }
+            set { this.SetValue(InsertProperty, value); }            
+        }
+
+        private bool replaceActionSet;
+
+        private static void SetReplaceAction(BindableScriptEditor editor)
+        {
+            if (!editor.replaceActionSet)
+            {
+                editor.Replace = editor.Document.Replace;
+                editor.replaceActionSet = true;
+            }
+        }
+
         public static void OnScriptChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var editor = sender as BindableScriptEditor;
+            if(e.NewValue != null)
+                SetReplaceAction(editor);
+
             if(editor.Text != e.NewValue)
                 editor.Text = e.NewValue as string;
         }
-        
+
         public static readonly DependencyProperty ScriptProperty = DependencyProperty.Register(
           "Script", typeof(String), typeof(BindableScriptEditor), new FrameworkPropertyMetadata(string.Empty, OnScriptChanged));
+
+        public static readonly DependencyProperty InsertProperty = DependencyProperty.Register(
+            "Replace", typeof(Action<int, int, string>), typeof(BindableScriptEditor));
     }
 }
