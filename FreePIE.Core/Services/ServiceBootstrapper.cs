@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FreePIE.Core.Common;
+using FreePIE.Core.Common.Events;
 using FreePIE.Core.Persistence;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine;
@@ -34,6 +35,7 @@ namespace FreePIE.Core.Services
             kernel.Bind<IGlobalProvider>().To<ScriptHelpersGlobalProvider>();
             kernel.Bind<IGlobalProvider>().To<CurveGlobalProvider>();
 
+            kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
             kernel.Bind<IFileSystem>().To<FileSystem>();
 
 
