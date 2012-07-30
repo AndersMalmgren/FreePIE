@@ -327,6 +327,11 @@
                     "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
                     "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
                     }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Visual.C++.10.0.x86"
+                    {
+                    "Name" = "8:Visual C++ 2010 Runtime Libraries (x86)"
+                    "ProductCode" = "8:Microsoft.Visual.C++.10.0.x86"
+                    }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
                     {
                     "Name" = "8:Windows Installer 3.1"
@@ -624,7 +629,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:FreePIE.Core, Version=0.3.119.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:FreePIE.Core, Version=0.3.120.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9AE14CF085C6F6E45E3941CFBB7D1570"
@@ -885,7 +890,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FreePIE"
         "ProductCode" = "8:{4071E196-878A-40A6-A480-1E4FE5F5F8CC}"
-        "PackageCode" = "8:{8EEB89B1-EC87-4671-9A7B-D65CD9956E54}"
+        "PackageCode" = "8:{963ACF24-DAC0-4CA0-B94E-5ECCCC2D46B3}"
         "UpgradeCode" = "8:{9534A27D-FC9C-452B-92CB-F2D5F6B3AB34}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -926,20 +931,6 @@
                     "Transitive" = "11:FALSE"
                         "Keys"
                         {
-                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_BCAC08B9085149E8981B65DA90177F62"
-                            {
-                            "Name" = "8:[Manufacturer]"
-                            "Condition" = "8:"
-                            "AlwaysCreate" = "11:FALSE"
-                            "DeleteAtUninstall" = "11:FALSE"
-                            "Transitive" = "11:FALSE"
-                                "Keys"
-                                {
-                                }
-                                "Values"
-                                {
-                                }
-                            }
                         }
                         "Values"
                         {
@@ -960,20 +951,6 @@
                     "Transitive" = "11:FALSE"
                         "Keys"
                         {
-                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_5C4C7BFDCB854988BA1A5F5FCCA4D089"
-                            {
-                            "Name" = "8:[Manufacturer]"
-                            "Condition" = "8:"
-                            "AlwaysCreate" = "11:FALSE"
-                            "DeleteAtUninstall" = "11:FALSE"
-                            "Transitive" = "11:FALSE"
-                                "Keys"
-                                {
-                                }
-                                "Values"
-                                {
-                                }
-                            }
                         }
                         "Values"
                         {
