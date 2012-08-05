@@ -11,7 +11,8 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
     {
         private Func<bool> isBeginningOfExpression;
 
-        private IEnumerable<Key> triggers = Enumerable.Range(44, 26).Cast<Key>();  
+        private static readonly IEnumerable<Key> triggers = Enumerable.Range(44, 26).Cast<Key>();
+        private static readonly IEnumerable<Key> modifiers = new []{ Key.LeftCtrl, Key.RightCtrl, Key.LeftShift, Key.RightShift, Key.LeftAlt, Key.RightAlt };
 
         public OpenOnWriteAction(Func<bool> isBeginningOfExpression)
         {
@@ -28,7 +29,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
 
             var keyArgs = events.First().EventArgs as KeyEventArgs;
 
-            if(triggers.Contains(keyArgs.Key))
+            if(triggers.Contains(keyArgs.Key) && !modifiers.Any(keyArgs.KeyboardDevice.IsKeyDown))
                 PopupActions.ForceShow(view);
         }
     }
