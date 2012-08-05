@@ -15,5 +15,6 @@ namespace FreePIE.GUI.CodeCompletion
         public abstract bool IsSameLine(int charIndex1, int charIndex2);
         public abstract void Focus();
         public abstract event KeyEventHandler KeyDown;
+        public abstract event KeyEventHandler KeyUp;
     }
 }
