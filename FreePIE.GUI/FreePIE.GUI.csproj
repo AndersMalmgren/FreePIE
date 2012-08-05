@@ -35,6 +35,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>free-pie.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro">
       <HintPath>..\Lib\Caliburn.Micro\Caliburn.Micro.dll</HintPath>
@@ -276,6 +279,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\curve-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="free-pie.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

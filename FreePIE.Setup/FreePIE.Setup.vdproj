@@ -629,7 +629,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:FreePIE.Core, Version=0.3.120.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:FreePIE.Core, Version=0.3.121.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9AE14CF085C6F6E45E3941CFBB7D1570"
@@ -988,12 +988,12 @@
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
+            "IconIndex" = "3:32512"
             "Transitive" = "11:FALSE"
             "Target" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
             "Folder" = "8:_AAE20387E74943038D3A041148E2CC29"
             "WorkingFolder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
-            "Icon" = "8:"
+            "Icon" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
             "Feature" = "8:"
             }
         }
