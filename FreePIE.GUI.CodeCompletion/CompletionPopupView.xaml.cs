@@ -100,6 +100,7 @@ namespace FreePIE.GUI.CodeCompletion
 
             EventHandler selectionChanged = (sender, args) => view.Publish(new SelectionChangedEvent(target.CaretIndex));
             KeyEventHandler previewKeyDown = (sender, args) => view.Publish(new CancellableKeyEvent(args, EventSource.Editor));
+            KeyEventHandler keyUp = (sender, args) => view.Publish(new KeyUpEvent(args, EventSource.Editor));
             KeyEventHandler keyDown = (sender, args) => view.Publish(new KeyEvent(args, EventSource.Editor));
 
             if (target != null)
@@ -107,6 +108,7 @@ namespace FreePIE.GUI.CodeCompletion
                 target.SelectionChanged += selectionChanged;
                 target.PreviewKeyDown += previewKeyDown;
                 target.KeyDown += keyDown;
+                target.KeyUp += keyUp;
             }
 
             if (oldTarget != null)
@@ -114,6 +116,7 @@ namespace FreePIE.GUI.CodeCompletion
                 oldTarget.SelectionChanged -= selectionChanged;
                 target.PreviewKeyDown -= previewKeyDown;
                 target.KeyDown -= keyDown;
+                target.KeyUp -= keyUp;
             }
         }
 

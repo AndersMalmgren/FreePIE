@@ -19,11 +19,6 @@ namespace FreePIE.GUI.Views.Script
         private readonly IEventAggregator eventAggregator;
         private readonly ICodeCompletionProvider provider;
 
-        private int ClampToZero(int i)
-        {
-            return i < 0 ? 0 : i;
-        }
-
         public ScriptEditorViewModel(IEventAggregator eventAggregator, ICodeCompletionProvider provider, CompletionPopupViewModel completionModel)
         {
             this.eventAggregator = eventAggregator;
@@ -32,7 +27,7 @@ namespace FreePIE.GUI.Views.Script
             Enabled = true;
             eventAggregator.Subscribe(this);
             completionModel.Observers.Add(new OpenOnWriteAction(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
-            completionModel.Observers.Add(new CloseOnSteppingIntoEndOfExpression(() => provider.IsBeginningOfExpression(Script, ClampToZero(CaretPosition - 1))));
+            completionModel.Observers.Add(new CloseOnSteppingIntoEndOfExpression(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
         }
 
         public CompletionPopupViewModel CompletionWindow { get; set; }
