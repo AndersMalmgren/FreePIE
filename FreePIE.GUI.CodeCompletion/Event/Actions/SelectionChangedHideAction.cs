@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FreePIE.GUI.CodeCompletion.Event.Actions
@@ -14,7 +15,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
 
             int caretIndex = (int)args;
 
-            return !editor.IsSameLine(caretIndex, lastIndex);
+            return Math.Abs(caretIndex - lastIndex) > 1 || !editor.IsSameLine(caretIndex, lastIndex);
         }
 
         public void Preview(IEnumerable<IPopupEvent> events, ICancellablePopupEvent current, CompletionPopupView view)
@@ -27,13 +28,10 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
             if (current.Type != EventType.SelectionChanged)
                 return;
 
-            if (!IsTriggered(current.Type, current.EventArgs, view.Target))
-                return;
+            if (IsTriggered(current.Type, current.EventArgs, view.Target))
+                PopupActions.Hide(view);
 
-            PopupActions.Hide(view);
-
-            int caretIndex = (int)current.EventArgs;
-            lastIndex = caretIndex;
+            lastIndex = (int)current.EventArgs;
         }
     }
 }

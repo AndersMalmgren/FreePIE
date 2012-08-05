@@ -26,7 +26,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
         {
             var current = events.First();
 
-            if (current.Type != EventType.KeyPress || view.Target == null)
+            if (current.Type != EventType.KeyUp || view.Target == null)
                 return;
 
             if (!IsTriggered(current.EventArgs as KeyEventArgs))

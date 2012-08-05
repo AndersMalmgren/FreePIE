@@ -27,6 +27,20 @@ namespace FreePIE.GUI.CodeCompletion.Event.Events
         }
     }
 
+    public class KeyUpEvent : KeyEvent
+    {
+        public KeyUpEvent(KeyEventArgs args, EventSource source) : base(args, source)
+        { }
+
+        public override EventType Type
+        {
+            get
+            {
+                return EventType.KeyUp;
+            }
+        }
+    }
+
     public class KeyEvent : IPopupEvent
     {
         protected readonly KeyEventArgs args;
@@ -38,7 +52,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Events
             this.source = source;
         }
 
-        public EventType Type
+        public virtual EventType Type
         {
             get { return EventType.KeyPress; }
         }

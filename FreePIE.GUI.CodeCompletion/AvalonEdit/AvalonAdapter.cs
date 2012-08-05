@@ -15,12 +15,19 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
             textArea.Caret.PositionChanged += OnCaretPositionChanged;
             textArea.PreviewKeyDown += OnTextAreaPreviewKeyDown;
             textArea.KeyDown += OnKeyDown;
+            textArea.KeyUp += OnKeyUp;
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (KeyDown != null)
                 KeyDown(sender, e);
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (KeyUp != null)
+                KeyUp(sender, e);
         }
 
         private void OnTextAreaPreviewKeyDown(object sender, KeyEventArgs e)
@@ -48,6 +55,7 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
         public override event EventHandler SelectionChanged;
         public override event KeyEventHandler PreviewKeyDown;
         public override event KeyEventHandler KeyDown;
+        public override event KeyEventHandler KeyUp;
 
         public override Rect GetVisualPosition()
         {
