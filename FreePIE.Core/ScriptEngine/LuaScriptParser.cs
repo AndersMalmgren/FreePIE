@@ -54,29 +54,32 @@ namespace FreePIE.Core.ScriptEngine
                     .Where(m => m.GetCustomAttributes(typeof(NeedIndexer), false).Length > 0)
                     .Select(m => new { Global = g, MethodInfo = m }));
             
-            foreach (var needIndex in globalsThatNeedsIndex)
+            for (int i = 0; i < script.Length; i++)
             {
-                var name = GlobalsInfo.GetGlobalName(needIndex.Global);
-                var methodName = needIndex.MethodInfo.Name;
-                var searchFor = string.Format("{0}:{1}", name, methodName);
-
-                for (int i = 0; i < script.Length - searchFor.Length; i++)
+                foreach(var needIndex in globalsThatNeedsIndex) 
                 {
-                    if(script.Substring(i, searchFor.Length) == searchFor)
+                    var name = GlobalsInfo.GetGlobalName(needIndex.Global);
+                    var methodName = needIndex.MethodInfo.Name;
+                    var searchFor = string.Format("{0}:{1}", name, methodName);
+                    
+                    if(i + searchFor.Length <= script.Length && script.Substring(i, searchFor.Length) == searchFor)
                     {
                         int argumentStart = i + searchFor.Length;
                         var arguments = ExtractArguments(script, argumentStart);
                         int argumentEnd = argumentStart + arguments.Length;
 
-                        var newArguments = string.Format(@"{0}, ""{1}"")", arguments.Substring(0, arguments.Length - 1), arguments.Substring(1, arguments.Length - 2).Replace(@"""", @"'" ));
+                        var proccesedArguments = FindAndInitMethodsThatNeedIndexer(arguments.Substring(0, arguments.Length - 1), globals);
+
+                        var newArguments = string.Format(@"{0}, ""{1}"")", proccesedArguments, arguments.Substring(1, arguments.Length - 2).Replace(@"""", @"'"));
 
                         script = script.Substring(0, argumentStart) +
-                                 newArguments + script.Substring(argumentEnd, script.Length - argumentEnd);
+                                    newArguments + script.Substring(argumentEnd, script.Length - argumentEnd);
 
                         i = argumentStart + newArguments.Length;
                     }
                 }
             }
+            
 
             return script;
         }

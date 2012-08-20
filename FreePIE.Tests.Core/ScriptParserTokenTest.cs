@@ -46,9 +46,9 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void GetTokensFromExpression()
         {
-            Register(Stub<IPluginInvoker>());
+            Stub<IPluginInvoker>();
 
-            IScriptParser parser = new LuaScriptParser(Get<IPluginInvoker>());
+            IScriptParser parser = Get<LuaScriptParser>();
 
             TestTokens(parser,
                        Expression1,
