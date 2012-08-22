@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Caliburn.Micro;
-using FreePIE.Core.Persistence;
+using FreePIE.Core.Common;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
 using FreePIE.GUI.Views.Plugin;
-using FreePIE.GUI.Views.Script;
-using FreePIE.GUI.Views.Script.Output;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Main
@@ -21,18 +16,21 @@ namespace FreePIE.GUI.Views.Main
         private readonly IResultFactory resultFactory;
         private readonly IEventAggregator eventAggregator;
         private readonly Func<IScriptEngine> scriptEngineFactory;
+        private readonly IFileSystem fileSystem;
         private IScriptEngine currentScriptEngine;
         private bool scriptRunning;
 
         public MainMenuViewModel(IResultFactory resultFactory, 
             IEventAggregator eventAggregator,
-            Func<IScriptEngine> scriptEngineFactory)
+            Func<IScriptEngine> scriptEngineFactory,
+            IFileSystem fileSystem)
         {
             eventAggregator.Subscribe(this);
            
             this.resultFactory = resultFactory;
             this.eventAggregator = eventAggregator;
             this.scriptEngineFactory = scriptEngineFactory;
+            this.fileSystem = fileSystem;
         }
 
         private string currentScriptFile;
@@ -45,7 +43,7 @@ namespace FreePIE.GUI.Views.Main
             if(!string.IsNullOrEmpty(result.File))
             {
                 currentScriptFile = result.File;
-                eventAggregator.Publish(new ScriptLoadedEvent(File.ReadAllText(result.File)));
+                eventAggregator.Publish(new ScriptLoadedEvent(fileSystem.ReadAllText(result.File)));
                 NotifyOfPropertyChange(() => CanQuickSaveScript);
             }
         }
@@ -62,7 +60,7 @@ namespace FreePIE.GUI.Views.Main
         private void Save(string filename)
         {
             currentScriptFile = filename;
-            File.WriteAllText(filename, script);
+            fileSystem.WriteAllText(filename, script);
             NotifyOfPropertyChange(() => CanQuickSaveScript);
         }
 
