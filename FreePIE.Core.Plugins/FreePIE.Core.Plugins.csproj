@@ -69,6 +69,7 @@
     <Compile Include="Strategies\SetPressedStrategy.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
+    <Compile Include="XBox360Plugin.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj">
