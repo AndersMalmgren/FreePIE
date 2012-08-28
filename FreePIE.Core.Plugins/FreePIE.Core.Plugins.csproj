@@ -60,12 +60,14 @@
     <Compile Include="FreeImuPlugin.cs" />
     <Compile Include="FreeSpacePlugin.cs" />
     <Compile Include="FreeTrackPlugin.cs" />
+    <Compile Include="JoystickPlugin.cs" />
     <Compile Include="KeyboardPlugin.cs" />
     <Compile Include="MouseKeyIO.cs" />
     <Compile Include="MousePlugin.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="PPJoyPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Strategies\GetPressedStrategy.cs" />
     <Compile Include="Strategies\SetPressedStrategy.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
