@@ -23,7 +23,7 @@ namespace FreePIE.Core.Plugins
             foreach (var device in directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly))
             {
                 var controller = new Joystick(directInput, device.InstanceGuid);
-                controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Foreground);
+                controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
                 controller.Acquire();
 
                 devices.Add(new Device(controller));
