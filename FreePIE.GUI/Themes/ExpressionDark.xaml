@@ -21,6 +21,7 @@
     <BitmapImage x:Key="IconSettings" UriSource="../Resources/settings-16.png" />
     <BitmapImage x:Key="IconCurve" UriSource="../Resources/curve-16.png" />
     <BitmapImage x:Key="IconAbout" UriSource="../Resources/about-16.png" />
+    <BitmapImage x:Key="IconHelp" UriSource="../Resources/help-16.png" />
     
     <!-- Main Colors -->
 

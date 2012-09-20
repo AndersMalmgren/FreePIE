@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
     <Compile Include="Common\CodeCompletion\CompletionItem.cs" />
+    <Compile Include="Common\RichTextBox\RtfTextBox.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
@@ -103,6 +104,10 @@
     </Compile>
     <Compile Include="Shells\CurveSettingsViewModel.cs" />
     <Compile Include="Shells\MainShellViewModel.cs" />
+    <Compile Include="Shells\PluginHelpView.xaml.cs">
+      <DependentUpon>PluginHelpView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shells\PluginHelpViewModel.cs" />
     <Compile Include="Shells\PluginSettingsView.xaml.cs">
       <DependentUpon>PluginSettingsView.xaml</DependentUpon>
     </Compile>
@@ -116,6 +121,7 @@
       <DependentUpon>MainMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Main\MainMenuViewModel.cs" />
+    <Compile Include="Views\Plugin\PluginHelpFileViewModel.cs" />
     <Compile Include="Views\Plugin\PluginPropertyView.xaml.cs">
       <DependentUpon>PluginPropertyView.xaml</DependentUpon>
     </Compile>
@@ -175,6 +181,10 @@
       <DependentUpon>MainShellView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Shells\PluginHelpView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Shells\PluginSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -283,10 +293,16 @@
   <ItemGroup>
     <Resource Include="free-pie.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\help-16.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>md "$(TargetDir)plugins"
 copy "$(SolutionDir)\FreePIE.Core.Plugins\$(OutDir)*.dll" "$(TargetDir)plugins"
+
+md "$(TargetDir)help"
+copy "$(SolutionDir)\FreePIE.Core.Plugins\Help\*.rtf" "$(TargetDir)help"
 
 copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"

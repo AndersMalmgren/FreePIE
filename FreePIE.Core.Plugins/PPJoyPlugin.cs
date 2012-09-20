@@ -65,7 +65,7 @@ namespace FreePIE.Core.Plugins
 
         public override string FriendlyName
         {
-            get { return "PPJoy"; }
+            get { return "ppJoy"; }
         }
 
         public void SetAxis(int index, AxisTypes axisType, int value)

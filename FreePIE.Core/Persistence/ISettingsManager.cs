@@ -11,5 +11,6 @@ namespace FreePIE.Core.Persistence
         Settings Settings { get; }
         PluginSetting GetPluginSettings(IPlugin plugin);
         IEnumerable<PluginSetting> ListConfigurablePluginSettings();
+        IEnumerable<PluginSetting> ListPluginSettingsWithHelpFile();
     }
 }

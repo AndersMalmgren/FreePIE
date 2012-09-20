@@ -22,5 +22,15 @@ namespace FreePIE.Core.Common
         {
             return File.ReadAllText(path);
         }
+
+        public bool Exists(string path)
+        {
+            return File.Exists(path);
+        }
+
+        public Stream OpenRead(string path)
+        {
+            return File.OpenRead(path);
+        }
     }
 }

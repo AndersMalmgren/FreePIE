@@ -18,6 +18,7 @@ namespace FreePIE.Core.Plugins
         private readonly Func<Type, IPlugin> pluginFactory;
         private readonly IFileSystem fileSystem;
         private const string pluginFolder = "plugins";
+        private const string helpFolder = "help";
 
         private IEnumerable<Type> pluginTypes;
         private IEnumerable<Type> globalEnumTypes; 
@@ -69,6 +70,13 @@ namespace FreePIE.Core.Plugins
 
                 pluginSettings.FriendlyName = plugin.FriendlyName;
                 InitProperties(plugin, pluginSettings.PluginProperties);
+
+                var helpFile = string.Format(@"{0}\{1}.rtf", Utils.GetAbsolutePath(helpFolder), pluginType.FullName);
+
+                if(fileSystem.Exists(helpFile))
+                {
+                    pluginSettings.HelpFile = helpFile;
+                }
             }
         }
 

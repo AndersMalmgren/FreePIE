@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 
 namespace FreePIE.Core.Common
 {
@@ -7,5 +8,7 @@ namespace FreePIE.Core.Common
         IEnumerable<string> GetFiles(string path, string pattern);
         void WriteAllText(string path, string content);
         string ReadAllText(string path);
+        bool Exists(string path);
+        Stream OpenRead(string path);
     }
 }

@@ -58,6 +58,11 @@
                         <Image Source="{StaticResource IconAbout}"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem x:Name="HelpFiles" DisplayMemberPath="Name" Header="_Help" cal:Message.Attach="ShowPluginHelp($orignalsourcecontext)">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconHelp}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
         </Menu>
     </Grid>

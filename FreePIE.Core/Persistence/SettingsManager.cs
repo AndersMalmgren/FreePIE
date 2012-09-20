@@ -53,6 +53,11 @@ namespace FreePIE.Core.Persistence
             return Settings.PluginSettings.Where(ps => ps.PluginProperties.Any()).ToList();
         }
 
+        public IEnumerable<PluginSetting> ListPluginSettingsWithHelpFile()
+        {
+            return Settings.PluginSettings.Where(ps => !string.IsNullOrEmpty(ps.HelpFile)).ToList();
+        }
+
         public Settings Settings { get; private set; }
 
     }

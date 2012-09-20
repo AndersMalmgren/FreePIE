@@ -31,6 +31,8 @@ namespace FreePIE.GUI.Shells
 
             Menu = mainMenuViewModel;
             Menu.Plugins = settingsManager.ListConfigurablePluginSettings().Select(ps => new PluginSettingsMenuViewModel(ps));
+            Menu.HelpFiles = settingsManager.ListPluginSettingsWithHelpFile().Select(ps => new PluginHelpFileViewModel(ps)).ToList();
+
             ScriptEditor = scriptEditorViewModel;
             Output = outputViewModel;
             DisplayName = "FreePIE - Programmable Input Emulator";

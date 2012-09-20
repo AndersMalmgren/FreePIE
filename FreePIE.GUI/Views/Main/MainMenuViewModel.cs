@@ -166,6 +166,13 @@ namespace FreePIE.GUI.Views.Main
                 .Configure(p => p.Init(pluginMenu.PluginSetting));
         }
 
+        public IEnumerable<IResult> ShowPluginHelp(PluginHelpFileViewModel pluginMenu)
+        {
+            yield return resultFactory.ShowDialogResult<PluginHelpViewModel>()
+                .Configure(p => p.Init(pluginMenu.PluginSetting));
+        }
+
         public IEnumerable<PluginSettingsMenuViewModel> Plugins { get; set; }
+        public IEnumerable<PluginHelpFileViewModel> HelpFiles { get; set; }
     }
 }
