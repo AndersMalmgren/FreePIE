@@ -69,6 +69,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strategies\GetPressedStrategy.cs" />
     <Compile Include="Strategies\SetPressedStrategy.cs" />
+    <Compile Include="TrackIRPlugin.cs" />
+    <Compile Include="TrackIR\DllRegistrar.cs" />
+    <Compile Include="TrackIR\HeadPoseData.cs" />
+    <Compile Include="TrackIR\NativeDll.cs" />
+    <Compile Include="TrackIR\NPClientSpoof.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
     <Compile Include="XBox360Plugin.cs" />
