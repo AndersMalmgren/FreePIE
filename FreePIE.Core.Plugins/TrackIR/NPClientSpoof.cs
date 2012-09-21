@@ -45,7 +45,7 @@ namespace FreePIE.Core.Plugins.TrackIR
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate InternalHeadPoseData DecodeTrackirData(InternalHeadPoseData data);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate UInt32 GetHeadposePosition(ref TrackIRHeadposeData data);
+        private delegate UInt32 GetHeadposePosition(IntPtr data);
 
         private readonly NativeDll npClient;
         private readonly SetHeadposePosition setPosition;
@@ -92,9 +92,13 @@ namespace FreePIE.Core.Plugins.TrackIR
 
         private bool ReadTrackIRData(ref InternalHeadPoseData output)
         {
-            var data = new TrackIRHeadposeData();
+            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (TrackIRHeadposeData)));
 
-            getPosition(ref data);
+            getPosition(ptr);
+
+            var data = (TrackIRHeadposeData)Marshal.PtrToStructure(ptr, typeof (TrackIRHeadposeData));
+
+            Marshal.FreeHGlobal(ptr);
 
             if (data.FrameSignature == lastFrame)
                 return false;
@@ -104,7 +108,6 @@ namespace FreePIE.Core.Plugins.TrackIR
             lastFrame = data.FrameSignature;
             return true;
         }
-
 
         public void SetPosition(float x, float y, float z, float roll, float pitch, float yaw)
         {
