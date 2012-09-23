@@ -124,15 +124,9 @@ namespace FreePIE.Core.Plugins
     }
 
     [LuaGlobal(Name = "freeTrack")]
-    public class FreeTrackGlobal : UpdateblePluginGlobal
+    public class FreeTrackGlobal : UpdateblePluginGlobal<FreeTrackPlugin>
     {
-        private readonly FreeTrackPlugin plugin;
-
-        public FreeTrackGlobal(FreeTrackPlugin plugin) : base(plugin)
-        {
-            this.plugin = plugin;
-
-        }
+        public FreeTrackGlobal(FreeTrackPlugin plugin) : base(plugin) { }
 
         private void Write(Func<FreeTrackData, FreeTrackData> setValue)
         {

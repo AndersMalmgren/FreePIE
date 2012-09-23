@@ -55,6 +55,7 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="AhrsImuPlugin.cs" />
+    <Compile Include="AndroidPlugin.cs" />
     <Compile Include="ApplePlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="FreeImuPlugin.cs" />
@@ -67,6 +68,8 @@
     <Compile Include="Plugin.cs" />
     <Compile Include="PPJoyPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SensorFusion\MahonyAHRS.cs" />
+    <Compile Include="SensorFusion\Quaternion.cs" />
     <Compile Include="Strategies\GetPressedStrategy.cs" />
     <Compile Include="Strategies\SetPressedStrategy.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />

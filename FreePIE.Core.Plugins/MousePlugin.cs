@@ -224,46 +224,45 @@ namespace FreePIE.Core.Plugins
 
     //==========================================================================
     [LuaGlobal(Name = "mouse")]
-    public class MouseGlobal : UpdateblePluginGlobal
+    public class MouseGlobal : UpdateblePluginGlobal<MousePlugin>
     {
-
-        private readonly MousePlugin Mouse;
+        private readonly MousePlugin plugin;
 
         //-----------------------------------------------------------------------
         public MouseGlobal(MousePlugin plugin)
             : base(plugin)
         {
-            Mouse = plugin;
+            this.plugin = plugin;
         }
 
         public double DeltaX
         {
-            get { return Mouse.DeltaX; }
-            set { Mouse.DeltaX = (int) Math.Round(value); }
+            get { return plugin.DeltaX; }
+            set { plugin.DeltaX = (int) Math.Round(value); }
         }
 
         public double DeltaY
         {
-            get { return Mouse.DeltaY; }
-            set { Mouse.DeltaY = (int) Math.Round(value); }
+            get { return plugin.DeltaY; }
+            set { plugin.DeltaY = (int) Math.Round(value); }
         }
 
         public bool LeftButton
         {
-            get { return Mouse.IsButtonPressed(0); }
-            set { Mouse.SetButtonPressed(0, value); }
+            get { return plugin.IsButtonPressed(0); }
+            set { plugin.SetButtonPressed(0, value); }
         }
 
         public bool MiddleButton
         {
-            get { return Mouse.IsButtonPressed(2); }
-            set { Mouse.SetButtonPressed(2, value); }
+            get { return plugin.IsButtonPressed(2); }
+            set { plugin.SetButtonPressed(2, value); }
         }
 
         public bool RightButton
         {
-            get { return Mouse.IsButtonPressed(1); }
-            set { Mouse.SetButtonPressed(1, value); }
+            get { return plugin.IsButtonPressed(1); }
+            set { plugin.SetButtonPressed(1, value); }
         }
     }
 }

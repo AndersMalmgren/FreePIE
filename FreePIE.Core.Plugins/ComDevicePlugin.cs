@@ -110,14 +110,9 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    public abstract class DofGlobal<TPlugin> : UpdateblePluginGlobal where TPlugin : ComDevicePlugin
+    public abstract class DofGlobal<TPlugin> : UpdateblePluginGlobal<TPlugin> where TPlugin : ComDevicePlugin
     {
-        private readonly TPlugin plugin;
-
-        public DofGlobal(TPlugin plugin) : base(plugin)
-        {
-            this.plugin = plugin;
-        }
+        public DofGlobal(TPlugin plugin) : base(plugin){}
 
         public float Yaw
         {

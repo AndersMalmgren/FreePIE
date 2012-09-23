@@ -638,61 +638,61 @@ namespace FreePIE.Core.Plugins
 
     //==========================================================================
     [LuaGlobal(Name = "keyboard")]
-    public class KeyboardGlobal : UpdateblePluginGlobal
+    public class KeyboardGlobal : UpdateblePluginGlobal<KeyboardPlugin>
     {
 
-        private readonly KeyboardPlugin Keyboard;
+        private readonly KeyboardPlugin plugin;
 
         //-----------------------------------------------------------------------
         public KeyboardGlobal(KeyboardPlugin plugin)
             : base(plugin)
         {
-            Keyboard = plugin;
+            this.plugin = plugin;
         }
 
         //-----------------------------------------------------------------------
         public bool getKeyDown(Key key)
         {
-            return Keyboard.IsKeyDown((int) key);
+            return plugin.IsKeyDown((int) key);
         }
 
         //-----------------------------------------------------------------------
         public void setKeyDown(Key key)
         {
-            Keyboard.KeyDown((int) key);
+            plugin.KeyDown((int) key);
         }
 
         //-----------------------------------------------------------------------
         public bool getKeyUp(Key key)
         {
-            return Keyboard.IsKeyUp((int) key);
+            return plugin.IsKeyUp((int) key);
         }
 
         //-----------------------------------------------------------------------
         public void setKeyUp(Key key)
         {
-            Keyboard.KeyUp((int) key);
+            plugin.KeyUp((int) key);
         }
 
         //-----------------------------------------------------------------------
         public void setKey(Key key, bool down)
         {
             if (down)
-                Keyboard.KeyDown((int) key);
+                plugin.KeyDown((int) key);
             else
-                Keyboard.KeyUp((int) key);
+                plugin.KeyUp((int) key);
         }
 
         //-----------------------------------------------------------------------
         public bool getPressed(Key key)
         {
-            return Keyboard.WasKeyPressed((int) key);
+            return plugin.WasKeyPressed((int) key);
         }
 
         //-----------------------------------------------------------------------
         public void setPressed(Key key)
         {
-            Keyboard.PressAndRelease((int) key);
+            plugin.PressAndRelease((int) key);
         }
     }
 }
