@@ -97,7 +97,7 @@ public class UdpSenderTask {
 		
 		SensorEventListener allListener = new SensorEventListener() {
 			public void onSensorChanged(SensorEvent event) {
-				if(sendOrientation) {
+				if(sendOrientation && event.accuracy != SensorManager.SENSOR_STATUS_UNRELIABLE) {
 				 float R[] = new float[9];
 				 float I[] = new float[9];
 				 float orientation[] = new float[3];
@@ -140,7 +140,6 @@ public class UdpSenderTask {
 		running = true;
 		worker = new Thread(new Runnable() { 
             public void run(){
-
         		while(running) {
         			try {
         			sync.await();
@@ -148,7 +147,10 @@ public class UdpSenderTask {
         			
         			Send();
         		}
-        		socket.disconnect();
+        		try  {
+        			socket.disconnect();
+        		}
+        		catch(Exception e)  {}
         	}
 		});	
 		worker.start();

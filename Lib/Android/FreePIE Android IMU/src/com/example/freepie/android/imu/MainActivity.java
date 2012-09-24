@@ -3,6 +3,7 @@ package com.example.freepie.android.imu;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.Menu;
@@ -17,22 +18,35 @@ import android.support.v4.app.NavUtils;
 public class MainActivity extends Activity {
 
 	private UdpSenderTask udpSender;
+	private static final String IP = "ip";
+	private static final String PORT = "port";
+	private static final String SEND_ORIENTATION = "send_orientation";
+	private static final String SEND_RAW = "send_raw";
 	
+	private ToggleButton start;
+	private EditText txtIp;
+	private EditText txtPort;
+	private CheckBox chkSendOrientation;
+	private CheckBox chkSendRaw;
+    
+		
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        final ToggleButton start = (ToggleButton) findViewById(R.id.start);
-        final EditText txtIp = (EditText) findViewById(R.id.ip);
-        final EditText txtPort = (EditText) findViewById(R.id.port);
-        final CheckBox chkSendOrientation = (CheckBox) findViewById(R.id.sendOrientation);
-        final CheckBox chkSendRaw = (CheckBox) findViewById(R.id.sendRaw);       
+        final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         
-        txtIp.setText("192.168.1.99");
-        txtPort.setText("5555");
-        chkSendOrientation.setChecked(true);
-        chkSendRaw.setChecked(true);
+        start = (ToggleButton) findViewById(R.id.start);
+        txtIp = (EditText) findViewById(R.id.ip);
+        txtPort = (EditText) findViewById(R.id.port);
+        chkSendOrientation = (CheckBox) findViewById(R.id.sendOrientation);
+        chkSendRaw = (CheckBox) findViewById(R.id.sendRaw);       
+        
+        txtIp.setText(preferences.getString(IP,  "192.168.1.1"));
+        txtPort.setText(preferences.getString(PORT,  "5555"));
+        chkSendOrientation.setChecked(preferences.getBoolean(SEND_ORIENTATION, true));
+        chkSendRaw.setChecked(preferences.getBoolean(SEND_RAW, true));
         
         final SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
                 
@@ -55,6 +69,19 @@ public class MainActivity extends Activity {
         });
     }
 
+    @Override
+    protected void onStop(){
+    	super.onStop();    	
+    	final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+    	
+    	preferences.edit()
+			.putString(IP, txtIp.getText().toString())
+			.putString(PORT, txtPort.getText().toString())
+			.putBoolean(SEND_ORIENTATION, chkSendOrientation.isChecked())
+			.putBoolean(SEND_RAW, chkSendRaw.isChecked())
+			.commit();
+    }    
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
