@@ -4,26 +4,26 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.locks.Lock;
-
-import android.R.bool;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.AsyncTask;
-import android.util.Log;
 
-public class UdpSenderTask {
+public class UdpSenderTask implements SensorEventListener {
 
-	float[] acc = new float[3];
-	float[] mag = new float[3];;
-	float[] gyr = new float[3];;
-	float[] imu = new float[3];;
+	float[] acc;
+	float[] mag;
+	float[] gyr;
+	float[] imu;
+	
+	float[] orientation = new float[3];	
+	
+	float[] inR = new float[16];
+	float[] I = new float[16];
+
 	
 	DatagramSocket socket;
 	InetAddress endPoint;
@@ -39,7 +39,7 @@ public class UdpSenderTask {
 	boolean running;
 
 	public void start(TargetSettings target) {
-		final SensorManager sensorManager = target.getSensorManager();
+		final SensorManager sensorManager = target.getSensorManager();		
 		sendRaw = target.getSendRaw();
 		sendOrientation = target.getSendOrientation();
 		
@@ -55,88 +55,9 @@ public class UdpSenderTask {
 			port = target.getPort();
 			socket = new DatagramSocket();
 		}
-		catch(Exception e) {
-			
+		catch(Exception e) {			
 		}
-			
-		SensorEventListener accListener = new SensorEventListener() {
-			public void onSensorChanged(SensorEvent event) {				 			
-				setArray(acc, event.values);		
-			}
-			@Override
-			public void onAccuracyChanged(Sensor sensor, int accuracy) {				
-			}
-		};
-		
-		SensorEventListener gyrListener = new SensorEventListener() {
-			public void onSensorChanged(SensorEvent event) {				 			
-				setArray(gyr, event.values);		
-			}
-			@Override
-			public void onAccuracyChanged(Sensor sensor, int accuracy) {				
-			}
-		};
-		
-		SensorEventListener magListener = new SensorEventListener() {
-			public void onSensorChanged(SensorEvent event) {				 			
-				setArray(mag, event.values);		
-			}
-			@Override
-			public void onAccuracyChanged(Sensor sensor, int accuracy) {				
-			}
-		};
-		
-		/*SensorEventListener imuListener = new SensorEventListener() {
-			public void onSensorChanged(SensorEvent event) {				
-				setArray(imu, event.values);
-			}
-			@Override
-			public void onAccuracyChanged(Sensor sensor, int accuracy) {				
-			}
-		};*/
-		
-		SensorEventListener allListener = new SensorEventListener() {
-			public void onSensorChanged(SensorEvent event) {
-				if(sendOrientation && event.accuracy != SensorManager.SENSOR_STATUS_UNRELIABLE) {
-				 float R[] = new float[9];
-				 float I[] = new float[9];
-				 float orientation[] = new float[3];
-				 boolean success = sensorManager.getRotationMatrix(R, I, acc, mag);
-				 if (success) {					    
-				   SensorManager.getOrientation(R, orientation);
-				   setArray(imu, orientation);
-				 }
-				}
-				
-				if(sync.getNumberWaiting() > 0)
-					sync.reset();			
-			}
-			@Override
-			public void onAccuracyChanged(Sensor sensor, int accuracy) {				
-			}
-		};	
-
-		
-		sensorManager.registerListener(accListener,
-				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_FASTEST);
-		
-		sensorManager.registerListener(gyrListener,
-				sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-				SensorManager.SENSOR_DELAY_FASTEST);		
-		
-		sensorManager.registerListener(magListener,
-				sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-				SensorManager.SENSOR_DELAY_FASTEST);	
-		
-		/*sensorManager.registerListener(imuListener,
-				sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-				SensorManager.SENSOR_DELAY_FASTEST);*/	
-		
-		sensorManager.registerListener(allListener,
-				sensorManager.getDefaultSensor(Sensor.TYPE_ALL),
-				SensorManager.SENSOR_DELAY_FASTEST);	
-		
+					
 		running = true;
 		worker = new Thread(new Runnable() { 
             public void run(){
@@ -154,16 +75,55 @@ public class UdpSenderTask {
         	}
 		});	
 		worker.start();
+
+		
+		sensorManager.registerListener(this,
+				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+				SensorManager.SENSOR_DELAY_FASTEST);
+		
+		sensorManager.registerListener(this,
+				sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+				SensorManager.SENSOR_DELAY_FASTEST);		
+		
+		sensorManager.registerListener(this,
+				sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+				SensorManager.SENSOR_DELAY_FASTEST);	
+	}
+	
+	public void onSensorChanged(SensorEvent sensorEvent) {
+	    switch (sensorEvent.sensor.getType()) {  
+	        case Sensor.TYPE_ACCELEROMETER:
+	            acc = sensorEvent.values.clone();
+	            break;
+	        case Sensor.TYPE_MAGNETIC_FIELD:
+	            mag = sensorEvent.values.clone();
+	            break;
+	            
+	        case Sensor.TYPE_GYROSCOPE:
+	            gyr = sensorEvent.values.clone();
+	            break;
+	    }
+
+	    if (sendOrientation && sensorEvent.accuracy != SensorManager.SENSOR_STATUS_UNRELIABLE && acc != null && mag != null) {
+	        boolean success = SensorManager.getRotationMatrix(inR, I, acc, mag);
+	        if (success) {
+	            SensorManager.getOrientation(inR, orientation);
+	            imu = orientation.clone();
+	        }
+	    }
+		
+		if(sync.getNumberWaiting() > 0)
+			sync.reset();			
+	}
+	
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public void stop() {
 		running = false;
-	}
-	
-	private void setArray(float[] arr, float[] sourceArr) {
-		arr[0] = sourceArr[0];
-		arr[1] = sourceArr[1];
-		arr[2] = sourceArr[2];
 	}
 
 	private void Send() {
@@ -171,7 +131,7 @@ public class UdpSenderTask {
 		
 		buffer.put(sendFlag);
 		
-		if(sendRaw) {
+		if(sendRaw && acc != null && mag != null && gyr != null) {
 			//Acc
 			buffer.putFloat(acc[0]);
 			buffer.putFloat(acc[1]);
@@ -188,7 +148,7 @@ public class UdpSenderTask {
 			buffer.putFloat(mag[2]);
 		}
 		
-		if(sendOrientation) {		
+		if(sendOrientation && imu != null) {		
 			//Orientation
 			buffer.putFloat(imu[0]);
 			buffer.putFloat(imu[1]);

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -49,7 +50,9 @@ public class MainActivity extends Activity {
         chkSendRaw.setChecked(preferences.getBoolean(SEND_RAW, true));
         
         final SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-                
+            
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        
         start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
             	boolean on = ((ToggleButton) view).isChecked();
