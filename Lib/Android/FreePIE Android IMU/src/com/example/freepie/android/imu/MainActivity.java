@@ -1,5 +1,9 @@
 package com.example.freepie.android.imu;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -10,9 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.ToggleButton;
 import android.support.v4.app.NavUtils;
 
@@ -23,12 +29,14 @@ public class MainActivity extends Activity {
 	private static final String PORT = "port";
 	private static final String SEND_ORIENTATION = "send_orientation";
 	private static final String SEND_RAW = "send_raw";
+	private static final String SAMPLE_RATE = "sample_rate";
 	
 	private ToggleButton start;
 	private EditText txtIp;
 	private EditText txtPort;
 	private CheckBox chkSendOrientation;
 	private CheckBox chkSendRaw;
+	private Spinner spnSampleRate;
     
 		
     @Override
@@ -48,6 +56,8 @@ public class MainActivity extends Activity {
         txtPort.setText(preferences.getString(PORT,  "5555"));
         chkSendOrientation.setChecked(preferences.getBoolean(SEND_ORIENTATION, true));
         chkSendRaw.setChecked(preferences.getBoolean(SEND_RAW, true));
+        spnSampleRate = (Spinner)this.findViewById(R.id.sampleRate);
+        populateSampleRates(preferences.getInt(SAMPLE_RATE, 0));
         
         final SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
             
@@ -64,12 +74,38 @@ public class MainActivity extends Activity {
                 boolean sendRaw = chkSendRaw.isChecked();
             	
 	        	udpSender = new UdpSenderTask();
-	        	udpSender.start(new TargetSettings(ip, port, sensorManager, sendOrientation, sendRaw));
+	        	udpSender.start(new TargetSettings(ip, port, sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId()));
             	} else {
             		udpSender.stop();
             	}
             }
         });
+    }
+    
+    private void populateSampleRates(int defaultSampleRate) {
+    	List<SampleRate> sampleRates = Arrays.asList(new SampleRate[] {   
+    		new SampleRate(SensorManager.SENSOR_DELAY_UI, "UI"), 
+    		new SampleRate(SensorManager.SENSOR_DELAY_NORMAL, "Normal"), 
+    		new SampleRate(SensorManager.SENSOR_DELAY_GAME, "Game"), 
+    		new SampleRate(SensorManager.SENSOR_DELAY_FASTEST, "Fastest") 
+		});
+    	
+    	SampleRate selectedSampleRate = null;
+    	for (SampleRate sampleRate : sampleRates) {
+		  if (sampleRate.getId() == defaultSampleRate) {
+		    selectedSampleRate = sampleRate;
+		    break;
+		  }
+		}
+    	
+    	ArrayAdapter<SampleRate> sampleRatesAdapter = new ArrayAdapter<SampleRate>(this,
+			android.R.layout.simple_spinner_item, sampleRates);
+    	spnSampleRate.setAdapter(sampleRatesAdapter);
+    	spnSampleRate.setSelection(sampleRates.indexOf(selectedSampleRate), false);
+    }
+    
+    private int getSelectedSampleRateId() {
+    	return ((SampleRate)spnSampleRate.getSelectedItem()).getId();
     }
 
     @Override
@@ -82,6 +118,7 @@ public class MainActivity extends Activity {
 			.putString(PORT, txtPort.getText().toString())
 			.putBoolean(SEND_ORIENTATION, chkSendOrientation.isChecked())
 			.putBoolean(SEND_RAW, chkSendRaw.isChecked())
+			.putInt(SAMPLE_RATE,  getSelectedSampleRateId())
 			.commit();
     }    
     

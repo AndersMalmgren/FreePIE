@@ -66,13 +66,21 @@
         android:layout_below="@+id/sendOrientation"
         android:text="@string/send_raw" />
 
+    <Spinner
+        android:id="@+id/sampleRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/sendRaw" />
+
     <ToggleButton
         android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/sendRaw"
+        android:layout_below="@+id/sampleRate"
         android:text="@string/start" />
 
 </RelativeLayout>

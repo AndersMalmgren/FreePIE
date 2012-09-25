@@ -119,6 +119,7 @@ namespace FreePIE.Core.Plugins
                         var freq = samples / (float)delta;
                         freeqSampled = true;
 
+                        System.Diagnostics.Debug.WriteLine("Samples / s: {0}", samples);
                         ahrs = new MahonyAHRS(1f / freq, 0.1f);
                     }
                     else

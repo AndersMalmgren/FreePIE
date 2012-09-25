@@ -30,6 +30,8 @@ public class UdpSenderTask implements SensorEventListener {
 	int port;
 	boolean sendOrientation;
 	boolean sendRaw;
+	private int sampleRate;
+	
 	byte sendFlag;
 	
 	ByteBuffer buffer;
@@ -41,7 +43,8 @@ public class UdpSenderTask implements SensorEventListener {
 	public void start(TargetSettings target) {
 		final SensorManager sensorManager = target.getSensorManager();		
 		sendRaw = target.getSendRaw();
-		sendOrientation = target.getSendOrientation();
+		sendOrientation = target.getSendOrientation();		
+		sampleRate = target.getSampleRate();
 		
 		sendFlag = (byte)((sendRaw ? 0x01 : 0x00) | (sendOrientation ? 0x02 : 0x00)); 
 		
@@ -79,15 +82,15 @@ public class UdpSenderTask implements SensorEventListener {
 		
 		sensorManager.registerListener(this,
 				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_FASTEST);
+				sampleRate);
 		
 		sensorManager.registerListener(this,
 				sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-				SensorManager.SENSOR_DELAY_FASTEST);		
+				sampleRate);		
 		
 		sensorManager.registerListener(this,
 				sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-				SensorManager.SENSOR_DELAY_FASTEST);	
+				sampleRate);	
 	}
 	
 	public void onSensorChanged(SensorEvent sensorEvent) {

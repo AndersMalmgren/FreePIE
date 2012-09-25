@@ -8,13 +8,15 @@ public class TargetSettings {
 	private SensorManager sensorManager;
 	private boolean sendOrientation;
 	private boolean sendRaw;
+	private int sampleRate;
 	
-	public TargetSettings(String toIp, int port, SensorManager sensorManager, boolean sendOrientation, boolean sendRaw) {
+	public TargetSettings(String toIp, int port, SensorManager sensorManager, boolean sendOrientation, boolean sendRaw, int sampleRate) {
 		this.toIp = toIp;
 		this.port = port;
 		this.sensorManager = sensorManager;
 		this.sendOrientation = sendOrientation;
 		this.sendRaw = sendRaw;
+		this.sampleRate = sampleRate;
 	}
 	
 	public String getToIp()
@@ -41,4 +43,8 @@ public class TargetSettings {
 	{
 		return sendRaw;
 	} 
+	
+	public int getSampleRate() {
+		return sampleRate;
+	}
 }
