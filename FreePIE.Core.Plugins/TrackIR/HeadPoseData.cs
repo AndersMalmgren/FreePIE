@@ -22,6 +22,11 @@ namespace FreePIE.Core.Plugins.TrackIR
             return Equals((HeadPoseData) obj);
         }
 
+        public override string ToString()
+        {
+            return "yaw: " + Yaw + " pitch: " + Pitch + "roll: " + Roll + " x: " + X + " y: " + Y + " z: " + Z;
+        }
+
         public override int GetHashCode()
         {
             unchecked
@@ -44,6 +49,16 @@ namespace FreePIE.Core.Plugins.TrackIR
         public static bool operator !=(HeadPoseData left, HeadPoseData right)
         {
             return !Equals(left, right);
+        }
+
+        public void CopyFrom(HeadPoseData data)
+        {
+            this.Yaw = data.Yaw;
+            this.Pitch = data.Pitch;
+            this.Roll = data.Roll;
+            this.X = data.X;
+            this.Y = data.Y;
+            this.Z = data.Z;
         }
     }
 }

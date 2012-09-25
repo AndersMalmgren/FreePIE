@@ -11,14 +11,15 @@ namespace FreePIE.Core.Plugins
     public class TrackIRPlugin : Plugin
     {
         private NPClientSpoof spoofer;
-        private HeadPoseData latestKnownData;
 
         public HeadPoseData Data { get; private set; }
+        private HeadPoseData LatestKnownData { get; set; }
+        public bool ReadRequested { get; set; }
 
         public TrackIRPlugin()
         {
             Data = new HeadPoseData();
-            latestKnownData = new HeadPoseData();
+            LatestKnownData = new HeadPoseData();
         }
 
         public override object CreateGlobal()
@@ -45,18 +46,22 @@ namespace FreePIE.Core.Plugins
 
         public override void DoBeforeNextExecute()
         {
-            if(Data != latestKnownData)
+            if(Data != LatestKnownData)
             {
+                System.Diagnostics.Debug.WriteLine("writing...");
                 spoofer.SetPosition(Data.X, Data.Y, Data.Z, Data.Roll, Data.Pitch, Data.Yaw);
-                latestKnownData = Data;
+                LatestKnownData.CopyFrom(Data);
             }
-            else
+            else if(ReadRequested)
             {
+                ReadRequested = false;
                 var data = new HeadPoseData();
 
                 if (spoofer.ReadPosition(ref data))
                 {
-                    Data = latestKnownData = data;
+                    System.Diagnostics.Debug.WriteLine("Reading....!!");
+                    Data.CopyFrom(data);
+                    LatestKnownData.CopyFrom(data);
                     OnUpdate();
                 }
             } 
@@ -76,37 +81,61 @@ namespace FreePIE.Core.Plugins
 
         public float Yaw
         {
-            get { return plugin.Data.Yaw; }
+            get
+            {
+                plugin.ReadRequested = true;
+                return plugin.Data.Yaw;
+            }
             set { plugin.Data.Yaw = value; }
         }
 
         public float Pitch
         {
-            get { return plugin.Data.Pitch; }
+            get
+            {
+                plugin.ReadRequested = true;
+                return plugin.Data.Pitch;
+            }
             set { plugin.Data.Pitch = value; }
         }
 
         public float Roll
         {
-            get { return plugin.Data.Roll; }
+            get
+            {
+                plugin.ReadRequested = true;
+                return plugin.Data.Roll;
+            }
             set { plugin.Data.Roll = value; }
         }
 
         public float X
         {
-            get { return plugin.Data.X; }
+            get
+            {
+                plugin.ReadRequested = true;
+                return plugin.Data.X;
+            }
             set { plugin.Data.X = value; }
         }
 
         public float Y
         {
-            get { return plugin.Data.Y; }
+            get
+            {
+                plugin.ReadRequested = true;
+                return plugin.Data.Y;
+            }
             set { plugin.Data.Y = value; }
         }
 
         public float Z
         {
-            get { return plugin.Data.Z; }
+            get
+            {
+                plugin.ReadRequested = true;
+                return plugin.Data.Z;
+            }
             set { plugin.Data.Z = value; }
         }
     }

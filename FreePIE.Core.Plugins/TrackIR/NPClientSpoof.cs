@@ -33,57 +33,41 @@ namespace FreePIE.Core.Plugins.TrackIR
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct InternalHeadPoseData
+        internal struct InternalHeadPoseData
         {
             public float Yaw, Pitch, Roll, X, Y, Z;
         }
 
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate int SetupFakeNPClient(string logPath);
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate int SetHeadposePosition(float yaw, float pitch, float roll, float tx, float ty, float tz);
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate InternalHeadPoseData DecodeTrackirData(InternalHeadPoseData data);
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate UInt32 GetHeadposePosition(IntPtr data);
-
-        private readonly NativeDll npClient;
-        private readonly SetHeadposePosition setPosition;
-        private readonly GetHeadposePosition getPosition;
-        private readonly DecodeTrackirData decodeHeadPose;
-        private readonly SetupFakeNPClient setup;
-
         private const string NPClientName = @"NPClient.dll";
-        private const string SetPositionName = "Freepie_SetPosition";
-        private const string GetDataName = "NP_GetData";
-        private const string GetSignatureName = "NP_GetSignature";
-        private const string DecodeTrackirName = "Freepie_DecodeTrackirData";
-        private const string SetupNPClientName = "Freepie_Setup";
+
+        private readonly WritableTrackIRDll freepieDll;
+        private readonly TrackIRDll realTrackIRDll;
 
         private ushort lastFrame;
 
         public NPClientSpoof(string logFile = null)
         {
-            new DllRegistrar().InjectFakeTrackIRDll(Path.Combine(Environment.CurrentDirectory, NPClientName));
-            npClient = new NativeDll(NPClientName);
+            string realDllPath = DllRegistrar.InjectFakeTrackIRDll(Environment.CurrentDirectory);
+            freepieDll = new WritableTrackIRDll(NPClientName);
 
-            getPosition = npClient.GetDelegateFromFunction<GetHeadposePosition>(GetDataName);
-            setPosition = npClient.GetDelegateFromFunction<SetHeadposePosition>(SetPositionName);
-            decodeHeadPose = npClient.GetDelegateFromFunction<DecodeTrackirData>(DecodeTrackirName);
-            setup = npClient.GetDelegateFromFunction<SetupFakeNPClient>(SetupNPClientName);
+            if(realDllPath != null)
+                realTrackIRDll = new TrackIRDll(realDllPath + NPClientName);
 
             if (logFile != null)
-                setup(logFile);
+                freepieDll.SetupFakeNpClient(logFile);
         }
 
         public bool ReadPosition(ref HeadPoseData output)
         {
+            if(realTrackIRDll == null)
+                throw new InvalidOperationException("Reading not supported - real trackir dll not loaded.");
+
             var headpose = new InternalHeadPoseData();
 
             if (!ReadTrackIRData(ref headpose))
                 return false;
 
-            headpose = decodeHeadPose(headpose);
+            headpose = freepieDll.DecodeTrackir(headpose);
 
             output = new HeadPoseData() { Yaw = headpose.Yaw, Pitch = headpose.Pitch, Roll = headpose.Roll, X = headpose.X, Y = headpose.Y, Z = headpose.Z };
 
@@ -94,30 +78,37 @@ namespace FreePIE.Core.Plugins.TrackIR
         {
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (TrackIRHeadposeData)));
 
-            getPosition(ptr);
+            realTrackIRDll.GetPosition(ptr);
 
-            var data = (TrackIRHeadposeData)Marshal.PtrToStructure(ptr, typeof (TrackIRHeadposeData));
+            TrackIRHeadposeData data = (TrackIRHeadposeData)Marshal.PtrToStructure(ptr, typeof (TrackIRHeadposeData));
 
             Marshal.FreeHGlobal(ptr);
 
-            if (data.FrameSignature == lastFrame)
+            if (data.FrameSignature == lastFrame || data.FrameSignature == 0)
                 return false;
 
             output = new InternalHeadPoseData() { Yaw = data.Yaw, Pitch = data.Pitch, Roll = data.Roll, X = data.X, Y = data.Y, Z = data.Z };
+
+            System.Diagnostics.Debug.WriteLine("Yaw: " + output.Yaw + "frame: " + data.FrameSignature);
 
             lastFrame = data.FrameSignature;
             return true;
         }
 
+
         public void SetPosition(float x, float y, float z, float roll, float pitch, float yaw)
         {
-            setPosition(yaw, pitch, roll, x, y, z);
+            freepieDll.SetPosition(yaw, pitch, roll, x, y, z);
         }
 
         public void Dispose()
         {
-            npClient.Dispose();
-            new DllRegistrar().EjectFakeTrackIRDll();
+            freepieDll.Dispose();
+
+            if(realTrackIRDll != null)
+                realTrackIRDll.Dispose();
+
+            DllRegistrar.EjectFakeTrackIRDll();
         }
     }
 }
