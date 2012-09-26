@@ -9,36 +9,64 @@ namespace FreePIE.Core.Plugins.TrackIR
 {
     public static class DllRegistrar
     {
-        private const string keyName = "Software\\NaturalPoint\\NATURALPOINT\\NPClient Location";
-        private const string valueName = "Path";
-        private const string freepieValueName = "Freepie_RealPath";
+        private const string KeyName = "Software\\NaturalPoint\\NATURALPOINT\\NPClient Location";
+        private const string ValueName = "Path";
+        private const string FreepieValueName = "Freepie_RealPath";
 
-        public static string InjectFakeTrackIRDll(string dllPath)
+        public static void InjectFakeTrackIRDll(string dllPath)
         {
-            var currentLocation = (string)Registry.GetValue(GetNPClientKey(), valueName, null);
+            var currentLocation = GetRealPath();
+
+            TrackIRPlugin.Log("Injecting fake dll located at: " + dllPath);
 
             if (currentLocation == dllPath)
-                return null;
+            {
+                TrackIRPlugin.Log("Freepie dll was already registered as the real dll");
+                return;
+            }
 
             if (currentLocation != null)
-                Registry.SetValue(GetNPClientKey(), freepieValueName, currentLocation);
+            {
+                TrackIRPlugin.Log("Storing path to old dll located at: " + currentLocation);
+                Registry.SetValue(GetNPClientKey(), FreepieValueName, currentLocation);
+            }
 
-            Registry.SetValue(GetNPClientKey(), valueName, dllPath);
+            Registry.SetValue(GetNPClientKey(), ValueName, dllPath);
+        }
 
-            return currentLocation;
+        public static string GetRealTrackIRDllPath(string freepieDllPath)
+        {
+            var realPath = GetRealPath();
+
+            return realPath == freepieDllPath ? GetStoredRealPath() : realPath;
+        }
+
+        private static string GetRealPath()
+        {
+           return (string)Registry.GetValue(GetNPClientKey(), ValueName, null);
+        }
+
+        private static string GetStoredRealPath()
+        {
+            return (string)Registry.GetValue(GetNPClientKey(), FreepieValueName, null);
         }
 
         private static string GetNPClientKey()
         {
-            return Path.Combine(Registry.CurrentUser.ToString(), keyName);
+            return Path.Combine(Registry.CurrentUser.ToString(), KeyName);
         }
 
         public static void EjectFakeTrackIRDll()
         {
-            var realLocation = (string)Registry.GetValue(GetNPClientKey(), freepieValueName, null);
+            var realLocation = GetStoredRealPath();
+
+            TrackIRPlugin.Log("Ejecting fake dll");
 
             if (realLocation != null)
-                Registry.SetValue(GetNPClientKey(), valueName, realLocation);
+            {
+                TrackIRPlugin.Log("Restoring to: " + realLocation);
+                Registry.SetValue(GetNPClientKey(), ValueName, realLocation);
+            } else TrackIRPlugin.Log("Nothing to restore to, doing nothing");
         }
     }
 }
