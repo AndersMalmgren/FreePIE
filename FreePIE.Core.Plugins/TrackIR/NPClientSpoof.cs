@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -57,6 +58,8 @@ namespace FreePIE.Core.Plugins.TrackIR
             if (logFile != null)
                 dll.SetupFakeNpClient(logFile);
 
+            CallStartupNPClientFunctions(dll);
+
             return dll;
         }
 
@@ -64,6 +67,19 @@ namespace FreePIE.Core.Plugins.TrackIR
         private readonly string logFile;
 
         private ushort lastFrame;
+
+        private Tuple<string, short> CallStartupNPClientFunctions(TrackIRDll dll)
+        {
+            string signature = dll.GetSignature();
+            short version = dll.QueryVersion();
+            dll.RegisterWindowHandle(Process.GetCurrentProcess().MainWindowHandle);
+            dll.RequestData(118);
+            dll.RegisterProgramProfileId(21434);
+            dll.StopCursor();
+            dll.StartDataTransmission();
+
+            return Tuple.Create(signature, version);
+        }
 
         public NPClientSpoof(string logFile = null)
         {
@@ -75,6 +91,13 @@ namespace FreePIE.Core.Plugins.TrackIR
             {
                 TrackIRPlugin.Log("Found real trackir dll at: " + realDllPath);
                 realTrackIRDll = new TrackIRDll(realDllPath + NPClientName);
+                var trackIRStartupData = CallStartupNPClientFunctions(realTrackIRDll);
+
+                TrackIRPlugin.Log("Signature: " + trackIRStartupData.Item1);
+                TrackIRPlugin.Log("Version: " + trackIRStartupData.Item2);
+
+
+
             } else TrackIRPlugin.Log("No real trackir dll found");
         }
 
@@ -162,8 +185,13 @@ namespace FreePIE.Core.Plugins.TrackIR
                 freepieDll.Dispose();
             }
 
-            if(realTrackIRDll != null)
+            if (realTrackIRDll != null)
+            {
+                realTrackIRDll.StopDataTransmission();
+                realTrackIRDll.StartCursor();
+                realTrackIRDll.UnregisterWindowHandle();
                 realTrackIRDll.Dispose();
+            }
         }
     }
 }

@@ -4,11 +4,8 @@ namespace FreePIE.Core.Plugins.TrackIR
 {
     internal class WritableTrackIRDll : TrackIRDll
     {
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate int SetupFakeNPClient(string logPath);
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate int SetHeadposePosition(float yaw, float pitch, float roll, float tx, float ty, float tz);
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate NPClientSpoof.InternalHeadPoseData DecodeTrackirData(NPClientSpoof.InternalHeadPoseData data);
 
         private const string SetPositionName = "Freepie_SetPosition";
