@@ -641,14 +641,8 @@ namespace FreePIE.Core.Plugins
     public class KeyboardGlobal : UpdateblePluginGlobal<KeyboardPlugin>
     {
 
-        private readonly KeyboardPlugin plugin;
-
         //-----------------------------------------------------------------------
-        public KeyboardGlobal(KeyboardPlugin plugin)
-            : base(plugin)
-        {
-            this.plugin = plugin;
-        }
+        public KeyboardGlobal(KeyboardPlugin plugin) : base(plugin) { }
 
         //-----------------------------------------------------------------------
         public bool getKeyDown(Key key)

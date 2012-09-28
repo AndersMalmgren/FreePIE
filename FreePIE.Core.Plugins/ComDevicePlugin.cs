@@ -112,7 +112,7 @@ namespace FreePIE.Core.Plugins
 
     public abstract class DofGlobal<TPlugin> : UpdateblePluginGlobal<TPlugin> where TPlugin : ComDevicePlugin
     {
-        public DofGlobal(TPlugin plugin) : base(plugin){}
+        protected DofGlobal(TPlugin plugin) : base(plugin){}
 
         public float Yaw
         {

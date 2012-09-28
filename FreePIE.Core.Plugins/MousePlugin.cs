@@ -226,14 +226,8 @@ namespace FreePIE.Core.Plugins
     [LuaGlobal(Name = "mouse")]
     public class MouseGlobal : UpdateblePluginGlobal<MousePlugin>
     {
-        private readonly MousePlugin plugin;
-
         //-----------------------------------------------------------------------
-        public MouseGlobal(MousePlugin plugin)
-            : base(plugin)
-        {
-            this.plugin = plugin;
-        }
+        public MouseGlobal(MousePlugin plugin) : base(plugin) { }
 
         public double DeltaX
         {
