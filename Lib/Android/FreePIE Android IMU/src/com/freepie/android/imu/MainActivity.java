@@ -1,4 +1,4 @@
-package com.example.freepie.android.imu;
+package com.freepie.android.imu;
 
 import java.util.Arrays;
 import java.util.List;
