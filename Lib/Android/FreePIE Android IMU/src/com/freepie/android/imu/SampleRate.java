@@ -1,4 +1,4 @@
-package com.example.freepie.android.imu;
+package com.freepie.android.imu;
 
 public class SampleRate {
 	private int id;	
