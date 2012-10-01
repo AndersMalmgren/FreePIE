@@ -106,11 +106,15 @@ namespace FreePIE.Core.Plugins
                     break;
                 }
 
-                if (samples == 0)
-                    started = DateTime.Now;
+                var flag = bytes[0];
+                var sendRaw = (flag & 1) == 1;
+                var sendOrientation = (flag & 2) == 2;
 
-                if (!freeqSampled)
+                if (!freeqSampled && sendRaw)
                 {
+                    if (samples == 0)
+                        started = DateTime.Now;
+
                     samples++;
                     var delta = (DateTime.Now - started).TotalSeconds;
                     if (delta > 1)
@@ -126,10 +130,6 @@ namespace FreePIE.Core.Plugins
                         continue;
                 }
 
-                var flag = bytes[0];
-                var sendRaw = (flag & 1) == 1;
-                var sendOrientation = (flag & 2) == 2;
-
                 var index = 1;
                 
                 if (sendRaw)
@@ -140,7 +140,7 @@ namespace FreePIE.Core.Plugins
 
                     var gx = GetFloat(bytes, index, 12);
                     var gy = GetFloat(bytes, index, 16);
-                    var gz = GetFloat(bytes, index, 20); ;
+                    var gz = GetFloat(bytes, index, 20);
 
                     var mx = GetFloat(bytes, index, 24);
                     var my = GetFloat(bytes, index, 28);

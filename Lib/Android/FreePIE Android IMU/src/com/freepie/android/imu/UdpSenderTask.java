@@ -79,6 +79,7 @@ public class UdpSenderTask implements SensorEventListener {
 		});	
 		worker.start();
 
+		if(sendRaw) {
 		
 		sensorManager.registerListener(this,
 				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
@@ -90,7 +91,14 @@ public class UdpSenderTask implements SensorEventListener {
 		
 		sensorManager.registerListener(this,
 				sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-				sampleRate);	
+				sampleRate);
+		}
+		
+		if(sendOrientation) {
+			sensorManager.registerListener(this,
+					sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+					sampleRate);
+		}
 	}
 	
 	public void onSensorChanged(SensorEvent sensorEvent) {
@@ -105,15 +113,10 @@ public class UdpSenderTask implements SensorEventListener {
 	        case Sensor.TYPE_GYROSCOPE:
 	            gyr = sensorEvent.values.clone();
 	            break;
-	    }
-
-	    if (sendOrientation && sensorEvent.accuracy != SensorManager.SENSOR_STATUS_UNRELIABLE && acc != null && mag != null) {
-	        boolean success = SensorManager.getRotationMatrix(inR, I, acc, mag);
-	        if (success) {
-	            SensorManager.getOrientation(inR, orientation);
-	            imu = orientation.clone();
-	        }
-	    }
+	        case Sensor.TYPE_ORIENTATION:
+	        	imu = sensorEvent.values.clone();
+	        	break;
+	    }	    
 		
 		if(sync.getNumberWaiting() > 0)
 			sync.reset();			
@@ -156,6 +159,7 @@ public class UdpSenderTask implements SensorEventListener {
 			buffer.putFloat(imu[0]);
 			buffer.putFloat(imu[1]);
 			buffer.putFloat(imu[2]);
+			imu = null;
 		}		
       				
 		byte[] arr = buffer.array();
