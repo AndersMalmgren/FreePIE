@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Help\FreePIE.Core.Plugins.AndroidPlugin.rtf" />
     <None Include="Help\FreePIE.Core.Plugins.PPJoyPlugin.rtf" />
     <None Include="Help\FreePIE.Core.Plugins.FreeImuPlugin.rtf" />
     <None Include="Help\FreePIE.Core.Plugins.AhrsImuPlugin.rtf" />
