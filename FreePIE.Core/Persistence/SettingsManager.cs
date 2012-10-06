@@ -50,12 +50,20 @@ namespace FreePIE.Core.Persistence
 
         public IEnumerable<PluginSetting> ListConfigurablePluginSettings()
         {
-            return Settings.PluginSettings.Where(ps => ps.PluginProperties.Any()).ToList();
+            return Settings
+                .PluginSettings
+                .Where(ps => ps.PluginProperties.Any())
+                .OrderBy(ps => ps.FriendlyName)
+                .ToList();
         }
 
         public IEnumerable<PluginSetting> ListPluginSettingsWithHelpFile()
         {
-            return Settings.PluginSettings.Where(ps => !string.IsNullOrEmpty(ps.HelpFile)).ToList();
+            return Settings
+                .PluginSettings
+                .Where(ps => !string.IsNullOrEmpty(ps.HelpFile))
+                .OrderBy(ps => ps.FriendlyName)
+                .ToList();
         }
 
         public Settings Settings { get; private set; }

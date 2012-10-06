@@ -45,11 +45,14 @@ namespace FreePIE.Core.Plugins
         public virtual void DoBeforeNextExecute() { }
     }
 
-    public abstract class UpdateblePluginGlobal
+    public abstract class UpdateblePluginGlobal<TPlugin> where TPlugin : Plugin
     {
-        public UpdateblePluginGlobal(Plugin plugin)
+        protected readonly TPlugin plugin;
+
+        public UpdateblePluginGlobal(TPlugin plugin)
         {
-            plugin.OnUpdate = OnUpdate;            
+            this.plugin = plugin;
+            plugin.OnUpdate = OnUpdate;
         }
 
         private void OnUpdate()

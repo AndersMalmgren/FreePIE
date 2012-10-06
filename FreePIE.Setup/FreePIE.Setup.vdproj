@@ -15,20 +15,14 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_0809F57C250DA23AD2ACE2A9BB54961A"
+        "MsmKey" = "8:_122DD4EA96E2C843BD379538541B6C20"
+        "OwnerKey" = "8:_6D2837A2575FA54A0A5C47F3C01DBD53"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_122DD4EA96E2C843BD379538541B6C20"
         "OwnerKey" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0809F57C250DA23AD2ACE2A9BB54961A"
-        "OwnerKey" = "8:_F436D3C2A1704083B7DAC64E3405B3B6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0809F57C250DA23AD2ACE2A9BB54961A"
-        "OwnerKey" = "8:_9AE14CF085C6F6E45E3941CFBB7D1570"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -40,7 +34,7 @@
         "Entry"
         {
         "MsmKey" = "8:_1E16CEA9A13B8C9814BF1616AC11F5D3"
-        "OwnerKey" = "8:_82309588DCAD25E3500D41B923F37701"
+        "OwnerKey" = "8:_3921E8D02C4B61F798F2FA09CFA0E4D5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -52,7 +46,7 @@
         "Entry"
         {
         "MsmKey" = "8:_22D349BC504A933FD2A389A753A975FF"
-        "OwnerKey" = "8:_82309588DCAD25E3500D41B923F37701"
+        "OwnerKey" = "8:_3921E8D02C4B61F798F2FA09CFA0E4D5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -75,7 +69,61 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_3921E8D02C4B61F798F2FA09CFA0E4D5"
+        "OwnerKey" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_519352801D17FF06FBC8A98801BF5E34"
+        "OwnerKey" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_519352801D17FF06FBC8A98801BF5E34"
+        "OwnerKey" = "8:_F436D3C2A1704083B7DAC64E3405B3B6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_519352801D17FF06FBC8A98801BF5E34"
+        "OwnerKey" = "8:_BD9E6BD382BB5AD1C8AA80A9AEFE4705"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_526EF64F6B224A199F04996B51D7C0A0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5E23FC8C834E4A488E0FDD79BE76B492"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_63ABAD6BC2D44D72B14DC0443F3DDACA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6D2837A2575FA54A0A5C47F3C01DBD53"
+        "OwnerKey" = "8:_BD9E6BD382BB5AD1C8AA80A9AEFE4705"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6D2837A2575FA54A0A5C47F3C01DBD53"
+        "OwnerKey" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_707A635EEEAC484281AD0A9DEE08DF67"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -93,14 +141,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_82309588DCAD25E3500D41B923F37701"
-        "OwnerKey" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
+        "MsmKey" = "8:_9526A3CA5C9B459E9C024E206702A12C"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_961E52F550621687C8CBDB0221ACFD86"
-        "OwnerKey" = "8:_9AE14CF085C6F6E45E3941CFBB7D1570"
+        "OwnerKey" = "8:_BD9E6BD382BB5AD1C8AA80A9AEFE4705"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -111,7 +159,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9AE14CF085C6F6E45E3941CFBB7D1570"
+        "MsmKey" = "8:_B061F0EDCA8049CE9AB81A8DB66E548C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BD9E6BD382BB5AD1C8AA80A9AEFE4705"
         "OwnerKey" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -119,18 +173,6 @@
         {
         "MsmKey" = "8:_D6BE18214E7612F394F3A907D84E2B0C"
         "OwnerKey" = "8:_F436D3C2A1704083B7DAC64E3405B3B6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DB57D0E0900A80B367DC813B4DBA561B"
-        "OwnerKey" = "8:_FA4FB3D539826AE4578F8A9D8383D1D2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DB57D0E0900A80B367DC813B4DBA561B"
-        "OwnerKey" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -149,18 +191,6 @@
         {
         "MsmKey" = "8:_F436D3C2A1704083B7DAC64E3405B3B6"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FA4FB3D539826AE4578F8A9D8383D1D2"
-        "OwnerKey" = "8:_9AE14CF085C6F6E45E3941CFBB7D1570"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FA4FB3D539826AE4578F8A9D8383D1D2"
-        "OwnerKey" = "8:_2F52C231D9AF4994BDBC623F2300A53C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -202,7 +232,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_82309588DCAD25E3500D41B923F37701"
+        "OwnerKey" = "8:_3921E8D02C4B61F798F2FA09CFA0E4D5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -226,7 +256,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9AE14CF085C6F6E45E3941CFBB7D1570"
+        "OwnerKey" = "8:_BD9E6BD382BB5AD1C8AA80A9AEFE4705"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -238,19 +268,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_FA4FB3D539826AE4578F8A9D8383D1D2"
+        "OwnerKey" = "8:_6D2837A2575FA54A0A5C47F3C01DBD53"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_DB57D0E0900A80B367DC813B4DBA561B"
+        "OwnerKey" = "8:_122DD4EA96E2C843BD379538541B6C20"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0809F57C250DA23AD2ACE2A9BB54961A"
+        "OwnerKey" = "8:_519352801D17FF06FBC8A98801BF5E34"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -368,20 +398,20 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0809F57C250DA23AD2ACE2A9BB54961A"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_122DD4EA96E2C843BD379538541B6C20"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:FreePIE.Core.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:lua51, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1e1fb15b02227b8a, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_0809F57C250DA23AD2ACE2A9BB54961A"
+                    "_122DD4EA96E2C843BD379538541B6C20"
                     {
-                    "Name" = "8:FreePIE.Core.Contracts.dll"
+                    "Name" = "8:lua51.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:FreePIE.Core.Contracts.dll"
+            "SourcePath" = "8:lua51.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
@@ -512,12 +542,165 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3921E8D02C4B61F798F2FA09CFA0E4D5"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:FreePIE.GUI.CodeCompletion, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86"
+                "ScatterAssemblies"
+                {
+                    "_3921E8D02C4B61F798F2FA09CFA0E4D5"
+                    {
+                    "Name" = "8:FreePIE.GUI.CodeCompletion.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:FreePIE.GUI.CodeCompletion.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_519352801D17FF06FBC8A98801BF5E34"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:FreePIE.Core.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_519352801D17FF06FBC8A98801BF5E34"
+                    {
+                    "Name" = "8:FreePIE.Core.Contracts.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:FreePIE.Core.Contracts.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_526EF64F6B224A199F04996B51D7C0A0"
             {
             "SourcePath" = "8:..\\Lib\\piefreespace\\libfreespace.dll"
             "TargetName" = "8:libfreespace.dll"
             "Tag" = "8:"
             "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5E23FC8C834E4A488E0FDD79BE76B492"
+            {
+            "SourcePath" = "8:..\\FreePIE.Core.Plugins\\Help\\FreePIE.Core.Plugins.AhrsImuPlugin.rtf"
+            "TargetName" = "8:FreePIE.Core.Plugins.AhrsImuPlugin.rtf"
+            "Tag" = "8:"
+            "Folder" = "8:_B5BA98F3BDB847AEB86112601326DEBD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_63ABAD6BC2D44D72B14DC0443F3DDACA"
+            {
+            "SourcePath" = "8:..\\FreePIE.Core.Plugins\\Help\\FreePIE.Core.Plugins.AndroidPlugin.rtf"
+            "TargetName" = "8:FreePIE.Core.Plugins.AndroidPlugin.rtf"
+            "Tag" = "8:"
+            "Folder" = "8:_B5BA98F3BDB847AEB86112601326DEBD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6D2837A2575FA54A0A5C47F3C01DBD53"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:LuaInterface, Version=2.0.4.32783, Culture=neutral, PublicKeyToken=1e1fb15b02227b8a, processorArchitecture=x86"
+                "ScatterAssemblies"
+                {
+                    "_6D2837A2575FA54A0A5C47F3C01DBD53"
+                    {
+                    "Name" = "8:LuaInterface.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:LuaInterface.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_707A635EEEAC484281AD0A9DEE08DF67"
+            {
+            "SourcePath" = "8:..\\FreePIE.Core.Plugins\\Help\\FreePIE.Core.Plugins.PPJoyPlugin.rtf"
+            "TargetName" = "8:FreePIE.Core.Plugins.PPJoyPlugin.rtf"
+            "Tag" = "8:"
+            "Folder" = "8:_B5BA98F3BDB847AEB86112601326DEBD"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -563,21 +746,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_82309588DCAD25E3500D41B923F37701"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9526A3CA5C9B459E9C024E206702A12C"
             {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:FreePIE.GUI.CodeCompletion, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86"
-                "ScatterAssemblies"
-                {
-                    "_82309588DCAD25E3500D41B923F37701"
-                    {
-                    "Name" = "8:FreePIE.GUI.CodeCompletion.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:FreePIE.GUI.CodeCompletion.dll"
-            "TargetName" = "8:"
+            "SourcePath" = "8:..\\Lib\\Android\\com.freepie.android.imu.apk"
+            "TargetName" = "8:com.freepie.android.imu.apk"
             "Tag" = "8:"
             "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
             "Condition" = "8:"
@@ -591,7 +763,7 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_961E52F550621687C8CBDB0221ACFD86"
@@ -625,14 +797,34 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9AE14CF085C6F6E45E3941CFBB7D1570"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B061F0EDCA8049CE9AB81A8DB66E548C"
+            {
+            "SourcePath" = "8:..\\FreePIE.Core.Plugins\\Help\\FreePIE.Core.Plugins.FreeImuPlugin.rtf"
+            "TargetName" = "8:FreePIE.Core.Plugins.FreeImuPlugin.rtf"
+            "Tag" = "8:"
+            "Folder" = "8:_B5BA98F3BDB847AEB86112601326DEBD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BD9E6BD382BB5AD1C8AA80A9AEFE4705"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:FreePIE.Core, Version=0.3.121.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:FreePIE.Core, Version=0.3.147.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_9AE14CF085C6F6E45E3941CFBB7D1570"
+                    "_BD9E6BD382BB5AD1C8AA80A9AEFE4705"
                     {
                     "Name" = "8:FreePIE.Core.dll"
                     "Attributes" = "3:512"
@@ -670,37 +862,6 @@
                     }
                 }
             "SourcePath" = "8:SlimDX.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DB57D0E0900A80B367DC813B4DBA561B"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:lua51, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1e1fb15b02227b8a, processorArchitecture=x86"
-                "ScatterAssemblies"
-                {
-                    "_DB57D0E0900A80B367DC813B4DBA561B"
-                    {
-                    "Name" = "8:lua51.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:lua51.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
@@ -780,37 +941,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FA4FB3D539826AE4578F8A9D8383D1D2"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:LuaInterface, Version=2.0.4.32783, Culture=neutral, PublicKeyToken=1e1fb15b02227b8a, processorArchitecture=x86"
-                "ScatterAssemblies"
-                {
-                    "_FA4FB3D539826AE4578F8A9D8383D1D2"
-                    {
-                    "Name" = "8:LuaInterface.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:LuaInterface.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
         }
         "FileType"
         {
@@ -834,6 +964,17 @@
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
                     "Property" = "8:_58A4D25BAC6D4170818AE5B9B5C7C2AA"
+                        "Folders"
+                        {
+                        }
+                    }
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_B5BA98F3BDB847AEB86112601326DEBD"
+                    {
+                    "Name" = "8:help"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_0300E20E29954A29AC6215B74CCF4508"
                         "Folders"
                         {
                         }
@@ -890,7 +1031,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FreePIE"
         "ProductCode" = "8:{4071E196-878A-40A6-A480-1E4FE5F5F8CC}"
-        "PackageCode" = "8:{963ACF24-DAC0-4CA0-B94E-5ECCCC2D46B3}"
+        "PackageCode" = "8:{76CEBB61-2572-4673-98D3-914ADAE9C04C}"
         "UpgradeCode" = "8:{9534A27D-FC9C-452B-92CB-F2D5F6B3AB34}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1397,7 +1538,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2F52C231D9AF4994BDBC623F2300A53C"
             {
-            "SourcePath" = "8:..\\FreePIE.GUI\\obj\\x86\\Release\\FreePIE.exe"
+            "SourcePath" = "8:..\\FreePIE.GUI\\obj\\x86\\Debug\\FreePIE.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5F501BE2EFA14BC5A1EEE93505A47542"
@@ -1425,7 +1566,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F436D3C2A1704083B7DAC64E3405B3B6"
             {
-            "SourcePath" = "8:..\\FreePIE.Core.Plugins\\obj\\Release\\FreePIE.Core.Plugins.dll"
+            "SourcePath" = "8:..\\FreePIE.Core.Plugins\\obj\\Debug\\FreePIE.Core.Plugins.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5DDD319141B34384AB7DD6E8B53691A7"

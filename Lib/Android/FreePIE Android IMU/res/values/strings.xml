@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="app_name">FreePIE IMU</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">FreePIE IMU</string>
+    <string name="target_ip">Target IP</string>
+    <string name="target_port">Target port</string>
+    <string name="start">Start</string>
+    <string name="send_raw">Send raw data</string>
+    <string name="send_orientation">Send orientation</string>
+
+</resources>
