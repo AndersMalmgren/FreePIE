@@ -17,19 +17,12 @@ namespace FreePIE.Core.Plugins.TrackIR
         {
             var currentLocation = GetRealPath();
 
-            TrackIRPlugin.Log("Injecting fake dll located at: " + dllPath);
-
             if (currentLocation == dllPath)
-            {
-                TrackIRPlugin.Log("Freepie dll was already registered as the real dll");
                 return;
-            }
+            
 
             if (currentLocation != null)
-            {
-                TrackIRPlugin.Log("Storing path to old dll located at: " + currentLocation);
                 Registry.SetValue(GetNPClientKey(), FreepieValueName, currentLocation);
-            }
 
             Registry.SetValue(GetNPClientKey(), ValueName, dllPath);
         }
@@ -60,13 +53,8 @@ namespace FreePIE.Core.Plugins.TrackIR
         {
             var realLocation = GetStoredRealPath();
 
-            TrackIRPlugin.Log("Ejecting fake dll");
-
             if (realLocation != null)
-            {
-                TrackIRPlugin.Log("Restoring to: " + realLocation);
                 Registry.SetValue(GetNPClientKey(), ValueName, realLocation);
-            } else TrackIRPlugin.Log("Nothing to restore to, doing nothing");
         }
     }
 }

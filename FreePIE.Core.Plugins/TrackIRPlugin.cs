@@ -17,8 +17,6 @@ namespace FreePIE.Core.Plugins
         private HeadPoseData LatestKnownData { get; set; }
 
         private const string LogPath = "TrackIRLog.txt";
-        private static bool loggingEnabled = true;
-        private TrackIRGlobal global;
 
         public TrackIRPlugin()
         {
@@ -28,12 +26,12 @@ namespace FreePIE.Core.Plugins
 
         public override object CreateGlobal()
         {
-            return global = new TrackIRGlobal(this);
+            return new TrackIRGlobal(this);
         }
 
         public override Action Start()
         {
-            spoofer = new NPClientSpoof(Path.Combine(Environment.CurrentDirectory, "NPClientLog.txt"));
+            spoofer = new NPClientSpoof();
             return null;
         }
 
@@ -63,14 +61,6 @@ namespace FreePIE.Core.Plugins
                 LatestKnownData.CopyFrom(data);
                 OnUpdate();
             }
-        }
-
-        //TODO: REMOVE! UGLY!
-        internal static void Log(string message, bool doLog = true)
-        {
-            if(loggingEnabled && doLog)
-                using(var writer = File.AppendText(LogPath))
-                    writer.WriteLine(message);
         }
     }
 

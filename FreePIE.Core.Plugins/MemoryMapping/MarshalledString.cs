@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FreePIE.Core.Plugins.TrackIR
+namespace FreePIE.Core.Plugins.MemoryMapping
 {
     public class MarshalledString : IDisposable
     {

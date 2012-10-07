@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using FreePIE.Core.Plugins.MemoryMapping;
 
 namespace FreePIE.Core.Plugins.TrackIR
 {
@@ -20,7 +21,6 @@ namespace FreePIE.Core.Plugins.TrackIR
         private const string StartCursorName = "NP_StartCursor";
         private const string StopCursorName = "NP_StopCursor";
         private const string ReCenterName = "NP_ReCenter";
-        private byte errorCount;
 
         protected NativeDll dll;
         private readonly _GetSignature getSignature;
@@ -38,7 +38,6 @@ namespace FreePIE.Core.Plugins.TrackIR
 
         public TrackIRDll(string path)
         {
-            TrackIRPlugin.Log("Loading dll at " + path);
             dll = new NativeDll(path);
             getSignature = dll.GetDelegateFromFunction<_GetSignature>(GetSignatureName);
             getPosition = dll.GetDelegateFromFunction<GetHeadposePosition>(GetDataName);
@@ -59,19 +58,7 @@ namespace FreePIE.Core.Plugins.TrackIR
             int retval = function();
 
             if (retval != 0)
-            {
-                IncreaseErrorCount();
-                if(errorCount <= 3)
-                    TrackIRPlugin.Log("Error: " + functionName + " resulted in error code " + retval);
-            }
-        }
-
-        void IncreaseErrorCount()
-        {
-            unchecked
-            {
-                errorCount++;
-            }
+                Console.WriteLine("Function failed: " + functionName + " with error: " + retval);
         }
 
         public string GetSignature()

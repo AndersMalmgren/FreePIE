@@ -64,6 +64,8 @@
     <Compile Include="FreeTrackPlugin.cs" />
     <Compile Include="JoystickPlugin.cs" />
     <Compile Include="KeyboardPlugin.cs" />
+    <Compile Include="MemoryMapping\MappedMemory.cs" />
+    <Compile Include="MemoryMapping\WorkerProcess.cs" />
     <Compile Include="MouseKeyIO.cs" />
     <Compile Include="MousePlugin.cs" />
     <Compile Include="Plugin.cs" />
@@ -74,13 +76,15 @@
     <Compile Include="Strategies\GetPressedStrategy.cs" />
     <Compile Include="Strategies\SetPressedStrategy.cs" />
     <Compile Include="TrackIRPlugin.cs" />
+    <Compile Include="MemoryMapping\DisconnectedFreepieData.cs" />
     <Compile Include="TrackIR\DllRegistrar.cs" />
     <Compile Include="TrackIR\HeadPoseData.cs" />
-    <Compile Include="TrackIR\MarshalledMemory.cs" />
-    <Compile Include="TrackIR\MarshalledString.cs" />
+    <Compile Include="MemoryMapping\MarshalledMemory.cs" />
+    <Compile Include="MemoryMapping\MarshalledString.cs" />
     <Compile Include="TrackIR\NativeDll.cs" />
     <Compile Include="TrackIR\NPClientSpoof.cs" />
     <Compile Include="TrackIR\TrackIRDll.cs" />
+    <Compile Include="TrackIR\TrackIRHeadposeData.cs" />
     <Compile Include="TrackIR\WritableTrackIRDll.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />

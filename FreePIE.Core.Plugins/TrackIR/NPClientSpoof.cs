@@ -12,30 +12,6 @@ namespace FreePIE.Core.Plugins.TrackIR
 {
     internal class NPClientSpoof : IDisposable
     {
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct TrackIRHeadposeData
-        {
-            public ushort Status;
-            public ushort FrameSignature;
-            public uint IOData;
-
-            public float Roll;
-            public float Pitch;
-            public float Yaw;
-            public float X;
-            public float Y;
-            public float Z;
-            public float RawX;
-            public float RawY;
-            public float RawZ;
-            public float DeltaX;
-            public float DeltaY;
-            public float DeltaZ;
-            public float SmoothX;
-            public float SmoothY;
-            public float SmoothZ;
-        }
-
         internal class InternalHeadPoseData
         {
             public float Yaw, Pitch, Roll, X, Y, Z;
@@ -48,13 +24,12 @@ namespace FreePIE.Core.Plugins.TrackIR
         {
             get 
             { 
-                return freepieDll ?? (freepieDll = SetupFakeTrackIR()); 
+                return freepieDll ?? (freepieDll = SetupFakeTrackIR());
             }
         }
 
         WritableTrackIRDll SetupFakeTrackIR()
         {
-            TrackIRPlugin.Log("Setting up fake dll");
             DllRegistrar.InjectFakeTrackIRDll(Environment.CurrentDirectory);
             var dll = new WritableTrackIRDll(Path.Combine(Environment.CurrentDirectory, NPClientName));
 
@@ -64,22 +39,41 @@ namespace FreePIE.Core.Plugins.TrackIR
             return dll;
         }
 
-        private readonly TrackIRDll realTrackIRDll;
-        private readonly string logFile;
+        private TrackIRDll realTrackIRDll;
 
+        private TrackIRDll RealTrackIRDll
+        {
+            get { return realTrackIRDll ?? (realTrackIRDll = SetupRealTrackIRDll());
+}
+        }
+
+        private TrackIRDll SetupRealTrackIRDll()
+        {
+            string realDllPath = DllRegistrar.GetRealTrackIRDllPath(Environment.CurrentDirectory);
+
+            TrackIRDll dll = null;
+
+            if (realDllPath != null)
+            {
+                dll = new TrackIRDll(realDllPath + NPClientName);
+                CallStartupNPClientFunctions(dll, Data, ProgramProfileId);
+            }
+
+            return dll;
+        }
+
+        private readonly string logFile;
         private ushort lastFrame;
 
-        private Tuple<string, short> CallStartupNPClientFunctions(TrackIRDll dll, short data, short profileId)
+        private void CallStartupNPClientFunctions(TrackIRDll dll, short data, short profileId)
         {
-            string signature = dll.GetSignature();
-            short version = dll.QueryVersion();
+            dll.GetSignature();
+            dll.QueryVersion();
             dll.RegisterWindowHandle(Process.GetCurrentProcess().MainWindowHandle);
             dll.RequestData(data);
             dll.RegisterProgramProfileId(profileId);
             dll.StopCursor();
             dll.StartDataTransmission();
-
-            return Tuple.Create(signature, version);
         }
 
         private const short ProgramProfileId = 13302;
@@ -88,61 +82,27 @@ namespace FreePIE.Core.Plugins.TrackIR
         public NPClientSpoof(string logFile = null)
         {
             this.logFile = logFile;
-
-            string realDllPath = DllRegistrar.GetRealTrackIRDllPath(Environment.CurrentDirectory);
-
-            if (realDllPath != null)
-            {
-                TrackIRPlugin.Log("Found real trackir dll at: " + realDllPath);
-                realTrackIRDll = new TrackIRDll(realDllPath + NPClientName);
-
-                var trackIRStartupData = CallStartupNPClientFunctions(realTrackIRDll, Data, ProgramProfileId);
-                TrackIRPlugin.Log("Signature: " + trackIRStartupData.Item1);
-                TrackIRPlugin.Log("Version: " + trackIRStartupData.Item2);
-            } else TrackIRPlugin.Log("No real trackir dll found");
-        }
-
-        int readCount = -1;
-        int writeCount = -1;
-
-        private bool ShouldLog(ref int count)
-        {
-            if(count++ == 2000)
-            {
-                count = 0;
-                return true;
-            }
-
-            return false;
         }
 
         public bool ReadPosition(ref HeadPoseData output)
         {
-            bool doLog = ShouldLog(ref readCount);
-
-            if (realTrackIRDll == null)
-            {
-                TrackIRPlugin.Log("Reading attempted while no real trackir plugin found - ignoring read", doLog);
+            if (RealTrackIRDll == null)
                 return false;
-            }
 
             var headpose = new InternalHeadPoseData();
 
-            TrackIRPlugin.Log("Attempting to read data from real dll.", doLog);
             if (!ReadTrackIRData(ref headpose))
                 return false;
-            TrackIRPlugin.Log("Fresh data acquired", doLog);
 
-            DecodeTrackIRIntoDegrees(headpose, doLog);
+            DecodeTrackIRIntoDegrees(headpose);
 
             output = new HeadPoseData() { Yaw = headpose.Yaw, Pitch = headpose.Pitch, Roll = headpose.Roll, X = headpose.X, Y = headpose.Y, Z = headpose.Z };
 
             return true;
         }
 
-        private void DecodeTrackIRIntoDegrees(InternalHeadPoseData data, bool shouldLog)
+        private void DecodeTrackIRIntoDegrees(InternalHeadPoseData data)
         {
-            TrackIRPlugin.Log("Converting TrackIR data to degrees", shouldLog);
             data.Yaw = -(data.Yaw * 180.0f) / 16384.0f;
             data.Pitch = -(data.Pitch * 180.0f) / 16384.0f;
             data.Roll = -(data.Roll * 180.0f) / 16384.0f;
@@ -173,8 +133,6 @@ namespace FreePIE.Core.Plugins.TrackIR
 
         public void SetPosition(float x, float y, float z, float roll, float pitch, float yaw)
         {
-            bool doLog = ShouldLog(ref writeCount);
-            TrackIRPlugin.Log("Setting position using the fake trackir plugin.", doLog);
             FreepieDll.SetPosition(yaw, pitch, roll, x, y, z);
         }
 
