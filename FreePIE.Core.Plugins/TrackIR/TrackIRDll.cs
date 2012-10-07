@@ -20,6 +20,7 @@ namespace FreePIE.Core.Plugins.TrackIR
         private const string StartCursorName = "NP_StartCursor";
         private const string StopCursorName = "NP_StopCursor";
         private const string ReCenterName = "NP_ReCenter";
+        private byte errorCount;
 
         protected NativeDll dll;
         private readonly _GetSignature getSignature;
@@ -53,80 +54,92 @@ namespace FreePIE.Core.Plugins.TrackIR
             reCenter = dll.GetDelegateFromFunction<_ReCenter>(ReCenterName);
         }
 
-        private void ExecuteAndCheckReturnValue(Func<int> function)
+        private void ExecuteAndCheckReturnValue(string functionName, Func<int> function)
         {
             int retval = function();
 
             if (retval != 0)
-                throw new TrackIRException(retval);
+            {
+                IncreaseErrorCount();
+                if(errorCount <= 3)
+                    TrackIRPlugin.Log("Error: " + functionName + " resulted in error code " + retval);
+            }
+        }
+
+        void IncreaseErrorCount()
+        {
+            unchecked
+            {
+                errorCount++;
+            }
         }
 
         public string GetSignature()
         {
             using (var signature = new MarshalledString(400))
             {
-                ExecuteAndCheckReturnValue(() => getSignature(signature.Pointer));
+                ExecuteAndCheckReturnValue(GetSignatureName, () => getSignature(signature.Pointer));
                 return signature.Value;
             }
         }
 
         public void GetPosition(IntPtr data)
         {
-            ExecuteAndCheckReturnValue(() => getPosition(data));
+            ExecuteAndCheckReturnValue(GetDataName, () => getPosition(data));
         }
 
         public short QueryVersion()
         {
             using (var version = new MarshalledMemory<short>())
             {
-                ExecuteAndCheckReturnValue(() => queryVersion(version.Pointer));
+                ExecuteAndCheckReturnValue(QueryVersionName, () => queryVersion(version.Pointer));
                 return version.Value;
             }
         }
 
         public void RegisterWindowHandle(IntPtr handle)
         {
-            ExecuteAndCheckReturnValue(() => registerWindowHandle(handle));
+            ExecuteAndCheckReturnValue(RegisterWindowHandleName, () => registerWindowHandle(handle));
         }
 
         public void UnregisterWindowHandle()
         {
-            ExecuteAndCheckReturnValue(() => unregisterWindowHandle());
+            ExecuteAndCheckReturnValue(UnregisterWindowHandleName, () => unregisterWindowHandle());
         }
 
         public void RegisterProgramProfileId(short id)
         {
-            ExecuteAndCheckReturnValue(() => registerProgramProfileId(id));
+            ExecuteAndCheckReturnValue(RegisterProgramProfileIdName, () => registerProgramProfileId(id));
         }
 
         public void RequestData(short data)
         {
-            ExecuteAndCheckReturnValue(() => requestData(data));
+            ExecuteAndCheckReturnValue(RequestDataName, () => requestData(data));
         }
 
         public void StartDataTransmission()
         {
-            ExecuteAndCheckReturnValue(() => startDataTransmission());
+            ExecuteAndCheckReturnValue(StartDataTransmissionName, () => startDataTransmission());
         }
 
         public void StopDataTransmission()
         {
-            ExecuteAndCheckReturnValue(() => stopDataTransmission());
+            ExecuteAndCheckReturnValue(StopDataTransmissionName, () => stopDataTransmission());
         }
 
         public void StartCursor()
         {
-            ExecuteAndCheckReturnValue(() => startCursor());
+            ExecuteAndCheckReturnValue(StartCursorName, () => startCursor());
         }
 
         public void StopCursor()
         {
-            ExecuteAndCheckReturnValue(() => stopCursor());
+            ExecuteAndCheckReturnValue(StopCursorName, () => stopCursor());
         }
 
         public void Recenter()
         {
-            ExecuteAndCheckReturnValue(() => reCenter());
+            ExecuteAndCheckReturnValue(ReCenterName, () => reCenter());
         }
 
         private delegate int _GetSignature(IntPtr signature);

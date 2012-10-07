@@ -33,8 +33,7 @@ namespace FreePIE.Core.Plugins
 
         public override Action Start()
         {
-            spoofer = new NPClientSpoof();
-
+            spoofer = new NPClientSpoof(Path.Combine(Environment.CurrentDirectory, "NPClientLog.txt"));
             return null;
         }
 
@@ -76,15 +75,11 @@ namespace FreePIE.Core.Plugins
     }
 
     [LuaGlobal(Name = "trackIR")]
-    public class TrackIRGlobal : UpdateblePluginGlobal
+    public class TrackIRGlobal : UpdateblePluginGlobal<TrackIRPlugin>
     {
-        private readonly TrackIRPlugin plugin;
 
-        public TrackIRGlobal(TrackIRPlugin plugin)
-            : base(plugin)
-        {
-            this.plugin = plugin;
-        }
+        public TrackIRGlobal(TrackIRPlugin plugin) : base(plugin)
+        { }
 
         public float Yaw
         {

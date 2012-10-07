@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Xml.Serialization;
 
 namespace FreePIE.Core.Plugins.TrackIR
 {
@@ -58,8 +61,6 @@ namespace FreePIE.Core.Plugins.TrackIR
             if (logFile != null)
                 dll.SetupFakeNpClient(logFile);
 
-            CallStartupNPClientFunctions(dll);
-
             return dll;
         }
 
@@ -68,18 +69,21 @@ namespace FreePIE.Core.Plugins.TrackIR
 
         private ushort lastFrame;
 
-        private Tuple<string, short> CallStartupNPClientFunctions(TrackIRDll dll)
+        private Tuple<string, short> CallStartupNPClientFunctions(TrackIRDll dll, short data, short profileId)
         {
             string signature = dll.GetSignature();
             short version = dll.QueryVersion();
             dll.RegisterWindowHandle(Process.GetCurrentProcess().MainWindowHandle);
-            dll.RequestData(118);
-            dll.RegisterProgramProfileId(21434);
+            dll.RequestData(data);
+            dll.RegisterProgramProfileId(profileId);
             dll.StopCursor();
             dll.StartDataTransmission();
 
             return Tuple.Create(signature, version);
         }
+
+        private const short ProgramProfileId = 13302;
+        private const short Data = 119;
 
         public NPClientSpoof(string logFile = null)
         {
@@ -91,13 +95,10 @@ namespace FreePIE.Core.Plugins.TrackIR
             {
                 TrackIRPlugin.Log("Found real trackir dll at: " + realDllPath);
                 realTrackIRDll = new TrackIRDll(realDllPath + NPClientName);
-                var trackIRStartupData = CallStartupNPClientFunctions(realTrackIRDll);
 
+                var trackIRStartupData = CallStartupNPClientFunctions(realTrackIRDll, Data, ProgramProfileId);
                 TrackIRPlugin.Log("Signature: " + trackIRStartupData.Item1);
                 TrackIRPlugin.Log("Version: " + trackIRStartupData.Item2);
-
-
-
             } else TrackIRPlugin.Log("No real trackir dll found");
         }
 
