@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -64,7 +65,10 @@
     <Compile Include="FreeTrackPlugin.cs" />
     <Compile Include="JoystickPlugin.cs" />
     <Compile Include="KeyboardPlugin.cs" />
+    <Compile Include="MemoryMapping\ArgumentExtension.cs" />
     <Compile Include="MemoryMapping\MappedMemory.cs" />
+    <Compile Include="MemoryMapping\SharedMemoryWorker.cs" />
+    <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
     <Compile Include="MouseKeyIO.cs" />
     <Compile Include="MousePlugin.cs" />
@@ -85,7 +89,6 @@
     <Compile Include="TrackIR\NPClientSpoof.cs" />
     <Compile Include="TrackIR\TrackIRDll.cs" />
     <Compile Include="TrackIR\TrackIRHeadposeData.cs" />
-    <Compile Include="TrackIR\WritableTrackIRDll.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
     <Compile Include="XBox360Plugin.cs" />

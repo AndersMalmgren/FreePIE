@@ -6,7 +6,9 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Xml.Serialization;
+using FreePIE.Core.Plugins.MemoryMapping;
 
 namespace FreePIE.Core.Plugins.TrackIR
 {
@@ -17,78 +19,42 @@ namespace FreePIE.Core.Plugins.TrackIR
             public float Yaw, Pitch, Roll, X, Y, Z;
         }
 
-        private const string NPClientName = @"NPClient.dll";
-        private WritableTrackIRDll freepieDll;
+        internal const string NPClientName = @"NPClient.dll";
+        private MappedMemory<DisconnectedFreepieData> freepieData;
+        private bool hasInjectedDll;
+        private WorkerProcess<TrackIRWorker> trackIRWorker;
+        private readonly Mutex freePieTrackIRMutex = new Mutex(false, "Freepie.TrackIRMutex");
 
-        private WritableTrackIRDll FreepieDll
+        void SetupFakeTrackIR()
         {
-            get 
-            { 
-                return freepieDll ?? (freepieDll = SetupFakeTrackIR());
-            }
+            if (File.Exists(Path.Combine(Environment.CurrentDirectory, NPClientName)))
+            {
+                DllRegistrar.InjectFakeTrackIRDll(Environment.CurrentDirectory);
+                hasInjectedDll = true;
+            } else Debug.WriteLine("No fake trackir dll found in current directory - obviously not spoofing.");
         }
 
-        WritableTrackIRDll SetupFakeTrackIR()
-        {
-            DllRegistrar.InjectFakeTrackIRDll(Environment.CurrentDirectory);
-            var dll = new WritableTrackIRDll(Path.Combine(Environment.CurrentDirectory, NPClientName));
-
-            if (logFile != null)
-                dll.SetupFakeNpClient(logFile);
-
-            return dll;
-        }
-
-        private TrackIRDll realTrackIRDll;
-
-        private TrackIRDll RealTrackIRDll
-        {
-            get { return realTrackIRDll ?? (realTrackIRDll = SetupRealTrackIRDll());
-}
-        }
-
-        private TrackIRDll SetupRealTrackIRDll()
+        private void SetupRealTrackIRDll()
         {
             string realDllPath = DllRegistrar.GetRealTrackIRDllPath(Environment.CurrentDirectory);
-
-            TrackIRDll dll = null;
+            freepieData = new MappedMemory<DisconnectedFreepieData>(DisconnectedFreepieData.SharedMemoryName);
 
             if (realDllPath != null)
             {
-                dll = new TrackIRDll(realDllPath + NPClientName);
-                CallStartupNPClientFunctions(dll, Data, ProgramProfileId);
+                freepieData.Write(x => x.TrackIRData, new TrackIRData { LastUpdatedTicks = DateTime.Now.Ticks });
+                trackIRWorker = new WorkerProcess<TrackIRWorker>(Path.Combine(realDllPath, NPClientName).Quote());
             }
-
-            return dll;
         }
 
-        private readonly string logFile;
         private ushort lastFrame;
 
-        private void CallStartupNPClientFunctions(TrackIRDll dll, short data, short profileId)
+        public NPClientSpoof()
         {
-            dll.GetSignature();
-            dll.QueryVersion();
-            dll.RegisterWindowHandle(Process.GetCurrentProcess().MainWindowHandle);
-            dll.RequestData(data);
-            dll.RegisterProgramProfileId(profileId);
-            dll.StopCursor();
-            dll.StartDataTransmission();
-        }
-
-        private const short ProgramProfileId = 13302;
-        private const short Data = 119;
-
-        public NPClientSpoof(string logFile = null)
-        {
-            this.logFile = logFile;
+            SetupRealTrackIRDll();
         }
 
         public bool ReadPosition(ref HeadPoseData output)
         {
-            if (RealTrackIRDll == null)
-                return false;
-
             var headpose = new InternalHeadPoseData();
 
             if (!ReadTrackIRData(ref headpose))
@@ -96,7 +62,7 @@ namespace FreePIE.Core.Plugins.TrackIR
 
             DecodeTrackIRIntoDegrees(headpose);
 
-            output = new HeadPoseData() { Yaw = headpose.Yaw, Pitch = headpose.Pitch, Roll = headpose.Roll, X = headpose.X, Y = headpose.Y, Z = headpose.Z };
+            output = new HeadPoseData { Yaw = headpose.Yaw, Pitch = headpose.Pitch, Roll = headpose.Roll, X = headpose.X, Y = headpose.Y, Z = headpose.Z };
 
             return true;
         }
@@ -114,43 +80,59 @@ namespace FreePIE.Core.Plugins.TrackIR
 
         private bool ReadTrackIRData(ref InternalHeadPoseData output)
         {
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (TrackIRHeadposeData)));
+            if (trackIRWorker == null)
+                return false;
 
-            realTrackIRDll.GetPosition(ptr);
+            var trackirData = freepieData.Read(x => x.TrackIRData);
 
-            TrackIRHeadposeData data = (TrackIRHeadposeData)Marshal.PtrToStructure(ptr, typeof (TrackIRHeadposeData));
+            if(DateTime.Now - new DateTime(trackirData.LastUpdatedTicks) > TimeSpan.FromSeconds(20))
+                throw new Exception("Lost contact with worker process - terminating.");
 
-            Marshal.FreeHGlobal(ptr);
+            var data = trackirData.RealTrackIRData;
 
             if (data.FrameSignature == lastFrame || data.FrameSignature == 0)
                 return false;
 
-            output = new InternalHeadPoseData() { Yaw = data.Yaw, Pitch = data.Pitch, Roll = data.Roll, X = data.X, Y = data.Y, Z = data.Z };
+            output = new InternalHeadPoseData { Yaw = data.Yaw, Pitch = data.Pitch, Roll = data.Roll, X = data.X, Y = data.Y, Z = data.Z };
 
             lastFrame = data.FrameSignature;
+
             return true;
         }
 
         public void SetPosition(float x, float y, float z, float roll, float pitch, float yaw)
         {
-            FreepieDll.SetPosition(yaw, pitch, roll, x, y, z);
+            if(!hasInjectedDll)
+                SetupFakeTrackIR();
+
+	        if(freePieTrackIRMutex.WaitOne(10))
+	        {
+                var trackIr = freepieData.Read(f => f.TrackIRData);
+
+	            trackIr.FakeTrackIRData.FrameNumber++;
+
+	            trackIr.FakeTrackIRData.Yaw = yaw;
+	            trackIr.FakeTrackIRData.Pitch = pitch;
+	            trackIr.FakeTrackIRData.Roll = roll;
+	            trackIr.FakeTrackIRData.X = x;
+	            trackIr.FakeTrackIRData.Y = y;
+	            trackIr.FakeTrackIRData.Z = z;
+
+                freepieData.Write(f => f.TrackIRData, trackIr);
+
+                freePieTrackIRMutex.ReleaseMutex();
+	        }
         }
 
         public void Dispose()
         {
-            if (freepieDll != null)
-            {
+            if (hasInjectedDll)
                 DllRegistrar.EjectFakeTrackIRDll();
-                freepieDll.Dispose();
-            }
 
-            if (realTrackIRDll != null)
-            {
-                realTrackIRDll.StopDataTransmission();
-                realTrackIRDll.StartCursor();
-                realTrackIRDll.UnregisterWindowHandle();
-                realTrackIRDll.Dispose();
-            }
+            freePieTrackIRMutex.Dispose();
+
+            if(trackIRWorker != null)
+                trackIRWorker.Dispose();
         }
     }
 }

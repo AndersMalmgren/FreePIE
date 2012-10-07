@@ -13,22 +13,22 @@ namespace FreePIE.Core.Plugins.MemoryMapping
         void Execute(IEnumerable<string> arguments);
     }
 
-    public class WorkerProcess<TWorker> : IDisposable where TWorker : IWorker
+    public class WorkerProcess<TWorker> : IDisposable where TWorker : IWorker, new()
     {
         private static CompilerResults WorkerExecutable;
         private static string[] WorkerSource = new[]
         {
                 "using System;" +
-                "using Test;" +
+                "using FreePIE.Core.Plugins.MemoryMapping;" +
                 "using System.Linq;" +
                 "using System.Threading;" +
                 "using System.Reflection;" +
-                "class Program { static void Main(string[] args) { " +
-                "Thread.Sleep(20000);" +
+                "class Program { static void Main(string[] args) {" +
                 "try {" +
                 "var worker = Activator.CreateInstance(Type.GetType(args[0])) as IWorker;" +
                 "worker.Execute(args.Skip(1));" +
-                "} catch(Exception e) { throw e; }" +
+                "} catch(Exception e) { Console.WriteLine(e.Message); }" +
+                "Console.ReadKey();" +
                 "} }"
         };
 
@@ -77,7 +77,7 @@ namespace FreePIE.Core.Plugins.MemoryMapping
 
             var res = codeProvider.CompileAssemblyFromSource(new CompilerParameters
             {
-                CompilerOptions = "/target:winexe",
+                CompilerOptions = "/platform:x86 /target:winexe",
                 GenerateExecutable = true,
                 OutputAssembly = Path.GetTempPath() + "FreePIE.WorkerHost." + typeof(TWorker).Name + "." + Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".exe",
                 ReferencedAssemblies = { workerTypeAssemblyPath, typeof(EnumerableQuery).Assembly.Location, typeof(int).Assembly.Location }
@@ -92,17 +92,10 @@ namespace FreePIE.Core.Plugins.MemoryMapping
         {
             if (process != null)
             {
-                process.Kill();
+                if(!process.HasExited)
+                    process.Kill();
                 process.Dispose();
             }
-        }
-    }
-
-    public static class Extension
-    {
-        public static string Quote(this string input)
-        {
-            return "\"" + input + "\"";
         }
     }
 }

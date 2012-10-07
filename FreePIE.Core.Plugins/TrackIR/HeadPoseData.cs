@@ -22,6 +22,11 @@ namespace FreePIE.Core.Plugins.TrackIR
             return Equals((HeadPoseData) obj);
         }
 
+        public static HeadPoseData Zero
+        {
+            get { return new HeadPoseData(); }
+        }
+
         public override string ToString()
         {
             return "yaw: " + Yaw + " pitch: " + Pitch + "roll: " + Roll + " x: " + X + " y: " + Y + " z: " + Z;

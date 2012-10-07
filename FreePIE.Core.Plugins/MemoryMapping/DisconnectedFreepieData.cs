@@ -7,5 +7,6 @@ namespace FreePIE.Core.Plugins.MemoryMapping
     public struct DisconnectedFreepieData
     {
         public readonly TrackIRData TrackIRData;
+        public const string SharedMemoryName = "FreePIEDisconnectedData";
     }
 }

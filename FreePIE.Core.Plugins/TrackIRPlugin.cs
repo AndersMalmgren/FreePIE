@@ -12,16 +12,21 @@ namespace FreePIE.Core.Plugins
     public class TrackIRPlugin : Plugin
     {
         private NPClientSpoof spoofer;
+        private HeadPoseData output;
 
-        public HeadPoseData Data { get; private set; }
-        private HeadPoseData LatestKnownData { get; set; }
+        public HeadPoseData Input { get; private set; }
+
+
+        public HeadPoseData Output
+        {
+            get { return output ?? (output = new HeadPoseData()); }
+        }
 
         private const string LogPath = "TrackIRLog.txt";
 
         public TrackIRPlugin()
         {
-            Data = new HeadPoseData();
-            LatestKnownData = new HeadPoseData();
+            Input = new HeadPoseData();
         }
 
         public override object CreateGlobal()
@@ -47,18 +52,17 @@ namespace FreePIE.Core.Plugins
 
         public override void DoBeforeNextExecute()
         {
-            if(Data != LatestKnownData)
+            if(output != null)
             {
-                spoofer.SetPosition(Data.X, Data.Y, Data.Z, Data.Roll, Data.Pitch, Data.Yaw);
-                LatestKnownData.CopyFrom(Data);
+                spoofer.SetPosition(Output.X, Output.Y, Output.Z, Output.Roll, Output.Pitch, Output.Yaw);
+                output = null;
             }
 
             var data = new HeadPoseData();
 
             if (spoofer.ReadPosition(ref data))
             {
-                Data.CopyFrom(data);
-                LatestKnownData.CopyFrom(data);
+                Input.CopyFrom(data);
                 OnUpdate();
             }
         }
@@ -73,38 +77,38 @@ namespace FreePIE.Core.Plugins
 
         public float Yaw
         {
-            get { return plugin.Data.Yaw; }
-            set { plugin.Data.Yaw = value; }
+            get { return plugin.Input.Yaw; }
+            set { plugin.Output.Yaw = value; }
         }
 
         public float Pitch
         {
-            get { return plugin.Data.Pitch; }
-            set { plugin.Data.Pitch = value; }
+            get { return plugin.Input.Pitch; }
+            set { plugin.Output.Pitch = value; }
         }
 
         public float Roll
         {
-            get { return plugin.Data.Roll; }
-            set { plugin.Data.Roll = value; }
+            get { return plugin.Input.Roll; }
+            set { plugin.Output.Roll = value; }
         }
 
         public float X
         {
-            get { return plugin.Data.X; }
-            set { plugin.Data.X = value; }
+            get { return plugin.Input.X; }
+            set { plugin.Output.X = value; }
         }
 
         public float Y
         {
-            get { return plugin.Data.Y; }
-            set { plugin.Data.Y = value; }
+            get { return plugin.Input.Y; }
+            set { plugin.Output.Y = value; }
         }
 
         public float Z
         {
-            get { return plugin.Data.Z; }
-            set { plugin.Data.Z = value; }
+            get { return plugin.Input.Z; }
+            set { plugin.Output.Z = value; }
         }
     }
 }

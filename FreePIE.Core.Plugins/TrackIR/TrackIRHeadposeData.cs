@@ -3,11 +3,19 @@ using System.Runtime.InteropServices;
 
 namespace FreePIE.Core.Plugins.TrackIR
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public unsafe struct FreePieTrackIRHeadposeData
+    {
+        public float Yaw, Pitch, Roll, X, Y, Z;
+        public UInt32 FrameNumber;
+        public fixed byte LogPath[200];
+    }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct TrackIRData
     {
-        public TrackIRHeadposeData HeadposeData;
+        public FreePieTrackIRHeadposeData FakeTrackIRData;
+        public TrackIRHeadposeData RealTrackIRData;
         public long LastUpdatedTicks;
     }
 

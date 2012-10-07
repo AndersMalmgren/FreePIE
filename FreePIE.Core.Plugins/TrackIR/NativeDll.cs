@@ -6,7 +6,7 @@ namespace FreePIE.Core.Plugins.TrackIR
 {
     public class NativeDll : IDisposable
     {
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr LoadLibrary(string dllname);
 
         [DllImport("kernel32.dll")]
@@ -24,7 +24,7 @@ namespace FreePIE.Core.Plugins.TrackIR
             library = LoadLibrary(dll);
 
             if (library == IntPtr.Zero)
-                throw new Exception("Cannot load library: " + library);
+                throw new Win32Exception();
         }
 
         public void Dispose()
