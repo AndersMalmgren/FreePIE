@@ -39,7 +39,7 @@ namespace FreePIE.Core.Plugins.MemoryMapping
             dll.QueryVersion();
             dll.RegisterWindowHandle(Process.GetCurrentProcess().MainWindowHandle);
             dll.RequestData(data);
-            dll.RegisterProgramProfileId(profileId);
+            //dll.RegisterProgramProfileId(profileId);
             dll.StopCursor();
             dll.StartDataTransmission();
         }
@@ -62,7 +62,9 @@ namespace FreePIE.Core.Plugins.MemoryMapping
 
         void WriteData(TrackIRHeadposeData headposeData)
         {
-            var data = new TrackIRData { RealTrackIRData = headposeData, LastUpdatedTicks = DateTime.Now.Ticks };
+            var data = freePIEData.Read(x => x.TrackIRData);
+            data.RealTrackIRData = headposeData;
+            data.LastUpdatedTicks = DateTime.Now.Ticks;
             freePIEData.Write(x => x.TrackIRData, data);
         }
 
