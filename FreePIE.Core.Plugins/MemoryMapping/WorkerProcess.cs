@@ -8,14 +8,30 @@ using Microsoft.CSharp;
 
 namespace FreePIE.Core.Plugins.MemoryMapping
 {
-    public interface IWorker
+    public interface IWorker : IDisposable
     {
         void Execute(IEnumerable<string> arguments);
+    }
+
+    public class ProcessAliveChecker
+    {
+        readonly int processId;
+
+        public ProcessAliveChecker(int processId)
+        {
+            this.processId = processId;
+        }
+
+        public bool IsAlive
+        {
+            get { return !Process.GetProcessById(processId).HasExited; }
+        }
     }
 
     public class WorkerProcess<TWorker> : IDisposable where TWorker : IWorker, new()
     {
         private static CompilerResults WorkerExecutable;
+
         private static string[] WorkerSource = new[]
         {
                 "using System;" +
@@ -25,10 +41,13 @@ namespace FreePIE.Core.Plugins.MemoryMapping
                 "using System.Reflection;" +
                 "class Program { static void Main(string[] args) {" +
                 "try {" +
-                "var worker = Activator.CreateInstance(Type.GetType(args[0])) as IWorker;" +
-                "worker.Execute(args.Skip(1));" +
-                "} catch(Exception e) { Console.WriteLine(e.Message); }" +
-                "Console.ReadKey();" +
+                "var processChecker = new ProcessAliveChecker(int.Parse(args[0]));" +
+                "using(var worker = Activator.CreateInstance(Type.GetType(args[1])) as IWorker)" +
+                "{" +
+                "   while(processChecker.IsAlive)" +
+                "       worker.Execute(args.Skip(2));" +
+                "}" +
+                "} catch(Exception e) { }" +
                 "} }"
         };
 
@@ -59,13 +78,13 @@ namespace FreePIE.Core.Plugins.MemoryMapping
 
             var processStartInfo = new ProcessStartInfo(WorkerExecutable.PathToAssembly)
             {
-                Arguments = typeof(TWorker).AssemblyQualifiedName.Quote() + " " + arguments
+                Arguments = Process.GetCurrentProcess().Id + " " + typeof(TWorker).AssemblyQualifiedName.Quote() + " " + arguments
             };
 
             process = Process.Start(processStartInfo);
 
             if (process.HasExited)
-                throw new Exception("Worked process terminated prematurely: " + typeof(TWorker).FullName);
+                throw new Exception("Worker process terminated prematurely: " + typeof(TWorker).FullName);
         }
 
         private static CompilerResults GenerateOrGetAssemblyForType()
@@ -73,7 +92,6 @@ namespace FreePIE.Core.Plugins.MemoryMapping
             var workerTypeAssemblyPath = Path.GetFullPath(typeof(TWorker).Assembly.Location);
 
             var codeProvider = new CSharpCodeProvider(new Dictionary<String, String> { { "CompilerVersion", "v4.0" } });
-
 
             var res = codeProvider.CompileAssemblyFromSource(new CompilerParameters
             {

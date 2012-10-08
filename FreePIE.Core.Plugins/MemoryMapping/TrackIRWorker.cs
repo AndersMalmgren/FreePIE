@@ -39,25 +39,23 @@ namespace FreePIE.Core.Plugins.MemoryMapping
             dll.QueryVersion();
             dll.RegisterWindowHandle(Process.GetCurrentProcess().MainWindowHandle);
             dll.RequestData(data);
-            //dll.RegisterProgramProfileId(profileId);
+            dll.RegisterProgramProfileId(profileId);
             dll.StopCursor();
             dll.StartDataTransmission();
         }
 
-        public override void Execute(IEnumerable<string> arguments)
+        protected override void DoExecute(IEnumerable<string> arguments)
         {
-            dll = SetupRealTrackIRDll(arguments.First());
+            if(dll == null)
+                dll = SetupRealTrackIRDll(arguments.First());
 
-            while(true)
-            {
-                dll.GetPosition(headposeData);
+            dll.GetPosition(headposeData);
 
-                var data = (TrackIRHeadposeData)Marshal.PtrToStructure(headposeData, typeof(TrackIRHeadposeData));
+            var data = (TrackIRHeadposeData)Marshal.PtrToStructure(headposeData, typeof(TrackIRHeadposeData));
 
-                WriteData(data);
+            WriteData(data);
 
-                Thread.Sleep(1);
-            }
+            Thread.Sleep(1);
         }
 
         void WriteData(TrackIRHeadposeData headposeData)
