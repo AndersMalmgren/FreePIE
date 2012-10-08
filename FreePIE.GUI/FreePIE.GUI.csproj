@@ -303,7 +303,7 @@ copy "$(SolutionDir)\FreePIE.Core.Plugins\$(OutDir)*.dll" "$(TargetDir)plugins"
 
 md "$(TargetDir)help"
 copy "$(SolutionDir)\FreePIE.Core.Plugins\Help\*.rtf" "$(TargetDir)help"
-
+copy "$(SolutionDir)\Lib\TrackIR\NPClient.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\SlimDX\*.*" "$(TargetDir)"
