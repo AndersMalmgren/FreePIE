@@ -30,7 +30,10 @@ public class UdpSenderTask implements SensorEventListener {
 	int port;
 	boolean sendOrientation;
 	boolean sendRaw;
+	boolean debug;
 	private int sampleRate;
+	private IDebugListener debugListener;
+	private SensorManager sensorManager;
 	
 	byte sendFlag;
 	
@@ -41,10 +44,12 @@ public class UdpSenderTask implements SensorEventListener {
 	boolean running;
 
 	public void start(TargetSettings target) {
-		final SensorManager sensorManager = target.getSensorManager();		
+		sensorManager = target.getSensorManager();		
 		sendRaw = target.getSendRaw();
-		sendOrientation = target.getSendOrientation();		
-		sampleRate = target.getSampleRate();
+		sendOrientation = target.getSendOrientation();
+		sampleRate = target.getSampleRate();		
+		debug = target.getDebug();
+		debugListener = target.getDebugListener();
 		
 		sendFlag = (byte)((sendRaw ? 0x01 : 0x00) | (sendOrientation ? 0x02 : 0x00)); 
 		
@@ -116,20 +121,26 @@ public class UdpSenderTask implements SensorEventListener {
 	        case Sensor.TYPE_ORIENTATION:
 	        	imu = sensorEvent.values.clone();
 	        	break;
-	    }	    
-		
+	    }	
+	    
+	    if(debug && acc != null && gyr != null && mag != null)
+	    	debugListener.debugRaw(acc, gyr, mag);
+	    
+	    if(debug && imu != null)
+	    	debugListener.debugImu(imu);
+	    
+	    
 		if(sync.getNumberWaiting() > 0)
 			sync.reset();			
 	}
 	
 	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// TODO Auto-generated method stub
-		
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {	
 	}
 	
 	public void stop() {
 		running = false;
+		sensorManager.unregisterListener(this);		
 	}
 
 	private void Send() {
@@ -151,7 +162,7 @@ public class UdpSenderTask implements SensorEventListener {
 			//Mag
 			buffer.putFloat(mag[0]);
 			buffer.putFloat(mag[1]);
-			buffer.putFloat(mag[2]);
+			buffer.putFloat(mag[2]);			
 		}
 		
 		if(sendOrientation && imu != null) {		
@@ -170,5 +181,9 @@ public class UdpSenderTask implements SensorEventListener {
 	    catch(IOException w) {
 	    	
 	    }
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;		
 	}
 }

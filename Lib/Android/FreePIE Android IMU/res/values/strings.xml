@@ -8,5 +8,10 @@
     <string name="start">Start</string>
     <string name="send_raw">Send raw data</string>
     <string name="send_orientation">Send orientation</string>
+    <string name="acc">Accelerometer</string>
+    <string name="debug">Debug</string>
+    <string name="gyr">Gyro</string>
+    <string name="mag">Magnometer</string>
+    <string name="imu">Orientation</string>
 
 </resources>
