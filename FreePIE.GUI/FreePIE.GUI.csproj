@@ -127,6 +127,10 @@
     </Compile>
     <Compile Include="Views\Plugin\PluginPropertyViewModel.cs" />
     <Compile Include="Views\Plugin\PluginSettingsMenuViewModel.cs" />
+    <Compile Include="Views\Plugin\PropertyValueTypes\BoolPropertyView.xaml.cs">
+      <DependentUpon>BoolPropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugin\PropertyValueTypes\BoolPropertyViewModel.cs" />
     <Compile Include="Views\Plugin\PropertyValueTypes\ChoicesPropertyViewModel.cs" />
     <Compile Include="Views\Plugin\PropertyValueTypes\ChoicesPropertyView.xaml.cs">
       <DependentUpon>ChoicesPropertyView.xaml</DependentUpon>
@@ -202,6 +206,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Plugin\PluginPropertyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugin\PropertyValueTypes\BoolPropertyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

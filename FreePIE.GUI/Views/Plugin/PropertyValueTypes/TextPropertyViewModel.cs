@@ -26,5 +26,10 @@ namespace FreePIE.GUI.Views.Plugin.PropertyValueTypes
                 NotifyOfPropertyChange(() => Text);
             }
         }
+
+        public static bool CanEdit(PluginProperty pluginProperty, bool defaultCheck)
+        {
+            return defaultCheck;
+        }
     }
 }

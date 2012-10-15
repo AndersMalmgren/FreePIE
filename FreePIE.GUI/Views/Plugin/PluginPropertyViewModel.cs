@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Caliburn.Micro;
+using FreePIE.Core.Common;
 using FreePIE.Core.Model;
 using FreePIE.GUI.Views.Plugin.PropertyValueTypes;
 
@@ -20,12 +21,15 @@ namespace FreePIE.GUI.Views.Plugin
 
         private ValueViewModel GetPropertyValueViewModel()
         {
-            if(pluginProperty.ConcreteChoices.Any())
-            {
-                return new ChoicesPropertyViewModel(pluginProperty);
-            }
+            return GetPropertyValueViewModel(false) ?? GetPropertyValueViewModel(true);
+        }
 
-            return new TextPropertyViewModel(pluginProperty);
+        private ValueViewModel GetPropertyValueViewModel(bool checkDefault)
+        {
+            return Utils.GetTypes<ValueViewModel>()
+                .Where(type => (bool)type.GetMethod("CanEdit").Invoke(null, new object[] { pluginProperty, checkDefault }))
+                .Select(type => Activator.CreateInstance(type, new object[] { pluginProperty }))
+                .FirstOrDefault() as ValueViewModel;
         }
 
         public string Name { get { return pluginProperty.Caption; } }

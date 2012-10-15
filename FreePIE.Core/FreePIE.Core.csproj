@@ -58,6 +58,7 @@
     <Compile Include="Common\Events\WeakReferenceList.cs" />
     <Compile Include="Common\Extensions\CollectionExtensions.cs" />
     <Compile Include="Common\Extensions\StringExtensions.cs" />
+    <Compile Include="Common\Extensions\TypeExtensions.cs" />
     <Compile Include="Common\FileSystem.cs" />
     <Compile Include="Common\Events\IEventAggregator.cs" />
     <Compile Include="Common\IFileSystem.cs" />
