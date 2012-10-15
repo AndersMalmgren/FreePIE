@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FreePIE.Core.Common;
 using FreePIE.Core.ScriptEngine.Globals.ScriptHelpers;
 
 namespace FreePIE.Core.ScriptEngine.Globals
@@ -17,10 +18,7 @@ namespace FreePIE.Core.ScriptEngine.Globals
 
         public IEnumerable<object> ListGlobals()
         {
-            var targetType = typeof (IScriptHelper);
-
-            return targetType.Assembly.GetTypes()
-                .Where(t => targetType.IsAssignableFrom(t) && t.IsClass)
+            return Utils.GetTypes<IScriptHelper>()
                 .Select(t => scriptHelperFactory(t));
         }
     }
