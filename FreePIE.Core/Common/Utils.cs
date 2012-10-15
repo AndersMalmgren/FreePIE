@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using FreePIE.Core.Common.Extensions;
 
 namespace FreePIE.Core.Common
 {
@@ -13,5 +14,10 @@ namespace FreePIE.Core.Common
         {
             return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\" + path;
         }
+
+        public static IEnumerable<Type> GetTypes<T>()
+        {
+            return typeof (T).GetTypes();
+        } 
     }
 }
