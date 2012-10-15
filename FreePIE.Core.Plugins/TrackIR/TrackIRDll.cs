@@ -22,35 +22,38 @@ namespace FreePIE.Core.Plugins.TrackIR
         private const string StopCursorName = "NP_StopCursor";
         private const string ReCenterName = "NP_ReCenter";
 
-        protected NativeDll dll;
-        private readonly _GetSignature getSignature;
+        private readonly NativeDll dll;
+        private readonly NpGetSignature getSignature;
         private readonly GetHeadposePosition getPosition;
-        private readonly _QueryVersion queryVersion;
-        private readonly _RegisterWindowHandle registerWindowHandle;
-        private readonly _UnregisterWindowHandle unregisterWindowHandle;
-        private readonly _RegisterProgramProfileId registerProgramProfileId;
-        private readonly _RequestData requestData;
-        private readonly _StartDataTransmission startDataTransmission;
-        private readonly _StopDataTransmission stopDataTransmission;
-        private readonly _StartCursor startCursor;
-        private readonly _StopCursor stopCursor;
-        private readonly _ReCenter reCenter;
+        private readonly NpQueryVersion queryVersion;
+        private readonly NpRegisterWindowHandle registerWindowHandle;
+        private readonly NpUnregisterWindowHandle unregisterWindowHandle;
+        private readonly NpRegisterProgramProfileId registerProgramProfileId;
+        private readonly NpRequestData requestData;
+        private readonly NpStartDataTransmission startDataTransmission;
+        private readonly NpStopDataTransmission stopDataTransmission;
+        private readonly NpStartCursor startCursor;
+        private readonly NpStopCursor stopCursor;
+        private readonly NpReCenter reCenter;
+        private readonly Action<string> logger;
 
-        public TrackIRDll(string path)
+        public TrackIRDll(string path, Action<string> logger = null)
         {
+            this.logger = logger ?? (str => {});
+
             dll = new NativeDll(path);
-            getSignature = dll.GetDelegateFromFunction<_GetSignature>(GetSignatureName);
+            getSignature = dll.GetDelegateFromFunction<NpGetSignature>(GetSignatureName);
             getPosition = dll.GetDelegateFromFunction<GetHeadposePosition>(GetDataName);
-            queryVersion = dll.GetDelegateFromFunction<_QueryVersion>(QueryVersionName);
-            registerWindowHandle = dll.GetDelegateFromFunction<_RegisterWindowHandle>(RegisterWindowHandleName);
-            unregisterWindowHandle = dll.GetDelegateFromFunction<_UnregisterWindowHandle>(UnregisterWindowHandleName);
-            registerProgramProfileId = dll.GetDelegateFromFunction<_RegisterProgramProfileId>(RegisterProgramProfileIdName);
-            requestData = dll.GetDelegateFromFunction<_RequestData>(RequestDataName);
-            startDataTransmission = dll.GetDelegateFromFunction<_StartDataTransmission>(StartDataTransmissionName);
-            stopDataTransmission = dll.GetDelegateFromFunction<_StopDataTransmission>(StopDataTransmissionName);
-            startCursor = dll.GetDelegateFromFunction<_StartCursor>(StartCursorName);
-            stopCursor = dll.GetDelegateFromFunction<_StopCursor>(StopCursorName);
-            reCenter = dll.GetDelegateFromFunction<_ReCenter>(ReCenterName);
+            queryVersion = dll.GetDelegateFromFunction<NpQueryVersion>(QueryVersionName);
+            registerWindowHandle = dll.GetDelegateFromFunction<NpRegisterWindowHandle>(RegisterWindowHandleName);
+            unregisterWindowHandle = dll.GetDelegateFromFunction<NpUnregisterWindowHandle>(UnregisterWindowHandleName);
+            registerProgramProfileId = dll.GetDelegateFromFunction<NpRegisterProgramProfileId>(RegisterProgramProfileIdName);
+            requestData = dll.GetDelegateFromFunction<NpRequestData>(RequestDataName);
+            startDataTransmission = dll.GetDelegateFromFunction<NpStartDataTransmission>(StartDataTransmissionName);
+            stopDataTransmission = dll.GetDelegateFromFunction<NpStopDataTransmission>(StopDataTransmissionName);
+            startCursor = dll.GetDelegateFromFunction<NpStartCursor>(StartCursorName);
+            stopCursor = dll.GetDelegateFromFunction<NpStopCursor>(StopCursorName);
+            reCenter = dll.GetDelegateFromFunction<NpReCenter>(ReCenterName);
         }
 
         private void ExecuteAndCheckReturnValue(string functionName, Func<int> function)
@@ -58,7 +61,7 @@ namespace FreePIE.Core.Plugins.TrackIR
             int retval = function();
 
             if (retval != 0)
-                Console.WriteLine("Function failed: " + functionName + " with error: " + retval);
+                logger("Function failed: " + functionName + " with error: " + retval);
         }
 
         public string GetSignature()
@@ -129,18 +132,18 @@ namespace FreePIE.Core.Plugins.TrackIR
             ExecuteAndCheckReturnValue(ReCenterName, () => reCenter());
         }
 
-        private delegate int _GetSignature(IntPtr signature);
+        private delegate int NpGetSignature(IntPtr signature);
         private delegate int GetHeadposePosition(IntPtr data);
-        private delegate int _QueryVersion(IntPtr version);
-        private delegate int _RegisterWindowHandle(IntPtr handle);
-        private delegate int _UnregisterWindowHandle();
-        private delegate int _RegisterProgramProfileId(short id);
-        private delegate int _RequestData(short data);
-        private delegate int _StartDataTransmission();
-        private delegate int _StopDataTransmission();
-        private delegate int _StartCursor();
-        private delegate int _StopCursor();
-        private delegate int _ReCenter();
+        private delegate int NpQueryVersion(IntPtr version);
+        private delegate int NpRegisterWindowHandle(IntPtr handle);
+        private delegate int NpUnregisterWindowHandle();
+        private delegate int NpRegisterProgramProfileId(short id);
+        private delegate int NpRequestData(short data);
+        private delegate int NpStartDataTransmission();
+        private delegate int NpStopDataTransmission();
+        private delegate int NpStartCursor();
+        private delegate int NpStopCursor();
+        private delegate int NpReCenter();
 
         public void Dispose()
         {

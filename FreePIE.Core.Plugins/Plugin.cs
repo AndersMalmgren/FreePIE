@@ -55,6 +55,11 @@ namespace FreePIE.Core.Plugins
             plugin.OnUpdate = OnUpdate;
         }
 
+        public bool HasUpdateListener
+        {
+            get { return Update != null; }
+        }
+
         private void OnUpdate()
         {
             if (Update != null)

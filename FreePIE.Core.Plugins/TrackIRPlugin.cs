@@ -16,12 +16,12 @@ namespace FreePIE.Core.Plugins
 
         public HeadPoseData Input { get; private set; }
 
-
         public HeadPoseData Output
         {
             get { return output ?? (output = new HeadPoseData()); }
         }
 
+        private bool doLog;
         private const string LogPath = "TrackIRLog.txt";
 
         public TrackIRPlugin()
@@ -34,9 +34,31 @@ namespace FreePIE.Core.Plugins
             return new TrackIRGlobal(this);
         }
 
+        public override bool GetProperty(int index, IPluginProperty property)
+        {
+            if(index > 0)
+                return false;
+
+            property.Name = "DoLog";
+            property.Caption = "Enable logging";
+            property.DefaultValue = false;
+            property.HelpText = "Enable basic logging concerning TrackIR interop";
+            property.Choices.Add("Yes", true);
+            property.Choices.Add("No", false);
+
+            return true;
+        }
+
+        public override bool SetProperties(Dictionary<string, object> properties)
+        {
+            doLog = (bool)properties["DoLog"];
+
+            return true;
+        }
+
         public override Action Start()
         {
-            spoofer = new NPClientSpoof();
+            spoofer = new NPClientSpoof(doLog);
             return null;
         }
 
@@ -71,7 +93,6 @@ namespace FreePIE.Core.Plugins
     [LuaGlobal(Name = "trackIR")]
     public class TrackIRGlobal : UpdateblePluginGlobal<TrackIRPlugin>
     {
-
         public TrackIRGlobal(TrackIRPlugin plugin) : base(plugin)
         { }
 

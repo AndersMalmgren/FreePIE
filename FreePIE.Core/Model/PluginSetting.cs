@@ -18,7 +18,7 @@ namespace FreePIE.Core.Model
             PluginProperties = new List<PluginProperty>();
         }
         public PluginSetting(string pluginType) : this()
-        {
+        { 
             PluginType = pluginType;
         }
     }

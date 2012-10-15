@@ -14,10 +14,15 @@ namespace FreePIE.Core.Plugins.TrackIR
 {
     internal class NPClientSpoof : IDisposable
     {
+        private readonly bool doLog;
+
         internal class InternalHeadPoseData
         {
             public float Yaw, Pitch, Roll, X, Y, Z;
         }
+
+        [DllImport("msvcrt.dll", EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void CopyMemory(IntPtr pDest, IntPtr pSrc, int length);
 
         internal const string NPClientName = @"NPClient.dll";
         private MappedMemory<DisconnectedFreepieData> freepieData;
@@ -29,9 +34,22 @@ namespace FreePIE.Core.Plugins.TrackIR
         {
             if (File.Exists(Path.Combine(Environment.CurrentDirectory, NPClientName)))
             {
+                if(doLog)
+                    InitDllLogging();
+
                 DllRegistrar.InjectFakeTrackIRDll(Environment.CurrentDirectory);
                 hasInjectedDll = true;
             } else Debug.WriteLine("No fake trackir dll found in current directory - obviously not spoofing.");
+        }
+
+        private unsafe void InitDllLogging()
+        {
+            var fakeTrackirData = new FreePieTrackIRHeadposeData();
+
+            using (var logpath = new MarshalledString(Path.Combine(Environment.CurrentDirectory, "NPClient.log")))
+                CopyMemory(new IntPtr(fakeTrackirData.LogPath), logpath.Pointer, logpath.Length);
+
+            freepieData.Write(x => x.TrackIRData.FakeTrackIRData, fakeTrackirData);
         }
 
         private void SetupRealTrackIRDll()
@@ -39,17 +57,18 @@ namespace FreePIE.Core.Plugins.TrackIR
             string realDllPath = DllRegistrar.GetRealTrackIRDllPath(Environment.CurrentDirectory);
             freepieData = new MappedMemory<DisconnectedFreepieData>(DisconnectedFreepieData.SharedMemoryName);
 
-            if (realDllPath != null)
-            {
-                freepieData.Write(x => x.TrackIRData, new TrackIRData { LastUpdatedTicks = DateTime.Now.Ticks });
-                trackIRWorker = new WorkerProcess<TrackIRWorker>(Path.Combine(realDllPath, NPClientName).Quote());
-            }
+            if (realDllPath == null)
+                return;
+
+            freepieData.Write(x => x.TrackIRData, new TrackIRData { LastUpdatedTicks = DateTime.Now.Ticks });
+            trackIRWorker = new WorkerProcess<TrackIRWorker>(Path.Combine(realDllPath, NPClientName).Quote() + " " + Process.GetCurrentProcess().MainWindowHandle.ToInt64() + " " + doLog);
         }
 
         private ushort lastFrame;
 
-        public NPClientSpoof()
+        public NPClientSpoof(bool doLog)
         {
+            this.doLog = doLog;
             SetupRealTrackIRDll();
         }
 
@@ -85,8 +104,12 @@ namespace FreePIE.Core.Plugins.TrackIR
 
             var trackirData = freepieData.Read(x => x.TrackIRData);
 
-            if(DateTime.Now - new DateTime(trackirData.LastUpdatedTicks) > TimeSpan.FromSeconds(20))
-                throw new Exception("Lost contact with worker process - terminating.");
+            if (DateTime.Now - new DateTime(trackirData.LastUpdatedTicks) > TimeSpan.FromSeconds(20))
+            {
+                Console.WriteLine("Lost contact with worker process - terminating read from trackir");
+                trackIRWorker.Dispose();
+                trackIRWorker = null;
+            }
 
             var data = trackirData.RealTrackIRData;
 

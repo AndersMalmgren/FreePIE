@@ -22,11 +22,19 @@ namespace FreePIE.Core.Plugins.MemoryMapping
         private long GetFieldOffsetFromExpression<TValue>(Expression<Func<TRootObject, TValue>> getter) where TValue : struct
         {
             var member = getter.Body as MemberExpression;
+            long offset = 0;
 
-            if (member == null)
-                throw new Exception("Invalid expression - must be a single level expression");
+            while (member != null)
+            {
+                offset += Marshal.OffsetOf(member.Member.DeclaringType, member.Member.Name).ToInt64();
 
-            return Marshal.OffsetOf(typeof(TRootObject), member.Member.Name).ToInt64();
+                if(member.Expression != null && !(member.Expression is MemberExpression || member.Expression is ParameterExpression))
+                    throw new InvalidOperationException("Cannot find field offset for expression");
+
+                member = member.Expression as MemberExpression;
+            }
+
+            return offset;
         }
 
         public void Write<TValue>(Expression<Func<TRootObject, TValue>> getter, TValue value) where TValue : struct

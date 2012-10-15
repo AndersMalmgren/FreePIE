@@ -8,73 +8,50 @@
 #include <iostream>
 #include <sstream>
 
-template <typename K> 
-std::string operator+ (const std::string& first, const K& second) 
-{
-	std::stringstream stream;
-	stream << first;
-	stream << second;
-	return stream.str();
-}
-
-template <typename K> 
-std::string operator+ (const std::string& first, const K&& second) 
-{
-	std::stringstream stream;
-	stream << first;
-	stream << second;
-	return stream.str();
-}
-
-template <typename K> 
-std::string operator+ (const char* first, const K&& second) 
-{
-	std::stringstream stream;
-	stream << first;
-	stream << second;
-	return stream.str();
-}
-
 HANDLE mutex_handle = CreateMutex(NULL, FALSE, "Freepie.TrackIRMutex");
-freepie::shared_memory<freepie_data> _freepie_data("Freepie.TrackIRFaker");
+freepie::shared_memory<freepie_data> _freepie_data("FreePIEDisconnectedData");
+
+const std::string word = "precise";
 
 std::string get_log_path()
 {
-	lock l(mutex_handle, 10);
+	auto l = lock(mutex_handle, 10);
 
 	if(l)
 	{
+		if(!_freepie_data)
+			return false;
+		
 		auto view = _freepie_data.open_view();
 
-		if(view)
-			return std::string(view.read().log_path);
-		
-		return std::string();
+		if(!view)
+			return false;
+
+		auto freepie = view.read();
+
+		return freepie.log_path;
 	}
+
+	return std::string();
 }
 
-std::string get_time()
+std::fstream get_log_stream()
 {
-	time_t t = time(0);   // get time now
-	struct tm now;
-	localtime_s(&now, &t);
-
-	char buf[80];
-
-	size_t num_chars = strftime(buf, sizeof(buf), "%Y-%m-%d %X", &now);
-
-	return std::string(buf, num_chars);
+	return std::fstream(get_log_path(), std::ios::app);
 }
 
-void log_message(std::string path, std::string message)
+template <typename T>
+void log_message(const T& t)
 {
-	if(path.empty())
-		return;
+	auto stream = get_log_stream();
+	stream << t << std::endl;
+}
 
-	std::fstream out(path, std::ios::app);
-
-	if(out)
-		out << message << std::endl;
+template <typename T, typename K>
+void log_message(const T& t, const K& k)
+{
+	auto stream = get_log_stream();
+	stream << t << k << std::endl;
 }
 
 const char* search_for_word(const char* address, const std::string &word, size_t limit)
@@ -94,44 +71,36 @@ const char* search_for_word(const char* address, const std::string &word, size_t
 	return NULL;
 }
 
-sig_data get_signature_from_offset(char* address, std::string &log_path)
+void get_signature_from_offset(char* address, sig_data *destination)
 {
-	static const size_t search_limit = 1500;
-	static const char* default_sig = "freepie input emulator";
+	const size_t search_limit = 1500;
+	const char* default_sig = "freepie input emulator";
+	const size_t default_sig_size = sizeof("freepie input emulator");
 
-	sig_data retval;
 	address -= search_limit;
 
-	auto signature_address = search_for_word(address, "precise", search_limit);
+	auto signature_address = search_for_word(address, word, search_limit);
 
 	if(signature_address !=  NULL)
 	{
-		log_message(log_path, "Found signature: " + std::string(signature_address, 106));
-		memcpy(&retval, signature_address, sizeof(retval));
-	} 
+		log_message("found signature in game - using it");
+		memcpy(destination, signature_address, sizeof(sig_data));
+	}
 	else 
 	{
-		log_message(log_path, "Sending default signature.");
-		memcpy(&retval, default_sig, sizeof(default_sig));
+		log_message("did not find signature in game - using freepie signature");
+		memset(destination, 0, sizeof(sig_data));
+		memcpy(destination, default_sig, default_sig_size);		
 	}
-
-	return retval;
-}
-
-void log_function(std::string &log_path, std::string functionName, std::string addition = "")
-{
-	log_message(log_path, get_time() + " -:- in function: " + functionName + " " + addition);
 }
 
 int __stdcall NP_GetSignature(struct sig_data *sig)
 {
 	static_assert(sizeof sig_data == 400, "sig_data needs to be 400 chars");
 
-	auto path = get_log_path();
+	log_message("NP_GetSignature");
 
-	log_function(path, __FUNCTION__);
-
-	*sig = get_signature_from_offset((char*)sig, path);
+	get_signature_from_offset((char*)sig, sig);
 
 	return 0;
 }
@@ -140,43 +109,41 @@ int __stdcall NP_QueryVersion(short *ver)
 {
 	*ver = 0x0400;
 
-	log_function(get_log_path(), __FUNCTION__);
+	log_message("NP_QueryVersion");
+
 	return 0;
 }
 
 int __stdcall NP_ReCenter(void)
 {
-	log_function(get_log_path(), __FUNCTION__);
 	return 0;
 }
 
 int __stdcall NP_RegisterWindowHandle(void *handle)
 {
-	log_function(get_log_path(), __FUNCTION__);
+	auto log_path = get_log_path();
+	log_message("NP_RegisterWindowHandle, handle: ", handle);
+	
 	return 0;
 }
 
 int __stdcall NP_UnregisterWindowHandle(void)
 {
-	log_function(get_log_path(), __FUNCTION__);
 	return 0;
 }
 
 int __stdcall NP_RegisterProgramProfileID(short id)
 {
-	log_function(get_log_path(), __FUNCTION__);
+	log_message("NP_RegisterProgramProfileId, id: ", id);
+
 	return 0;
 }
 
 int __stdcall NP_RequestData(short data)
 {
-	log_function(get_log_path(), __FUNCTION__);
-	return 0;
-}
+	log_message("NP_RequestData: data", data);
 
-void log_shared_memory_error(std::string &log_path ,std::string causant, DWORD error_code)
-{
-	log_message(log_path, "error with " + causant + ", error: " + error_code);
+	return 0;
 }
 
 bool read_freepie_data(float &yaw, float &pitch, float &roll, float &tx, float &ty, float &tz)
@@ -188,18 +155,12 @@ bool read_freepie_data(float &yaw, float &pitch, float &roll, float &tx, float &
 	if(l)
 	{
 		if(!_freepie_data)
-		{
-			log_shared_memory_error(get_log_path(), "memory mapping", GetLastError());
 			return false;
-		}
 		
 		auto view = _freepie_data.open_view();
 
 		if(!view)
-		{
-			log_shared_memory_error(get_log_path(), "view mapping", GetLastError());
 			return false;
-		}
 
 		auto freepie = view.read();
 
@@ -260,8 +221,6 @@ void set_trackir_data(void *data, float yaw, float pitch, float roll, float tx, 
 
 int __stdcall NP_GetData(void *data)
 {
-	log_function(get_log_path(), __FUNCTION__);
-
 	memset(data, 0, sizeof tir_data);
 
 	float yaw, pitch, roll, tx, ty, tz;
@@ -274,42 +233,26 @@ int __stdcall NP_GetData(void *data)
 
 int __stdcall NP_StopCursor(void)
 {
-	log_function(get_log_path(), __FUNCTION__);
 	return 0;
 }
 
 int __stdcall NP_StartCursor(void)
 {
-	log_function(get_log_path(), __FUNCTION__);
 	return 0;
 }
 int __stdcall NP_StartDataTransmission(void)
 {
-	log_function(get_log_path(), __FUNCTION__);
+	log_message("NP_StartDataTransmission: ");
+
 	return 0;
 }
 int __stdcall NP_StopDataTransmission(void)
 {
-	log_function(get_log_path(), __FUNCTION__);
 	return 0;
-}
-
-void __stdcall Freepie_Setup(const char* log)
-{
-	lock l(mutex_handle, 10);
-
-	auto freepie = _freepie_data.open_view();
-
-	auto data = freepie.read();
-
-	strncpy(data.log_path, log, 200);
-
-	freepie.write(data);
 }
 
 void __stdcall Freepie_SetPosition(float yaw, float pitch, float roll, float tx, float ty, float tz)
 {
-	//log_function(__FUNCTION__, std::string("yaw: ") + yaw + std::string(" pitch: ") + pitch + std::string( " roll: ") + roll);
 	set_freepie_data(yaw, pitch, roll, tx, ty, tz);
 }
 

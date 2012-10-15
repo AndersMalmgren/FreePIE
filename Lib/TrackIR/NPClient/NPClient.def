@@ -14,4 +14,3 @@ NP_StopDataTransmission
 NP_GetSignature
 Freepie_SetPosition
 Freepie_DecodeTrackirData
-Freepie_Setup
