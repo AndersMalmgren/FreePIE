@@ -77,6 +77,7 @@ public class MainActivity extends Activity implements IDebugListener {
         final SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
             
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         
         chkDebug.setOnCheckedChangeListener(new OnCheckedChangeListener()
         {
