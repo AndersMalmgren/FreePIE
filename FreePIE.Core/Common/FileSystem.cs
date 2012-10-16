@@ -32,5 +32,10 @@ namespace FreePIE.Core.Common
         {
             return File.OpenRead(path);
         }
+
+        public void AppendAllText(string path, string content)
+        {
+            File.AppendAllText(path, content);
+        }
     }
 }
