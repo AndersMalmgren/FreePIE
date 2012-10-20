@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,8 @@ namespace FreePIE.Core.Plugins
 {
     public abstract class ComDevicePlugin : Plugin
     {
-        private bool running;
+        private bool stopping;
+        private SerialPort serialPort;
         protected string port;
         protected int baudRate;
         protected bool newData;
@@ -29,25 +31,33 @@ namespace FreePIE.Core.Plugins
 
         private void ThreadAction()
         {
-            running = true;
             OnStarted(this, new EventArgs());
 
-            using (var serialPort = new SerialPort(port, baudRate))
-            {
-                serialPort.Open();
-                Init(serialPort);
+            serialPort = new SerialPort(port, baudRate);
+            serialPort.Open();
+            Init(serialPort);
 
-                while (running)
+            while (true)
+            {
+                try
                 {
                     Read(serialPort);
                 }
-                serialPort.Close();
+                catch (IOException e)
+                {
+                    if (!stopping)
+                        throw;
+
+                    break;
+                }
             }
         }
 
         public override void Stop()
         {
-            running = false;
+            stopping = true;
+            serialPort.Close();
+            serialPort.Dispose();
         }
 
         public override void DoBeforeNextExecute()
