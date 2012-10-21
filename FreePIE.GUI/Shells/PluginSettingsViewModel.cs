@@ -21,6 +21,11 @@ namespace FreePIE.GUI.Shells
             PluginProperties = pluginSetting.PluginProperties.Select(p => new PluginPropertyViewModel(p));
         }
 
+        public IEnumerable<IResult> Ok()
+        {
+            yield return Result.Close();
+        }
+
         public IEnumerable<PluginPropertyViewModel> PluginProperties { get; private set; }
     }
 }
