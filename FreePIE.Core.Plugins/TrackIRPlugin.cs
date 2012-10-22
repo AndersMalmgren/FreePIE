@@ -14,6 +14,7 @@ namespace FreePIE.Core.Plugins
         private NPClientSpoof spoofer;
         private HeadPoseData output;
 
+        public bool ExplicitReadRequested { get; set; }
         public HeadPoseData Input { get; private set; }
 
         public HeadPoseData Output
@@ -58,6 +59,7 @@ namespace FreePIE.Core.Plugins
 
         public override Action Start()
         {
+            ExplicitReadRequested = false;
             spoofer = new NPClientSpoof(doLog);
             return null;
         }
@@ -80,7 +82,7 @@ namespace FreePIE.Core.Plugins
                 output = null;
             }
             
-            if (GlobalHasUpdateListener)
+            if (GlobalHasUpdateListener || ExplicitReadRequested)
                 ReadFromNpClient();
         }
 
@@ -103,37 +105,61 @@ namespace FreePIE.Core.Plugins
 
         public float Yaw
         {
-            get { return plugin.Input.Yaw; }
+            get
+            {
+                plugin.ExplicitReadRequested = true;
+                return plugin.Input.Yaw;
+            }
             set { plugin.Output.Yaw = value; }
         }
 
         public float Pitch
         {
-            get { return plugin.Input.Pitch; }
+            get
+            {
+                plugin.ExplicitReadRequested = true;
+                return plugin.Input.Pitch;
+            }
             set { plugin.Output.Pitch = value; }
         }
 
         public float Roll
         {
-            get { return plugin.Input.Roll; }
+            get
+            {
+                plugin.ExplicitReadRequested = true;
+                return plugin.Input.Roll;
+            }
             set { plugin.Output.Roll = value; }
         }
 
         public float X
         {
-            get { return plugin.Input.X; }
+            get
+            {
+                plugin.ExplicitReadRequested = true;
+                return plugin.Input.X;
+            }
             set { plugin.Output.X = value; }
         }
 
         public float Y
         {
-            get { return plugin.Input.Y; }
+            get
+            {
+                plugin.ExplicitReadRequested = true;
+                return plugin.Input.Y;
+            }
             set { plugin.Output.Y = value; }
         }
 
         public float Z
         {
-            get { return plugin.Input.Z; }
+            get
+            {
+                plugin.ExplicitReadRequested = true;
+                return plugin.Input.Z;
+            }
             set { plugin.Output.Z = value; }
         }
     }
