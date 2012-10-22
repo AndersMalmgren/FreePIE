@@ -25,7 +25,7 @@ namespace FreePIE.Core.Plugins.TrackIR
         private static extern void CopyMemory(IntPtr pDest, IntPtr pSrc, int length);
 
         internal const string NPClientName = @"NPClient.dll";
-        private MappedMemory<DisconnectedFreepieData> freepieData;
+        private readonly MappedMemory<DisconnectedFreepieData> freepieData;
         private bool hasInjectedDll;
         private WorkerProcess<TrackIRWorker> trackIRWorker;
         private readonly Mutex freePieTrackIRMutex = new Mutex(false, "Freepie.TrackIRMutex");
@@ -66,7 +66,6 @@ namespace FreePIE.Core.Plugins.TrackIR
             return worker;
         }
 
-        private ushort lastFrame;
 
         public NPClientSpoof(bool doLog)
         {
@@ -98,6 +97,8 @@ namespace FreePIE.Core.Plugins.TrackIR
             data.Y = data.Y / 64.0f;
             data.Z = data.Z / 64.0f;
         }
+
+        private ushort lastFrame;
 
         private bool ReadTrackIRData(ref InternalHeadPoseData output)
         {

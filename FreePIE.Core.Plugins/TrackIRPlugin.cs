@@ -23,7 +23,6 @@ namespace FreePIE.Core.Plugins
         }
 
         private bool doLog;
-        private const string LogPath = "TrackIRLog.txt";
 
         public TrackIRPlugin()
         {
@@ -44,8 +43,6 @@ namespace FreePIE.Core.Plugins
             property.Caption = "Enable logging";
             property.DefaultValue = false;
             property.HelpText = "Enable basic logging concerning TrackIR interop";
-            property.Choices.Add("Yes", true);
-            property.Choices.Add("No", false);
 
             return true;
         }
