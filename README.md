@@ -5,6 +5,13 @@ Programmable Input Emulator
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+Changelog 0.4.177.0
+* Added support for TrackIR
+* Added support for Android
+* Added support for Xbox360 controller
+* Added support for DirectX joysticks and controllers
+* Possible fix for crashes when using diagnostics:watch 
+
 Changelog 0.3.115.0
 * Added code completion (Early beta)
 * Added support for WiiMote (Only buttons)
