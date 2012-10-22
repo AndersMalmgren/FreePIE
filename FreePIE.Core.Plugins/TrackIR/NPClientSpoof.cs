@@ -29,6 +29,7 @@ namespace FreePIE.Core.Plugins.TrackIR
         private bool hasInjectedDll;
         private WorkerProcess<TrackIRWorker> trackIRWorker;
         private readonly Mutex freePieTrackIRMutex = new Mutex(false, "Freepie.TrackIRMutex");
+        private const int WorkerProcessTimeout = 20;
 
         void SetupFakeTrackIR()
         {
@@ -52,16 +53,17 @@ namespace FreePIE.Core.Plugins.TrackIR
             freepieData.Write(x => x.TrackIRData.FakeTrackIRData, fakeTrackirData);
         }
 
-        private void SetupRealTrackIRDll()
+        private WorkerProcess<TrackIRWorker> SetupRealTrackIRDll()
         {
             string realDllPath = DllRegistrar.GetRealTrackIRDllPath(Environment.CurrentDirectory);
-            freepieData = new MappedMemory<DisconnectedFreepieData>(DisconnectedFreepieData.SharedMemoryName);
 
             if (realDllPath == null)
-                return;
+                return new WorkerProcess<TrackIRWorker>();
 
             freepieData.Write(x => x.TrackIRData, new TrackIRData { LastUpdatedTicks = DateTime.Now.Ticks });
-            trackIRWorker = new WorkerProcess<TrackIRWorker>(Path.Combine(realDllPath, NPClientName).Quote() + " " + Process.GetCurrentProcess().MainWindowHandle.ToInt64() + " " + doLog);
+            var worker = new WorkerProcess<TrackIRWorker>(Path.Combine(realDllPath, NPClientName).Quote() + " " + Process.GetCurrentProcess().MainWindowHandle.ToInt64() + " " + doLog);
+            worker.Start();
+            return worker;
         }
 
         private ushort lastFrame;
@@ -69,7 +71,7 @@ namespace FreePIE.Core.Plugins.TrackIR
         public NPClientSpoof(bool doLog)
         {
             this.doLog = doLog;
-            SetupRealTrackIRDll();
+            freepieData = new MappedMemory<DisconnectedFreepieData>(DisconnectedFreepieData.SharedMemoryName);
         }
 
         public bool ReadPosition(ref HeadPoseData output)
@@ -100,15 +102,14 @@ namespace FreePIE.Core.Plugins.TrackIR
         private bool ReadTrackIRData(ref InternalHeadPoseData output)
         {
             if (trackIRWorker == null)
-                return false;
+                trackIRWorker = SetupRealTrackIRDll();
 
             var trackirData = freepieData.Read(x => x.TrackIRData);
 
-            if (DateTime.Now - new DateTime(trackirData.LastUpdatedTicks) > TimeSpan.FromSeconds(20))
+            if (DateTime.Now - new DateTime(trackirData.LastUpdatedTicks) > TimeSpan.FromSeconds(WorkerProcessTimeout))
             {
-                Console.WriteLine("Lost contact with worker process - terminating read from trackir");
                 trackIRWorker.Dispose();
-                trackIRWorker = null;
+                throw new Exception("Lost contact with worker process.");
             }
 
             var data = trackirData.RealTrackIRData;

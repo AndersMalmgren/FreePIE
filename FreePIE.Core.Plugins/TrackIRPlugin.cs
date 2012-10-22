@@ -79,9 +79,14 @@ namespace FreePIE.Core.Plugins
                 spoofer.SetPosition(Output.X, Output.Y, Output.Z, Output.Roll, Output.Pitch, Output.Yaw);
                 output = null;
             }
+            
+            if (GlobalHasUpdateListener)
+                ReadFromNpClient();
+        }
 
+        private void ReadFromNpClient()
+        {
             var data = new HeadPoseData();
-
             if (spoofer.ReadPosition(ref data))
             {
                 Input.CopyFrom(data);

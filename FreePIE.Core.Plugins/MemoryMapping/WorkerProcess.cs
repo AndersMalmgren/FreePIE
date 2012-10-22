@@ -57,12 +57,16 @@ namespace FreePIE.Core.Plugins.MemoryMapping
         public WorkerProcess(string arguments = "")
         {
             this.arguments = arguments;
-            Restart();
         }
 
         public bool IsAlive
         {
             get { return !process.HasExited; }
+        }
+
+        public void Start()
+        {
+            Restart();
         }
 
         public void Restart()

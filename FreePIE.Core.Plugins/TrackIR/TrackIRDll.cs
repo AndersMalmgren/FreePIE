@@ -150,10 +150,4 @@ namespace FreePIE.Core.Plugins.TrackIR
             dll.Dispose();
         }
     }
-
-    public class TrackIRException : Exception
-    {
-        public TrackIRException(int errorCode) : base("Error occured while reading from TrackIR dll: " + errorCode)
-        { }
-    }
 }
