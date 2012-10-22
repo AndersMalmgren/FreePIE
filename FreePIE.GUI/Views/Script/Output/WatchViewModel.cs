@@ -8,6 +8,14 @@ namespace FreePIE.GUI.Views.Script.Output
 {
     public class WatchViewModel : PropertyChangedBase
     {
+        private DateTime lastUpdate;
+        private static TimeSpan interval = TimeSpan.FromMilliseconds(20);
+
+        public WatchViewModel()
+        {
+            lastUpdate = DateTime.Now;
+        }
+
         public string Name { get; set; }
 
         private object value;
@@ -16,8 +24,12 @@ namespace FreePIE.GUI.Views.Script.Output
             get { return value; }
             set 
             {
-                this.value = value;
-                NotifyOfPropertyChange(() => Value);
+                if (DateTime.Now - lastUpdate > interval)
+                {
+                    lastUpdate = DateTime.Now;
+                    this.value = value;
+                    NotifyOfPropertyChange(() => Value);
+                }
             }
         }
     }
