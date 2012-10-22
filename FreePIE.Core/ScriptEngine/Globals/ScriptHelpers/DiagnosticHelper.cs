@@ -32,8 +32,7 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
         [NeedIndexer]
         public void watch(object value, string indexer)
         {
-            //Strange behaviour if fired on the Lua thread
-            ThreadPool.QueueUserWorkItem(obj => eventAggregator.Publish(new WatchEvent(indexer, value)));
+            eventAggregator.Publish(new WatchEvent(indexer, value));
         }
     }
 }

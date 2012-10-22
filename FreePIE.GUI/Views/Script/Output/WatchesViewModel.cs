@@ -11,15 +11,23 @@ namespace FreePIE.GUI.Views.Script.Output
 {
     public class WatchesViewModel : PropertyChangedBase, Core.Common.Events.IHandle<WatchEvent>, Core.Common.Events.IHandle<ScriptStateChangedEvent>
     {
+        private DateTime lastUpdate;
+        private static TimeSpan interval = TimeSpan.FromMilliseconds(20);
+
         public WatchesViewModel(IEventAggregator eventAggregator)
         {
             Watches = new BindableCollection<WatchViewModel>();
             eventAggregator.Subscribe(this);
+            lastUpdate = DateTime.Now;
         }
 
         public void Handle(WatchEvent message)
         {
-            AddWatch(message, false);
+            if (DateTime.Now - lastUpdate > interval)
+            {
+                lastUpdate = DateTime.Now;
+                AddWatch(message, false);
+            }
         }
 
         private WatchViewModel AddWatch(WatchEvent message, bool locked)
