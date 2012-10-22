@@ -4,6 +4,11 @@
         Title="PluginSettingsView" Background="{DynamicResource WindowBackgroundBrush}" SizeToContent="WidthAndHeight"
         Icon="{StaticResource IconSettings}">
     <Grid>
-        <ItemsControl x:Name="PluginProperties" Padding="5"></ItemsControl>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ItemsControl x:Name="PluginProperties" Padding="5" Grid.Row="0"></ItemsControl>        
+        <Button x:Name="Ok" Grid.Row="1">Ok</Button>
     </Grid>
 </Window>
