@@ -1,0 +1,16 @@
+LIBRARY NPClient
+EXPORTS
+NP_QueryVersion
+NP_ReCenter
+NP_RegisterWindowHandle
+NP_UnregisterWindowHandle
+NP_RegisterProgramProfileID
+NP_RequestData
+NP_GetData
+NP_StopCursor
+NP_StartCursor
+NP_StartDataTransmission
+NP_StopDataTransmission
+NP_GetSignature
+Freepie_SetPosition
+Freepie_DecodeTrackirData
