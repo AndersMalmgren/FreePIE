@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.GUI.CodeCompletion"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "FreePIE.Setup", "FreePIE.Setup\FreePIE.Setup.vdproj", "{C6F5E9EB-8EC9-44BE-92FE-073BCF0E360D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Console", "FreePIE.Console\FreePIE.Console.csproj", "{D0368562-09D1-4E6E-8BD3-C1138764971E}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = FreePIE.vsmdi
