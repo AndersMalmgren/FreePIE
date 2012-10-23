@@ -5,6 +5,8 @@ Programmable Input Emulator
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+**0.4 Release postponed due to problem with Lua engine and WPF**
+
 Changelog 0.4.177.0
 * Added support for TrackIR
 * Added support for Android
