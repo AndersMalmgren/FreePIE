@@ -47,16 +47,20 @@ namespace FreePIE.Core.ScriptEngine.Python
     {
         private readonly IScriptParser parser;
         private readonly IEnumerable<IGlobalProvider> globalProviders;
-        private readonly ScriptEngine engine;
+        private static ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
         private bool stopRequested;
         private const int LoopDelay = 1;
+
+        private static ScriptEngine Engine
+        {
+            get { return engine ?? (engine = Python.CreateEngine()); }
+        }
 
         public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders)
         {
             this.parser = parser;
             this.globalProviders = globalProviders;
-            engine = Python.CreateEngine();
         }
 
         public void Start(string script)
@@ -79,13 +83,16 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                 script = PreProcessScript(script, usedPlugins);
 
-                while (!stopRequested)
+                ExecuteSafe(() =>
                 {
-                    usedPlugins.ForEach(p => p.DoBeforeNextExecute());
-                    engine.Execute(script, scope);
-                    scope.SetVariable("starting", false);
-                    Thread.Sleep(LoopDelay);
-                }
+                    while (!stopRequested)
+                    {
+                        usedPlugins.ForEach(p => p.DoBeforeNextExecute());
+                        Engine.Execute(script, scope);
+                        scope.SetVariable("starting", false);
+                        Thread.Sleep(LoopDelay);
+                    }
+                });
 
                 usedPlugins.ForEach(StopPlugin);
                 pluginStopped.Wait();
@@ -99,11 +106,10 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         string PreProcessScript(string script, IEnumerable<IPlugin> plugins)
         {
-            var pluginTypes = plugins.Select(x => x.GetType()).Select(x => new { Assembly = x.Assembly, Namespace = x.Namespace }).ToList();
+            var pluginTypes = plugins.Select(x => x.GetType()).Select(x => new { x.Assembly, x.Namespace }).ToList();
 
             return script.ImportNamespaces(pluginTypes.Select(x => x.Namespace).ToArray())
                          .AddReferences(pluginTypes.Select(x => x.Assembly).ToArray());
-
         }
 
         void ExecuteSafe(Action action)
@@ -144,7 +150,7 @@ namespace FreePIE.Core.ScriptEngine.Python
                                     .Union(new [] { new KeyValuePair<string, object>("starting", true) })
                                     .ToDictionary(x => x.Key, x => x.Value);
 
-            return engine.CreateScope(types);
+            return Engine.CreateScope(types);
         }
 
         private CountdownEvent pluginStartedTemporary;
