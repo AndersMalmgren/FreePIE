@@ -16,23 +16,30 @@ namespace FreePIE.Core.ScriptEngine.Python
 
     public static class PythonExtensions
     {
-        public static void AddReference(this ScriptEngine engine, params Assembly[] assemblies)
+        public static string AddReferences(this string script, params Assembly[] assemblies)
         {
             var builder = new StringBuilder();
+
             builder.AppendLine("import sys");
             builder.AppendLine("import clr");
+
             foreach (var assembly in assemblies)
             {
                 builder.AppendLine(string.Format("sys.path.append(r'{0}')", Path.GetDirectoryName(assembly.Location)));
                 builder.AppendLine(string.Format("clr.AddReferenceToFile(r'{0}')", Path.GetFileName(assembly.Location)));
             }
 
-            engine.Execute(builder.ToString());
+            return builder + Environment.NewLine + script;
         }
 
-        public static void ImportNamespace(this ScriptEngine engine, string @namespace)
+        public static string ImportNamespaces(this string script, params string[] namespaces)
         {
-            engine.Execute(string.Format("from {0} import *", @namespace));
+            var builder = new StringBuilder();
+
+            foreach(var @namespace in namespaces)
+                builder.Append(string.Format("from {0} import *{1}", @namespace, Environment.NewLine));
+
+            return builder + Environment.NewLine + script;
         }
     }
 
@@ -56,16 +63,21 @@ namespace FreePIE.Core.ScriptEngine.Python
         {
             ThreadPool.QueueUserWorkItem(obj1 => ExecuteSafe(() =>
             {
-                var pluginsStopped = new CountdownEvent(0);
+                var pluginStarted = new CountdownEvent(1);
+                var pluginStopped = new CountdownEvent(1);
 
                 usedPlugins = parser.InvokeAndConfigureAllScriptDependantPlugins(script).ToList();
 
                 var scope = InitSession(usedPlugins);
 
                 foreach (var plugin in usedPlugins)
-                    StartPlugin(plugin, pluginsStopped);
+                    StartPlugin(plugin, pluginStarted, pluginStopped);
 
-                script = PreProcessScript(script);
+                pluginStopped.Signal();  
+                pluginStarted.Signal();
+                pluginStarted.Wait();
+
+                script = PreProcessScript(script, usedPlugins);
 
                 while (!stopRequested)
                 {
@@ -75,14 +87,23 @@ namespace FreePIE.Core.ScriptEngine.Python
                     Thread.Sleep(LoopDelay);
                 }
 
-                ThreadPool.QueueUserWorkItem(obj2 => usedPlugins.ForEach(p => p.Stop()));
-                pluginsStopped.Wait();
+                usedPlugins.ForEach(StopPlugin);
+                pluginStopped.Wait();
             }));
         }
 
-        string PreProcessScript(string script)
+        private void StopPlugin(IPlugin obj)
         {
-            return script;
+            ExecuteSafe(obj.Stop);
+        }        
+
+        string PreProcessScript(string script, IEnumerable<IPlugin> plugins)
+        {
+            var pluginTypes = plugins.Select(x => x.GetType()).Select(x => new { Assembly = x.Assembly, Namespace = x.Namespace }).ToList();
+
+            return script.ImportNamespaces(pluginTypes.Select(x => x.Namespace).ToArray())
+                         .AddReferences(pluginTypes.Select(x => x.Assembly).ToArray());
+
         }
 
         void ExecuteSafe(Action action)
@@ -126,15 +147,26 @@ namespace FreePIE.Core.ScriptEngine.Python
             return engine.CreateScope(types);
         }
 
-        private void StartPlugin(IPlugin plugin, CountdownEvent pluginsStopped)
+        private CountdownEvent pluginStartedTemporary;
+
+        private void StartPlugin(IPlugin plugin, CountdownEvent pluginStarted, CountdownEvent pluginStopped)
         {
             var action = plugin.Start();
 
             if (action != null)
             {
+                pluginStopped.AddCount();
+                pluginStarted.AddCount();
+                pluginStartedTemporary = pluginStarted;
+                plugin.Started += WhenPluginHasStarted;
                 ThreadPool.QueueUserWorkItem(x => ExecuteSafe(action));
-                pluginsStopped.AddCount();
             }
+        }
+
+        private void WhenPluginHasStarted(object sender, EventArgs args)
+        {
+            (sender as IPlugin).Started -= WhenPluginHasStarted;
+            pluginStartedTemporary.Signal();
         }
 
         public void Stop()
