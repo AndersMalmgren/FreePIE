@@ -5,6 +5,7 @@ using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.Core.ScriptEngine.Globals;
+using FreePIE.Core.ScriptEngine.Globals.ScriptHelpers;
 
 namespace FreePIE.Core.ScriptEngine.Python
 {
@@ -40,7 +41,62 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         public string PrepareScript(string script, IEnumerable<object> globals)
         {
+            return FindAndInitMethodsThatNeedIndexer(script, globals);
+        }
+
+        private string FindAndInitMethodsThatNeedIndexer(string script, IEnumerable<object> globals)
+        {
+            var globalsThatNeedsIndex = globals
+                .SelectMany(g => g.GetType().GetMethods()
+                    .Where(m => m.GetCustomAttributes(typeof(NeedIndexer), false).Length > 0)
+                    .Select(m => new { Global = g, MethodInfo = m }));
+
+            for (int i = 0; i < script.Length; i++)
+            {
+                foreach (var needIndex in globalsThatNeedsIndex)
+                {
+                    var name = GlobalsInfo.GetGlobalName(needIndex.Global);
+                    var methodName = needIndex.MethodInfo.Name;
+                    var searchFor = string.Format("{0}.{1}", name, methodName);
+
+                    if (i + searchFor.Length <= script.Length && script.Substring(i, searchFor.Length) == searchFor)
+                    {
+                        int argumentStart = i + searchFor.Length;
+                        var arguments = ExtractArguments(script, argumentStart);
+                        int argumentEnd = argumentStart + arguments.Length;
+
+                        var proccesedArguments = FindAndInitMethodsThatNeedIndexer(arguments.Substring(0, arguments.Length - 1), globals);
+
+                        var newArguments = string.Format(@"{0}, ""{1}"")", proccesedArguments, arguments.Substring(1, arguments.Length - 2).Replace(@"""", @"'"));
+
+                        script = script.Substring(0, argumentStart) +
+                                    newArguments + script.Substring(argumentEnd, script.Length - argumentEnd);
+
+                        i = argumentStart + newArguments.Length;
+                    }
+                }
+            }
+
             return script;
+        }
+
+        private string ExtractArguments(string script, int start)
+        {
+            int parenthesesCount = 0;
+            int index = start;
+            do
+            {
+                if (script[index] == '(')
+                    parenthesesCount++;
+
+                if (script[index] == ')')
+                    parenthesesCount--;
+
+                index++;
+
+            } while (parenthesesCount > 0 && index < script.Length);
+
+            return script.Substring(start, index - start);
         }
     }
 }

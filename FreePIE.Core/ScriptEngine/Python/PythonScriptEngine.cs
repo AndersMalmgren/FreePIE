@@ -43,6 +43,14 @@ namespace FreePIE.Core.ScriptEngine.Python
         }
     }
 
+    public static class DictionaryExtensions
+    {
+        public static IDictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+        {
+            return pairs.ToDictionary(x => x.Key, x => x.Value);
+        }
+    }
+
     public class PythonScriptEngine : IScriptEngine
     {
         private readonly IScriptParser parser;
@@ -72,7 +80,9 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                 usedPlugins = parser.InvokeAndConfigureAllScriptDependantPlugins(script).ToList();
 
-                var scope = InitSession(usedPlugins);
+                var globals = CreateGlobals(usedPlugins, globalProviders);
+
+                var scope = CreateScope(globals);
 
                 foreach (var plugin in usedPlugins)
                     StartPlugin(plugin, pluginStarted, pluginStopped);
@@ -81,7 +91,7 @@ namespace FreePIE.Core.ScriptEngine.Python
                 pluginStarted.Signal();
                 pluginStarted.Wait();
 
-                script = PreProcessScript(script, usedPlugins);
+                script = PreProcessScript(script, usedPlugins, globals);
 
                 ExecuteSafe(() =>
                 {
@@ -99,13 +109,26 @@ namespace FreePIE.Core.ScriptEngine.Python
             }));
         }
 
+        private static IDictionary<string, object> CreateGlobals(IEnumerable<IPlugin> plugins, IEnumerable<IGlobalProvider> providers)
+        {
+            var globals = providers.SelectMany(gp => gp.ListGlobals()).ToList();
+
+            var types = plugins.ToDictionary(GlobalsInfo.GetGlobalName, x => x.CreateGlobal())
+                               .Union(globals.ToDictionary(GlobalsInfo.GetGlobalName, x => x))
+                               .ToDictionary();
+
+            return types;
+        }
+
         private void StopPlugin(IPlugin obj)
         {
             ExecuteSafe(obj.Stop);
         }        
 
-        string PreProcessScript(string script, IEnumerable<IPlugin> plugins)
+        string PreProcessScript(string script, IEnumerable<IPlugin> plugins, IDictionary<string, object> globals)
         {
+            script = parser.PrepareScript(script, globals.Values);
+
             var pluginTypes = plugins.Select(x => x.GetType()).Select(x => new { x.Assembly, x.Namespace }).ToList();
 
             return script.ImportNamespaces(pluginTypes.Select(x => x.Namespace).ToArray())
@@ -141,16 +164,10 @@ namespace FreePIE.Core.ScriptEngine.Python
                 Error(sender, e);
         }
 
-        ScriptScope InitSession(IEnumerable<IPlugin> plugins)
+        ScriptScope CreateScope(IDictionary<string, object> globals)
         {
-            var globals = globalProviders.SelectMany(gp => gp.ListGlobals()).ToList();
-
-            var types = plugins.ToDictionary(GlobalsInfo.GetGlobalName, x => x.CreateGlobal())
-                                    .Union(globals.ToDictionary(GlobalsInfo.GetGlobalName, x => x))
-                                    .Union(new [] { new KeyValuePair<string, object>("starting", true) })
-                                    .ToDictionary(x => x.Key, x => x.Value);
-
-            return Engine.CreateScope(types);
+            globals.Add("starting", true);
+            return Engine.CreateScope(globals);
         }
 
         private CountdownEvent pluginStartedTemporary;
