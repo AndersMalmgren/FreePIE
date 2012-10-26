@@ -24,7 +24,6 @@ namespace FreePIE.GUI.Views.Script.Output
 
             updateTimer = new Timer(20);
             updateTimer.Elapsed += (x, y) => UpdateWatches();
-            updateTimer.Start();
         }
 
         private Dictionary<string, WatchEvent> buffer;
@@ -65,8 +64,10 @@ namespace FreePIE.GUI.Views.Script.Output
 
         public void Handle(ScriptStateChangedEvent message)
         {
+            ClearBuffer();
             if (message.Running)
-                ClearBuffer();
+                updateTimer.Start();
+            else updateTimer.Stop();
         }
 
         public BindableCollection<WatchViewModel> Watches { get; private set; }
