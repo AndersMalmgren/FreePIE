@@ -22,7 +22,7 @@ namespace FreePIE.GUI.Views.Script.Output
             eventAggregator.Subscribe(this);
             buffer = new Dictionary<string, WatchEvent>();
 
-            updateTimer = new Timer(1);
+            updateTimer = new Timer(20);
             updateTimer.Elapsed += (x, y) => UpdateWatches();
             updateTimer.Start();
         }
@@ -57,22 +57,10 @@ namespace FreePIE.GUI.Views.Script.Output
 
         public void Handle(WatchEvent message)
         {
-            var tempBuffer = new Dictionary<string, WatchEvent>();
-            tempBuffer[message.Name] = message;
+                var tempBuffer = new Dictionary<string, WatchEvent>(buffer);
+                tempBuffer[message.Name] = message;
 
-            buffer = tempBuffer;
-        }
-
-        private void AddWatch(WatchEvent message)
-        {
-            var watch = Watches.FirstOrDefault(w => w.Name == message.Name);
-
-            if (watch == null)
-            {
-                watch = new WatchViewModel { Name = message.Name };
-                Watches.Add(watch);
-            }
-            watch.Value = message.Value;
+                buffer = tempBuffer;
         }
 
         public void Handle(ScriptStateChangedEvent message)
