@@ -14,79 +14,73 @@ namespace FreePIE.GUI.Views.Script.Output
 {
     public class WatchesViewModel : PropertyChangedBase, Core.Common.Events.IHandle<WatchEvent>, Core.Common.Events.IHandle<ScriptStateChangedEvent>
     {
-        private Timer updateTimer;
+        private readonly Timer updateTimer;
 
         public WatchesViewModel(IEventAggregator eventAggregator)
         {
             Watches = new BindableCollection<WatchViewModel>();
-            buffer = new Dictionary<WatchViewModel, object>();
             eventAggregator.Subscribe(this);
-            buffer = new Dictionary<WatchViewModel, object>();
-            updateTimer = new Timer(40);
+            buffer = new Dictionary<string, WatchEvent>();
+
+            updateTimer = new Timer(1);
             updateTimer.Elapsed += (x, y) => UpdateWatches();
             updateTimer.Start();
         }
 
-        private volatile Dictionary<WatchViewModel, object> buffer;
+        private Dictionary<string, WatchEvent> buffer;
+        private readonly object locker = new object();
 
         private void UpdateWatches()
         {
-            foreach (var pair in buffer)
-                pair.Key.Value = pair.Value;
+            lock (locker)
+            {
+                var copy = new Dictionary<string, WatchEvent>(buffer);
+                var toRemove = Watches.Where(w => !copy.Any(item => item.Key == w.Name)).ToList();
+                Watches.RemoveRange(toRemove);
+                AddOrUpdateWatches(copy);
+            }
         }
 
-        private void SetWatchValue(WatchViewModel watch, object value)
+        void AddOrUpdateWatches(Dictionary<string, WatchEvent> watchEvents)
         {
-            var tempBuffer = new Dictionary<WatchViewModel, object>(buffer);
-            tempBuffer[watch] = value;
+            var added = watchEvents.Where(ev => !Watches.Any(w => w.Name == ev.Key)).ToList();
+            Watches.AddRange(added.Select(a => new WatchViewModel() { Name = a.Value.Name }));
 
-            buffer = tempBuffer;
+            foreach (var watch in Watches)
+                watch.Value = watchEvents[watch.Name].Value;
         }
 
-        private void ClearWatchBuffer()
+        private void ClearBuffer()
         {
-            buffer = new Dictionary<WatchViewModel, object>();
+            buffer = new Dictionary<string, WatchEvent>();
         }
 
         public void Handle(WatchEvent message)
         {
-            AddWatch(message, false);
+            var tempBuffer = new Dictionary<string, WatchEvent>();
+            tempBuffer[message.Name] = message;
+
+            buffer = tempBuffer;
         }
 
-        private WatchViewModel AddWatch(WatchEvent message, bool locked)
+        private void AddWatch(WatchEvent message)
         {
             var watch = Watches.FirstOrDefault(w => w.Name == message.Name);
-            
+
             if (watch == null)
             {
-                if (locked)
-                {
-                    watch = new WatchViewModel { Name = message.Name };
-                    Watches.Add(watch);
-                }
-                else
-                {
-                    lock (Watches)
-                    {
-                        watch = AddWatch(message, true);
-                    }
-                }
+                watch = new WatchViewModel { Name = message.Name };
+                Watches.Add(watch);
             }
-            SetWatchValue(watch, message.Value);
-
-            return watch;
+            watch.Value = message.Value;
         }
 
         public void Handle(ScriptStateChangedEvent message)
         {
             if (message.Running)
-            {
-                ClearWatchBuffer();
-                Watches.Clear();
-            }
+                ClearBuffer();
         }
 
         public BindableCollection<WatchViewModel> Watches { get; private set; }
-
     }
 }
