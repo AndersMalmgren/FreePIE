@@ -73,7 +73,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             AddEvents(dotDelim, globalMembers);
             AddProperties(dotDelim, globalMembers);
 
-            AddMethods(node, globalMembers);
+            AddMethods(dotDelim, globalMembers);
         }
 
         private static void AddProperties(Node<TokenInfo> propDelim, List<MemberInfo> members)
@@ -86,9 +86,8 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             eventDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Event).Select(m => MapEvent(m as EventInfo)));
         }
 
-        private static void AddMethods(Node<TokenInfo> node, IEnumerable<MemberInfo> members)
+        private static void AddMethods(Node<TokenInfo> methodDelim, IEnumerable<MemberInfo> members)
         {
-            var methodDelim = node.AddChild(ConstructDelimiterNode(':'));
             methodDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Method && !(m as MethodInfo).IsSpecialName).Select(m => MapMethod(m as MethodInfo)));
         }
 
