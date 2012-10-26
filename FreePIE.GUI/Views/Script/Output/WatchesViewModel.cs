@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Timers;
+using System.Threading;
 using Caliburn.Micro;
 using FreePIE.Core.Model.Events;
 using FreePIE.GUI.CodeCompletion.Data;
 using FreePIE.GUI.Events;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
+using Timer = System.Timers.Timer;
 
 namespace FreePIE.GUI.Views.Script.Output
 {
@@ -21,30 +22,30 @@ namespace FreePIE.GUI.Views.Script.Output
             buffer = new Dictionary<WatchViewModel, object>();
             eventAggregator.Subscribe(this);
             buffer = new Dictionary<WatchViewModel, object>();
-            updateTimer = new Timer(20);
+            updateTimer = new Timer(40);
             updateTimer.Elapsed += (x, y) => UpdateWatches();
             updateTimer.Start();
         }
 
-        private Dictionary<WatchViewModel, object> buffer;
+        private volatile Dictionary<WatchViewModel, object> buffer;
 
         private void UpdateWatches()
         {
-            lock (buffer)
-                foreach (var pair in buffer)
-                    pair.Key.Value = pair.Value;
+            foreach (var pair in buffer)
+                pair.Key.Value = pair.Value;
         }
 
         private void SetWatchValue(WatchViewModel watch, object value)
         {
-            lock (buffer)
-                buffer[watch] = value;
+            var tempBuffer = new Dictionary<WatchViewModel, object>(buffer);
+            tempBuffer[watch] = value;
+
+            buffer = tempBuffer;
         }
 
         private void ClearWatchBuffer()
         {
-            lock(buffer)
-                buffer.Clear();
+            buffer = new Dictionary<WatchViewModel, object>();
         }
 
         public void Handle(WatchEvent message)
@@ -60,8 +61,7 @@ namespace FreePIE.GUI.Views.Script.Output
             {
                 if (locked)
                 {
-                    watch = new WatchViewModel();
-                    watch.Name = message.Name;
+                    watch = new WatchViewModel { Name = message.Name };
                     Watches.Add(watch);
                 }
                 else

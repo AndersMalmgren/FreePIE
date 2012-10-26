@@ -57,8 +57,9 @@ namespace FreePIE.Core.ScriptEngine.Python
         private readonly IEnumerable<IGlobalProvider> globalProviders;
         private static ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
-        private bool stopRequested;
+        private volatile bool stopRequested;
         private const int LoopDelay = 1;
+        private CountdownEvent pluginStopped;
 
         private static ScriptEngine Engine
         {
@@ -73,10 +74,10 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         public void Start(string script)
         {
-            ThreadPool.QueueUserWorkItem(obj1 => ExecuteSafe(() =>
+            thread = new Thread(obj1 => ExecuteSafe(() =>
             {
                 var pluginStarted = new CountdownEvent(1);
-                var pluginStopped = new CountdownEvent(1);
+                pluginStopped = new CountdownEvent(1);
 
                 usedPlugins = parser.InvokeAndConfigureAllScriptDependantPlugins(script).ToList();
 
@@ -98,15 +99,27 @@ namespace FreePIE.Core.ScriptEngine.Python
                     while (!stopRequested)
                     {
                         usedPlugins.ForEach(p => p.DoBeforeNextExecute());
-                        Engine.Execute(script, scope);
+                        CatchThreadAbortedException(() => Engine.Execute(script, scope));
                         scope.SetVariable("starting", false);
                         Thread.Sleep(LoopDelay);
                     }
                 });
-
-                usedPlugins.ForEach(StopPlugin);
-                pluginStopped.Wait();
             }));
+
+            thread.Name = "PythonEngine Worker";
+            thread.Start();
+        }
+
+        private void CatchThreadAbortedException(Action func)
+        {
+            try
+            {
+                func();
+            } catch(ThreadAbortException e)
+            {
+                Thread.ResetAbort();
+                throw new Exception("Had to forcibly shut down script - try removing infinite loops from the script");
+            }
         }
 
         private static IDictionary<string, object> CreateGlobals(IEnumerable<IPlugin> plugins, IEnumerable<IGlobalProvider> providers)
@@ -143,19 +156,19 @@ namespace FreePIE.Core.ScriptEngine.Python
             }
             catch (Exception e)
             {
-                TriggerErrorEventNotOnLuaThread(e);
+                TriggerErrorEventNotOnPythonThread(e);
             }
         }
 
-        private void TriggerErrorEventNotOnLuaThread(Exception e)
+        private void TriggerErrorEventNotOnPythonThread(Exception e)
         {
             if (e.InnerException != null)
             {
-                TriggerErrorEventNotOnLuaThread(e.InnerException);
+                TriggerErrorEventNotOnPythonThread(e.InnerException);
                 return;
             }
 
-            OnError(this, new ScriptErrorEventArgs(e));
+            ThreadPool.QueueUserWorkItem(obj => OnError(this, new ScriptErrorEventArgs(e)));
         }
 
         private void OnError(object sender, ScriptErrorEventArgs e)
@@ -171,6 +184,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         }
 
         private CountdownEvent pluginStartedTemporary;
+        private Thread thread;
 
         private void StartPlugin(IPlugin plugin, CountdownEvent pluginStarted, CountdownEvent pluginStopped)
         {
@@ -194,9 +208,22 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         public void Stop()
         {
+            const int maximumShutdownTime = 200;
+
+            DateTime stopRequestedTime = DateTime.Now;
             stopRequested = true;
+
+            while((DateTime.Now - stopRequestedTime).TotalMilliseconds < maximumShutdownTime && thread.IsAlive)
+            { }
+
+            if(thread.IsAlive)
+                thread.Abort();
+
+            usedPlugins.ForEach(StopPlugin);
+            pluginStopped.Wait();
         }
 
         public event EventHandler<ScriptErrorEventArgs> Error;
+        
     }
 }
