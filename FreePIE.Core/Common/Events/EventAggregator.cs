@@ -10,23 +10,26 @@ namespace FreePIE.Core.Common.Events
     public class EventAggregator : IEventAggregator
     {
         private readonly WeakReferenceList<object> subscribers = new WeakReferenceList<object>();
-        private readonly AutoResetEvent detechEventSync = new AutoResetEvent(false);
+        private readonly AutoResetEvent detachEventSync = new AutoResetEvent(false);
         private readonly Queue<Action> eventQueue = new Queue<Action>();
+
+        public EventAggregator ()
+        {
+            var detachEventWorker = new BackgroundWorker();
+            detachEventWorker.DoWork += DetachEvents;
+            detachEventWorker.RunWorkerAsync();
+        }
 
         public void Subscribe(object subsriber)
         {
             subscribers.Add(subsriber);
-
-            var detachEventWorker = new BackgroundWorker();
-            detachEventWorker.DoWork += new DoWorkEventHandler(DetachEvents);
-            detachEventWorker.RunWorkerAsync();
         }
 
         private void DetachEvents(object sender, DoWorkEventArgs e)
         {
             while(true)
             {
-                detechEventSync.WaitOne();
+                detachEventSync.WaitOne();
                 while(eventQueue.Count > 0)
                 {
                     var action = eventQueue.Dequeue();
@@ -47,7 +50,7 @@ namespace FreePIE.Core.Common.Events
             if (handler is IHandleDetached<T>)
             {
                 eventQueue.Enqueue(action);
-                detechEventSync.Set();
+                detachEventSync.Set();
             }
             else
                 action();
