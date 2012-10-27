@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Reflection;
 using System.Text;
 
@@ -21,7 +22,9 @@ namespace FreePIE.Core.ScriptEngine.Python
             var builder = new StringBuilder();
 
             builder.AppendLine("import sys");
+
             builder.AppendLine("import clr");
+            builder.AppendLine("import math");
 
             foreach (var assembly in assemblies)
             {
@@ -66,6 +69,13 @@ namespace FreePIE.Core.ScriptEngine.Python
             get { return engine ?? (engine = Python.CreateEngine()); }
         }
 
+        private static double StaticReferenceForCompilerOnly()
+        {
+            var x = IronPython.Modules.PythonMath.degrees(10);
+            throw new InvalidOperationException("Do not use this method - it is only to force local copy.");
+            return x;
+        }
+
         public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders)
         {
             this.parser = parser;
@@ -91,6 +101,13 @@ namespace FreePIE.Core.ScriptEngine.Python
                 pluginStopped.Signal();  
                 pluginStarted.Signal();
                 pluginStarted.Wait();
+
+                var paths = new Collection<string>()
+                    {
+                        Path.Combine(Environment.CurrentDirectory, "pylib"),
+                    };
+
+                Engine.SetSearchPaths(paths);
 
                 script = PreProcessScript(script, usedPlugins, globals);
 

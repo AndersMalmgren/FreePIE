@@ -35,6 +35,10 @@
     <Reference Include="IronPython">
       <HintPath>..\Lib\IronPython\IronPython.dll</HintPath>
     </Reference>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\Lib\IronPython\IronPython.Modules.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="lua51">
       <HintPath>..\Lib\Lua\lua51.dll</HintPath>
     </Reference>
