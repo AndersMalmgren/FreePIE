@@ -9,7 +9,7 @@ using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Script.Output
 {
-    public class WatchesViewModel : PropertyChangedBase, Core.Common.Events.IHandle<WatchEvent>, Core.Common.Events.IHandle<ScriptStateChangedEvent>
+    public class WatchesViewModel : PropertyChangedBase, Core.Common.Events.IHandleDetached<WatchEvent>, Core.Common.Events.IHandle<ScriptStateChangedEvent>
     {
         public WatchesViewModel(IEventAggregator eventAggregator)
         {

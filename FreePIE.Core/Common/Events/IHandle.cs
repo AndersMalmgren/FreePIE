@@ -5,8 +5,10 @@ using System.Text;
 
 namespace FreePIE.Core.Common.Events
 {
-    public interface IHandle<T> where T : class
+    public interface IHandle<in T> where T : class
     {
         void Handle(T message);
     }
+
+    public interface IHandleDetached<in T> : IHandle<T> where T : class { }
 }
