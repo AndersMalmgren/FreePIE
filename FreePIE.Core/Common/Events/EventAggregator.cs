@@ -11,7 +11,7 @@ namespace FreePIE.Core.Common.Events
     {
         private readonly WeakReferenceList<object> subscribers = new WeakReferenceList<object>();
         private readonly AutoResetEvent detachEventSync = new AutoResetEvent(false);
-        private readonly Queue<Action> eventQueue = new Queue<Action>();
+        private volatile Dictionary<int, Action> eventQueue = new Dictionary<int, Action>();
 
         public EventAggregator ()
         {
@@ -30,11 +30,8 @@ namespace FreePIE.Core.Common.Events
             while(true)
             {
                 detachEventSync.WaitOne();
-                while(eventQueue.Count > 0)
-                {
-                    var action = eventQueue.Dequeue();
-                    action();
-                }
+                var tempQueue = Interlocked.Exchange(ref eventQueue, new Dictionary<int, Action>());
+                tempQueue.ForEach(pair => pair.Value());
             }
         }
 
@@ -42,6 +39,8 @@ namespace FreePIE.Core.Common.Events
         {
             subscribers.OfType<IHandle<T>>()
             .ForEach(h => Handle(h, message));
+
+            detachEventSync.Set();
         }
 
         private void Handle<T>(IHandle<T> handler, T message) where T : class
@@ -49,8 +48,9 @@ namespace FreePIE.Core.Common.Events
             Action action = () => handler.Handle(message);
             if (handler is IHandleDetached<T>)
             {
-                eventQueue.Enqueue(action);
-                detachEventSync.Set();
+                var tempQueue = new Dictionary<int, Action>(eventQueue);
+                tempQueue[message.GetHashCode()] = action;
+                eventQueue = tempQueue;
             }
             else
                 action();

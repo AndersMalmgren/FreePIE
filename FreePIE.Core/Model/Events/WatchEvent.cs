@@ -15,5 +15,10 @@ namespace FreePIE.Core.Model.Events
 
         public string Name { get; set; }
         public object Value { get; set; }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
     }
 }
