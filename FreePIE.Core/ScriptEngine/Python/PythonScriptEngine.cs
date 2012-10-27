@@ -150,9 +150,10 @@ namespace FreePIE.Core.ScriptEngine.Python
             return types;
         }
 
-        private void StopPlugin(IPlugin obj)
+        private void StopPlugin(IPlugin obj, CountdownEvent @event)
         {
             ExecuteSafe(obj.Stop);
+            @event.Signal();
         }        
 
         string PreProcessScript(string script, IEnumerable<IPlugin> plugins, IDictionary<string, object> globals)
@@ -206,10 +207,10 @@ namespace FreePIE.Core.ScriptEngine.Python
         private void StartPlugin(IPlugin plugin, CountdownEvent pluginStarted, CountdownEvent pluginStopped)
         {
             var action = plugin.Start();
+            pluginStopped.AddCount();
 
             if (action != null)
             {
-                pluginStopped.AddCount();
                 pluginStarted.AddCount();
                 pluginStartedTemporary = pluginStarted;
                 plugin.Started += WhenPluginHasStarted;
@@ -236,7 +237,7 @@ namespace FreePIE.Core.ScriptEngine.Python
             if(thread.IsAlive)
                 thread.Abort();
 
-            usedPlugins.ForEach(StopPlugin);
+            usedPlugins.ForEach(p => StopPlugin(p, pluginStopped));
             pluginStopped.Wait();
         }
 
