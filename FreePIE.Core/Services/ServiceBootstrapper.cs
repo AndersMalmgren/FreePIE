@@ -9,6 +9,7 @@ using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.Core.ScriptEngine.Globals;
+using FreePIE.Core.ScriptEngine.Python;
 using Ninject;
 using Ninject.Activation;
 using Ninject.Parameters;
@@ -22,8 +23,8 @@ namespace FreePIE.Core.Services
             var kernel = new StandardKernel();
             AddCustomBindings(kernel);
 
-            kernel.Bind<IScriptEngine>().To<LuaEngine>();
-            kernel.Bind<IScriptParser>().To<LuaScriptParser>();
+            kernel.Bind<IScriptEngine>().To<PythonScriptEngine>();
+            kernel.Bind<IScriptParser>().To<PythonScriptParser>();
             kernel.Bind<ICodeCompletionProvider>().To<CodeCompletionProvider>();
             kernel.Bind<IRuntimeInfoProvider>().To<RuntimeInfoProvider>();
 

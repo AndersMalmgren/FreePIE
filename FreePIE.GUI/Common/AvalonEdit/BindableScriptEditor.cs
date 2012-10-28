@@ -14,7 +14,6 @@ namespace FreePIE.GUI.Common.AvalonEdit
         static BindableScriptEditor()
         {
             LoadHighlightingFromManifest("FreePIE.GUI.Common.AvalonEdit.Python.xshd", "Python", ".py");
-            LoadHighlightingFromManifest("FreePIE.GUI.Common.AvalonEdit.Lua.xshd", "Lua", ".lua");
         }
 
         private static void LoadHighlightingFromManifest(string resource, string languageName, string fileExtension)

@@ -39,12 +39,6 @@
       <HintPath>..\Lib\IronPython\IronPython.Modules.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="lua51">
-      <HintPath>..\Lib\Lua\lua51.dll</HintPath>
-    </Reference>
-    <Reference Include="LuaInterface">
-      <HintPath>..\Lib\Lua\LuaInterface.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Dynamic">
       <HintPath>..\Lib\IronPython\Microsoft.Dynamic.dll</HintPath>
     </Reference>
@@ -114,8 +108,6 @@
     <Compile Include="ScriptEngine\ICodeCompletionProvider.cs" />
     <Compile Include="ScriptEngine\IScriptEngine.cs" />
     <Compile Include="ScriptEngine\IScriptParser.cs" />
-    <Compile Include="ScriptEngine\LuaEngine.cs" />
-    <Compile Include="ScriptEngine\LuaScriptParser.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptEngine.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptParser.cs" />
     <Compile Include="Services\ServiceBootstrapper.cs" />
