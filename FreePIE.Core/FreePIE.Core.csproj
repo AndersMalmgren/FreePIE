@@ -32,11 +32,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IronPython">
+      <HintPath>..\Lib\IronPython\IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\Lib\IronPython\IronPython.Modules.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="lua51">
       <HintPath>..\Lib\Lua\lua51.dll</HintPath>
     </Reference>
     <Reference Include="LuaInterface">
       <HintPath>..\Lib\Lua\LuaInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\Lib\IronPython\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\Lib\IronPython\Microsoft.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="Ninject">
       <HintPath>..\Lib\Ninject\Ninject.dll</HintPath>
@@ -103,6 +116,8 @@
     <Compile Include="ScriptEngine\IScriptParser.cs" />
     <Compile Include="ScriptEngine\LuaEngine.cs" />
     <Compile Include="ScriptEngine\LuaScriptParser.cs" />
+    <Compile Include="ScriptEngine\Python\PythonScriptEngine.cs" />
+    <Compile Include="ScriptEngine\Python\PythonScriptParser.cs" />
     <Compile Include="Services\ServiceBootstrapper.cs" />
     <Compile Include="Model\Curve.cs" />
     <Compile Include="Persistence\ISettingsManager.cs" />
