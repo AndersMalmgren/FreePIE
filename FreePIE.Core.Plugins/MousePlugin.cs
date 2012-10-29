@@ -229,31 +229,31 @@ namespace FreePIE.Core.Plugins
         //-----------------------------------------------------------------------
         public MouseGlobal(MousePlugin plugin) : base(plugin) { }
 
-        public double DeltaX
+        public double deltaX
         {
             get { return plugin.DeltaX; }
             set { plugin.DeltaX = (int) Math.Round(value); }
         }
 
-        public double DeltaY
+        public double deltaY
         {
             get { return plugin.DeltaY; }
             set { plugin.DeltaY = (int) Math.Round(value); }
         }
 
-        public bool LeftButton
+        public bool leftButton
         {
             get { return plugin.IsButtonPressed(0); }
             set { plugin.SetButtonPressed(0, value); }
         }
 
-        public bool MiddleButton
+        public bool middleButton
         {
             get { return plugin.IsButtonPressed(2); }
             set { plugin.SetButtonPressed(2, value); }
         }
 
-        public bool RightButton
+        public bool rightButton
         {
             get { return plugin.IsButtonPressed(1); }
             set { plugin.SetButtonPressed(1, value); }

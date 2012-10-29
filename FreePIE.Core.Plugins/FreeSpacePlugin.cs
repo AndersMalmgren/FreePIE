@@ -265,23 +265,23 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
-      public bool ContinuousYawMode {
+      public bool continuousYawMode {
          get { return Device.ContinousYawMode; }
          set { Device.ContinousYawMode = value; }
       }
 
       //-----------------------------------------------------------------------
-      public double Yaw {
+      public double yaw {
          get { return Device.Yaw; }
       }
 
       //-----------------------------------------------------------------------
-      public double Pitch {
+      public double pitch {
          get { return Device.Pitch; }
       }
 
       //-----------------------------------------------------------------------
-      public double Roll {
+      public double roll {
          get { return Device.Roll; }
       }
    }

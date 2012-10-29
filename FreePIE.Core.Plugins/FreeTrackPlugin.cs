@@ -137,37 +137,37 @@ namespace FreePIE.Core.Plugins
             plugin.Data = setValue(data);
         }
 
-        public float Yaw
+        public float yaw
         {
             get { return plugin.Data.Yaw; }
             set { Write(d => { d.Yaw = value; return d; }); }
         }
 
-        public float Pitch
+        public float pitch
         {
             get { return plugin.Data.Pitch; }
             set { Write(d => { d.Pitch = value; return d; }); }
         }
 
-        public float Roll
+        public float roll
         {
             get { return plugin.Data.Roll; }
             set { Write(d => { d.Roll = value; return d; }); }
         }
 
-        public float X
+        public float x
         {
             get { return plugin.Data.X; }
             set { Write(d => { d.X = value; return d; }); }
         }
 
-        public float Y
+        public float y
         {
             get { return plugin.Data.Y; }
             set { Write(d => { d.Y = value; return d; }); }
         }
 
-        public float Z
+        public float z
         {
             get { return plugin.Data.Z; }
             set { Write(d => { d.Z = value; return d; }); }

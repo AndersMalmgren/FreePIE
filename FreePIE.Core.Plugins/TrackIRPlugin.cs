@@ -100,7 +100,7 @@ namespace FreePIE.Core.Plugins
         public TrackIRGlobal(TrackIRPlugin plugin) : base(plugin)
         { }
 
-        public float Yaw
+        public float yaw
         {
             get
             {
@@ -110,7 +110,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.Yaw = value; }
         }
 
-        public float Pitch
+        public float pitch
         {
             get
             {
@@ -120,7 +120,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.Pitch = value; }
         }
 
-        public float Roll
+        public float roll
         {
             get
             {
@@ -130,7 +130,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.Roll = value; }
         }
 
-        public float X
+        public float x
         {
             get
             {
@@ -140,7 +140,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.X = value; }
         }
 
-        public float Y
+        public float y
         {
             get
             {
@@ -150,7 +150,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.Y = value; }
         }
 
-        public float Z
+        public float z
         {
             get
             {

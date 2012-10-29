@@ -247,38 +247,38 @@ namespace FreePIE.Core.Plugins {
             set { vuzix.SetDataUnits(value); }
         }
 
-        public bool ContinuousYawMode
+        public bool continuousYawMode
         {
             get { return vuzix.ContinousYawMode; }
             set { vuzix.ContinousYawMode = value; }
         }
 
-        public double Yaw
+        public double yaw
         {
             get { return vuzix.Yaw; }
         }
 
-        public double Pitch
+        public double pitch
         {
             get { return vuzix.Pitch; }
         }
 
-        public double Roll
+        public double roll
         {
             get { return vuzix.Roll; }
         }
 
-        public double X
+        public double x
         {
             get { return vuzix.X; }
         }
 
-        public double Y
+        public double y
         {
             get { return vuzix.Y; }
         }
 
-        public double Z
+        public double z
         {
             get { return vuzix.Z; }
         }
