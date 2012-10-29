@@ -8,7 +8,7 @@ using PPJoy;
 
 namespace FreePIE.Core.Plugins
 {
-    [LuaGlobalEnum]
+    [GlobalEnum]
     public enum AxisTypes
     {
         X           = 0,
@@ -21,7 +21,7 @@ namespace FreePIE.Core.Plugins
         Dial        = 7
     }
 
-    [LuaGlobalType(Type = typeof(PPJoyGlobal), IsIndexed = true)]
+    [GlobalType(Type = typeof(PPJoyGlobal), IsIndexed = true)]
     public class PPJoyPlugin : Plugin
     {
         private Device[] devices;
@@ -176,7 +176,7 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [LuaGlobal(Name = "ppJoy")]
+    [Global(Name = "ppJoy")]
     public class PPJoyGlobal
     {
         private readonly int index;

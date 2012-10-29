@@ -10,7 +10,7 @@ using SlimDX.DirectInput;
 namespace FreePIE.Core.Plugins
 {
 
-    [LuaGlobalType(Type = typeof(MouseGlobal))]
+    [GlobalType(Type = typeof(MouseGlobal))]
     public class MousePlugin : Plugin
     {
         // Mouse position state variables
@@ -223,7 +223,7 @@ namespace FreePIE.Core.Plugins
     }
 
     //==========================================================================
-    [LuaGlobal(Name = "mouse")]
+    [Global(Name = "mouse")]
     public class MouseGlobal : UpdateblePluginGlobal<MousePlugin>
     {
         //-----------------------------------------------------------------------

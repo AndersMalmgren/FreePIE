@@ -8,7 +8,7 @@ using FreePIE.Core.Plugins.TrackIR;
 
 namespace FreePIE.Core.Plugins
 {
-    [LuaGlobalType(Type = typeof(TrackIRGlobal))]
+    [GlobalType(Type = typeof(TrackIRGlobal))]
     public class TrackIRPlugin : Plugin
     {
         private NPClientSpoof spoofer;
@@ -94,7 +94,7 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [LuaGlobal(Name = "trackIR")]
+    [Global(Name = "trackIR")]
     public class TrackIRGlobal : UpdateblePluginGlobal<TrackIRPlugin>
     {
         public TrackIRGlobal(TrackIRPlugin plugin) : base(plugin)

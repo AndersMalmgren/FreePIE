@@ -39,7 +39,7 @@ namespace FreePIE.Core.Plugins
         public float Y4;
     };
 
-    [LuaGlobalType(Type = typeof(FreeTrackGlobal))]
+    [GlobalType(Type = typeof(FreeTrackGlobal))]
     public class FreeTrackPlugin : Plugin
     {
         private MemoryMappedFile memoryMappedFile;
@@ -123,7 +123,7 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [LuaGlobal(Name = "freeTrack")]
+    [Global(Name = "freeTrack")]
     public class FreeTrackGlobal : UpdateblePluginGlobal<FreeTrackPlugin>
     {
         public FreeTrackGlobal(FreeTrackPlugin plugin) : base(plugin) { }

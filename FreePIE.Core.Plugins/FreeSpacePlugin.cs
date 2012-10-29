@@ -88,7 +88,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          FreeSpacePlugin
    //==========================================================================
-   [LuaGlobalType(Type = typeof(FreeSpacePluginGlobal))]
+   [GlobalType(Type = typeof(FreeSpacePluginGlobal))]
    public class FreeSpacePlugin : Plugin {
 
       Thread PollThread = null;
@@ -255,7 +255,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          FreeSpacePluginGlobal
    //==========================================================================
-   [LuaGlobal(Name = "freespace")]
+   [Global(Name = "freespace")]
    public class FreeSpacePluginGlobal {
       private readonly FreeSpacePlugin Device;
 

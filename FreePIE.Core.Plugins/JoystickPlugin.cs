@@ -9,7 +9,7 @@ using SlimDX.DirectInput;
 
 namespace FreePIE.Core.Plugins
 {
-    [LuaGlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
+    [GlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
     public class JoystickPlugin : Plugin
     {
         private List<Device> devices;
@@ -101,7 +101,7 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [LuaGlobal(Name = "joystick")]
+    [Global(Name = "joystick")]
     public class JoystickGlobal
     {
         private readonly Device device;

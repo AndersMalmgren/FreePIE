@@ -23,15 +23,15 @@ namespace FreePIE.Core.ScriptEngine.Globals
 
         public static string GetGlobalName(Type type)
         {
-            var typeAttribute = GetAttribute<LuaGlobalType>(type);
-            var luaGlobalAttribute = typeAttribute != null ? GetAttribute<LuaGlobal>(typeAttribute.Type) : GetAttribute<LuaGlobal>(type);
+            var typeAttribute = GetAttribute<GlobalType>(type);
+            var globalAttribute = typeAttribute != null ? GetAttribute<Global>(typeAttribute.Type) : GetAttribute<Global>(type);
 
-            return luaGlobalAttribute != null ? luaGlobalAttribute.Name : null;
+            return globalAttribute != null ? globalAttribute.Name : null;
         }
 
         public static IEnumerable<MemberInfo> GetGlobalMembers(Type pluginType)
         {
-            var globalType = GetAttribute<LuaGlobalType>(pluginType);
+            var globalType = GetAttribute<GlobalType>(pluginType);
             pluginType = globalType != null ? globalType.Type : pluginType;
 
             return GetMembers(pluginType, new List<MemberInfo>());
@@ -48,7 +48,7 @@ namespace FreePIE.Core.ScriptEngine.Globals
 
         public static IEnumerable<string> GetGlobalMehods(Type pluginType)
         {
-            var globalType = GetAttribute<LuaGlobalType>(pluginType).Type;
+            var globalType = GetAttribute<GlobalType>(pluginType).Type;
             var methods = new List<string>();
             foreach(var methodInfo in globalType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {

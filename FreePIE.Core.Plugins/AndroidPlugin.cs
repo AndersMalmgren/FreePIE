@@ -10,7 +10,7 @@ using FreePIE.Core.Plugins.SensorFusion;
 
 namespace FreePIE.Core.Plugins
 {
-    [LuaGlobalType(Type = typeof(AndroidGlobal))]
+    [GlobalType(Type = typeof(AndroidGlobal))]
     public class AndroidPlugin : Plugin
     {
         private UdpClient udpClient;
@@ -169,7 +169,7 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [LuaGlobal(Name = "android")]
+    [Global(Name = "android")]
     public class AndroidGlobal : UpdateblePluginGlobal<AndroidPlugin>
     {
         public AndroidGlobal(AndroidPlugin plugin) : base(plugin){ }

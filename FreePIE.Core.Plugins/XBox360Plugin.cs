@@ -12,7 +12,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          XBox360Plugin
    //==========================================================================
-   [LuaGlobalType(Type = typeof(XBox360PluginGlobal))]
+   [GlobalType(Type = typeof(XBox360PluginGlobal))]
    public class XBox360Plugin : Plugin {
 
       Controller XBoxController = new Controller(0);
@@ -220,7 +220,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          FreeSpacePluginGlobal
    //==========================================================================
-   [LuaGlobal(Name = "xbox360")]
+   [Global(Name = "xbox360")]
    public class XBox360PluginGlobal {
       private readonly XBox360Plugin Device;
 

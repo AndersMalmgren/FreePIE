@@ -9,7 +9,7 @@ using FreePIE.Core.Model.Events;
 
 namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
 {
-    [LuaGlobal(Name = "diagnostics")]
+    [Global(Name = "diagnostics")]
     public class DiagnosticHelper : IScriptHelper
     {
         private readonly IEventAggregator eventAggregator;

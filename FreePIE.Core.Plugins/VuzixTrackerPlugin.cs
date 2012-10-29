@@ -32,7 +32,7 @@ namespace FreePIE.Core.Plugins {
    }
 
    //==========================================================================
-   [LuaGlobalEnum]
+   [GlobalEnum]
    public enum VuzixDataUnits {
       RAW = 0,
       DEGREES = 1,
@@ -42,7 +42,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          VuzixTrackerPlugin
    //==========================================================================
-   [LuaGlobalType(Type = typeof(VuzixTrackerPluginGlobal))]
+   [GlobalType(Type = typeof(VuzixTrackerPluginGlobal))]
    public class VuzixTrackerPlugin : Plugin {
 
       bool Sampled = false;
@@ -229,7 +229,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          VuzixTrackerPluginGlobal
    //==========================================================================
-    [LuaGlobal(Name = "vuzix")]
+    [Global(Name = "vuzix")]
     public class VuzixTrackerPluginGlobal
     {
         private readonly VuzixTrackerPlugin vuzix;

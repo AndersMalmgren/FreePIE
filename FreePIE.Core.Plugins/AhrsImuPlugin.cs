@@ -10,7 +10,7 @@ using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins
 {
-    [LuaGlobalType(Type = typeof(AhrsImuGlobal))]
+    [GlobalType(Type = typeof(AhrsImuGlobal))]
     public class AhrsImuPlugin : ComDevicePlugin
     {
         private byte[] buffer;
@@ -82,7 +82,7 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [LuaGlobal(Name = "ahrsImu")]
+    [Global(Name = "ahrsImu")]
     public class AhrsImuGlobal : DofGlobal<AhrsImuPlugin>
     {
         public AhrsImuGlobal(AhrsImuPlugin plugin) : base(plugin) { }

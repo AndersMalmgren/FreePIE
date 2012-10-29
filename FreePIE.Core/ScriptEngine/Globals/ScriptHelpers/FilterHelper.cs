@@ -6,7 +6,7 @@ using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
 {
-    [LuaGlobal(Name = "filters")]
+    [Global(Name = "filters")]
     public class FilterHelper : IScriptHelper
     {
         private readonly Dictionary<string, double> lastSamples;
