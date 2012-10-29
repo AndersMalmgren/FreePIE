@@ -16,7 +16,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
 
         private bool IsTriggered(KeyEventArgs key)
         {
-            return isEndOfExpression() && key.Key == Key.Left;
+            return isEndOfExpression() && key.Key == Key.Left || key.Key == Key.Right;
         }
 
         public void Preview(IEnumerable<IPopupEvent> events, ICancellablePopupEvent current, CompletionPopupView view)

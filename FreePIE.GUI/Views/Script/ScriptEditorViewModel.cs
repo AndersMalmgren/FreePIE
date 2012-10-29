@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Linq;
-using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.CodeCompletion;
 using FreePIE.GUI.CodeCompletion.Event.Actions;
-using FreePIE.GUI.Common;
-using FreePIE.GUI.Common.AvalonEdit;
 using FreePIE.GUI.Common.CodeCompletion;
 using FreePIE.GUI.Events;
-using FreePIE.GUI.Result;
-using FreePIE.GUI.Shells;
 using FreePIE.Core.Common.Events;
 
 namespace FreePIE.GUI.Views.Script
@@ -26,8 +21,22 @@ namespace FreePIE.GUI.Views.Script
             CompletionWindow = completionModel;
             Enabled = true;
             eventAggregator.Subscribe(this);
-            completionModel.Observers.Add(new OpenOnWriteAction(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
+            completionModel.Observers.Add(new OpenOnWriteAction(IsBeginningOfExpression));
             completionModel.Observers.Add(new CloseOnSteppingIntoEndOfExpression(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
+            completionModel.Observers.Add(new CloseOnWritingEndOfExpression(IsEndOfExpression));
+        }
+
+        private bool IsBeginningOfExpression(char nextChar)
+        {
+            var caret = CaretPosition;
+            var script = (Script ?? string.Empty).Insert(CaretPosition, nextChar.ToString());
+            caret++;
+            return provider.IsBeginningOfExpression(Script, CaretPosition) || provider.IsBeginningOfExpression(script, caret);
+        }
+
+        private bool IsEndOfExpression(char nextChar)
+        {
+            return provider.IsEndOfExpressionDelimiter(nextChar);
         }
 
         public CompletionPopupViewModel CompletionWindow { get; set; }

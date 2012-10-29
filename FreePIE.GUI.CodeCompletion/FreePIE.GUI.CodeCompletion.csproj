@@ -97,11 +97,13 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Event\Events\CancellableInputEvent.cs" />
     <Compile Include="Controls\EvenListBox.xaml.cs">
       <DependentUpon>EvenListBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\FixedSizeStack.cs" />
     <Compile Include="Event\Actions\CloseOnSteppingIntoEndOfExpression.cs" />
+    <Compile Include="Event\Actions\CloseOnWritingEndOfExpression.cs" />
     <Compile Include="Event\Actions\InsertOnItemClicked.cs" />
     <Compile Include="Event\Actions\OpenOnWriteAction.cs" />
     <Compile Include="Event\Actions\PositionAction.cs" />

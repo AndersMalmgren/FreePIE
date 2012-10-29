@@ -36,6 +36,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         }
 
         private static readonly char[] ExpressionDelimiters = "(){}\t \r\n".ToArray();
+        private static readonly char[] ExpressionEndDelimiters = ")]\r\n\t".ToArray();
         private static readonly char[] TokenDelimiters = ".".ToArray();
 
         private int GetStartOfExpression(string script, int offset)
@@ -88,6 +89,11 @@ namespace FreePIE.Core.ScriptEngine.Python
         public string PrepareScript(string script, IEnumerable<object> globals)
         {
             return FindAndInitMethodsThatNeedIndexer(script, globals);
+        }
+
+        public bool IsEndOfExpressionDelimiter(char @char)
+        {
+            return ExpressionEndDelimiters.Contains(@char);
         }
 
         private string FindAndInitMethodsThatNeedIndexer(string script, IEnumerable<object> globals)
