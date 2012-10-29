@@ -7,6 +7,7 @@ namespace FreePIE.GUI.CodeCompletion.Event
         SelectionChanged,
         ItemClicked,
         PopupStateChanged,
-        PositionInvalidated
+        PositionInvalidated,
+        CancellableInput
     }
 }
