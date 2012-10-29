@@ -54,7 +54,7 @@ namespace FreePIE.GUI.CodeCompletion
                                   ShouldSwallow = true
                               });
 
-            
+            observers.Add(new SelectionChangedHideAction());
             observers.Add(new InsertionAction(Key.Enter) { ShouldSwallow = true });
             observers.Add(new InsertionAction(Key.OemPeriod));
             observers.Add(new InsertionAction(Key.OemSemicolon));
@@ -65,7 +65,6 @@ namespace FreePIE.GUI.CodeCompletion
             observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemSemicolon));
             observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true, IsTargetSource = IsEditor});
             observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true, IsTargetSource = IsEditor });
-            observers.Add(new SelectionChangedHideAction());
         }
 
         private bool IsEditor(EventSource source)
@@ -102,9 +101,11 @@ namespace FreePIE.GUI.CodeCompletion
             KeyEventHandler previewKeyDown = (sender, args) => view.Publish(new CancellableKeyEvent(args, EventSource.Editor));
             KeyEventHandler keyUp = (sender, args) => view.Publish(new KeyUpEvent(args, EventSource.Editor));
             KeyEventHandler keyDown = (sender, args) => view.Publish(new KeyEvent(args, EventSource.Editor));
+            TextCompositionEventHandler previewTextInput = (sender, args) => view.Publish(new CancellableInputEvent(args));
 
             if (target != null)
             {
+                target.PreviewTextInput += previewTextInput;
                 target.SelectionChanged += selectionChanged;
                 target.PreviewKeyDown += previewKeyDown;
                 target.KeyDown += keyDown;

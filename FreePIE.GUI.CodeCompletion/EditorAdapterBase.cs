@@ -16,5 +16,6 @@ namespace FreePIE.GUI.CodeCompletion
         public abstract void Focus();
         public abstract event KeyEventHandler KeyDown;
         public abstract event KeyEventHandler KeyUp;
+        public abstract event TextCompositionEventHandler PreviewTextInput;
     }
 }

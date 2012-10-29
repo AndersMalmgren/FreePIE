@@ -10,5 +10,6 @@ namespace FreePIE.Core.ScriptEngine
     {
         CodeCompletionResult GetSuggestionsForExpression(string script, int offset);
         bool IsBeginningOfExpression(string script, int caretPosition);
+        bool IsEndOfExpressionDelimiter(char nextChar);
     }
 }

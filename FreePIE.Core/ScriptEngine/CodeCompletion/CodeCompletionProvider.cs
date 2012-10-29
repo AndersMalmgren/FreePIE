@@ -25,7 +25,6 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return new CodeCompletionResult(infos, tokenResult.Tokens.Last(), tokenResult.LastTokenRange);
         }
 
-
         public bool IsBeginningOfExpression(string script, int caretPosition)
         {
             var tokens = parser.GetTokensFromExpression(script, caretPosition).Tokens;
@@ -34,6 +33,11 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
                 return true;
 
             return tokens.Last().Value.Length == 0;
+        }
+
+        public bool IsEndOfExpressionDelimiter(char @char)
+        {
+            return parser.IsEndOfExpressionDelimiter(@char);
         }
     }
 }
