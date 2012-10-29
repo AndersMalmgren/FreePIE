@@ -12,7 +12,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          XBox360Plugin
    //==========================================================================
-   [LuaGlobalType(Type = typeof(XBox360PluginGlobal))]
+   [GlobalType(Type = typeof(XBox360PluginGlobal))]
    public class XBox360Plugin : Plugin {
 
       Controller XBoxController = new Controller(0);
@@ -220,7 +220,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          FreeSpacePluginGlobal
    //==========================================================================
-   [LuaGlobal(Name = "xbox360")]
+   [Global(Name = "xbox360")]
    public class XBox360PluginGlobal {
       private readonly XBox360Plugin Device;
 
@@ -230,102 +230,102 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
-      public bool A {
+      public bool a {
          get { return Device.A; }
       }
 
       //-----------------------------------------------------------------------
-      public bool B {
+      public bool b {
          get { return Device.B; }
       }
 
       //-----------------------------------------------------------------------
-      public bool X {
+      public bool x {
          get { return Device.X; }
       }
 
       //-----------------------------------------------------------------------
-      public bool Y {
+      public bool y {
          get { return Device.Y; }
       }
 
       //-----------------------------------------------------------------------
-      public bool LeftShoulder {
+      public bool leftShoulder {
          get { return Device.LeftShoulder; }
       }
 
       //-----------------------------------------------------------------------
-      public bool RightShoulder {
+      public bool rightShoulder {
          get { return Device.RightShoulder; }
       }
 
       //-----------------------------------------------------------------------
-      public bool Start {
+      public bool start {
          get { return Device.StartBtn; }
       }
 
       //-----------------------------------------------------------------------
-      public bool Back {
+      public bool back {
          get { return Device.Back; }
       }
 
       //-----------------------------------------------------------------------
-      public bool Up {
+      public bool up {
          get { return Device.Up; }
       }
 
       //-----------------------------------------------------------------------
-      public bool Down {
+      public bool down {
          get { return Device.Down; }
       }
 
       //-----------------------------------------------------------------------
-      public bool Left {
+      public bool left {
          get { return Device.Left; }
       }
 
       //-----------------------------------------------------------------------
-      public bool Right {
+      public bool right {
          get { return Device.Right; }
       }
 
       //-----------------------------------------------------------------------
-      public double LeftTrigger {
+      public double leftTrigger {
          get { return Device.LeftTrigger; }
       }
 
       //-----------------------------------------------------------------------
-      public double RightTrigger {
+      public double rightTrigger {
          get { return Device.RightTrigger; }
       }
 
       //-----------------------------------------------------------------------
-      public bool LeftThumb {
+      public bool leftThumb {
          get { return Device.LeftThumb; }
       }
 
       //-----------------------------------------------------------------------
-      public double LeftStickX {
+      public double leftStickX {
          get { return Device.LeftStickX; }
       }
 
       //-----------------------------------------------------------------------
-      public double LeftStickY {
+      public double leftStickY {
          get { return Device.LeftStickY; }
       }
 
       //-----------------------------------------------------------------------
-      public bool RightThumb {
+      public bool rightThumb {
          get { return Device.RightThumb; }
       }
 
       //-----------------------------------------------------------------------
-      public double RightStickX {
+      public double rightStickX {
          get { return Device.RightStickX; }
       }
 
       //-----------------------------------------------------------------------
-      public double RightStickY {
+      public double rightStickY {
          get { return Device.RightStickY; }
       }
    }

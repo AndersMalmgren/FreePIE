@@ -124,17 +124,17 @@ namespace FreePIE.Core.Plugins
     {
         protected DofGlobal(TPlugin plugin) : base(plugin){}
 
-        public float Yaw
+        public float yaw
         {
             get { return plugin.Data.Yaw; }
         }
 
-        public float Pitch
+        public float pitch
         {
             get { return plugin.Data.Pitch; }
         }
 
-        public float Roll
+        public float roll
         {
             get { return plugin.Data.Roll; }
         }

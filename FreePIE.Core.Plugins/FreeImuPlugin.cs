@@ -10,7 +10,7 @@ using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins
 {
-    [LuaGlobalType(Type = typeof(FreeImuGlobal))]
+    [GlobalType(Type = typeof(FreeImuGlobal))]
     public class FreeImuPlugin : ComDevicePlugin
     {
         public override object CreateGlobal()
@@ -59,7 +59,7 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [LuaGlobal(Name = "freeImu")]
+    [Global(Name = "freeImu")]
     public class FreeImuGlobal : DofGlobal<FreeImuPlugin>
     {
         public FreeImuGlobal(FreeImuPlugin plugin) : base(plugin) { }

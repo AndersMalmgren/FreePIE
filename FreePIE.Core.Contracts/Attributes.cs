@@ -6,7 +6,7 @@ using System.Text;
 namespace FreePIE.Core.Contracts
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class LuaGlobalType : Attribute
+    public class GlobalType : Attribute
     {
         public Type Type { get; set; }
 
@@ -14,11 +14,11 @@ namespace FreePIE.Core.Contracts
     }
 
     [AttributeUsage(AttributeTargets.Class)]
-    public class LuaGlobal : Attribute
+    public class Global : Attribute
     {
         public string Name { get; set; }
     }
 
     [AttributeUsage(AttributeTargets.Enum)]
-    public class LuaGlobalEnum : Attribute { }
+    public class GlobalEnum : Attribute { }
 }

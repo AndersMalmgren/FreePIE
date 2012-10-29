@@ -11,7 +11,7 @@
 			
 			<Delimiters>()[]{}@,:.`=;+-*/% &amp;|^&gt;&lt;</Delimiters>
 			
-			<Span name="Char" stopateol="true" color="Magenta" escapecharacter="\">
+			<Span name="Char" stopateol="true" color="Red" escapecharacter="\">
 				<Begin>'</Begin>
 				<End>'</End>
 			</Span>
@@ -25,7 +25,7 @@
 				<Begin>#</Begin>
 			</Span>
 			
-			<Span name="String" stopateol="true" color="Blue" escapecharacter="\">
+			<Span name="String" stopateol="true" color="Red" escapecharacter="\">
 				<Begin>"</Begin>
 				<End>"</End>
 			</Span>
@@ -81,6 +81,11 @@
 				<Key word="not"/>
 				<Key word="or"/>
 			</KeyWords>
+
+      <KeyWords name="Boolean" bold="false" color="Blue">
+        <Key word="True"/>
+        <Key word="False"/>
+      </KeyWords>
 			
 			<KeyWords name="PassStatement" color="Gray">
 				<Key word="pass"/>

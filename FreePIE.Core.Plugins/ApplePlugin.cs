@@ -201,17 +201,17 @@ namespace FreePIE.Core.Plugins {
             set { Device.ContinousYawMode = value; }
         }
 
-        public double Yaw
+        public double yaw
         {
             get { return Device.Yaw; }
         }
 
-        public double Pitch
+        public double pitch
         {
             get { return Device.Pitch; }
         }
 
-        public double Roll
+        public double roll
         {
             get { return Device.Roll; }
         }
@@ -220,7 +220,7 @@ namespace FreePIE.Core.Plugins {
     //==========================================================================
    //                          iPhonePlugin
    //==========================================================================
-   [LuaGlobalType(Type = typeof(iPhonePluginGlobal))]
+   [GlobalType(Type = typeof(iPhonePluginGlobal))]
    public class iPhonePlugin : ApplePlugin {
 
       //----------------------------------------------------------------------- 
@@ -237,7 +237,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          iPhonePluginGlobal
    //==========================================================================
-   [LuaGlobal(Name = "iPhone")]
+   [Global(Name = "iPhone")]
    public class iPhonePluginGlobal : ApplePluginGlobal {
 
       //-----------------------------------------------------------------------
@@ -249,7 +249,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          iPodPlugin
    //==========================================================================
-   [LuaGlobalType(Type = typeof(iPodPluginGlobal))]
+   [GlobalType(Type = typeof(iPodPluginGlobal))]
    public class iPodPlugin : ApplePlugin {
 
       //----------------------------------------------------------------------- 
@@ -266,7 +266,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          iPodPluginGlobal
    //==========================================================================
-   [LuaGlobal(Name = "iPod")]
+   [Global(Name = "iPod")]
    public class iPodPluginGlobal : ApplePluginGlobal {
 
       //-----------------------------------------------------------------------
@@ -278,7 +278,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          iPadPlugin
    //==========================================================================
-   [LuaGlobalType(Type = typeof(iPadPluginGlobal))]
+   [GlobalType(Type = typeof(iPadPluginGlobal))]
    public class iPadPlugin : ApplePlugin {
 
       //----------------------------------------------------------------------- 
@@ -295,7 +295,7 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    //                          iPadPluginGlobal
    //==========================================================================
-   [LuaGlobal(Name = "iPad")]
+   [Global(Name = "iPad")]
    public class iPadPluginGlobal : ApplePluginGlobal {
 
       //-----------------------------------------------------------------------

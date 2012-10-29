@@ -9,7 +9,7 @@ using SlimDX.DirectInput;
 
 namespace FreePIE.Core.Plugins
 {
-    [LuaGlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
+    [GlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
     public class JoystickPlugin : Plugin
     {
         private List<Device> devices;
@@ -101,7 +101,7 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [LuaGlobal(Name = "joystick")]
+    [Global(Name = "joystick")]
     public class JoystickGlobal
     {
         private readonly Device device;
@@ -128,32 +128,32 @@ namespace FreePIE.Core.Plugins
             return device.GetDown(button);
         }
 
-        public int X
+        public int x
         {
             get { return State.X; }
         }
 
-        public int Y
+        public int y
         {
             get { return State.Y; }
         }
 
-        public int Z
+        public int z
         {
             get { return State.Z;  }
         }
 
-        public int ZRotation
+        public int zRotation
         {
             get { return State.RotationZ; }
         }
 
-        public int[] Sliders
+        public int[] sliders
         {
             get { return State.GetSliders(); }
         }
 
-        public int[] Pov
+        public int[] pov
         {
             get { return State.GetPointOfViewControllers(); }
         }

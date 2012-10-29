@@ -12,7 +12,7 @@ namespace FreePIE.Core.Plugins
 {
 
     // SlimDX key-codes
-    [LuaGlobalEnum]
+    [GlobalEnum]
     public enum Key
     {
         D0 = 0,
@@ -163,7 +163,7 @@ namespace FreePIE.Core.Plugins
     }
 
 
-    [LuaGlobalType(Type = typeof (KeyboardGlobal))]
+    [GlobalType(Type = typeof (KeyboardGlobal))]
     public class KeyboardPlugin : Plugin
     {
         // Maps SlimDX key codes to virtual key codes
@@ -637,7 +637,7 @@ namespace FreePIE.Core.Plugins
     }
 
     //==========================================================================
-    [LuaGlobal(Name = "keyboard")]
+    [Global(Name = "keyboard")]
     public class KeyboardGlobal : UpdateblePluginGlobal<KeyboardPlugin>
     {
 

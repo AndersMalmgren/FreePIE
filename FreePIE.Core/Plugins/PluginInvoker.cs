@@ -87,7 +87,7 @@ namespace FreePIE.Core.Plugins
             if(globalEnumTypes != null)
                 return globalEnumTypes;
 
-            globalEnumTypes = ListAllPluginTypes().Select(t => t.Assembly).SelectMany(a => a.GetTypes().Where(t => t.GetCustomAttributes(typeof (LuaGlobalEnum), false).Any())).Distinct().ToList();
+            globalEnumTypes = ListAllPluginTypes().Select(t => t.Assembly).SelectMany(a => a.GetTypes().Where(t => t.GetCustomAttributes(typeof (GlobalEnum), false).Any())).Distinct().ToList();
 
             return globalEnumTypes;
         }

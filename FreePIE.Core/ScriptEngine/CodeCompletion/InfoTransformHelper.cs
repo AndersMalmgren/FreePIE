@@ -59,7 +59,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static bool HasIndexer(Type type)
         {
-            var globalType = type.GetCustomAttributes(true).SingleOrDefault(x => x is LuaGlobalType) as LuaGlobalType;
+            var globalType = type.GetCustomAttributes(true).SingleOrDefault(x => x is GlobalType) as GlobalType;
 
             return globalType != null && globalType.IsIndexed;
         }

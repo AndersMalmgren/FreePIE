@@ -10,7 +10,7 @@ using FreePIE.Core.Plugins.SensorFusion;
 
 namespace FreePIE.Core.Plugins
 {
-    [LuaGlobalType(Type = typeof(AndroidGlobal))]
+    [GlobalType(Type = typeof(AndroidGlobal))]
     public class AndroidPlugin : Plugin
     {
         private UdpClient udpClient;
@@ -169,17 +169,17 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [LuaGlobal(Name = "android")]
+    [Global(Name = "android")]
     public class AndroidGlobal : UpdateblePluginGlobal<AndroidPlugin>
     {
         public AndroidGlobal(AndroidPlugin plugin) : base(plugin){ }
 
-        public double Yaw { get { return plugin.Yaw; } }
-        public double Pitch { get { return plugin.Pitch; } }
-        public double Roll { get { return plugin.Roll; } }
+        public double yaw { get { return plugin.Yaw; } }
+        public double pitch { get { return plugin.Pitch; } }
+        public double roll { get { return plugin.Roll; } }
 
-        public double GoogleYaw { get { return plugin.GoogleYaw; } }
-        public double GooglePitch { get { return plugin.GooglePitch; } }
-        public double GoogleRoll { get { return plugin.GoogleRoll; } }
+        public double googleYaw { get { return plugin.GoogleYaw; } }
+        public double googlePitch { get { return plugin.GooglePitch; } }
+        public double googleRoll { get { return plugin.GoogleRoll; } }
     }
 }
