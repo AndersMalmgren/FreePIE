@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Caliburn.Micro;
 using FreePIE.Core.Model.Events;
 using FreePIE.GUI.Events;
@@ -15,45 +16,56 @@ namespace FreePIE.GUI.Views.Script.Output
         {
             Watches = new BindableCollection<WatchViewModel>();
             eventAggregator.Subscribe(this);
+            messages = new Dictionary<string, object>();
+
+            ThreadPool.QueueUserWorkItem(x =>
+                {
+                    while (true)
+                    {
+                        if(clearWatches)
+                        {
+                            clearWatches = false;
+                            Watches.Clear();
+                        }
+                        foreach (var message in messages)
+                            AddWatch(message.Key, message.Value);
+                        Thread.Sleep(20);
+                    }
+                });
         }
+
+        private volatile bool clearWatches;
+        private volatile Dictionary<string, object> messages;
 
         public void Handle(WatchEvent message)
         {
-            AddWatch(message, false);
+            var tempMessage = new Dictionary<string, object>(messages);
+            tempMessage[message.Name] = message.Value;
+            messages = tempMessage;
         }
 
-        private WatchViewModel AddWatch(WatchEvent message, bool locked)
+        private void AddWatch(string name, object message)
         {
-            var watch = Watches.FirstOrDefault(w => w.Name == message.Name);
-            
+            var watch = Watches.FirstOrDefault(w => w.Name == name);
+
             if (watch == null)
             {
-                if (locked)
-                {
-                    watch = new WatchViewModel();
-                    watch.Name = message.Name;
-                    Watches.Add(watch);
-                }
-                else
-                {
-                    lock (Watches)
-                    {
-                        watch = AddWatch(message, true);
-                    }
-                }
+                watch = new WatchViewModel { Name = name };
+                Watches.Add(watch);
             }
-            watch.Value = message.Value;
 
-            return watch;
+            watch.Value = message;
         }
 
         public void Handle(ScriptStateChangedEvent message)
         {
-            if(message.Running)
-                Watches.Clear();
+            if (message.Running)
+            {
+                messages = new Dictionary<string, object>();
+                clearWatches = true;
+            }
         }
 
         public BindableCollection<WatchViewModel> Watches { get; private set; }
-
     }
 }

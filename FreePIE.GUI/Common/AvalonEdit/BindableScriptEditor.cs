@@ -5,6 +5,7 @@ using FreePIE.GUI.Shells;
 using FreePIE.GUI.Views.Script;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 
 namespace FreePIE.GUI.Common.AvalonEdit
 {
@@ -12,20 +13,24 @@ namespace FreePIE.GUI.Common.AvalonEdit
     {
         static BindableScriptEditor()
         {
+            LoadHighlightingFromManifest("FreePIE.GUI.Common.AvalonEdit.Python.xshd", "Python", ".py");
+        }
+
+        private static void LoadHighlightingFromManifest(string resource, string languageName, string fileExtension)
+        {
             // Load our custom highlighting definition
             IHighlightingDefinition customHighlighting;
-            using (var s = typeof(MainShellView).Assembly.GetManifestResourceStream("FreePIE.GUI.Common.AvalonEdit.Lua.xshd"))
+            using (var s = typeof(MainShellView).Assembly.GetManifestResourceStream(resource))
             {
                 if (s == null)
                     throw new InvalidOperationException("Could not find embedded resource");
                 using (var reader = new XmlTextReader(s))
                 {
-                    customHighlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.
-                        HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                    customHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
                 }
             }
             // and register it in the HighlightingManager
-            HighlightingManager.Instance.RegisterHighlighting("Lua", new string[] { ".lua" }, customHighlighting);
+            HighlightingManager.Instance.RegisterHighlighting(languageName, new[] { fileExtension }, customHighlighting);
         }
 
         public BindableScriptEditor()

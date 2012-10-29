@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
+using FreePIE.Core.ScriptEngine.Python;
 using Ninject;
 using FreePIE.Core.Services;
 using FreePIE.Core.ScriptEngine;
@@ -14,7 +15,7 @@ namespace FreePIE.Console {
    class Program {
 
       static ManualResetEvent ExitLock = new ManualResetEvent(false);
-      static LuaEngine s_ParserEngine = null;
+      static IScriptEngine s_ParserEngine = null;
       
 
       //-----------------------------------------------------------------------
@@ -73,32 +74,23 @@ namespace FreePIE.Console {
          // Generate all the binding between interfaces and class definitions
          IKernel kernel = ServiceBootstrapper.Create();
 
-         // Instantiate the persistance (settings) scaffolding
-         IEnumerable<object> services = kernel.GetAll(typeof(PersistanceManager));
-         IEnumerator<object> e = (IEnumerator<object>)services.GetEnumerator();
-         if (e.MoveNext()) {
-            // Load the default settings
-            PersistanceManager persistance = (PersistanceManager)e.Current;
-            persistance.Load();
-         }
+        // Instantiate the persistance (settings) scaffolding
+        var persistance = kernel.Get<IPersistanceManager>();
+        persistance.Load();
 
-         // Instantiate the parser
-         services = kernel.GetAll(typeof(LuaEngine));
-         e = (IEnumerator<object>)services.GetEnumerator();
-         if (e.MoveNext()) {
-            s_ParserEngine = (LuaEngine)e.Current;
+        // Instantiate the parser
+        s_ParserEngine = kernel.Get<IScriptEngine>();
          
-            // Finally we can run the script parser
-            System.Console.WriteLine("Starting script parser");
-            s_ParserEngine.Start(script);
-            s_ParserEngine.Error += OnScriptEngineError;
+        // Finally we can run the script parser
+        System.Console.WriteLine("Starting script parser");
+        s_ParserEngine.Start(script);
+        s_ParserEngine.Error += OnScriptEngineError;
 
-            // The script parser launches in a worker thread so the main thread will just wait here
-            // until the stop command is called in the Ctrl-C handler
-            ExitLock.WaitOne();
-         }
+        // The script parser launches in a worker thread so the main thread will just wait here
+        // until the stop command is called in the Ctrl-C handler
+        ExitLock.WaitOne();
 
-         System.Console.WriteLine("Exiting");  // Hmmm...Need to investigate why I'm not getting this print?
+        System.Console.WriteLine("Exiting");  // Hmmm...Need to investigate why I'm not getting this print?
       }
    }
 }

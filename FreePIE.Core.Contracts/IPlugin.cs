@@ -5,6 +5,8 @@ using System.Text;
 
 namespace FreePIE.Core.Contracts
 {
+    public delegate void GlobalNoArgumentEvent();
+
     public interface IPlugin
     {
         object CreateGlobal();

@@ -264,7 +264,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Common\AvalonEdit\Lua.xshd" />
+    <EmbeddedResource Include="Common\AvalonEdit\Python.xshd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -311,6 +311,7 @@ copy "$(SolutionDir)\FreePIE.Core.Plugins\$(OutDir)*.dll" "$(TargetDir)plugins"
 
 md "$(TargetDir)help"
 copy "$(SolutionDir)\FreePIE.Core.Plugins\Help\*.rtf" "$(TargetDir)help"
+xcopy /S /I "$(SolutionDir)\Lib\IronPython\pylib\*" "$(TargetDir)pylib\"
 copy "$(SolutionDir)\Lib\TrackIR\NPClient.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"

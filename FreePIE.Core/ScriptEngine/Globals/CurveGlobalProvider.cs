@@ -22,7 +22,7 @@ namespace FreePIE.Core.ScriptEngine.Globals
             return settingsManager.Settings.Curves.Where(c => !string.IsNullOrEmpty(c.Name)).Select(c => new CurveGlobal(c));
         }
 
-        private class CurveGlobal : IGlobalNameProvider
+        public class CurveGlobal : IGlobalNameProvider
         {
             private readonly Curve curve;
 

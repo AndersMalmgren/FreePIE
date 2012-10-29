@@ -46,11 +46,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RuntimeInfoTest.cs" />
-    <Compile Include="LuaEngineTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PluginInvokerTests.cs" />
-    <Compile Include="ScriptParserTest.cs" />
     <Compile Include="ScriptParserTokenTest.cs" />
   </ItemGroup>
   <ItemGroup>
