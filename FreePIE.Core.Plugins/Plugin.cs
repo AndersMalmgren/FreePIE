@@ -50,7 +50,7 @@ namespace FreePIE.Core.Plugins
     public abstract class UpdateblePluginGlobal<TPlugin> where TPlugin : Plugin
     {
         protected readonly TPlugin plugin;
-        private event EventHandler update; 
+        private event GlobalNoArgumentEvent update; 
 
         public UpdateblePluginGlobal(TPlugin plugin)
         {
@@ -62,7 +62,7 @@ namespace FreePIE.Core.Plugins
         {
             if (update != null)
             {
-                update(this, new EventArgs());
+                update();
             }
         }
 
@@ -71,7 +71,7 @@ namespace FreePIE.Core.Plugins
             plugin.GlobalHasUpdateListener = update != null;
         }
 
-        public event EventHandler Update
+        public event GlobalNoArgumentEvent Update
         {
             add
             {

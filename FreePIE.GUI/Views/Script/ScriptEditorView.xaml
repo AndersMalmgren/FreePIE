@@ -12,7 +12,7 @@
 				x:Name="textEditor"
 				FontFamily="Consolas"
 				FontSize="10pt"
-				SyntaxHighlighting="Lua"   
+				SyntaxHighlighting="Python"   
                 Script="{ Binding Path=Script, Mode=TwoWay}"    
                 Replace="{ Binding Path=Replace, Mode=TwoWay}"    
                 IsEnabled="{ Binding Enabled}"

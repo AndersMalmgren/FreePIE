@@ -6,6 +6,7 @@ using FreePIE.Core.Common;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
+using FreePIE.Core.ScriptEngine.Python;
 using FreePIE.Tests.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -48,7 +49,7 @@ namespace FreePIE.Tests.Core
         {
             Stub<IPluginInvoker>();
 
-            IScriptParser parser = Get<LuaScriptParser>();
+            IScriptParser parser = Get<PythonScriptParser>();
 
             TestTokens(parser,
                        Expression1,

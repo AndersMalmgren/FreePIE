@@ -34,7 +34,7 @@ namespace FreePIE.GUI.Views.Main
         }
 
         private string currentScriptFile;
-        private const string fileFilter = "Lua scripts (*.lua)|*.lua|All files (*.*)|*.*";
+        private const string fileFilter = "Python scripts (*.py)|*.py|All files (*.*)|*.*";
         public IEnumerable<IResult> OpenScript()
         {
             var result = resultFactory.ShowFileDialog("Open script", fileFilter, FileDialogMode.Open);
