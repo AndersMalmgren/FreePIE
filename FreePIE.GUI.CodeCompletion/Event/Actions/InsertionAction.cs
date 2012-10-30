@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 
 namespace FreePIE.GUI.CodeCompletion.Event.Actions
@@ -24,13 +25,16 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
         public Key Key { get; set; }
 
         public bool ShouldSwallow { get; set; }
+        private static IEnumerable<Key> modifiers = new [] { Key.LeftShift, Key.RightShift, Key.LeftCtrl, Key.RightCtrl, Key.LeftAlt, Key.RightAlt }; 
 
         private bool IsTriggered(ICancellablePopupEvent current, CompletionPopupView view)
         {
             if (current.Type != EventType.KeyPress || !view.IsOpen || view.CompletionItems.SelectedItem == null)
                 return false;
 
-            return ((KeyEventArgs)current.EventArgs).Key == Key;
+            var args = current.EventArgs as KeyEventArgs;
+
+            return args.Key == Key && modifiers.All(args.KeyboardDevice.IsKeyUp);
         }
 
         private void InsertElement(CompletionPopupView view)

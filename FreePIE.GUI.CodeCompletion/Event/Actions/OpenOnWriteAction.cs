@@ -10,9 +10,15 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
     public class OpenOnWriteAction : IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>
     {
         private Func<char, bool> isBeginningOfExpression;
+
+        private HashSet<char> triggers;
         
         public OpenOnWriteAction(Func<char, bool> isBeginningOfExpression)
         {
+            triggers = new HashSet<char>(Enumerable.Range(65, 26).Union(Enumerable.Range(97, 26)).Select(x => (char)x))
+            {
+                '('
+            };
             this.isBeginningOfExpression = isBeginningOfExpression;
         }
 
@@ -23,7 +29,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
 
             var args = current.EventArgs as TextCompositionEventArgs;
 
-            if(args.Text.Length == 1 && isBeginningOfExpression(args.Text[0]))
+            if (args.Text.Length == 1 && triggers.Contains(args.Text[0]) && isBeginningOfExpression(args.Text[0]))
                 PopupActions.ForceShow(view);
         }
 

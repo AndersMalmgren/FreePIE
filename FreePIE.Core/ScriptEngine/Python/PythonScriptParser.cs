@@ -35,7 +35,7 @@ namespace FreePIE.Core.ScriptEngine.Python
             return pluginInvoker.InvokeAndConfigurePlugins(pluginTypes);
         }
 
-        private static readonly char[] ExpressionDelimiters = "(){}\t \r\n".ToArray();
+        private static readonly char[] ExpressionDelimiters = "(){}\t \r\n:".ToArray();
         private static readonly char[] ExpressionEndDelimiters = ")]\r\n\t".ToArray();
         private static readonly char[] TokenDelimiters = ".".ToArray();
 

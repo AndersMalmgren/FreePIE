@@ -57,12 +57,10 @@ namespace FreePIE.GUI.CodeCompletion
             observers.Add(new SelectionChangedHideAction());
             observers.Add(new InsertionAction(Key.Enter) { ShouldSwallow = true });
             observers.Add(new InsertionAction(Key.OemPeriod));
-            observers.Add(new InsertionAction(Key.OemSemicolon));
             observers.Add(new InsertOnItemClicked());
             observers.Add(new PositionAction());
             observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemPeriod));
             observers.Add(new CustomKeyAction(x => PopupActions.Hide(this), Enumerable.Empty<Key>(), Key.Escape));
-            observers.Add(new CustomKeyAction(x => PopupActions.Show(this), Enumerable.Empty<Key>(), Key.OemSemicolon));
             observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true, IsTargetSource = IsEditor});
             observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true, IsTargetSource = IsEditor });
         }
