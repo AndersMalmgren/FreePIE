@@ -2,6 +2,11 @@
 using System.IO;
 using System.Reflection;
 using System.Text;
+using IronPython;
+using IronPython.Compiler;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting.Providers;
+using Microsoft.Scripting.Runtime;
 
 namespace FreePIE.Core.ScriptEngine.Python
 {
@@ -17,29 +22,17 @@ namespace FreePIE.Core.ScriptEngine.Python
 
     public static class PythonExtensions
     {
-        public static string AddReferences(this string script, params Assembly[] assemblies)
+        public static void AddReferences(this ScriptRuntime runtime, params Assembly[] assemblies)
         {
-            var builder = new StringBuilder();
-
-            builder.AppendLine("import sys");
-
-            builder.AppendLine("import clr");
-            builder.AppendLine("import math");
-
-            foreach (var assembly in assemblies)
-            {
-                builder.AppendLine(string.Format("sys.path.append(r'{0}')", Path.GetDirectoryName(assembly.Location)));
-                builder.AppendLine(string.Format("clr.AddReferenceToFile(r'{0}')", Path.GetFileName(assembly.Location)));
-            }
-
-            return builder + Environment.NewLine + script;
+            foreach(var assembly in assemblies)
+                runtime.LoadAssembly(assembly);
         }
 
         public static string ImportNamespaces(this string script, params string[] namespaces)
         {
             var builder = new StringBuilder();
 
-            foreach(var @namespace in namespaces)
+            foreach (var @namespace in namespaces)
                 builder.Append(string.Format("from {0} import *{1}", @namespace, Environment.NewLine));
 
             return builder + Environment.NewLine + script;
@@ -69,6 +62,12 @@ namespace FreePIE.Core.ScriptEngine.Python
             get { return engine ?? (engine = Python.CreateEngine()); }
         }
 
+        private Parser CreatePythonParser(string script)
+        {
+            var src = HostingHelpers.GetSourceUnit(Engine.CreateScriptSourceFromString(script));
+            return Parser.CreateParser(new CompilerContext(src, Engine.GetCompilerOptions(), ErrorSink.Default), new PythonOptions());
+        }
+
         private static double StaticReferenceForCompilerOnly()
         {
             var x = IronPython.Modules.PythonMath.degrees(10);
@@ -93,8 +92,12 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                 var globals = CreateGlobals(usedPlugins, globalProviders);
 
-                var scope = CreateScope(globals);
+                var pluginTypes = usedPlugins.Select(x => x.GetType()).Select(x => new { x.Assembly, x.Namespace }).ToList();
 
+                Engine.Runtime.AddReferences(pluginTypes.Select(x => x.Assembly).Distinct().ToArray());
+
+                var scope = CreateScope(globals);
+                
                 foreach (var plugin in usedPlugins)
                     StartPlugin(plugin, pluginStarted, pluginStopped);
 
@@ -102,29 +105,34 @@ namespace FreePIE.Core.ScriptEngine.Python
                 pluginStarted.Signal();
                 pluginStarted.Wait();
 
-                var paths = new Collection<string>()
-                    {
-                        Path.Combine(Environment.CurrentDirectory, "pylib"),
-                    };
-
-                Engine.SetSearchPaths(paths);
+                Engine.SetSearchPaths(GetPythonPaths());
 
                 script = PreProcessScript(script, usedPlugins, globals);
 
-                ExecuteSafe(() =>
-                {
-                    while (!stopRequested)
-                    {
-                        usedPlugins.ForEach(p => p.DoBeforeNextExecute());
-                        CatchThreadAbortedException(() => Engine.Execute(script, scope));
-                        scope.SetVariable("starting", false);
-                        Thread.Sleep(LoopDelay);
-                    }
-                });
+                RunLoop(Engine.CreateScriptSourceFromString(script).Compile(), scope);
             }));
 
             thread.Name = "PythonEngine Worker";
             thread.Start();
+        }
+
+        void RunLoop(CompiledCode compiled, ScriptScope scope)
+        {
+            ExecuteSafe(() =>
+            {
+                while (!stopRequested)
+                {
+                    usedPlugins.ForEach(p => p.DoBeforeNextExecute());
+                    CatchThreadAbortedException(() => compiled.Execute(scope));
+                    scope.SetVariable("starting", false);
+                    Thread.Sleep(LoopDelay);
+                }
+            });
+        }
+
+        ICollection<string> GetPythonPaths()
+        {
+            return new Collection<string> { Path.Combine(Environment.CurrentDirectory, "pylib") };
         }
 
         private void CatchThreadAbortedException(Action func)
@@ -159,11 +167,8 @@ namespace FreePIE.Core.ScriptEngine.Python
         string PreProcessScript(string script, IEnumerable<IPlugin> plugins, IDictionary<string, object> globals)
         {
             script = parser.PrepareScript(script, globals.Values);
-
-            var pluginTypes = plugins.Select(x => x.GetType()).Select(x => new { x.Assembly, x.Namespace }).ToList();
-
-            return script.ImportNamespaces(pluginTypes.Select(x => x.Namespace).ToArray())
-                         .AddReferences(pluginTypes.Select(x => x.Assembly).ToArray());
+            var namespaces = plugins.Select(x => x.GetType()).Select(x => x.Namespace).ToArray();
+            return script.ImportNamespaces(namespaces);
         }
 
         void ExecuteSafe(Action action)
@@ -198,7 +203,10 @@ namespace FreePIE.Core.ScriptEngine.Python
         ScriptScope CreateScope(IDictionary<string, object> globals)
         {
             globals.Add("starting", true);
-            return Engine.CreateScope(globals);
+
+            var scope = Engine.CreateScope(globals);
+            scope.ImportModule("math");
+            return scope;
         }
 
         private CountdownEvent pluginStartedTemporary;
