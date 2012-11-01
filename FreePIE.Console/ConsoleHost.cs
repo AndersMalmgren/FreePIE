@@ -39,8 +39,10 @@ namespace FreePIE.Console
                 string script = null;
 
 
-                if (args.Length == 0)
+                if (args.Length == 0) {
                     PrintHelp();
+                    return;
+                }
 
                 try
                 {
@@ -54,7 +56,7 @@ namespace FreePIE.Console
 
                 System.Console.TreatControlCAsInput = false;
                 System.Console.CancelKeyPress += (s, e) => Stop();
-                
+
                 persistanceManager.Load();
 
                 scriptEngine.Error += ScriptEngineError;
