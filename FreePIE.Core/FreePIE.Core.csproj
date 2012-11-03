@@ -71,6 +71,7 @@
     <Compile Include="Common\Events\IEventAggregator.cs" />
     <Compile Include="Common\IFileSystem.cs" />
     <Compile Include="Common\CurveMath.cs" />
+    <Compile Include="Common\InterlockableBool.cs" />
     <Compile Include="Common\Range.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Model\Choice.cs" />

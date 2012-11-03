@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Text;
+using FreePIE.Core.Common;
 using IronPython;
 using IronPython.Compiler;
 using Microsoft.Scripting;
@@ -39,11 +40,18 @@ namespace FreePIE.Core.ScriptEngine.Python
         }
     }
 
-    public static class DictionaryExtensions
+    public static class Extensions
     {
         public static IDictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> pairs)
         {
             return pairs.ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public static void Increment(this CountdownEvent @event)
+        {
+            if(@event.IsSet)
+                @event.Reset(1);
+            else @event.AddCount();
         }
     }
 
@@ -53,7 +61,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         private readonly IEnumerable<IGlobalProvider> globalProviders;
         private static ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
-        private volatile bool stopRequested;
+        private InterlockableBool stopRequested;
         private const int LoopDelay = 1;
         private CountdownEvent pluginStopped;
 
@@ -85,8 +93,9 @@ namespace FreePIE.Core.ScriptEngine.Python
         {
             thread = new Thread(obj1 => ExecuteSafe(() =>
             {
-                var pluginStarted = new CountdownEvent(1);
-                pluginStopped = new CountdownEvent(1);
+                var pluginStarted = new CountdownEvent(0);
+
+                pluginStopped = new CountdownEvent(0);
 
                 usedPlugins = parser.InvokeAndConfigureAllScriptDependantPlugins(script).ToList();
 
@@ -101,8 +110,6 @@ namespace FreePIE.Core.ScriptEngine.Python
                 foreach (var plugin in usedPlugins)
                     StartPlugin(plugin, pluginStarted, pluginStopped);
 
-                pluginStopped.Signal();  
-                pluginStarted.Signal();
                 pluginStarted.Wait();
 
                 Engine.SetSearchPaths(GetPythonPaths());
@@ -215,11 +222,13 @@ namespace FreePIE.Core.ScriptEngine.Python
         private void StartPlugin(IPlugin plugin, CountdownEvent pluginStarted, CountdownEvent pluginStopped)
         {
             var action = plugin.Start();
-            pluginStopped.AddCount();
+
+            pluginStopped.Increment();
 
             if (action != null)
             {
-                pluginStarted.AddCount();
+                
+                pluginStarted.Increment();
                 pluginStartedTemporary = pluginStarted;
                 plugin.Started += WhenPluginHasStarted;
                 ThreadPool.QueueUserWorkItem(x => ExecuteSafe(action));
@@ -234,10 +243,14 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         public void Stop()
         {
+            var wasStopRequested = stopRequested.CompareExchange(true, false);
+
+            if (wasStopRequested)
+                return;
+
             const int maximumShutdownTime = 200;
 
             DateTime stopRequestedTime = DateTime.Now;
-            stopRequested = true;
 
             while((DateTime.Now - stopRequestedTime).TotalMilliseconds < maximumShutdownTime && thread.IsAlive)
             { }
