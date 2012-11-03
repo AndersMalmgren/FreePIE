@@ -19,11 +19,10 @@ public class UdpSenderTask implements SensorEventListener {
 	float[] gyr;
 	float[] imu;
 	
-	float[] orientation = new float[3];	
+	float[]  orientation;
+	final float[] rotationMatrix = new float[16];
 	
-	float[] inR = new float[16];
-	float[] I = new float[16];
-
+	float[] inR = new float[16];	
 	
 	DatagramSocket socket;
 	InetAddress endPoint;
@@ -44,6 +43,11 @@ public class UdpSenderTask implements SensorEventListener {
 	boolean running;
 
 	public void start(TargetSettings target) {
+        rotationMatrix[ 0] = 1;
+        rotationMatrix[ 4] = 1;
+        rotationMatrix[ 8] = 1;
+        rotationMatrix[12] = 1;
+		
 		sensorManager = target.getSensorManager();		
 		sendRaw = target.getSendRaw();
 		sendOrientation = target.getSendOrientation();
@@ -83,27 +87,25 @@ public class UdpSenderTask implements SensorEventListener {
         	}
 		});	
 		worker.start();
-
+		
 		if(sendRaw) {
-		
-		sensorManager.registerListener(this,
-				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				sampleRate);
-		
-		sensorManager.registerListener(this,
-				sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-				sampleRate);		
-		
-		sensorManager.registerListener(this,
-				sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-				sampleRate);
-		}
-		
-		if(sendOrientation) {
 			sensorManager.registerListener(this,
-					sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+					sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+					sampleRate);
+			
+			sensorManager.registerListener(this,
+					sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+					sampleRate);		
+			
+			sensorManager.registerListener(this,
+					sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
 					sampleRate);
 		}
+		if(sendOrientation)
+			sensorManager.registerListener(this,
+					sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
+					sampleRate);
+		
 	}
 	
 	public void onSensorChanged(SensorEvent sensorEvent) {
@@ -118,17 +120,22 @@ public class UdpSenderTask implements SensorEventListener {
 	        case Sensor.TYPE_GYROSCOPE:
 	            gyr = sensorEvent.values.clone();
 	            break;
-	        case Sensor.TYPE_ORIENTATION:
-	        	imu = sensorEvent.values.clone();
+	        case Sensor.TYPE_ROTATION_VECTOR:
+	        	orientation = sensorEvent.values.clone();
 	        	break;
 	    }	
 	    
+       if(sendOrientation && orientation != null) {
+            SensorManager.getRotationMatrixFromVector(rotationMatrix , orientation);
+            SensorManager.getOrientation(rotationMatrix, orientation);
+            imu = orientation;
+       }
+	    	    
 	    if(debug && acc != null && gyr != null && mag != null)
 	    	debugListener.debugRaw(acc, gyr, mag);
 	    
 	    if(debug && imu != null)
-	    	debugListener.debugImu(imu);
-	    
+	    	debugListener.debugImu(imu);	    
 	    
 		if(sync.getNumberWaiting() > 0)
 			sync.reset();			
@@ -162,7 +169,11 @@ public class UdpSenderTask implements SensorEventListener {
 			//Mag
 			buffer.putFloat(mag[0]);
 			buffer.putFloat(mag[1]);
-			buffer.putFloat(mag[2]);			
+			buffer.putFloat(mag[2]);	
+			
+			acc = null;
+			mag = null;
+			gyr = null;
 		}
 		
 		if(sendOrientation && imu != null) {		
