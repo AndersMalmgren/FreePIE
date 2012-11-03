@@ -22,8 +22,6 @@ public class UdpSenderTask implements SensorEventListener {
 	float[]  orientation;
 	final float[] rotationMatrix = new float[16];
 	
-	float[] inR = new float[16];	
-	
 	DatagramSocket socket;
 	InetAddress endPoint;
 	int port;
@@ -43,11 +41,6 @@ public class UdpSenderTask implements SensorEventListener {
 	boolean running;
 
 	public void start(TargetSettings target) {
-        rotationMatrix[ 0] = 1;
-        rotationMatrix[ 4] = 1;
-        rotationMatrix[ 8] = 1;
-        rotationMatrix[12] = 1;
-		
 		sensorManager = target.getSensorManager();		
 		sendRaw = target.getSendRaw();
 		sendOrientation = target.getSendOrientation();
