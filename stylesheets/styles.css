@@ -322,7 +322,29 @@ footer {
   float:left;
   position:fixed;
   bottom:10px;
-	padding-left: 50px;
+  padding-left: 50px;
+}
+
+ul.column {
+    width: 250px;
+    float: left;  
+    margin-right: 20px;  
+}
+
+/*icons */
+div.icon {
+    width: 16px;
+    height: 16px;
+    background: url(../images/icons/16.png) no-repeat;
+    float: right;
+}
+
+div.read {
+   background-position: 0 0;
+}
+
+div.write {
+   background-position: -16px 0px;
 }
 
 @media print, screen and (max-width: 960px) {
