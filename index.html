@@ -1,9 +1,11 @@
 <!doctype html>
 <html>
   <head>
+    <meta name="keywords" content="FreePIE, GlovePIE, Input emulation, WiiMote, Wii, Freetrack, TrackIR, Android, iPhone, AHRS, Arduino, DirectX, Joystick, Gamepad">
+    <meta name="description" content="FreePIE (Programmable Input Emulator) is a C# utility for bridging and emulating input devices. It has applications primarily in video gaming but can also be used for VR interaction, remote control, and other applications. A typical application might be controlling the mouse in a PC game using a Wiimote. Device control schemes are customized for specific applications by executing scripts from the FreePIE GUI. The script language is based on the Python syntax and offers non-programmers an easy way to interface devices.">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Freepie by AndersMalmgren</title>
+    <title>FreePIE (Programmable Input Emulator)</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -16,12 +18,11 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1 class="header">Freepie</h1>
-        <p class="header">Programmable Input Emulator</p>
+        <h1 class="header">FreePIE</h1>
+        <h2 class="header">Programmable Input Emulator</h2>
 
         <ul>
-          <li class="download"><a class="buttons" href="https://github.com/AndersMalmgren/FreePIE/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/AndersMalmgren/FreePIE/tarball/master">Download TAR</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/downloads/AndersMalmgren/FreePIE/FreePIE.0.4.211.0.msi">MSI v0.4.211.0</a></li>
           <li><a class="buttons github" href="https://github.com/AndersMalmgren/FreePIE">View On GitHub</a></li>
         </ul>
 
@@ -30,48 +31,56 @@
 
       </header>
       <section>
-        <h3>Welcome to GitHub Pages.</h3>
+        <h3>Welcome to FreePIE!</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<strong>FreePIE</strong> (Programmable Input Emulator) is a C# utility for bridging and emulating input devices. It has applications primarily in video gaming but can also be used for VR interaction, remote control, and other applications. A typical application might be controlling the mouse in a PC game using a Wiimote. Device control schemes are customized for specific applications by executing scripts from the FreePIE GUI. The script language is based on the <strong>Python</strong> syntax and offers non-programmers an easy way to interface devices.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<p>FreePIE is very similar to the popular utility GlovePIE, but encourages open development and integration with any device. The software is designed to allow third party developers to add their own I/O plugins either through direct integration into the core library or through a separately compiled plugin mechanism.</p>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<ul>
+    <li><a href="http://www.mtbs3d.com/phpBB/viewforum.php?f=139">Official FreePIE forum </a></li>
+    <li>For an example on how to implement an I/O plugin for FreePIE please see this wiki page.
+    <a href="https://github.com/AndersMalmgren/FreePIE/wiki/Plugin-development">Plugin development</a>
+    </li>
+    <li>Please see the scripting section for help with scripting syntax.
+    <a href="https://github.com/AndersMalmgren/FreePIE/wiki/Scripting">Scripting</a>
+    </li>
+</ul>
 
-<h3>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<h4>List of supported hardware</h4>
+<ul class="column">
+    <li>Mouse<div class="icon read" title="Read"></div><div class="icon write" title="Write"></div></li>
+    <li>Keyboard<div class="icon read" title="Read"></div><div class="icon write" title="Write"></div></li>
+    <li>TrackIR<div class="icon read" title="Read"></div><div class="icon write" title="Write"></div></li>
+    <li>Freetrack<div class="icon read" title="Read"></div><div class="icon write" title="Write"></div></li>
+    <li>Wiimote<div class="icon read" title="Read"></div></li>
+    <li>Razor AHRS<div class="icon read" title="Read"></div></li>
+    <li>FreeIMU<div class="icon read" title="Read"></div></li>
+</ul>
+<ul class="column">    
+    <li>Android<div class="icon read" title="Read"></div></li>
+    <li>iPhone<div class="icon read" title="Read"></div></li>
+    <li>ppJoy<div class="icon write" title="Write"></div></li>
+    <li>Xbox360<div class="icon read" title="Read"></div></li>
+    <li>Hillcrest Labs Freespace<div class="icon read" title="Read"></div></li>
+    <li>Vuzix<div class="icon read" title="Read"></div></li>
+    <li>DX Joysticks<div class="icon read" title="Read"></div></li>
+</ul>
       </section>
       <footer>
         <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		          <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-36162327-1");
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->		
+    <script type="text/javascript">
+		        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-36162327-1");
             pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
-
+        } catch (err) { }
+    </script>
   </body>
 </html>
