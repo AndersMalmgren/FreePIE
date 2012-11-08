@@ -20,6 +20,7 @@ namespace FreePIE.GUI.Views.Script
             this.provider = provider;
             CompletionWindow = completionModel;
             Enabled = true;
+            UpdateCompletionItems();
             eventAggregator.Subscribe(this);
             completionModel.Observers.Add(new OpenOnWriteAction(IsBeginningOfExpression));
             completionModel.Observers.Add(new CloseOnSteppingIntoEndOfExpression(() => provider.IsBeginningOfExpression(Script, CaretPosition)));

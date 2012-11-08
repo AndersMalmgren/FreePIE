@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
+using FreePIE.Core.Persistence;
 using FreePIE.Core.Services;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
@@ -24,6 +25,7 @@ namespace FreePIE.GUI.Bootstrap
             kernel.Bind<IResultFactory>().To<ResultFactory>();
 
             SetupCustomMessageBindings();
+            kernel.Get<IPersistanceManager>().Load();
         }
 
         protected override object GetInstance(Type service, string key)

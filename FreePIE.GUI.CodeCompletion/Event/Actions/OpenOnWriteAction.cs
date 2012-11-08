@@ -17,7 +17,8 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
         {
             triggers = new HashSet<char>(Enumerable.Range(65, 26).Union(Enumerable.Range(97, 26)).Select(x => (char)x))
             {
-                '('
+                '(',
+                '.'
             };
             this.isBeginningOfExpression = isBeginningOfExpression;
         }
@@ -30,7 +31,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
             var args = current.EventArgs as TextCompositionEventArgs;
 
             if (args.Text.Length == 1 && triggers.Contains(args.Text[0]) && isBeginningOfExpression(args.Text[0]))
-                PopupActions.ForceShow(view);
+                PopupActions.Show(view);
         }
 
         public void Handle(IEnumerable<IPopupEvent> events, CompletionPopupView view)

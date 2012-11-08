@@ -24,7 +24,6 @@ namespace FreePIE.GUI.Shells
             ScriptEditorViewModel scriptEditorViewModel,
             OutputViewModel outputViewModel) : base(resultFactory)
         {
-            persistanceManager.Load();
             this.eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
             this.persistanceManager = persistanceManager;
