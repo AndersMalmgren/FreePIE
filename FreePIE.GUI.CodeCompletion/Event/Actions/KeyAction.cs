@@ -33,13 +33,18 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
 
         protected abstract void DoAct(CompletionPopupView view, KeyEventArgs args);
 
+        protected virtual bool ShouldSwallow(CompletionPopupView view, KeyEventArgs args)
+        {
+            return false;
+        }
+
         protected virtual bool IsTriggeredAddon(IPopupEvent @event, CompletionPopupView view)
         {
             return true;
         }
 
         public Key Key { get; set; }
-        public bool ShouldSwallow { get; set; }
+
         public Predicate<EventSource> IsTargetSource { get; set; }
 
         [TypeConverter(typeof (KeyActionListConverter))]
@@ -54,7 +59,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
 
             DoAct(view, keyArgs);
 
-            if (ShouldSwallow)
+            if (ShouldSwallow(view, keyArgs))
                 current.Cancel();
         }
 

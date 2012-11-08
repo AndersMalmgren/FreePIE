@@ -51,7 +51,7 @@ namespace FreePIE.GUI.CodeCompletion
                                                },
                                   Key = Key.Space,
                                   Modifiers = new[] { Key.LeftCtrl },
-                                  ShouldSwallow = true
+                                  ShouldSwallowKeyPress = true
                               });
 
             observers.Add(new SelectionChangedHideAction());
@@ -60,8 +60,8 @@ namespace FreePIE.GUI.CodeCompletion
             observers.Add(new InsertOnItemClicked());
             observers.Add(new PositionAction());
             observers.Add(new CustomKeyAction(x => PopupActions.Hide(this), Enumerable.Empty<Key>(), Key.Escape));
-            observers.Add(new ElementChangedKeyAction { Key = Key.Up, ShouldSwallow = true, IsTargetSource = IsEditor});
-            observers.Add(new ElementChangedKeyAction { Key = Key.Down, ShouldSwallow = true, IsTargetSource = IsEditor });
+            observers.Add(new ElementChangedKeyAction { Key = Key.Up, IsTargetSource = IsEditor});
+            observers.Add(new ElementChangedKeyAction { Key = Key.Down, IsTargetSource = IsEditor });
         }
 
         private bool IsEditor(EventSource source)

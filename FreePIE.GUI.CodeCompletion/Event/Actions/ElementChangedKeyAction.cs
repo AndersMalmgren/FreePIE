@@ -22,6 +22,11 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
             view.CompletionItems.ScrollIntoView(view.Model.SelectedCompletionItem);
         }
 
+        protected override bool ShouldSwallow(CompletionPopupView view, KeyEventArgs args)
+        {
+            return view.CompletionItems.Items.Count > 0;
+        }
+
         protected override bool IsTriggeredAddon(IPopupEvent @event, CompletionPopupView view)
         {
             return view.IsOpen;

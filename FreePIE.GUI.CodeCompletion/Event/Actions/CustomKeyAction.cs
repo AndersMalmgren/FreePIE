@@ -22,6 +22,13 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
         {
             Action(view);
         }
+
+        public bool ShouldSwallowKeyPress { get; set; }
+
+        protected override bool ShouldSwallow(CompletionPopupView view, KeyEventArgs args)
+        {
+            return ShouldSwallowKeyPress;
+        }
     }
 
     public class ActionConverter : TypeConverter
