@@ -32,7 +32,7 @@ namespace FreePIE.GUI.Shells
 
         public string ProjectPageUrl
         {
-            get { return "https://github.com/AndersMalmgren/FreePIE"; }
+            get { return "http://andersmalmgren.github.com/FreePIE/"; }
         }
 
         public void GotoProjectPage()
