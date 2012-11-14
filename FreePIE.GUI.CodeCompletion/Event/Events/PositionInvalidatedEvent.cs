@@ -1,7 +1,6 @@
 using System;
-using FreePIE.GUI.CodeCompletion.Event;
 
-namespace FreePIE.GUI.CodeCompletion
+namespace FreePIE.GUI.CodeCompletion.Event.Events
 {
     internal class PositionInvalidatedEvent : IPopupEvent
     {
