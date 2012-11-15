@@ -3,6 +3,7 @@ using System.Linq;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.CodeCompletion;
 using FreePIE.GUI.CodeCompletion.Event.Actions;
+using FreePIE.GUI.Common.AvalonEdit;
 using FreePIE.GUI.Common.CodeCompletion;
 using FreePIE.GUI.Events;
 using FreePIE.Core.Common.Events;
@@ -18,6 +19,7 @@ namespace FreePIE.GUI.Views.Script
         {
             this.eventAggregator = eventAggregator;
             this.provider = provider;
+            Replacer = new Replacer();
             CompletionWindow = completionModel;
             Enabled = true;
             UpdateCompletionItems();
@@ -65,12 +67,7 @@ namespace FreePIE.GUI.Views.Script
             }
         }
 
-        private Action<int, int, string> replace;
-        public Action<int, int, string> Replace
-        {
-            get { return replace; }
-            set { replace = value; }
-        }
+        public Replacer Replacer { get; set; }
 
         private int caretPosition;
         public int CaretPosition
@@ -102,7 +99,7 @@ namespace FreePIE.GUI.Views.Script
 
         private void OnInsertion(string script, int caretOffset, int range)
         {
-            Replace(caretOffset, range, script);
+            Replacer.Replace(caretOffset, range, script);
         }
 
         public void Handle(ScriptStateChangedEvent message)
