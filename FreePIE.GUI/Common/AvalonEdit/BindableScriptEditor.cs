@@ -43,11 +43,6 @@ namespace FreePIE.GUI.Common.AvalonEdit
             Caret = CaretOffset;
         }
 
-        public ScriptEditorViewModel ViewModel
-        {
-            get { return DataContext as ScriptEditorViewModel; }
-        }
-
         protected override void OnTextChanged(EventArgs e)
         {
             Script = Text;
@@ -75,29 +70,22 @@ namespace FreePIE.GUI.Common.AvalonEdit
             set { this.SetValue(ScriptProperty, value); }
         }
 
-        public Action<int, int, string> Replace
+        public Replacer Replacer
         {
-            get { return this.GetValue(InsertProperty) as Action<int, int, string>; }
-            set { this.SetValue(InsertProperty, value); }            
+            get { return this.GetValue(ReplacerProperty) as Replacer; }
+            set { this.SetValue(ReplacerProperty, value); }            
         }
 
-        private bool replaceActionSet;
-
-        private static void SetReplaceAction(BindableScriptEditor editor)
+        public static void OnReplacerChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!editor.replaceActionSet)
-            {
-                editor.Replace = editor.Document.Replace;
-                editor.replaceActionSet = true;
-            }
+            var editor = sender as BindableScriptEditor;
+            var replacer = e.NewValue as Replacer;
+            replacer.Replace = editor.Document.Replace;
         }
 
         public static void OnScriptChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var editor = sender as BindableScriptEditor;
-            if(e.NewValue != null)
-                SetReplaceAction(editor);
-
             if(editor.Text != e.NewValue)
                 editor.Text = e.NewValue as string;
         }
@@ -105,7 +93,12 @@ namespace FreePIE.GUI.Common.AvalonEdit
         public static readonly DependencyProperty ScriptProperty = DependencyProperty.Register(
           "Script", typeof(String), typeof(BindableScriptEditor), new FrameworkPropertyMetadata(string.Empty, OnScriptChanged));
 
-        public static readonly DependencyProperty InsertProperty = DependencyProperty.Register(
-            "Replace", typeof(Action<int, int, string>), typeof(BindableScriptEditor));
+        public static readonly DependencyProperty ReplacerProperty = DependencyProperty.Register(
+            "Replacer", typeof(Replacer), typeof(BindableScriptEditor), new FrameworkPropertyMetadata(null, OnReplacerChanged));
+    }
+
+    public class Replacer
+    {
+        public Action<int, int, string> Replace { get; set; }
     }
 }
