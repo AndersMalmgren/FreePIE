@@ -7,9 +7,9 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:Script="clr-namespace:FreePIE.GUI.Views.Script"
              xmlns:CodeCompletion="clr-namespace:FreePIE.GUI.CodeCompletion;assembly=FreePIE.GUI.CodeCompletion">
-    <Grid>
-        <AvalonEdit:BindableScriptEditor
-				x:Name="textEditor"
+    <Grid FocusManager.FocusedElement="{Binding ElementName=textEditor}">
+        <AvalonEdit:BindableScriptEditor            
+				x:Name="textEditor"            
 				FontFamily="Consolas"
 				FontSize="10pt"
 				SyntaxHighlighting="Python"   
