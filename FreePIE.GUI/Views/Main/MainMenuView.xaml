@@ -3,16 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:cal="http://www.caliburnproject.org"
-             mc:Ignorable="d">
-    <Grid>
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:common="clr-namespace:FreePIE.GUI.Common.Caliburn" mc:Ignorable="d">
+    <Grid>       
         <Menu IsMainMenu="True">
             <MenuItem Header="_File">
-                <MenuItem x:Name="OpenScript" Header="_Open...">
+                <MenuItem x:Name="OpenScript" Header="_Open..." InputGestureText="Ctrl+O">
+                    <i:Interaction.Triggers>
+                        <common:MenuTrigger Modifiers="Ctrl" Key="O" MethodName="OpenScript" />
+                    </i:Interaction.Triggers>
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconOpen}"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="QuickSaveScript" Header="_Save">
+                <MenuItem x:Name="QuickSaveScript" Header="_Save" InputGestureText="Ctrl+S">
+                    <i:Interaction.Triggers>
+                        <common:MenuTrigger Modifiers="Ctrl" Key="S" MethodName="QuickSaveScript" />
+                    </i:Interaction.Triggers>
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconSave}"/>
                     </MenuItem.Icon>
@@ -22,19 +29,25 @@
                         <Image Source="{StaticResource IconSaveAs}"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="Close" Header="E_xit">
+                <MenuItem x:Name="Close" Header="E_xit" InputGestureText="Alt+F4">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconExit}"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="_Script">
-                <MenuItem x:Name="RunScript" Header="_Run script">
+                <MenuItem x:Name="RunScript" Header="_Run script" InputGestureText="F5">
+                    <i:Interaction.Triggers>
+                        <common:MenuTrigger Key="F5" MethodName="RunScript" />
+                    </i:Interaction.Triggers>
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconPlay}"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="StopScript" Header="_Stop script">
+                <MenuItem x:Name="StopScript" Header="_Stop script" InputGestureText="Shift+F5">
+                    <i:Interaction.Triggers>
+                        <common:MenuTrigger Modifiers="Shift" Key="F5" MethodName="StopScript" />
+                    </i:Interaction.Triggers>
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconStop}"/>
                     </MenuItem.Icon>

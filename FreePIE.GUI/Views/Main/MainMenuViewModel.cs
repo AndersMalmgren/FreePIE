@@ -64,12 +64,18 @@ namespace FreePIE.GUI.Views.Main
             NotifyOfPropertyChange(() => CanQuickSaveScript);
         }
 
-        public void QuickSaveScript()
+        public IEnumerable<IResult> QuickSaveScript()
         {
-            Save(currentScriptFile);
+            if (CanQuickSaveScript)
+            {
+                Save(currentScriptFile);
+                return null;
+            }
+
+            return SaveScript();
         }
 
-        public bool CanQuickSaveScript
+        private bool CanQuickSaveScript
         {
             get { return !string.IsNullOrEmpty(currentScriptFile); }
         }
