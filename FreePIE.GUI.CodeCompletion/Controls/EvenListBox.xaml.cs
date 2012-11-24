@@ -40,7 +40,7 @@ namespace FreePIE.GUI.CodeCompletion.Controls
         {
             var source = e.OriginalSource as FrameworkElement;
 
-            if (this == source.TemplatedParent)
+            if (source == this || this == source.TemplatedParent)
                 return;
             
             OnItemClicked(source.DataContext, e);
