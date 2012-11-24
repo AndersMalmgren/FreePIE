@@ -2,56 +2,44 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:cal="http://www.caliburnproject.org"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:common="clr-namespace:FreePIE.GUI.Common.Caliburn" mc:Ignorable="d">
     <Grid>       
         <Menu IsMainMenu="True">
             <MenuItem Header="_File">
-                <MenuItem x:Name="OpenScript" Header="_Open..." InputGestureText="Ctrl+O">
-                    <i:Interaction.Triggers>
-                        <common:MenuTrigger Modifiers="Ctrl" Key="O" MethodName="OpenScript" />
-                    </i:Interaction.Triggers>
+              <common:GestureMenuItem x:Name="OpenScript" Header="_Open..." Modifiers="Ctrl" Key="O">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconOpen}"/>
                     </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="QuickSaveScript" Header="_Save" InputGestureText="Ctrl+S">
-                    <i:Interaction.Triggers>
-                        <common:MenuTrigger Modifiers="Ctrl" Key="S" MethodName="QuickSaveScript" />
-                    </i:Interaction.Triggers>
+                </common:GestureMenuItem>
+              <common:GestureMenuItem x:Name="QuickSaveScript" Key="S" Modifiers="Ctrl" Header="_Save">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconSave}"/>
                     </MenuItem.Icon>
-                </MenuItem>
+                </common:GestureMenuItem>
                 <MenuItem x:Name="SaveScript" Header="Save _As...">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconSaveAs}"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="Close" Header="E_xit" InputGestureText="Alt+F4">
+                <MenuItem x:Name="Close" Header="E_xit" InputGestureText="Alt + F4">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconExit}"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="_Script">
-                <MenuItem x:Name="RunScript" Header="_Run script" InputGestureText="F5">
-                    <i:Interaction.Triggers>
-                        <common:MenuTrigger Key="F5" MethodName="RunScript" />
-                    </i:Interaction.Triggers>
+                <common:GestureMenuItem x:Name="RunScript" Header="_Run script" Key="F5">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconPlay}"/>
                     </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="StopScript" Header="_Stop script" InputGestureText="Shift+F5">
-                    <i:Interaction.Triggers>
-                        <common:MenuTrigger Modifiers="Shift" Key="F5" MethodName="StopScript" />
-                    </i:Interaction.Triggers>
+                </common:GestureMenuItem>
+              <common:GestureMenuItem x:Name="StopScript" Header="_Stop script" Key="F5" Modifiers="Shift">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconStop}"/>
                     </MenuItem.Icon>
-                </MenuItem>
+                </common:GestureMenuItem>
             </MenuItem>
             <MenuItem Header="S_ettings">
                 <MenuItem x:Name="Plugins" DisplayMemberPath="Name" Header="_Plugins" cal:Message.Attach="ShowPluginSettings($orignalsourcecontext)">
