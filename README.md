@@ -5,6 +5,11 @@ Programmable Input Emulator
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+Changelog 0.4.237.0
+* Various stability fixes for the python engine
+* Various bug fixes for code completion
+* Added menu shortcuts
+
 Changelog 0.4.211.0
 * Changed scripting language to Python
 * Added support for TrackIR
