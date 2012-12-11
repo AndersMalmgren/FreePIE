@@ -5,6 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
 
 namespace FreePIE.Core.Plugins
@@ -23,6 +24,8 @@ namespace FreePIE.Core.Plugins
         bool LeftPressed = false;
         bool RightPressed = false;
         bool MiddlePressed = false;
+        private GetPressedStrategy getButtonPressedStrategy;
+        private SetPressedStrategy setButtonPressedStrategy;
 
         //-----------------------------------------------------------------------
         public override object CreateGlobal()
@@ -42,6 +45,9 @@ namespace FreePIE.Core.Plugins
             MouseDevice.SetCooperativeLevel(handle, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
             MouseDevice.Properties.AxisMode = DeviceAxisMode.Relative;   // Get delta values
             MouseDevice.Acquire();
+
+            getButtonPressedStrategy = new GetPressedStrategy(IsButtonDown);
+            setButtonPressedStrategy = new SetPressedStrategy(SetButtonDown, SetButtonUp);
           
             OnStarted(this, new EventArgs());
             return null;
@@ -113,6 +119,8 @@ namespace FreePIE.Core.Plugins
             }
 
             CurrentMouseState = null;  // flush the mouse state
+
+            setButtonPressedStrategy.Do();
         }
 
         //-----------------------------------------------------------------------
@@ -154,7 +162,7 @@ namespace FreePIE.Core.Plugins
         }
 
         //-----------------------------------------------------------------------
-        public bool IsButtonPressed(int index)
+        public bool IsButtonDown(int index)
         {
 
             // Retrieve the mouse state only once per iteration to avoid getting
@@ -163,6 +171,21 @@ namespace FreePIE.Core.Plugins
                 CurrentMouseState = MouseDevice.GetCurrentState();
 
             return CurrentMouseState.IsPressed(index);
+        }
+
+        public bool IsButtonPressed(int button)
+        {
+            return getButtonPressedStrategy.IsPressed(button);
+        }
+
+        private void SetButtonDown(int button)
+        {
+            SetButtonPressed(button, true);    
+        }
+
+        private void SetButtonUp(int button)
+        {
+            SetButtonPressed(button, false);
         }
 
         //----------------------------------------------------------------------
@@ -220,6 +243,11 @@ namespace FreePIE.Core.Plugins
                MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
             }
         }
+
+        public void PressAndRelease(int button)
+        {
+            setButtonPressedStrategy.Add(button);
+        }
     }
 
     //==========================================================================
@@ -243,20 +271,40 @@ namespace FreePIE.Core.Plugins
 
         public bool leftButton
         {
-            get { return plugin.IsButtonPressed(0); }
+            get { return plugin.IsButtonDown(0); }
             set { plugin.SetButtonPressed(0, value); }
         }
 
         public bool middleButton
         {
-            get { return plugin.IsButtonPressed(2); }
+            get { return plugin.IsButtonDown(2); }
             set { plugin.SetButtonPressed(2, value); }
         }
 
         public bool rightButton
         {
-            get { return plugin.IsButtonPressed(1); }
+            get { return plugin.IsButtonDown(1); }
             set { plugin.SetButtonPressed(1, value); }
+        }
+
+        public bool getButton(int button)
+        {
+            return plugin.IsButtonDown(button);
+        }
+
+        public void setButton(int button, bool pressed)
+        {
+            plugin.SetButtonPressed(button, pressed);
+        }
+
+        public bool getPressed(int button)
+        {
+            return plugin.IsButtonPressed(button);
+        }
+
+        public void setPressed(int button)
+        {
+            plugin.PressAndRelease(button);
         }
     }
 }
