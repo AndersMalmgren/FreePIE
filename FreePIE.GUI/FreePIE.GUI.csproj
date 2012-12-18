@@ -78,6 +78,9 @@
       <Link>VersionInfo.cs</Link>
     </Compile>
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
+    <Compile Include="Common\Caliburn\ActionMessageCommand.cs" />
+    <Compile Include="Common\Caliburn\GestureMenuItem.cs" />
+    <Compile Include="Common\Caliburn\InputBindingTrigger.cs" />
     <Compile Include="Common\CodeCompletion\CompletionItem.cs" />
     <Compile Include="Common\RichTextBox\RtfTextBox.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />

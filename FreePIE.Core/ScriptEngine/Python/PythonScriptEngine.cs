@@ -134,6 +134,8 @@ namespace FreePIE.Core.ScriptEngine.Python
                     scope.SetVariable("starting", false);
                     Thread.Sleep(LoopDelay);
                 }
+                scope.SetVariable("stopping", true);
+                CatchThreadAbortedException(() => compiled.Execute(scope));
             });
         }
 
@@ -210,6 +212,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         ScriptScope CreateScope(IDictionary<string, object> globals)
         {
             globals.Add("starting", true);
+            globals.Add("stopping", false);
 
             var scope = Engine.CreateScope(globals);
             scope.ImportModule("math");
