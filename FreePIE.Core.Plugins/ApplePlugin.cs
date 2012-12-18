@@ -195,7 +195,7 @@ namespace FreePIE.Core.Plugins {
         }
 
 
-        public bool ContinuousYawMode
+        public bool continuousYawMode
         {
             get { return Device.ContinousYawMode; }
             set { Device.ContinousYawMode = value; }
