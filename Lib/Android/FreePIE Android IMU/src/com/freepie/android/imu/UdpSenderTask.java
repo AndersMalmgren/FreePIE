@@ -162,11 +162,7 @@ public class UdpSenderTask implements SensorEventListener {
 			//Mag
 			buffer.putFloat(mag[0]);
 			buffer.putFloat(mag[1]);
-			buffer.putFloat(mag[2]);	
-			
-			acc = null;
-			mag = null;
-			gyr = null;
+			buffer.putFloat(mag[2]);
 		}
 		
 		if(sendOrientation && imu != null) {		
