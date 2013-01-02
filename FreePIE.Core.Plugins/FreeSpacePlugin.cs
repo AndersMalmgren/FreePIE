@@ -83,6 +83,9 @@ namespace FreePIE.Core.Plugins {
 
       [DllImport("piefreespace.dll", SetLastError = false, EntryPoint = "PFS_GetOrientation", CallingConvention = CallingConvention.Cdecl)]
       public static extern int GetOrientation(out float yaw, out float pitch, out float roll);
+
+      //[DllImport("piefreespace.dll", SetLastError = false, EntryPoint = "PFS_EnableRawFeed", CallingConvention = CallingConvention.Cdecl)]
+      //public static extern void EnableRawFeed(int val);
    }
    
    //==========================================================================
@@ -114,6 +117,7 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public override Action Start() {
 
+         //PFS.EnableRawFeed(1);
          int err = PFS.Connect();
          
          if (err == 0) {
@@ -251,7 +255,7 @@ namespace FreePIE.Core.Plugins {
          }
       }
    }
-
+   
    //==========================================================================
    //                          FreeSpacePluginGlobal
    //==========================================================================

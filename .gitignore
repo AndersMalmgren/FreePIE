@@ -3,6 +3,9 @@ bin
 obj
 *.suo
 *.user
+*.py
+*.bak
+*.lua
 
 # mstest test results
 TestResults

@@ -319,7 +319,8 @@ copy "$(SolutionDir)\Lib\TrackIR\NPClient.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\SlimDX\*.*" "$(TargetDir)"
-copy "$(SolutionDir)\Lib\piefreespace\*.dll" "$(TargetDir)"</PostBuildEvent>
+copy "$(SolutionDir)\Lib\piefreespace\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\Sixense\*.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
