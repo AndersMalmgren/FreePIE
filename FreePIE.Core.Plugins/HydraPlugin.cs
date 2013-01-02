@@ -83,17 +83,8 @@ namespace FreePIE.Core.Plugins {
    [GlobalType(Type = typeof(HydraPluginGlobal), IsIndexed = true)]
    public class HydraPlugin : Plugin {
       
-      public Sixense.ControllerData[] Controller = new Sixense.ControllerData[2];
-      public Sixense.ControllerAngles[] Angles = new Sixense.ControllerAngles[2];
-
-      //-----------------------------------------------------------------------
-      public HydraPlugin() {
-         Controller[0] = new Sixense.ControllerData();
-         Controller[1] = new Sixense.ControllerData();
-
-         Angles[0] = new Sixense.ControllerAngles();
-         Angles[1] = new Sixense.ControllerAngles();
-      }
+      public Sixense.ControllerData[] Controller;
+      public Sixense.ControllerAngles[] Angles;
 
       //----------------------------------------------------------------------- 
       public override object CreateGlobal() {
@@ -108,7 +99,7 @@ namespace FreePIE.Core.Plugins {
       public override Action Start() {
          int r = Sixense.Init();
          if (r == Sixense.SUCCESS) {
-            
+
             int attempts = 0;
             int base_found = 0;
             while (base_found == 0 && attempts < 2) {
@@ -121,6 +112,14 @@ namespace FreePIE.Core.Plugins {
                throw new Exception("Hydra not attached");
             }
 
+            Controller = new Sixense.ControllerData[2];
+            Controller[0] = new Sixense.ControllerData();
+            Controller[1] = new Sixense.ControllerData();
+
+            Angles = new Sixense.ControllerAngles[2];
+            Angles[0] = new Sixense.ControllerAngles();
+            Angles[1] = new Sixense.ControllerAngles();
+
             r = Sixense.SetActiveBase(0);
             return null;
          }
@@ -130,7 +129,7 @@ namespace FreePIE.Core.Plugins {
 
       //-----------------------------------------------------------------------
       public override void Stop() {
-         
+         Sixense.Exit();
       }
 
       //-----------------------------------------------------------------------
@@ -252,62 +251,86 @@ namespace FreePIE.Core.Plugins {
 
       //-----------------------------------------------------------------------
       public float joyx {
-         get { return Hydra.Controller[Index].joystick_x; }
+         get {
+            return Hydra.Controller[Index].joystick_x;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float joyy {
-         get { return Hydra.Controller[Index].joystick_y; }
+         get {
+            return Hydra.Controller[Index].joystick_y;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float x {
-         get { return Hydra.Controller[Index].pos_x; }
+         get {
+            return Hydra.Controller[Index].pos_x;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float y {
-         get { return Hydra.Controller[Index].pos_y; }
+         get {
+            return Hydra.Controller[Index].pos_y;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float z {
-         get { return Hydra.Controller[Index].pos_z; }
+         get {
+            return Hydra.Controller[Index].pos_z;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float yaw {
-         get { return Hydra.Angles[Index].yaw; }
+         get {
+            return Hydra.Angles[Index].yaw;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float pitch {
-         get { return Hydra.Angles[Index].pitch; }
+         get {
+            return Hydra.Angles[Index].pitch;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float roll {
-         get { return Hydra.Angles[Index].roll; }
+         get {
+            return Hydra.Angles[Index].roll;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float q0 {
-         get { return Hydra.Controller[Index].rot_quat0; }
+         get {
+            return Hydra.Controller[Index].rot_quat0;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float q1 {
-         get { return Hydra.Controller[Index].rot_quat1; }
+         get {
+            return Hydra.Controller[Index].rot_quat1;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float q2 {
-         get { return Hydra.Controller[Index].rot_quat2; }
+         get {
+            return Hydra.Controller[Index].rot_quat2;
+         }
       }
 
       //-----------------------------------------------------------------------
       public float q3 {
-         get { return Hydra.Controller[Index].rot_quat3; }
+         get {
+            return Hydra.Controller[Index].rot_quat3;
+         }
       }
    }
 }
