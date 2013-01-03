@@ -1,6 +1,7 @@
 #include "NPClient.h"
 #include "shared_memory.h"
 #include "lock.h"
+#include "exp.hpp"
 
 #include <string>
 #include <fstream>
@@ -40,6 +41,15 @@ std::fstream get_log_stream()
 	return std::fstream(get_log_path(), std::ios::app);
 }
 
+
+template <typename T>
+void log_binary(const T& t)
+{
+	auto stream = std::fstream(get_log_path(), std::ios::binary | std::ios::app);
+
+	stream << std::endl << "binary:" << t << std::endl;
+}
+
 template <typename T>
 void log_message(const T& t)
 {
@@ -54,53 +64,17 @@ void log_message(const T& t, const K& k)
 	stream << t << k << std::endl;
 }
 
-const char* search_for_word(const char* address, const std::string &word, size_t limit)
-{
-	size_t matching_chars = 0;
-
-	for(size_t i = 0; i < limit; i++)
-	{
-		if(address[i] == word[matching_chars])
-			matching_chars++;
-		else matching_chars = 0;
-
-		if(matching_chars == word.length())
-			return address + i - matching_chars + 1;
-	}
-
-	return NULL;
-}
-
-void get_signature_from_offset(char* address, sig_data *destination)
-{
-	const size_t search_limit = 1500;
-	const char* default_sig = "freepie input emulator";
-	const size_t default_sig_size = sizeof("freepie input emulator");
-
-	address -= search_limit;
-
-	auto signature_address = search_for_word(address, word, search_limit);
-
-	if(signature_address !=  NULL)
-	{
-		log_message("found signature in game - using it");
-		memcpy(destination, signature_address, sizeof(sig_data));
-	}
-	else 
-	{
-		log_message("did not find signature in game - using freepie signature");
-		memset(destination, 0, sizeof(sig_data));
-		memcpy(destination, default_sig, default_sig_size);		
-	}
-}
-
-int __stdcall NP_GetSignature(struct sig_data *sig)
+int __stdcall NP_GetSignature(struct sig_data *signature)
 {
 	static_assert(sizeof sig_data == 400, "sig_data needs to be 400 chars");
 
 	log_message("NP_GetSignature");
 
-	get_signature_from_offset((char*)sig, sig);
+	memset(signature, 0, sizeof sig_data);
+
+	trackir::get_signature((char*)signature);
+
+	log_binary(std::string((char*)signature, sizeof sig_data));
 
 	return 0;
 }
