@@ -5,6 +5,13 @@ Programmable Input Emulator
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+Changelog 0.5.249.0
+* TrackIR should now work with TrackIR fixer titles
+* Added Razer Hydra Support
+* Dataformat bug fixed for Android APK
+* Added generic button support to Mouse plugin
+* Added a stopping global that scripts can listen to for tear down tasks
+
 Changelog 0.4.237.0
 * Various stability fixes for the python engine
 * Various bug fixes for code completion
