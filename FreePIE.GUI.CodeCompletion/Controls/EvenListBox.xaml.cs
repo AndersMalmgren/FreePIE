@@ -32,15 +32,14 @@ namespace FreePIE.GUI.CodeCompletion.Controls
                               this.itemHeight = CalculateItemHeight();
                               UpdateHeight();
                           };
-
-            PreviewMouseLeftButtonDown += OnMouseLeftButtonDown;
+           PreviewMouseLeftButtonDown += OnMouseLeftButtonDown;
         }
 
         void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var source = e.OriginalSource as FrameworkElement;
 
-            if (source == this || this == source.TemplatedParent)
+            if (!(source is TextBlock) || source == this || this == source.TemplatedParent)
                 return;
             
             OnItemClicked(source.DataContext, e);
