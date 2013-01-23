@@ -22,6 +22,12 @@ namespace FreePIE.GUI.Views.Script.Output
         public ConsoleView()
         {
             InitializeComponent();
+
+            Text.TextChanged += (s, e) =>
+                {
+                    Text.CaretIndex = Text.Text.Length;
+                    Text.ScrollToEnd(); 
+                };
         }
     }
 }

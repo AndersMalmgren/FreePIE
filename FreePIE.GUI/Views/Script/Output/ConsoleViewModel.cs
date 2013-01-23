@@ -9,9 +9,17 @@ namespace FreePIE.GUI.Views.Script.Output
 {
     public class ConsoleViewModel : PropertyChangedBase
     {
+        private readonly ConsoleTextWriter consoleTextWriter;
+
         public ConsoleViewModel()
         {
-            Console.SetOut(new ConsoleTextWriter(this));
+            consoleTextWriter = new ConsoleTextWriter(this);
+            Console.SetOut(consoleTextWriter);
+        }
+
+        public void Clear()
+        {
+            consoleTextWriter.Clear();
         }
 
         private string text;
@@ -29,7 +37,6 @@ namespace FreePIE.GUI.Views.Script.Output
     public class ConsoleTextWriter : TextWriter
     {
         private readonly ConsoleViewModel output;
-        private int lines;
         private string currentText;
 
         public ConsoleTextWriter(ConsoleViewModel output)
@@ -50,15 +57,16 @@ namespace FreePIE.GUI.Views.Script.Output
             }
         }
 
+        public void Clear()
+        {
+            output.Text = null;
+            currentText = null;
+        }
+
         public override void WriteLine(string value)
         {
-            if (lines > 500)
-            {
-                currentText = string.Empty;
-                lines = 0;
-            }
-            lines++;
-            currentText += value + "\r\n";}
+            currentText += value + "\r\n";
+        }
 
         public override Encoding Encoding
         {
