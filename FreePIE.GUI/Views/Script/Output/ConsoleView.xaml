@@ -15,7 +15,17 @@
             IsReadOnly="true">
             <TextBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem cal:Message.Attach="Clear()" Header="Clear"></MenuItem>
+                    <MenuItem Header="Copy" Command="Copy">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource IconCopy}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator></Separator>
+                    <MenuItem cal:Message.Attach="Clear()" Header="Clear All">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource IconDelete}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </ContextMenu>    
             </TextBox.ContextMenu>
         </TextBox>
