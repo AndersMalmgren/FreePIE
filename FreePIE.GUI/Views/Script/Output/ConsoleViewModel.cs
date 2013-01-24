@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
@@ -37,11 +38,12 @@ namespace FreePIE.GUI.Views.Script.Output
     public class ConsoleTextWriter : TextWriter
     {
         private readonly ConsoleViewModel output;
-        private string currentText;
+        private List<string> consoleStack;
 
         public ConsoleTextWriter(ConsoleViewModel output)
         {
             this.output = output;
+            consoleStack = new List<string>();
             var worker = new BackgroundWorker();
 
             worker.DoWork += WorkerDoWork;
@@ -52,7 +54,7 @@ namespace FreePIE.GUI.Views.Script.Output
         {
             while(true)
             {
-                output.Text = currentText;
+                output.Text = string.Join(Environment.NewLine, consoleStack.ToArray());
                 Thread.Sleep(500);
             }
         }
@@ -60,12 +62,16 @@ namespace FreePIE.GUI.Views.Script.Output
         public void Clear()
         {
             output.Text = null;
-            currentText = null;
+            consoleStack.Clear();
         }
 
         public override void WriteLine(string value)
         {
-            currentText += value + "\r\n";
+            consoleStack.Add(value);
+            if (consoleStack.Count > 1000)
+            {
+                consoleStack.RemoveAt(0);
+            }
         }
 
         public override Encoding Encoding
