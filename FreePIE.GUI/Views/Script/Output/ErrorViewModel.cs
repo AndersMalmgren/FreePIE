@@ -47,6 +47,8 @@ namespace FreePIE.GUI.Views.Script.Output
         {
             Error = true;
             Text += string.Format("{0}{1}", message.Exception.Message, Environment.NewLine);
+
+            IsActive = true;
         }
     }
 }
