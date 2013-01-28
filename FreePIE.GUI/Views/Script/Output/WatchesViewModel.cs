@@ -35,6 +35,7 @@ namespace FreePIE.GUI.Views.Script.Output
                 });
 
             Title = "Watch";
+            IconName = "watch-16.png";
         }
 
         private volatile bool clearWatches;

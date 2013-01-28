@@ -323,6 +323,15 @@
   <ItemGroup>
     <Resource Include="Resources\copy-16.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\console-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\error-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\watch-16.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>md "$(TargetDir)plugins"

@@ -19,6 +19,7 @@ namespace FreePIE.GUI.Views.Script.Output
             eventAggregator.Subscribe(this);
 
             Title = "Error";
+            IconName = "error-16.png";
         }
 
         private string text;

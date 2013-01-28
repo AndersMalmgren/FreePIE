@@ -27,15 +27,16 @@ namespace FreePIE.GUI.Shells
         private readonly IFileSystem fileSystem;
 
         public MainShellViewModel(IResultFactory resultFactory,
-            IEventAggregator eventAggregator,
-            IPersistanceManager persistanceManager,
-            ISettingsManager settingsManager,
-            MainMenuViewModel mainMenuViewModel,
-            ScriptEditorViewModel scriptEditorViewModel,
-            ConsoleViewModel consoleViewModel,
-            ErrorViewModel errorViewModel,
-            WatchesViewModel watchesViewModel,
-            IFileSystem fileSystem) : base(resultFactory)
+                                  IEventAggregator eventAggregator,
+                                  IPersistanceManager persistanceManager,
+                                  ISettingsManager settingsManager,
+                                  MainMenuViewModel mainMenuViewModel,
+                                  ScriptEditorViewModel scriptEditorViewModel,
+                                  ConsoleViewModel consoleViewModel,
+                                  ErrorViewModel errorViewModel,
+                                  WatchesViewModel watchesViewModel,
+                                  IFileSystem fileSystem)
+            : base(resultFactory)
         {
             this.eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
@@ -52,8 +53,10 @@ namespace FreePIE.GUI.Shells
             Tools.Add(watchesViewModel);
 
             Menu = mainMenuViewModel;
-            Menu.Plugins = settingsManager.ListConfigurablePluginSettings().Select(ps => new PluginSettingsMenuViewModel(ps));
-            Menu.HelpFiles = settingsManager.ListPluginSettingsWithHelpFile().Select(ps => new PluginHelpFileViewModel(ps)).ToList();
+            Menu.Plugins =
+                settingsManager.ListConfigurablePluginSettings().Select(ps => new PluginSettingsMenuViewModel(ps));
+            Menu.HelpFiles =
+                settingsManager.ListPluginSettingsWithHelpFile().Select(ps => new PluginHelpFileViewModel(ps)).ToList();
             Menu.Views = Tools;
 
             this.consoleViewModel = consoleViewModel;
@@ -75,7 +78,7 @@ namespace FreePIE.GUI.Shells
         private void InitDocking()
         {
             if (!fileSystem.Exists(dockingConfig)) return;
-            
+
             var layoutSerializer = new XmlLayoutSerializer(DockingManager);
             //layoutSerializer.LayoutSerializationCallback += (s, e) =>
             //{
@@ -85,7 +88,7 @@ namespace FreePIE.GUI.Shells
             //    //    File.Exists(e.Model.ContentId))
             //    //    e.Content = Workspace.This.Open(e.Model.ContentId);
             //};
-            
+
             layoutSerializer.Deserialize(dockingConfig);
         }
 
@@ -105,11 +108,10 @@ namespace FreePIE.GUI.Shells
             eventAggregator.Publish(new ExitingEvent());
 
             persistanceManager.Save();
+            base.CanClose(callback);
 
             var layoutSerializer = new XmlLayoutSerializer(DockingManager);
             layoutSerializer.Serialize(dockingConfig);
-
-            base.CanClose(callback);
         }
     }
 }

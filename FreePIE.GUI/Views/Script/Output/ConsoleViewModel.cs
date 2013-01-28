@@ -19,6 +19,7 @@ namespace FreePIE.GUI.Views.Script.Output
             Console.SetOut(consoleTextWriter);
 
             Title = "Console";
+            IconName = "console-16.png";
         }
 
         public void Clear()

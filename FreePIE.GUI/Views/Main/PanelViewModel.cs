@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Caliburn.Micro;
 
 namespace FreePIE.GUI.Views.Main
@@ -47,6 +49,29 @@ namespace FreePIE.GUI.Views.Main
             {
                 isVisible = value;
                 NotifyOfPropertyChange(() => IsVisible);
+            }
+        }
+
+        protected string IconName
+        {
+            set
+            {
+                BitmapImage bi = new BitmapImage();
+                bi.BeginInit();
+                bi.UriSource = new Uri("pack://application:,,/Resources/" + value);
+                bi.EndInit();
+                Icon = bi;
+            }
+        }
+
+        private ImageSource icon;
+        public ImageSource Icon
+        {
+            get { return icon; }
+            private set
+            {
+                icon = value;
+                NotifyOfPropertyChange(() => Icon);
             }
         }
     }

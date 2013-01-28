@@ -35,6 +35,7 @@
             <avalonDock:DockingManager.LayoutItemContainerStyle>
                 <Style TargetType="{x:Type avalondock:LayoutItem}">
                     <Setter Property="Title" Value="{Binding Model.Title}" />
+                    <Setter Property="IconSource" Value="{Binding Model.Icon}"/>
                     <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
                     <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
                     <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"/>
