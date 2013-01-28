@@ -117,7 +117,7 @@ namespace FreePIE.GUI.Views.Main
         private void ScriptEngineError(object sender, ScriptErrorEventArgs e)
         {
             StopScript();
-            eventAggregator.Publish(new ScriptErrorEvent(e.Exception));
+            eventAggregator.Publish(new ScriptErrorEvent(e.Exception, e.LineNumber));
         }
 
         private bool canStopScript;

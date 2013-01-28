@@ -12,9 +12,12 @@ namespace FreePIE.Core.ScriptEngine
     public class ScriptErrorEventArgs : EventArgs
     {
         public Exception Exception { get; set; }
-        public ScriptErrorEventArgs(Exception e)
+        public int? LineNumber { get; set; }
+
+        public ScriptErrorEventArgs(Exception e, int? lineNumber)
         {
-            this.Exception = e;
+            Exception = e;
+            LineNumber = lineNumber;
         }
     }
 }

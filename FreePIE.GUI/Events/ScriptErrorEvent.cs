@@ -8,9 +8,12 @@ namespace FreePIE.GUI.Events
     public class ScriptErrorEvent
     {
         public Exception Exception { get; set; }
-        public ScriptErrorEvent(Exception e)
+        public int? LineNumber { get; set; }
+
+        public ScriptErrorEvent(Exception e, int? lineNumber)
         {
-            this.Exception = e;
+            Exception = e;
+            LineNumber = lineNumber;
         }
     }
 }

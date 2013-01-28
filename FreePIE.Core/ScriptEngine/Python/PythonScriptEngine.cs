@@ -5,6 +5,7 @@ using System.Text;
 using FreePIE.Core.Common;
 using IronPython;
 using IronPython.Compiler;
+using IronPython.Runtime.Operations;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting.Providers;
 using Microsoft.Scripting.Runtime;
@@ -36,7 +37,10 @@ namespace FreePIE.Core.ScriptEngine.Python
             foreach (var @namespace in namespaces)
                 builder.Append(string.Format("from {0} import *{1}", @namespace, Environment.NewLine));
 
-            return builder + Environment.NewLine + script;
+            if(namespaces.Length > 0)
+                script = builder + Environment.NewLine + script;
+
+            return script;
         }
     }
 
@@ -200,7 +204,12 @@ namespace FreePIE.Core.ScriptEngine.Python
                 return;
             }
 
-            ThreadPool.QueueUserWorkItem(obj => OnError(this, new ScriptErrorEventArgs(e)));
+            var stack = PythonOps.GetDynamicStackFrames(e);
+            var lineNumber = stack
+                .Select(s => (int?)s.GetFileLineNumber())
+                .FirstOrDefault();
+
+            ThreadPool.QueueUserWorkItem(obj => OnError(this, new ScriptErrorEventArgs(e, lineNumber)));
         }
 
         private void OnError(object sender, ScriptErrorEventArgs e)
