@@ -67,12 +67,10 @@ namespace FreePIE.GUI.Shells
             DisplayName = "FreePIE - Programmable Input Emulator";
         }
 
-        protected override void OnInitialize()
+        protected override void OnViewLoaded(object view)
         {
-            base.OnInitialize();
-
+            base.OnViewLoaded(view);
             InitDocking();
-
         }
 
         private void InitDocking()
@@ -108,10 +106,10 @@ namespace FreePIE.GUI.Shells
             eventAggregator.Publish(new ExitingEvent());
 
             persistanceManager.Save();
-            base.CanClose(callback);
-
             var layoutSerializer = new XmlLayoutSerializer(DockingManager);
             layoutSerializer.Serialize(dockingConfig);
+
+            base.CanClose(callback);
         }
     }
 }
