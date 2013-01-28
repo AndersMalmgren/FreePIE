@@ -7,10 +7,11 @@ using FreePIE.GUI.Common.AvalonEdit;
 using FreePIE.GUI.Common.CodeCompletion;
 using FreePIE.GUI.Events;
 using FreePIE.Core.Common.Events;
+using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script
 {
-    public class ScriptEditorViewModel : Caliburn.Micro.PropertyChangedBase, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
+    public class ScriptEditorViewModel : PanelViewModel, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
     {
         private readonly IEventAggregator eventAggregator;
         private readonly ICodeCompletionProvider provider;
@@ -27,6 +28,8 @@ namespace FreePIE.GUI.Views.Script
             completionModel.Observers.Add(new OpenOnWriteAction(IsBeginningOfExpression));
             completionModel.Observers.Add(new CloseOnSteppingIntoEndOfExpression(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
             completionModel.Observers.Add(new CloseOnWritingEndOfExpression(IsEndOfExpression));
+
+            Title = "Untitled.py";
         }
 
         private bool IsBeginningOfExpression(char nextChar)

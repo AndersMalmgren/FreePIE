@@ -5,10 +5,11 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Caliburn.Micro;
+using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script.Output
 {
-    public class ConsoleViewModel : PropertyChangedBase
+    public class ConsoleViewModel : PanelViewModel
     {
         private readonly ConsoleTextWriter consoleTextWriter;
 
@@ -16,6 +17,8 @@ namespace FreePIE.GUI.Views.Script.Output
         {
             consoleTextWriter = new ConsoleTextWriter(this);
             Console.SetOut(consoleTextWriter);
+
+            Title = "Console";
         }
 
         public void Clear()

@@ -39,6 +39,12 @@
     <ApplicationIcon>free-pie.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AvalonDock">
+      <HintPath>..\Lib\AvalonDock\AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="AvalonDock.Themes.Expression">
+      <HintPath>..\Lib\AvalonDock\AvalonDock.Themes.Expression.dll</HintPath>
+    </Reference>
     <Reference Include="Caliburn.Micro">
       <HintPath>..\Lib\Caliburn.Micro\Caliburn.Micro.dll</HintPath>
     </Reference>
@@ -77,6 +83,8 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Common\AvalonDock\AutobinderTemplateSelector.cs" />
+    <Compile Include="Common\AvalonDock\DocumentContext.cs" />
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
     <Compile Include="Common\Caliburn\ActionMessageCommand.cs" />
     <Compile Include="Common\Caliburn\GestureMenuItem.cs" />
@@ -106,6 +114,7 @@
       <DependentUpon>CurveSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Shells\CurveSettingsViewModel.cs" />
+    <Compile Include="Common\AvalonDock\IDockingManagerSource.cs" />
     <Compile Include="Shells\MainShellViewModel.cs" />
     <Compile Include="Shells\PluginHelpView.xaml.cs">
       <DependentUpon>PluginHelpView.xaml</DependentUpon>
@@ -124,6 +133,7 @@
       <DependentUpon>MainMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Main\MainMenuViewModel.cs" />
+    <Compile Include="Views\Main\PanelViewModel.cs" />
     <Compile Include="Views\Plugin\PluginHelpFileViewModel.cs" />
     <Compile Include="Views\Plugin\PluginPropertyView.xaml.cs">
       <DependentUpon>PluginPropertyView.xaml</DependentUpon>

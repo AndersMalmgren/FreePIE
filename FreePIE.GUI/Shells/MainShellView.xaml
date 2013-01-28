@@ -1,10 +1,14 @@
 ﻿<Window x:Class="FreePIE.GUI.Shells.MainShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:cal="http://www.caliburnproject.org"
+        xmlns:avalonDock="clr-namespace:AvalonDock;assembly=AvalonDock"
+        xmlns:avalondock="http://avalondock.codeplex.com"
+        xmlns:avalonDock1="clr-namespace:FreePIE.GUI.Common.AvalonDock"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         Title="FreePIE" Background="{DynamicResource WindowBackgroundBrush}">
     
     <Grid>
-        <Grid.RowDefinitions>
+        <!--<Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
@@ -12,6 +16,54 @@
         <ContentControl x:Name="Menu" Grid.Row="0"/>       
         <ContentControl x:Name="ScriptEditor" Grid.Row="1"/>
         <GridSplitter Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="2" />
-        <ContentControl x:Name="Output" Margin="0,2,0,0" Grid.Row="2"/>
+        <ContentControl x:Name="Output" Margin="0,2,0,0" Grid.Row="2"/>-->
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ContentControl x:Name="Menu" Grid.Row="0"/>
+        <avalonDock:DockingManager
+            x:Name="Manager"
+            AnchorablesSource="{Binding Tools}"
+            DocumentsSource="{Binding Scripts}"
+            ActiveContent="{Binding ActiveScript, Mode=TwoWay}"
+            Grid.Row="1">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="DocumentClosing">
+                    <cal:ActionMessage MethodName="Test">
+                        <cal:Parameter Value="$documentcontext" />
+                        <cal:Parameter Value="$eventArgs" />
+                    </cal:ActionMessage>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <avalonDock:DockingManager.Theme>
+                <avalondock:ExpressionDarkTheme/>
+            </avalonDock:DockingManager.Theme>
+            <avalonDock:DockingManager.LayoutItemContainerStyle>
+                <Style TargetType="{x:Type avalondock:LayoutItem}">
+                    <Setter Property="Title" Value="{Binding Model.Title}" />
+                    <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
+                    <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
+                </Style>
+            </avalonDock:DockingManager.LayoutItemContainerStyle>
+            <avalonDock:DockingManager.LayoutItemTemplateSelector>
+                <avalonDock1:AutobinderTemplateSelector>
+                    <avalonDock1:AutobinderTemplateSelector.Template>
+                        <DataTemplate>
+                            <ContentControl cal:View.Model="{Binding . }" IsTabStop="False" />
+                        </DataTemplate>
+                    </avalonDock1:AutobinderTemplateSelector.Template>
+                </avalonDock1:AutobinderTemplateSelector>
+            </avalonDock:DockingManager.LayoutItemTemplateSelector>
+            <avalondock:LayoutRoot>
+                <avalondock:LayoutPanel Orientation="Vertical">
+                    <avalondock:LayoutDocumentPane/>
+                    <avalondock:LayoutAnchorablePane DockHeight="150">
+                    </avalondock:LayoutAnchorablePane>
+                </avalondock:LayoutPanel>
+            </avalondock:LayoutRoot>
+        </avalonDock:DockingManager>
+
     </Grid>
 </Window>

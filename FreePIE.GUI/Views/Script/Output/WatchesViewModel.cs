@@ -6,11 +6,12 @@ using System.Threading;
 using Caliburn.Micro;
 using FreePIE.Core.Model.Events;
 using FreePIE.GUI.Events;
+using FreePIE.GUI.Views.Main;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Script.Output
 {
-    public class WatchesViewModel : PropertyChangedBase, Core.Common.Events.IHandle<WatchEvent>, Core.Common.Events.IHandle<ScriptStateChangedEvent>
+    public class WatchesViewModel : PanelViewModel, Core.Common.Events.IHandle<WatchEvent>, Core.Common.Events.IHandle<ScriptStateChangedEvent>
     {
         public WatchesViewModel(IEventAggregator eventAggregator)
         {
@@ -32,6 +33,8 @@ namespace FreePIE.GUI.Views.Script.Output
                         Thread.Sleep(20);
                     }
                 });
+
+            Title = "Watch";
         }
 
         private volatile bool clearWatches;
