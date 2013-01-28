@@ -29,6 +29,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
+            <MenuItem x:Name="Views" DisplayMemberPath="Title" Header="_View" cal:Message.Attach="ShowView($orignalsourcecontext)" />
             <MenuItem Header="_Script">
                 <common:GestureMenuItem x:Name="RunScript" Header="_Run script" Key="F5">
                     <MenuItem.Icon>

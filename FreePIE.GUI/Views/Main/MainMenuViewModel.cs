@@ -178,7 +178,14 @@ namespace FreePIE.GUI.Views.Main
                 .Configure(p => p.Init(pluginMenu.PluginSetting));
         }
 
+        public void ShowView(PanelViewModel panel)
+        {
+            panel.IsVisible = true;
+            panel.IsActive = true;
+        }
+
         public IEnumerable<PluginSettingsMenuViewModel> Plugins { get; set; }
         public IEnumerable<PluginHelpFileViewModel> HelpFiles { get; set; }
+        public IEnumerable<PanelViewModel> Views { get; set; } 
     }
 }

@@ -41,11 +41,21 @@ namespace FreePIE.GUI.Shells
             eventAggregator.Subscribe(this);
             this.persistanceManager = persistanceManager;
 
+            ScriptEditor = scriptEditorViewModel;
+
+            Scripts = new BindableCollection<ScriptEditorViewModel>();
+            Tools = new BindableCollection<PanelViewModel>();
+
+            Scripts.Add(ScriptEditor);
+            Tools.Add(consoleViewModel);
+            Tools.Add(errorViewModel);
+            Tools.Add(watchesViewModel);
+
             Menu = mainMenuViewModel;
             Menu.Plugins = settingsManager.ListConfigurablePluginSettings().Select(ps => new PluginSettingsMenuViewModel(ps));
             Menu.HelpFiles = settingsManager.ListPluginSettingsWithHelpFile().Select(ps => new PluginHelpFileViewModel(ps)).ToList();
+            Menu.Views = Tools;
 
-            ScriptEditor = scriptEditorViewModel;
             this.consoleViewModel = consoleViewModel;
             this.errorViewModel = errorViewModel;
             this.watchesViewModel = watchesViewModel;
@@ -64,14 +74,6 @@ namespace FreePIE.GUI.Shells
 
         private void InitDocking()
         {
-            Scripts = new BindableCollection<ScriptEditorViewModel>();
-            Tools = new BindableCollection<PanelViewModel>();
-
-            Scripts.Add(ScriptEditor);
-            Tools.Add(consoleViewModel);
-            Tools.Add(errorViewModel);
-            Tools.Add(watchesViewModel);
-
             if (!fileSystem.Exists(dockingConfig)) return;
             
             var layoutSerializer = new XmlLayoutSerializer(DockingManager);

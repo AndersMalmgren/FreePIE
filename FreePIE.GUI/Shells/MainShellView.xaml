@@ -6,18 +6,10 @@
         xmlns:avalonDock1="clr-namespace:FreePIE.GUI.Common.AvalonDock"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         Title="FreePIE" Background="{DynamicResource WindowBackgroundBrush}">
-    
+    <Window.Resources>
+        <avalondock:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
     <Grid>
-        <!--<Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <ContentControl x:Name="Menu" Grid.Row="0"/>       
-        <ContentControl x:Name="ScriptEditor" Grid.Row="1"/>
-        <GridSplitter Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="2" />
-        <ContentControl x:Name="Output" Margin="0,2,0,0" Grid.Row="2"/>-->
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -45,6 +37,7 @@
                     <Setter Property="Title" Value="{Binding Model.Title}" />
                     <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
                     <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
+                    <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"/>
                 </Style>
             </avalonDock:DockingManager.LayoutItemContainerStyle>
             <avalonDock:DockingManager.LayoutItemTemplateSelector>

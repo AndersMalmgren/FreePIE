@@ -10,6 +10,7 @@ namespace FreePIE.GUI.Views.Main
     {
         private string title;
         private bool isActive;
+        private bool isVisible = true;
 
         public virtual string Title
         {
@@ -36,6 +37,16 @@ namespace FreePIE.GUI.Views.Main
             {
                 isActive = value;
                 NotifyOfPropertyChange(() => IsActive);
+            }
+        }
+
+        public bool IsVisible
+        {
+            get { return isVisible; }
+            set
+            {
+                isVisible = value;
+                NotifyOfPropertyChange(() => IsVisible);
             }
         }
     }
