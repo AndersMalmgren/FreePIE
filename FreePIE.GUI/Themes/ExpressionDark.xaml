@@ -1810,8 +1810,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
-
-                    <Border x:Name="Border" BorderBrush="White" BorderThickness="1">
+                    <Border x:Name="Border" BorderBrush="{DynamicResource SolidBorderBrush}" Background="{DynamicResource ControlBackgroundBrush}" BorderThickness="1">
                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
                     </Border>
                     <ControlTemplate.Triggers>
