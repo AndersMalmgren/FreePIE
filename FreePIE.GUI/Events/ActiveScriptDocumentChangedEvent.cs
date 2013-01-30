@@ -6,10 +6,10 @@ using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Events
 {
-    public class ActiveFileDocumentChangedEvent
+    public class ActiveScriptDocumentChangedEvent
     {
         public PanelViewModel Document { get; private set; }
-        public ActiveFileDocumentChangedEvent(PanelViewModel document)
+        public ActiveScriptDocumentChangedEvent(PanelViewModel document)
         {
             Document = document;
         }

@@ -1,4 +1,5 @@
-﻿using FreePIE.GUI.Shells;
+﻿using System.Windows;
+using FreePIE.GUI.Shells;
 
 namespace FreePIE.GUI.Result
 {
@@ -8,5 +9,6 @@ namespace FreePIE.GUI.Result
         CloseResult Close();
         FileDialogResult ShowFileDialog(string title, string filter, FileDialogMode mode);
         FileDialogResult ShowFileDialog(string title, string filter, FileDialogMode mode, string fileName);
+        MessageBoxResult ShowMessageBox(string caption, string text, MessageBoxButton buttons);
     }
 }

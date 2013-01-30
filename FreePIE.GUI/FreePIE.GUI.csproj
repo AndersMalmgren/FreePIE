@@ -91,8 +91,9 @@
     <Compile Include="Common\Caliburn\InputBindingTrigger.cs" />
     <Compile Include="Common\CodeCompletion\CompletionItem.cs" />
     <Compile Include="Common\RichTextBox\RtfTextBox.cs" />
+    <Compile Include="Common\Strategies\ScriptDialogStrategy.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
-    <Compile Include="Events\ActiveFileDocumentChangedEvent.cs" />
+    <Compile Include="Events\ActiveScriptDocumentChangedEvent.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
     <Compile Include="Events\ScriptDocumentAddedEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
@@ -338,6 +339,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\cut-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\new-16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

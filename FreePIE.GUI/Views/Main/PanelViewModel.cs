@@ -29,10 +29,10 @@ namespace FreePIE.GUI.Views.Main
             get { return false; }
         }
 
-        public virtual string Filename { get; set; }
+        public virtual string Filename { get; private set; }
         public virtual string FilePath { get; set; }
         public virtual string FileContent { get; set; }
-
+        
         public virtual string ContentId
         {
             get 
@@ -82,6 +82,11 @@ namespace FreePIE.GUI.Views.Main
                 icon = value;
                 NotifyOfPropertyChange(() => Icon);
             }
+        }
+
+        public virtual void Saved()
+        {
+            
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using FreePIE.Core.Common;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.CodeCompletion;
 using FreePIE.GUI.CodeCompletion.Event.Actions;
@@ -14,11 +15,13 @@ namespace FreePIE.GUI.Views.Script
     {
         private readonly IEventAggregator eventAggregator;
         private readonly ICodeCompletionProvider provider;
+        private readonly FileSystem fileSystem;
 
-        public ScriptEditorViewModel(IEventAggregator eventAggregator, ICodeCompletionProvider provider, CompletionPopupViewModel completionModel)
+        public ScriptEditorViewModel(IEventAggregator eventAggregator, ICodeCompletionProvider provider, CompletionPopupViewModel completionModel, FileSystem fileSystem)
         {
             this.eventAggregator = eventAggregator;
             this.provider = provider;
+            this.fileSystem = fileSystem;
             Replacer = new Replacer();
             CompletionWindow = completionModel;
             Enabled = true;
@@ -29,6 +32,20 @@ namespace FreePIE.GUI.Views.Script
             completionModel.Observers.Add(new CloseOnWritingEndOfExpression(IsEndOfExpression));
         }
         
+        private static int untitledIndex = 0;
+        private int untitledId;
+
+        public ScriptEditorViewModel Configure(string filePath)
+        {
+            FilePath = filePath;
+            if (string.IsNullOrEmpty(filePath))
+            {
+                untitledId = untitledIndex++;
+            }
+
+            return this;
+        }
+
         private bool IsBeginningOfExpression(char nextChar)
         {
             var caret = CaretPosition;
@@ -50,7 +67,8 @@ namespace FreePIE.GUI.Views.Script
             get { return script; }
             set
             {
-                script = value; 
+                script = value;
+                IsDirty = true;
                 eventAggregator.Publish(new ScriptUpdatedEvent(value));
                 NotifyOfPropertyChange(() => Script);
             }
@@ -109,12 +127,34 @@ namespace FreePIE.GUI.Views.Script
 
         public override string Filename
         {
-            get { return base.Filename; }
-            set 
-            { 
-                base.Filename = value;
-                Title = value;
+            get
+            {
+                if (!string.IsNullOrEmpty(FilePath))
+                    return fileSystem.GetFilename(FilePath);
+
+                var untitledPostfix = untitledId > 0 ? string.Format("-{0}", untitledId) : null;
+
+                return string.Format("Untitled{0}.py", untitledPostfix);
             }
+        }
+
+        public override string Title
+        {
+            get
+            {
+                return Filename;
+            }
+        }
+
+        public override string ContentId
+        {
+            get { return FilePath ?? Filename; }
+        }
+
+        public bool IsDirty { get; set; }
+        public override void Saved()
+        {
+            IsDirty = false;
         }
 
         public override string FileContent
@@ -123,6 +163,20 @@ namespace FreePIE.GUI.Views.Script
             set
             {
                 Script = value;
+            }
+        }
+
+        public override string FilePath
+        {
+            get
+            {
+                return base.FilePath;
+            }
+            set
+            {
+                base.FilePath = value;
+                NotifyOfPropertyChange(() => Title);
+                NotifyOfPropertyChange(() => ContentId);
             }
         }
 

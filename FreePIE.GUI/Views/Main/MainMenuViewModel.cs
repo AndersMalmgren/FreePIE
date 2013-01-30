@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.ScriptEngine;
+using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
@@ -12,13 +13,17 @@ using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Main
 {
-    public class MainMenuViewModel : PropertyChangedBase, Core.Common.Events.IHandle<ScriptUpdatedEvent>, Core.Common.Events.IHandle<ExitingEvent>, Core.Common.Events.IHandle<ActiveFileDocumentChangedEvent>
+    public class MainMenuViewModel : PropertyChangedBase, 
+        Core.Common.Events.IHandle<ScriptUpdatedEvent>, 
+        Core.Common.Events.IHandle<ExitingEvent>, 
+        Core.Common.Events.IHandle<ActiveScriptDocumentChangedEvent>
     {
         private readonly IResultFactory resultFactory;
         private readonly IEventAggregator eventAggregator;
         private readonly Func<IScriptEngine> scriptEngineFactory;
         private readonly Func<ScriptEditorViewModel> scriptEditorFactory;
         private readonly IFileSystem fileSystem;
+        private readonly ScriptDialogStrategy scriptDialogStrategy;
         private IScriptEngine currentScriptEngine;
         private bool scriptRunning;
 
@@ -26,7 +31,8 @@ namespace FreePIE.GUI.Views.Main
             IEventAggregator eventAggregator,
             Func<IScriptEngine> scriptEngineFactory,
             Func<ScriptEditorViewModel> scriptEditorFactory,
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            ScriptDialogStrategy scriptDialogStrategy)
         {
             eventAggregator.Subscribe(this);
            
@@ -35,63 +41,88 @@ namespace FreePIE.GUI.Views.Main
             this.scriptEngineFactory = scriptEngineFactory;
             this.scriptEditorFactory = scriptEditorFactory;
             this.fileSystem = fileSystem;
+            this.scriptDialogStrategy = scriptDialogStrategy;
         }
 
+        private PanelViewModel activeDocument;
         private PanelViewModel ActiveDocument
         {
             get { return activeDocument; }
-            set { activeDocument = value; }
+            set { 
+                activeDocument = value; 
+                NotifyOfPropertyChange(() => CanQuickSaveScript);
+                NotifyOfPropertyChange(() => CanSaveScript);
+                NotifyOfPropertyChange(() => CanRunScript);
+            }
         }
 
-        private string currentScriptFile;
-        private const string fileFilter = "Python scripts (*.py)|*.py|All files (*.*)|*.*";
+        public void NewScript()
+        {
+            CreateScriptViewModel(null);
+        }
+
         public IEnumerable<IResult> OpenScript()
         {
-            var result = resultFactory.ShowFileDialog("Open script", fileFilter, FileDialogMode.Open);
-            yield return result;
+            return scriptDialogStrategy.Open(CreateScriptViewModel);
+        }
 
-            if(!string.IsNullOrEmpty(result.File))
-            {
-                var document = scriptEditorFactory();
+        private void CreateScriptViewModel(string filePath)
+        {
+            var document = scriptEditorFactory()
+                .Configure(filePath);
 
-                document.FilePath = result.File;
-                document.Filename = fileSystem.GetFilename(result.File);
-                document.FileContent = fileSystem.ReadAllText(result.File);
-                
-                eventAggregator.Publish(new ScriptDocumentAddedEvent(document));
-            }
+            if(!string.IsNullOrEmpty(filePath))
+                document.FileContent = fileSystem.ReadAllText(filePath);
+
+            eventAggregator.Publish(new ScriptDocumentAddedEvent(document));
         }
 
         public IEnumerable<IResult> SaveScript()
         {
-            var result = resultFactory.ShowFileDialog("Save script", fileFilter, FileDialogMode.Save, currentScriptFile);
-            yield return result;
-
-            if(!string.IsNullOrEmpty(result.File))
-                Save(result.File);
+            return SaveScript(ActiveDocument);
         }
 
-        private void Save(string filename)
+        public IEnumerable<IResult> SaveScript(PanelViewModel document)
         {
-            currentScriptFile = filename;
-            fileSystem.WriteAllText(filename, script);
-            NotifyOfPropertyChange(() => CanQuickSaveScript);
+            return scriptDialogStrategy.SaveAs(document, true, path => Save(document, path));
+        }
+
+        private void Save(PanelViewModel document)
+        {
+            Save(document, document.FilePath);
+        }
+
+        private void Save(PanelViewModel document, string filePath)
+        {
+            document.FilePath = filePath;
+            fileSystem.WriteAllText(filePath, document.FileContent);
+            document.Saved();
         }
 
         public IEnumerable<IResult> QuickSaveScript()
         {
-            if (CanQuickSaveScript)
+            if (PathSet)
             {
-                Save(currentScriptFile);
+                Save(activeDocument);
                 return null;
             }
 
             return SaveScript();
         }
 
-        private bool CanQuickSaveScript
+        public bool CanQuickSaveScript
         {
-            get { return !string.IsNullOrEmpty(currentScriptFile); }
+            get { return CanSaveScript; }
+        }
+
+        public bool PathSet
+        {
+            get { return !string.IsNullOrEmpty(activeDocument.FilePath); }
+        }
+
+        public bool CanSaveScript
+        {
+            get { return activeDocument != null; }
         }
 
         public void RunScript()
@@ -100,9 +131,8 @@ namespace FreePIE.GUI.Views.Main
 
             currentScriptEngine = scriptEngineFactory();
             currentScriptEngine.Error += ScriptEngineError;
-            CanRunScript = !scriptRunning;
             CanStopScript = scriptRunning;
-            currentScriptEngine.Start(script);
+            currentScriptEngine.Start(activeDocument.FileContent);
 
             PublishScriptStateChange();
         }
@@ -111,7 +141,6 @@ namespace FreePIE.GUI.Views.Main
         {
             scriptRunning = false;
 
-            CanRunScript = !scriptRunning;
             CanStopScript = scriptRunning;
             currentScriptEngine.Stop();
 
@@ -125,6 +154,7 @@ namespace FreePIE.GUI.Views.Main
 
         private void PublishScriptStateChange()
         {
+            NotifyOfPropertyChange(() => CanRunScript);
             eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning));
         }
 
@@ -145,24 +175,14 @@ namespace FreePIE.GUI.Views.Main
             }
         }
 
-        private bool canRunScript;
-        private string script;
-        private PanelViewModel activeDocument;
-
         public bool CanRunScript
         {
-            get { return canRunScript; }
-            set 
-            {
-                canRunScript = value; 
-                NotifyOfPropertyChange(() => CanRunScript);
-            }
+            get { return !scriptRunning && activeDocument != null && !string.IsNullOrEmpty(activeDocument.FileContent); }
         }
 
         public void Handle(ScriptUpdatedEvent message)
         {
-            CanRunScript = message.Script.Length > 0;
-            script = message.Script;
+            NotifyOfPropertyChange(() => CanRunScript);
         }
 
         public void Handle(ExitingEvent message)
@@ -171,9 +191,9 @@ namespace FreePIE.GUI.Views.Main
                 StopScript();
         }
 
-        public void Handle(ActiveFileDocumentChangedEvent message)
+        public void Handle(ActiveScriptDocumentChangedEvent message)
         {
-            activeDocument = message.Document;
+            ActiveDocument = message.Document;
         }
 
         public IEnumerable<IResult> Close()

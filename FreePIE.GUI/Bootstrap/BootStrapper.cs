@@ -8,6 +8,7 @@ using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
 using FreePIE.Core.Services;
+using FreePIE.GUI.Common.AvalonDock;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
 using Ninject;
@@ -57,6 +58,7 @@ namespace FreePIE.GUI.Bootstrap
 
         private void SetupCustomMessageBindings()
         {
+            DocumentContext.Init();
             MessageBinder.SpecialValues.Add("$orignalsourcecontext", context =>
             {
                 var args = context.EventArgs as RoutedEventArgs;

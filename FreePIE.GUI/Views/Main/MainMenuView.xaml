@@ -12,7 +12,12 @@
                     Source="{Binding Path=Icon}" />
             </Menu.Resources>
             <MenuItem Header="_File">
-              <common:GestureMenuItem x:Name="OpenScript" Header="_Open..." Modifiers="Ctrl" Key="O">
+                <common:GestureMenuItem x:Name="NewScript" Header="_New..." Modifiers="Ctrl" Key="N">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconNew}"/>
+                    </MenuItem.Icon>
+                </common:GestureMenuItem>
+                <common:GestureMenuItem x:Name="OpenScript" Header="_Open..." Modifiers="Ctrl" Key="O">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconOpen}"/>
                     </MenuItem.Icon>

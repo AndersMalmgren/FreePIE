@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using AvalonDock;
 using AvalonDock.Layout.Serialization;
 //using Caliburn.Micro;
@@ -7,6 +9,7 @@ using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
 using FreePIE.GUI.Common.AvalonDock;
+using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Views.Main;
@@ -23,31 +26,30 @@ namespace FreePIE.GUI.Shells
         private readonly IEventAggregator eventAggregator;
         private readonly IPersistanceManager persistanceManager;
         private readonly IFileSystem fileSystem;
-        private PanelViewModel activeDocument;
+        private readonly ScriptDialogStrategy scriptDialogStrategy;
 
         public MainShellViewModel(IResultFactory resultFactory,
                                   IEventAggregator eventAggregator,
                                   IPersistanceManager persistanceManager,
                                   ISettingsManager settingsManager,
                                   MainMenuViewModel mainMenuViewModel,
-                                  //ScriptEditorViewModel scriptEditorViewModel,
                                   ConsoleViewModel consoleViewModel,
                                   ErrorViewModel errorViewModel,
                                   WatchesViewModel watchesViewModel,
-                                  IFileSystem fileSystem)
+                                  IFileSystem fileSystem,
+                                  ScriptDialogStrategy scriptDialogStrategy
+                                  )
             : base(resultFactory)
         {
             this.eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
             this.persistanceManager = persistanceManager;
             this.fileSystem = fileSystem;
-
-            //ScriptEditor = scriptEditorViewModel;
+            this.scriptDialogStrategy = scriptDialogStrategy;
 
             Scripts = new BindableCollection<ScriptEditorViewModel>();
             Tools = new BindableCollection<PanelViewModel>();
 
-            //Scripts.Add(ScriptEditor);
             Tools.Add(consoleViewModel);
             Tools.Add(errorViewModel);
             Tools.Add(watchesViewModel);
@@ -71,15 +73,6 @@ namespace FreePIE.GUI.Shells
             if (!fileSystem.Exists(dockingConfig)) return;
 
             var layoutSerializer = new XmlLayoutSerializer(DockingManager);
-            //layoutSerializer.LayoutSerializationCallback += (s, e) =>
-            //{
-            //    //if (e.Model.ContentId == FileStatsViewModel.ToolContentId)
-            //    //    e.Content = Workspace.This.FileStats;
-            //    //else if (!string.IsNullOrWhiteSpace(e.Model.ContentId) &&
-            //    //    File.Exists(e.Model.ContentId))
-            //    //    e.Content = Workspace.This.Open(e.Model.ContentId);
-            //};
-
             layoutSerializer.Deserialize(dockingConfig);
         }
 
@@ -88,17 +81,37 @@ namespace FreePIE.GUI.Shells
             get { return (this.GetView() as IDockingManagerSource).DockingManager; }
         }
 
+        private PanelViewModel activeDocument;
         public PanelViewModel ActiveDocument
         {
             get { return activeDocument; }
             set
             {
-                if (value.IsFileContent)
+                    
+                if (value == null || value.IsFileContent)
                 {
                     activeDocument = value;
                     NotifyOfPropertyChange(() => ActiveDocument);
+                    eventAggregator.Publish(new ActiveScriptDocumentChangedEvent(value));
+                }
+            }
+        }
 
-                    eventAggregator.Publish(new ActiveFileDocumentChangedEvent(value));
+        public IEnumerable<IResult> DocumentClosing(ScriptEditorViewModel document, DocumentClosingEventArgs e)
+        {
+            if (document.IsDirty)
+            {
+                var message = Result.ShowMessageBox(document.Filename, string.Format("Do you want to save changes to {0}", document.Filename), MessageBoxButton.YesNoCancel);
+                yield return message;
+                
+                if (message.Result == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+                else if (message.Result == System.Windows.MessageBoxResult.Yes)
+                {
+                    foreach (var result in scriptDialogStrategy.SaveAs(document, true, path => fileSystem.WriteAllText(path, document.FileContent)))
+                        yield return result;
                 }
             }
         }
@@ -123,6 +136,7 @@ namespace FreePIE.GUI.Shells
         public void Handle(ScriptDocumentAddedEvent message)
         {
             Scripts.Add(message.Document);
+            message.Document.IsActive = true;
         }
     }
 }

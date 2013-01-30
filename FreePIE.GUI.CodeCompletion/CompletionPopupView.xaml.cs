@@ -93,7 +93,7 @@ namespace FreePIE.GUI.CodeCompletion
             EditorAdapterBase target = e.NewValue as EditorAdapterBase;
             EditorAdapterBase oldTarget = e.OldValue as EditorAdapterBase;
             CompletionPopupView view = obj as CompletionPopupView;
-
+            
             EventHandler selectionChanged = (sender, args) => view.Publish(new SelectionChangedEvent(target.CaretIndex));
             KeyEventHandler previewKeyDown = (sender, args) => view.Publish(new CancellableKeyEvent(args, EventSource.Editor));
             KeyEventHandler keyUp = (sender, args) => view.Publish(new KeyUpEvent(args, EventSource.Editor));
@@ -120,6 +120,8 @@ namespace FreePIE.GUI.CodeCompletion
 
         private void Publish(IPopupEvent @event)
         {
+            if (Model == null) return;
+
             System.Diagnostics.Debug.WriteLine("publishing:" + @event.Type);
 
             events.Push(@event);

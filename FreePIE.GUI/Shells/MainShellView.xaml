@@ -23,7 +23,7 @@
             Grid.Row="1">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="DocumentClosing">
-                    <cal:ActionMessage MethodName="Test">
+                    <cal:ActionMessage MethodName="DocumentClosing">
                         <cal:Parameter Value="$documentcontext" />
                         <cal:Parameter Value="$eventArgs" />
                     </cal:ActionMessage>
