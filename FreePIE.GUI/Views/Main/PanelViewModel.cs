@@ -24,6 +24,15 @@ namespace FreePIE.GUI.Views.Main
             }
         }
 
+        public virtual bool IsFileContent
+        {
+            get { return false; }
+        }
+
+        public virtual string Filename { get; set; }
+        public virtual string FilePath { get; set; }
+        public virtual string FileContent { get; set; }
+
         public virtual string ContentId
         {
             get 

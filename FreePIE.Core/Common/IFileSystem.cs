@@ -11,5 +11,6 @@ namespace FreePIE.Core.Common
         bool Exists(string path);
         Stream OpenRead(string path);
         void AppendAllText(string path, string content);
+        string GetFilename(string path);
     }
 }

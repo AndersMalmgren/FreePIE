@@ -19,7 +19,7 @@
             x:Name="Manager"
             AnchorablesSource="{Binding Tools}"
             DocumentsSource="{Binding Scripts}"
-            ActiveContent="{Binding ActiveScript, Mode=TwoWay}"
+            ActiveContent="{Binding ActiveDocument, Mode=TwoWay}"
             Grid.Row="1">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="DocumentClosing">

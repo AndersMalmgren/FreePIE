@@ -92,11 +92,12 @@
     <Compile Include="Common\CodeCompletion\CompletionItem.cs" />
     <Compile Include="Common\RichTextBox\RtfTextBox.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
+    <Compile Include="Events\ActiveFileDocumentChangedEvent.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
+    <Compile Include="Events\ScriptDocumentAddedEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
     <Compile Include="Events\ScriptErrorEvent.cs" />
     <Compile Include="Events\ScriptEvent.cs" />
-    <Compile Include="Events\ScriptLoadedEvent.cs" />
     <Compile Include="Events\ScriptStateChangedEvent.cs" />
     <Compile Include="Events\ScriptUpdatedEvent.cs" />
     <Compile Include="Result\CloseResult.cs" />

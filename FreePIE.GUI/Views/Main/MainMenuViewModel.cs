@@ -7,15 +7,17 @@ using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
 using FreePIE.GUI.Views.Plugin;
+using FreePIE.GUI.Views.Script;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Main
 {
-    public class MainMenuViewModel : PropertyChangedBase, Core.Common.Events.IHandle<ScriptUpdatedEvent>, Core.Common.Events.IHandle<ExitingEvent>
+    public class MainMenuViewModel : PropertyChangedBase, Core.Common.Events.IHandle<ScriptUpdatedEvent>, Core.Common.Events.IHandle<ExitingEvent>, Core.Common.Events.IHandle<ActiveFileDocumentChangedEvent>
     {
         private readonly IResultFactory resultFactory;
         private readonly IEventAggregator eventAggregator;
         private readonly Func<IScriptEngine> scriptEngineFactory;
+        private readonly Func<ScriptEditorViewModel> scriptEditorFactory;
         private readonly IFileSystem fileSystem;
         private IScriptEngine currentScriptEngine;
         private bool scriptRunning;
@@ -23,6 +25,7 @@ namespace FreePIE.GUI.Views.Main
         public MainMenuViewModel(IResultFactory resultFactory, 
             IEventAggregator eventAggregator,
             Func<IScriptEngine> scriptEngineFactory,
+            Func<ScriptEditorViewModel> scriptEditorFactory,
             IFileSystem fileSystem)
         {
             eventAggregator.Subscribe(this);
@@ -30,7 +33,14 @@ namespace FreePIE.GUI.Views.Main
             this.resultFactory = resultFactory;
             this.eventAggregator = eventAggregator;
             this.scriptEngineFactory = scriptEngineFactory;
+            this.scriptEditorFactory = scriptEditorFactory;
             this.fileSystem = fileSystem;
+        }
+
+        private PanelViewModel ActiveDocument
+        {
+            get { return activeDocument; }
+            set { activeDocument = value; }
         }
 
         private string currentScriptFile;
@@ -42,9 +52,13 @@ namespace FreePIE.GUI.Views.Main
 
             if(!string.IsNullOrEmpty(result.File))
             {
-                currentScriptFile = result.File;
-                eventAggregator.Publish(new ScriptLoadedEvent(fileSystem.ReadAllText(result.File)));
-                NotifyOfPropertyChange(() => CanQuickSaveScript);
+                var document = scriptEditorFactory();
+
+                document.FilePath = result.File;
+                document.Filename = fileSystem.GetFilename(result.File);
+                document.FileContent = fileSystem.ReadAllText(result.File);
+                
+                eventAggregator.Publish(new ScriptDocumentAddedEvent(document));
             }
         }
 
@@ -133,6 +147,7 @@ namespace FreePIE.GUI.Views.Main
 
         private bool canRunScript;
         private string script;
+        private PanelViewModel activeDocument;
 
         public bool CanRunScript
         {
@@ -154,6 +169,11 @@ namespace FreePIE.GUI.Views.Main
         {
             if(scriptRunning)
                 StopScript();
+        }
+
+        public void Handle(ActiveFileDocumentChangedEvent message)
+        {
+            activeDocument = message.Document;
         }
 
         public IEnumerable<IResult> Close()
@@ -186,6 +206,6 @@ namespace FreePIE.GUI.Views.Main
 
         public IEnumerable<PluginSettingsMenuViewModel> Plugins { get; set; }
         public IEnumerable<PluginHelpFileViewModel> HelpFiles { get; set; }
-        public IEnumerable<PanelViewModel> Views { get; set; } 
+        public IEnumerable<PanelViewModel> Views { get; set; }
     }
 }

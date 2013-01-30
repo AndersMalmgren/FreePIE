@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.CodeCompletion;
 using FreePIE.GUI.CodeCompletion.Event.Actions;
@@ -11,7 +10,7 @@ using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script
 {
-    public class ScriptEditorViewModel : PanelViewModel, IHandle<ScriptStateChangedEvent>, IHandle<ScriptLoadedEvent>
+    public class ScriptEditorViewModel : PanelViewModel, IHandle<ScriptStateChangedEvent>
     {
         private readonly IEventAggregator eventAggregator;
         private readonly ICodeCompletionProvider provider;
@@ -28,10 +27,8 @@ namespace FreePIE.GUI.Views.Script
             completionModel.Observers.Add(new OpenOnWriteAction(IsBeginningOfExpression));
             completionModel.Observers.Add(new CloseOnSteppingIntoEndOfExpression(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
             completionModel.Observers.Add(new CloseOnWritingEndOfExpression(IsEndOfExpression));
-
-            Title = "Untitled.py";
         }
-
+        
         private bool IsBeginningOfExpression(char nextChar)
         {
             var caret = CaretPosition;
@@ -105,14 +102,33 @@ namespace FreePIE.GUI.Views.Script
             Replacer.Replace(caretOffset, range, script);
         }
 
+        public override bool IsFileContent
+        {
+            get { return true; }
+        }
+
+        public override string Filename
+        {
+            get { return base.Filename; }
+            set 
+            { 
+                base.Filename = value;
+                Title = value;
+            }
+        }
+
+        public override string FileContent
+        {
+            get { return Script; }
+            set
+            {
+                Script = value;
+            }
+        }
+
         public void Handle(ScriptStateChangedEvent message)
         {
             Enabled = !message.Running;
-        }
-
-        public void Handle(ScriptLoadedEvent message)
-        {
-            Script = message.Script;
         }
     }
 }

@@ -37,5 +37,10 @@ namespace FreePIE.Core.Common
         {
             File.AppendAllText(path, content);
         }
+
+        public string GetFilename(string path)
+        {
+            return Path.GetFileName(path);
+        }
     }
 }
