@@ -17,8 +17,27 @@
                 Replacer="{ Binding Path=Replacer, Mode=TwoWay}"    
                 IsEnabled="{ Binding Enabled}"
                 Caret="{ Binding Path=CaretPosition, Mode=TwoWay }">
+            <AvalonEdit:BindableScriptEditor.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Cut" Command="Cut">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource IconCut}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Copy" Command="Copy">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource IconCopy}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Paste" Command="Paste">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource IconPaste}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </AvalonEdit:BindableScriptEditor.ContextMenu>
         </AvalonEdit:BindableScriptEditor>
-      <CodeCompletion:CompletionPopupView cal:Bind.Model="{ Binding RelativeSource={RelativeSource FindAncestor,
+        <CodeCompletion:CompletionPopupView cal:Bind.Model="{ Binding RelativeSource={RelativeSource FindAncestor,
                                                                                                AncestorType={x:Type Script:ScriptEditorView}},
                                                                                                Path=DataContext.CompletionWindow }"
                                       Target="{Binding ElementName=textEditor, Path=TextArea, Converter={CodeCompletion:EditorAdapterConverter}}">
