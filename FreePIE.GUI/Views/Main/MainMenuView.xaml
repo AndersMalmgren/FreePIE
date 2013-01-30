@@ -7,6 +7,10 @@
              xmlns:common="clr-namespace:FreePIE.GUI.Common.Caliburn" mc:Ignorable="d">
     <Grid>       
         <Menu IsMainMenu="True">
+            <Menu.Resources>
+                <Image x:Key="ViewIcon" x:Shared="false"
+                    Source="{Binding Path=Icon}" />
+            </Menu.Resources>
             <MenuItem Header="_File">
               <common:GestureMenuItem x:Name="OpenScript" Header="_Open..." Modifiers="Ctrl" Key="O">
                     <MenuItem.Icon>
@@ -29,7 +33,14 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem x:Name="Views" DisplayMemberPath="Title" Header="_View" cal:Message.Attach="ShowView($orignalsourcecontext)" />
+            <MenuItem x:Name="Views" Header="_View" cal:Message.Attach="ShowView($orignalsourcecontext)">                
+                <MenuItem.ItemContainerStyle>
+                    <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="Header" Value="{Binding Title}"/>
+                        <Setter Property="Icon" Value="{StaticResource ViewIcon}" />
+                    </Style>
+                </MenuItem.ItemContainerStyle>
+            </MenuItem>
             <MenuItem Header="_Script">
                 <common:GestureMenuItem x:Name="RunScript" Header="_Run script" Key="F5">
                     <MenuItem.Icon>
