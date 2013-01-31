@@ -38,7 +38,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem x:Name="Views" Header="_View" cal:Message.Attach="ShowView($orignalsourcecontext)">                
+            <MenuItem x:Name="Views" Header="_Views" cal:Message.Attach="ShowView($orignalsourcecontext)">                
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
                         <Setter Property="Header" Value="{Binding Title}"/>
