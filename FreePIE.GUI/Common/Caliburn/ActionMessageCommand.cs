@@ -6,6 +6,11 @@ namespace FreePIE.GUI.Common.Caliburn
 {
     public class ActionMessageCommand : ActionMessage, ICommand
     {
+        static ActionMessageCommand()
+        {
+            ActionMessage.EnforceGuardsDuringInvocation = true;
+        }
+
         public bool CanExecute(object parameter)
         {
             return true;
