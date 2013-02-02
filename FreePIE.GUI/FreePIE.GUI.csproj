@@ -176,9 +176,6 @@
       <DependentUpon>ScriptEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Script\ScriptEditorViewModel.cs" />
-    <Compile Include="Views\Script\Output\WatchView.xaml.cs">
-      <DependentUpon>WatchView.xaml</DependentUpon>
-    </Compile>
     <Page Include="Shells\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -255,10 +252,6 @@
     <Page Include="Views\Script\ScriptEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Script\Output\WatchView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d">
     <Grid>
-        <ItemsControl x:Name="Watches"></ItemsControl>
+        <DataGrid x:Name="Watches" CanUserAddRows="False" RowHeaderWidth="0" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{ Binding Name}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Value" Binding="{ Binding Value}"></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>

@@ -3267,7 +3267,669 @@
         </Setter>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
+    <Style x:Key="ColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="Width" Value="2"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Cursor" Value="SizeWE"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="RowHeaderGripperStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="Height" Value="10"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Cursor" Value="SizeNS"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border Padding="{TemplateBinding Padding}"
+                  Background="{TemplateBinding Background}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="DataGridRow">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridRow">
+                    <Border x:Name="DGR_Border"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  SnapsToDevicePixels="True">
+                        <SelectiveScrollingGrid x:Name="Root" Margin="1,1,1,1">
+                            <Grid.Resources>
+                                <Storyboard x:Key="DetailsVisibleTransition">
+                                    <DoubleAnimation Duration="00:00:0.1" Storyboard.TargetName="DetailsPresenter" Storyboard.TargetProperty="ContentHeight" />
+                                </Storyboard>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualStateGroup.Transitions>
+                                        <VisualTransition GeneratedDuration="0" />
+                                        <VisualTransition From="Normal" GeneratedDuration="00:00:00.3000000" To="MouseOver" />
+                                        <VisualTransition From="MouseOver" GeneratedDuration="00:00:00.5000000" To="Normal" />
+                                        <VisualTransition From="Normal" GeneratedDuration="00:00:00.3000000" To="MouseOver Selected" />
+                                        <VisualTransition From="MouseOver Selected" GeneratedDuration="00:00:00.5000000" To="Normal" />
+                                        <VisualTransition From="Normal" GeneratedDuration="00:00:00.3000000" To="Normal Selected" />
+                                        <VisualTransition From="Normal Selected" GeneratedDuration="00:00:00.5000000" To="Normal" />
+                                    </VisualStateGroup.Transitions>
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard />
+                                    </VisualState>
+                                    <VisualState x:Name="NormalAlternatingRow">
+                                        <Storyboard />
+                                    </VisualState>
+                                    <VisualState x:Name="MouseOver">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="HoverRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+                                            </DoubleAnimationUsingKeyFrames>
 
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="NormalSelected">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="SelectedRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+                                            </DoubleAnimationUsingKeyFrames>
+
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="MouseOverSelected">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="HoverRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="0.5" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="SelectedRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+                                            </DoubleAnimationUsingKeyFrames>
+
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="UnfocusedSelected">
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="SelectedRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="0.6" />
+                                            </DoubleAnimationUsingKeyFrames>
+
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <Rectangle x:Name="BackgroundRectangle" Grid.ColumnSpan="2" Grid.RowSpan="2" Fill="{StaticResource NormalBrush}" Opacity="0.25" />
+
+                            <Rectangle x:Name="SelectedRectangle" Opacity="0" Fill="{StaticResource SelectedBackgroundBrush}" Grid.ColumnSpan="2" Grid.RowSpan="2" />
+
+                            <Rectangle x:Name="HoverRectangle" Fill="{StaticResource NormalBrush}" Opacity="0" Grid.ColumnSpan="2" Grid.RowSpan="2" />
+
+                            <DataGridCellsPresenter Grid.Column="1"
+                                         ItemsPanel="{TemplateBinding ItemsPanel}"
+                                         SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                            <DataGridDetailsPresenter  SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=AreRowDetailsFrozen, Converter={x:Static DataGrid.RowDetailsScrollingConverter}, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}}"
+                                            Grid.Column="1" Grid.Row="1"
+                                            Visibility="{TemplateBinding DetailsVisibility}" />
+
+                            <DataGridRowHeader SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"  Grid.RowSpan="2"
+                                    Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.Row}}"/>
+
+                            <!-- <Rectangle Height="1" HorizontalAlignment="Stretch" x:Name="BottomGridLine" Grid.Column="1" Grid.Row="2" Fill="White" /> -->
+
+                        </SelectiveScrollingGrid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsSelected" Value="true">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="SelectedRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="SelectedRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type DataGridCellsPresenter}" TargetType="{x:Type DataGridCellsPresenter}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridCellsPresenter}">
+                    <ItemsPresenter />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--DataGridCell-->
+    <Style TargetType="DataGridCell">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Arrow" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Grid x:Name="Root" Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CurrentStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="0" />
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Regular" />
+                                <VisualState x:Name="Current">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="0.8" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Rectangle HorizontalAlignment="Stretch" x:Name="FocusVisual" VerticalAlignment="Stretch" IsHitTestVisible="false" Opacity="0" Fill="{StaticResource DisabledBackgroundBrush}" Stroke="{StaticResource GlyphBrush}" StrokeThickness="1" />
+                        <ContentPresenter Cursor="{TemplateBinding Cursor}" 
+		HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+		Margin="{TemplateBinding Padding}" 
+		VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+		Content="{TemplateBinding Content}" 
+		ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        <Rectangle x:Name="RightGridLine" VerticalAlignment="Stretch" Width="1" Grid.Column="1"/>
+                        <!--  Fill="{StaticResource ShineBrush} -->
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--DataGridColumnHeader-->
+    <Style TargetType="DataGridColumnHeader">
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="SeparatorBrush" Value="#FFC9CACA" />
+        <Setter Property="Padding" Value="4,4,5,4" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridColumnHeader">
+                    <Grid x:Name="Root">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="00:00:0.1" />
+                                    <VisualTransition From="Normal" GeneratedDuration="00:00:00.3000000" To="MouseOver" />
+                                    <VisualTransition From="MouseOver" GeneratedDuration="00:00:00.5000000" To="Normal" />
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="HoverRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="SortStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="00:00:0.1" />
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Unsorted" />
+                                <VisualState x:Name="SortAscending">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="1.0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="SortDescending">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="1.0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SortIconTransform" Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="-.9" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Rectangle x:Name="BackgroundRectangle" Grid.ColumnSpan="2" Grid.RowSpan="2" Fill="{StaticResource NormalBrush}" Stretch="Fill" Stroke="{StaticResource NormalBorderBrush}" StrokeThickness="1" />
+                        <Rectangle x:Name="HoverRectangle" Grid.ColumnSpan="2" Grid.RowSpan="2" Stretch="Fill" Fill="{StaticResource HoverBrush}" Opacity="0" />
+                        <ContentPresenter Cursor="{TemplateBinding Cursor}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Grid.RowSpan="2" Content="{TemplateBinding Content}" />
+                        <Rectangle x:Name="ShineRectangle" Fill="{StaticResource ShineBrush}" Stretch="Fill" Stroke="{StaticResource NormalBorderBrush}" StrokeThickness="1" Grid.ColumnSpan="2" Grid.RowSpan="2" />
+                        <Rectangle x:Name="VerticalSeparator" VerticalAlignment="Stretch" Width="1" Visibility="{TemplateBinding SeparatorVisibility}" Grid.Column="2" Grid.RowSpan="2" Fill="{TemplateBinding SeparatorBrush}" />
+                        <Path HorizontalAlignment="Left" x:Name="SortIcon" VerticalAlignment="Center" Width="8" Opacity="0" RenderTransformOrigin=".5,.5" Grid.Column="1" Grid.RowSpan="2" Fill="#FFFFFFFF" Stretch="Uniform" Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z ">
+                            <Path.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX=".9" ScaleY=".9" x:Name="SortIconTransform" />
+                                </TransformGroup>
+                            </Path.RenderTransform>
+                        </Path>
+                        <Thumb x:Name="PART_LeftHeaderGripper" Grid.RowSpan="2" Grid.Column="2"
+                   HorizontalAlignment="Left"
+                  Style="{StaticResource ColumnHeaderGripperStyle}"/>
+                        <Thumb x:Name="PART_RightHeaderGripper"  Grid.RowSpan="2" Grid.Column="2"
+                   HorizontalAlignment="Right"
+                   Style="{StaticResource ColumnHeaderGripperStyle}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--DataGridRowHeader-->
+    <Style TargetType="DataGridRowHeader">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="SeparatorBrush" Value="#FFFFFFFF" />
+        <Setter Property="SeparatorVisibility" Value="Collapsed" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridRowHeader">
+                    <Grid x:Name="Root">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="00:00:0.2" />
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="HoverRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="MouseOverCurrentRowSelected">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="SelectedRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="HoverRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="NormalCurrentRow">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="NormalSelected">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="SelectedRectangle" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="NormalEditingRow">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="grid" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                            <SplineDoubleKeyFrame KeyTime="00:00:00" Value="0.5" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border Grid.ColumnSpan="2" Grid.RowSpan="3" BorderBrush="#FFFFFFFF" BorderThickness="1, 0, 1, 0">
+                            <Grid Height="Auto" Width="Auto" x:Name="grid">
+                                <Rectangle Stretch="Fill" Fill="{StaticResource NormalBrush}" Opacity="0.25" />
+                                <Rectangle Stretch="Fill" Fill="{StaticResource SelectedBackgroundBrush}" x:Name="SelectedRectangle" Opacity="0" />
+                                <Rectangle Stretch="Fill" Fill="{StaticResource NormalBrush}" x:Name="HoverRectangle" Opacity="0" />
+                            </Grid>
+                        </Border>
+                        <Rectangle Height="1" HorizontalAlignment="Stretch" Margin="1, 0, 1, 0" x:Name="HorizontalSeparator" Visibility="{TemplateBinding SeparatorVisibility}" Grid.ColumnSpan="2" Grid.Row="2" Fill="{TemplateBinding SeparatorBrush}" />
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.RowSpan="2" Content="{TemplateBinding Content}" />
+                        <Path Height="10" HorizontalAlignment="Center" Margin="8,0,8,0" x:Name="CurrentRowGlyph" VerticalAlignment="Center" Width="6" Opacity="0" Grid.RowSpan="2" Stretch="Fill" Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z " Fill="{StaticResource GlyphBrush}" />
+                        <Path Height="10" HorizontalAlignment="Center" Margin="8,0,8,0" x:Name="EditingRowGlyph" VerticalAlignment="Center" Width="6" Opacity="0" Grid.RowSpan="2" Stretch="Fill" Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z " Fill="{StaticResource GlyphBrush}" />
+                        <Thumb x:Name="PART_TopHeaderGripper" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.Row="2" Height="1" Style="{StaticResource RowHeaderGripperStyle}"/>
+                        <Thumb x:Name="PART_BottomHeaderGripper" VerticalAlignment="Bottom" Height="1" Grid.ColumnSpan="2" Grid.Row="2" Style="{StaticResource RowHeaderGripperStyle}"/>
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
+    </Style>
+    <!--DataGrid-->
+    <Style TargetType="DataGrid">
+        <Setter Property="RowBackground" Value="{StaticResource NormalBrush}" />
+        <Setter Property="AlternatingRowBackground" Value="{StaticResource HoverBrush}" />
+        <!-- "#00FFFFFF" -->
+        <Setter Property="Background" Value="{StaticResource NormalBrush}" />
+        <!-- ControlBackgroundBrush -->
+        <Setter Property="HeadersVisibility" Value="All" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="SelectionMode" Value="Extended" />
+        <Setter Property="CanUserReorderColumns" Value="False" />
+        <Setter Property="CanUserResizeColumns" Value="True" />
+        <Setter Property="CanUserSortColumns" Value="True" />
+        <!-- <Setter Property="AutoGenerateColumns" Value="True" /> -->
+        <!-- <Setter Property="RowHeaderStyle" Value="{StaticResource DataGridRowHeaderStyle}"/>
+        <Setter Property="ColumnHeaderStyle" Value="{StaticResource DataGridColumnHeaderStyle}"/>
+        <Setter Property="RowStyle" Value="{StaticResource DataGridRowStyle}"/>
+        <Setter Property="CellStyle" Value="{StaticResource DataGridCellStyle}"/> -->
+        <Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected" />
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFA3AEB9" Offset="0" />
+                    <GradientStop Color="#FF8399A9" Offset="0.375" />
+                    <GradientStop Color="#FF718597" Offset="0.375" />
+                    <GradientStop Color="#FF617584" Offset="1" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="DragIndicatorStyle">
+            <Setter.Value>
+                <Style TargetType="ContentControl">
+                    <Setter Property="FontSize" Value="10.5" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Setter Property="Foreground" Value="#7FFFFFFF" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ContentControl">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Rectangle x:Name="BackgroundRectangle" Grid.ColumnSpan="2" Grid.RowSpan="2" Fill="#66808080" Stretch="Fill" />
+                                    <Rectangle x:Name="BackgroundGradient" Opacity="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Stretch="Fill">
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush EndPoint=".7,1" StartPoint=".7,0">
+                                                <GradientStop Color="#FFFFFFFF" Offset="0.015" />
+                                                <GradientStop Color="#F9FFFFFF" Offset="0.375" />
+                                                <GradientStop Color="#E5FFFFFF" Offset="0.6" />
+                                                <GradientStop Color="#C6FFFFFF" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <ContentPresenter Margin="4,4,5,4" VerticalAlignment="Center" />
+                                    <Rectangle VerticalAlignment="Stretch" Width="1" Visibility="Visible" Grid.Column="2" Grid.RowSpan="2" Fill="#FFAAAAAA" />
+                                    <Path HorizontalAlignment="Left" x:Name="SortIcon" VerticalAlignment="Center" Width="8" Opacity="0" RenderTransformOrigin=".5,.5" Grid.Column="1" Fill="#7FFFFFFF" Stretch="Uniform" Data="F1 M -5.215,0.0L 5.215,0.0L 0,6.099L -5.215,0.0 Z ">
+                                        <Path.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform ScaleX=".9" ScaleY=".9" />
+                                                <RotateTransform x:Name="SortIconTransform" />
+                                            </TransformGroup>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="DropLocationIndicatorStyle">
+            <Setter.Value>
+                <Style TargetType="Control">
+                    <Setter Property="Background" Value="#FF3F4346" />
+                    <Setter Property="Width" Value="2" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Control">
+                                <Rectangle Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Fill="{TemplateBinding Background}" />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="HorizontalGridLinesBrush" Value="#FFC9CACA" />
+        <Setter Property="IsTabStop" Value="True" />
+        <Setter Property="VerticalGridLinesBrush" Value="#FFDBDCDC" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGrid">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2">
+
+                        <ScrollViewer   Focusable="false" Name="DG_ScrollViewer2" Background="{StaticResource LightBrush}">
+                            <ScrollViewer.Template>
+                                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+
+                                    <Grid x:Name="Root" Background="{TemplateBinding Background}">
+                                        <Grid.Resources>
+
+                                            <ControlTemplate x:Key="TopLeftHeaderTemplate" TargetType="DataGridColumnHeader">
+                                                <Grid x:Name="Root">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+                                                    <Border Grid.RowSpan="2" Background="#FF1F3B53" BorderBrush="#FFC9CACA" BorderThickness="0,0,1,0">
+                                                        <Rectangle Stretch="Fill" StrokeThickness="1">
+                                                            <Rectangle.Fill>
+                                                                <LinearGradientBrush EndPoint=".7,1" StartPoint=".7,0">
+                                                                    <GradientStop Color="#FFFFFFFF" Offset="0.015" />
+                                                                    <GradientStop Color="#F9FFFFFF" Offset="0.375" />
+                                                                    <GradientStop Color="#E5FFFFFF" Offset="0.6" />
+                                                                    <GradientStop Color="#C6FFFFFF" Offset="1" />
+                                                                </LinearGradientBrush>
+                                                            </Rectangle.Fill>
+                                                        </Rectangle>
+                                                    </Border>
+                                                    <Rectangle Height="1" VerticalAlignment="Bottom" Width="Auto" Grid.RowSpan="2" Fill="#FFDBDCDC" StrokeThickness="1" />
+                                                </Grid>
+                                            </ControlTemplate>
+
+                                            <ControlTemplate x:Key="TopRightHeaderTemplate" TargetType="DataGridColumnHeader">
+                                                <Grid x:Name="RootElement">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+                                                    <Border Grid.RowSpan="2" Background="#FF1F3B53" BorderBrush="#FFC9CACA" BorderThickness="1,0,0,0">
+                                                        <Rectangle Stretch="Fill">
+                                                            <Rectangle.Fill>
+                                                                <LinearGradientBrush EndPoint=".7,1" StartPoint=".7,0">
+                                                                    <GradientStop Color="#FFFFFFFF" Offset="0.015" />
+                                                                    <GradientStop Color="#F9FFFFFF" Offset="0.375" />
+                                                                    <GradientStop Color="#E5FFFFFF" Offset="0.6" />
+                                                                    <GradientStop Color="#C6FFFFFF" Offset="1" />
+                                                                </LinearGradientBrush>
+                                                            </Rectangle.Fill>
+                                                        </Rectangle>
+                                                    </Border>
+                                                </Grid>
+                                            </ControlTemplate>
+
+                                            <ControlTemplate x:Key="SelectAllButtonTemplate" TargetType="{x:Type Button}">
+                                                <Grid>
+                                                    <Rectangle x:Name="Border"
+                 Fill="{StaticResource NormalBrush}" 
+                 SnapsToDevicePixels="True" />
+                                                    <Polygon x:Name="Arrow"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Bottom"
+               Margin="8,8,3,3"
+               Opacity="1"
+               Fill="{StaticResource TextBrush}"
+               Stretch="Uniform"
+               Points="0,10 10,10 10,0" />
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Border" Property="Stroke" Value="{StaticResource HoverBrush}" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter TargetName="Border" Property="Fill" Value="{StaticResource HoverBrush}" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter TargetName="Arrow" Property="Visibility" Value="Collapsed" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+
+                                        </Grid.Resources>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <!--Left Column Header Corner -->
+                                        <Button Command="{x:Static DataGrid.SelectAllCommand}"
+                            Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=CellsPanelHorizontalOffset}"
+                            Template="{StaticResource SelectAllButtonTemplate}"
+                            Focusable="false"
+                            Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.All}}" />
+
+                                        <DataGridColumnHeadersPresenter x:Name="ColumnHeadersPresenter" Grid.Column="1" />
+
+                                        <!-- <DataGridColumnHeader x:Name="TopRightCornerHeader" Template="{StaticResource TopRightHeaderTemplate}" Grid.Column="2" /> -->
+
+                                        <Rectangle  x:Name="TopRightCornerHeader" Grid.Column="2" Fill="{StaticResource NormalBrush}" />
+
+                                        <Rectangle Height="1" x:Name="ColumnHeadersAndRowsSeparator" VerticalAlignment="Bottom" Width="Auto" Grid.ColumnSpan="3" Fill="#FFDBDCDC" StrokeThickness="1" />
+
+                                        <ScrollContentPresenter 
+			x:Name="PART_ScrollContentPresenter" 
+			Grid.Row="1" 
+			Content="{TemplateBinding Content}" 
+			Grid.ColumnSpan="2" 
+			CanContentScroll="{TemplateBinding CanContentScroll}" />
+
+                                        <Rectangle x:Name="BottomRightCorner" Grid.Column="2" Grid.Row="2"  Fill="{StaticResource NormalBrush}" />
+                                        <!-- Fill="#FFE9EEF4" -->
+
+                                        <Rectangle x:Name="BottomLeftCorner" Grid.ColumnSpan="1" Grid.Row="2" Fill="{StaticResource NormalBrush}" />
+                                        <!-- Fill="#FFE9EEF4" -->
+
+                                        <ScrollBar  x:Name="PART_VerticalScrollBar" Width="40" Grid.Column="2" Grid.Row="1" Orientation="Vertical" 
+		Maximum="{TemplateBinding ScrollableHeight}"
+                                             ViewportSize="{TemplateBinding ViewportHeight}"
+                                             Value="{Binding Path=VerticalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                             Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+
+                                        <Grid Grid.Column="1" Grid.Row="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=NonFrozenColumnsViewportHorizontalOffset}"/>
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <!-- <Rectangle x:Name="FrozenColumnScrollBarSpacer" /> -->
+
+                                            <ScrollBar Height="40" x:Name="PART_HorizontalScrollBar" Grid.Column="1" Orientation="Horizontal" 
+			Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" 
+			ViewportSize="{TemplateBinding ViewportWidth}" 
+			Maximum="{TemplateBinding ScrollableWidth}" 
+			Value="{Binding Path=HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                        </Grid>
+
+                                    </Grid>
+
+                                </ControlTemplate>
+                            </ScrollViewer.Template>
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    </Style>
 </ResourceDictionary>
 
 
