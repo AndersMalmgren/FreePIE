@@ -5,7 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d">
     <Grid>
-        <DataGrid x:Name="Watches" CanUserAddRows="False" RowHeaderWidth="0" AutoGenerateColumns="False">
+        <Grid.Resources>
+            <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                <Setter Property="IsHitTestVisible" Value="False"/>
+            </Style>
+        </Grid.Resources>
+        <DataGrid x:Name="Watches" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="true" RowHeaderWidth="0" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{ Binding Name}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Value" Binding="{ Binding Value}"></DataGridTextColumn>
