@@ -157,6 +157,11 @@ namespace FreePIE.GUI.Views.Script
             IsDirty = false;
         }
 
+        public void LoadFileContent(string content)
+        {
+            script = content;
+        }
+
         public override string FileContent
         {
             get { return Script; }

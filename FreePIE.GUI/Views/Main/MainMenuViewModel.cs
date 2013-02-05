@@ -71,8 +71,8 @@ namespace FreePIE.GUI.Views.Main
             var document = scriptEditorFactory()
                 .Configure(filePath);
 
-            if(!string.IsNullOrEmpty(filePath))
-                document.FileContent = fileSystem.ReadAllText(filePath);
+            if (!string.IsNullOrEmpty(filePath))
+                document.LoadFileContent(fileSystem.ReadAllText(filePath));
 
             eventAggregator.Publish(new ScriptDocumentAddedEvent(document));
         }
