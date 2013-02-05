@@ -58,8 +58,10 @@ namespace FreePIE.GUI.Views.Script.Output
         {
             while(true)
             {
-                output.Text = string.Join(Environment.NewLine, consoleStack.ToArray());
-                Thread.Sleep(500);
+                if(consoleStack.Count > 0)
+                    output.Text = string.Join(Environment.NewLine, consoleStack.ToArray());
+
+                Thread.Sleep(100);
             }
         }
 
