@@ -34,8 +34,11 @@ namespace FreePIE.GUI.CodeCompletion
 
         private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if(e.NewValue as CompletionPopupViewModel != null)
-                AddObservers(Model.Observers);
+            if (e.NewValue as CompletionPopupViewModel == null)
+                return;
+
+            AddObservers(Model.Observers);
+            Publish(new PositionInvalidatedEvent());
         }
 
         private void AddObservers(IList<IEventObserver<IPopupEvent, ICancellablePopupEvent, CompletionPopupView>> observers )
