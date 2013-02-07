@@ -88,6 +88,12 @@ namespace FreePIE.GUI.Views.Curves
 
         public bool CanSetSelectedPointX { get { return !SetDefault; } }
 
+        public void ApplyNewValuesToSelectedPoint()
+        {
+            ApplyNewSelectedPoint(new Point(SelectedPointX, SelectedPointY));
+        }
+
+
         public void OnPointSelected(MovePointBehaviour.PointSelectedEventArgs e)
         {
             var index = Curve.IndexOf(e.Point);
@@ -96,33 +102,41 @@ namespace FreePIE.GUI.Views.Curves
 
             selectedPointIndex = index;
 
+            UpdateSelectedPoint();
+
             CanSetDefault = selectedPointIndex == Curve.Points.Count - 1;
             NotifyOfPropertyChange(() => HasSelectedPoint);
-            NotifyOfPropertyChange(() => SelectedPointX);
-            NotifyOfPropertyChange(() => SelectedPointY);
         }
 
+        private void UpdateSelectedPoint()
+        {
+            SelectedPointX = GetSelectedPoint().X;
+            SelectedPointY = GetSelectedPoint().Y;
+        }
+
+        private double selectedPointX;
         public double SelectedPointX
         {
-            get { return GetSelectedPoint().X; }
-
+            get { return selectedPointX; }
             set
             {
-                SetSelectedPoint(new Point(value, SelectedPointY));
+                selectedPointX = value;
+                NotifyOfPropertyChange(() => SelectedPointX);
             }
         }
-        
+
+        private double selectedPointY;
         public double SelectedPointY
         {
-            get { return GetSelectedPoint().Y; }
-
+            get { return selectedPointY; }
             set
             {
-                SetSelectedPoint(new Point(SelectedPointX, value));
+                selectedPointY = value;
+                NotifyOfPropertyChange(() => SelectedPointY);
             }
         }
 
-        private void SetSelectedPoint(Point newPoint)
+        private void ApplyNewSelectedPoint(Point newPoint)
         {
             if(SetDefault)
             {
@@ -138,8 +152,7 @@ namespace FreePIE.GUI.Views.Curves
             };
             OnPointDragged(args);
             SetSelectablePoints();
-            NotifyOfPropertyChange(() => SelectedPointX);
-            NotifyOfPropertyChange(() => SelectedPointY);    
+            UpdateSelectedPoint();
         }
 
         private Point GetSelectedPoint()
@@ -201,6 +214,7 @@ namespace FreePIE.GUI.Views.Curves
         }
 
         private IEnumerable<Point> selectablePoints;
+
         public IEnumerable<Point> SelectablePoints
         {
             get { return selectablePoints; }
