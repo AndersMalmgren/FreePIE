@@ -7,7 +7,7 @@ Latest downloadable installer can be found [here](http://www.mtbs3d.com/phpBB/vi
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
-Changelog 0.6.276.0
+Changelog 0.6.277.0
 * Totaly remade GUI to use a Visual Studio like docking view
 * Added a apply button to Edit Selected Curve point for usability reasons (Curve settings)
 * Improved Watch window

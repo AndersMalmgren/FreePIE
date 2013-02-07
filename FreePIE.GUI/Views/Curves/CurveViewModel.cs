@@ -152,7 +152,6 @@ namespace FreePIE.GUI.Views.Curves
             };
             OnPointDragged(args);
             SetSelectablePoints();
-            UpdateSelectedPoint();
         }
 
         private Point GetSelectedPoint()
@@ -193,6 +192,7 @@ namespace FreePIE.GUI.Views.Curves
             Curve.Points[index] = e.NewPoint;
 
             Points = CalculateNewPoints();
+            UpdateSelectedPoint();
         }
 
         private IEnumerable<Point> CalculateNewPoints()
