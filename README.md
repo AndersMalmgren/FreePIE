@@ -3,7 +3,17 @@ FreePIE
 
 Programmable Input Emulator
 
+Latest downloadable installer can be found [here](http://www.mtbs3d.com/phpBB/viewtopic.php?f=139&t=14483)
+
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
+
+Changelog 0.6.276.0
+* Totaly remade GUI to use a Visual Studio like docking view
+* Added a apply button to Edit Selected Curve point for usability reasons (Curve settings)
+* Improved Watch window
+* Improved Error window, added script linenumber for error
+* Improved Console window and added a Context menu
+* Various stability fixes for code completion
 
 Changelog 0.5.249.0
 * TrackIR should now work with TrackIR fixer titles
