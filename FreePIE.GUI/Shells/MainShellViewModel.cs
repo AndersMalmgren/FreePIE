@@ -71,9 +71,15 @@ namespace FreePIE.GUI.Shells
         private void InitDocking()
         {
             if (!fileSystem.Exists(dockingConfig)) return;
-
-            var layoutSerializer = new XmlLayoutSerializer(DockingManager);
-            layoutSerializer.Deserialize(dockingConfig);
+            try
+            {
+                var layoutSerializer = new XmlLayoutSerializer(DockingManager);
+                layoutSerializer.Deserialize(dockingConfig);
+            }
+            catch
+            {
+                fileSystem.Delete(dockingConfig);
+            }
         }
 
         private DockingManager DockingManager

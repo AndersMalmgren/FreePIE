@@ -12,5 +12,6 @@ namespace FreePIE.Core.Common
         Stream OpenRead(string path);
         void AppendAllText(string path, string content);
         string GetFilename(string path);
+        void Delete(string path);
     }
 }
