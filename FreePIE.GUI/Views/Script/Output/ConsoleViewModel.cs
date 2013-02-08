@@ -27,6 +27,8 @@ namespace FreePIE.GUI.Views.Script.Output
             consoleTextWriter.Clear();
         }
 
+        public bool CanClear { get { return !string.IsNullOrEmpty(Text); } }
+
         private string text;
         public string Text
         {
@@ -35,6 +37,7 @@ namespace FreePIE.GUI.Views.Script.Output
             { 
                 text = value; 
                 NotifyOfPropertyChange(() => Text);
+                NotifyOfPropertyChange(() => CanClear);
             }
         }
     }
