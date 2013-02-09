@@ -28,7 +28,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.GUI", "FreePIE.GUI\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.GUI.CodeCompletion", "FreePIE.GUI.CodeCompletion\FreePIE.GUI.CodeCompletion.csproj", "{8487DD8C-896C-4597-A377-5620DCA04C62}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "FreePIE.Setup", "FreePIE.Setup\FreePIE.Setup.vdproj", "{C6F5E9EB-8EC9-44BE-92FE-073BCF0E360D}"
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "FreePIE.Setup", "FreePIE.Setup\FreePIE.Setup.wixproj", "{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -133,12 +133,16 @@ Global
 		{8487DD8C-896C-4597-A377-5620DCA04C62}.Release|Mixed Platforms.Build.0 = Release|x86
 		{8487DD8C-896C-4597-A377-5620DCA04C62}.Release|x86.ActiveCfg = Release|x86
 		{8487DD8C-896C-4597-A377-5620DCA04C62}.Release|x86.Build.0 = Release|x86
-		{C6F5E9EB-8EC9-44BE-92FE-073BCF0E360D}.Debug|Any CPU.ActiveCfg = Debug
-		{C6F5E9EB-8EC9-44BE-92FE-073BCF0E360D}.Debug|Mixed Platforms.ActiveCfg = Debug
-		{C6F5E9EB-8EC9-44BE-92FE-073BCF0E360D}.Debug|x86.ActiveCfg = Debug
-		{C6F5E9EB-8EC9-44BE-92FE-073BCF0E360D}.Release|Any CPU.ActiveCfg = Release
-		{C6F5E9EB-8EC9-44BE-92FE-073BCF0E360D}.Release|Mixed Platforms.ActiveCfg = Release
-		{C6F5E9EB-8EC9-44BE-92FE-073BCF0E360D}.Release|x86.ActiveCfg = Release
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Debug|x86.ActiveCfg = Debug|x86
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Debug|x86.Build.0 = Debug|x86
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Release|Any CPU.ActiveCfg = Release|x86
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Release|Mixed Platforms.Build.0 = Release|x86
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Release|x86.ActiveCfg = Release|x86
+		{79EAF7AF-A52D-4790-AD09-BA1F9F2AE7C6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="{4071E196-878A-40A6-A480-1E4FE5F5F8CC}" Codepage="1252" Language="1033" Manufacturer="FreePIE" Name="FreePIE" UpgradeCode="{9534A27D-FC9C-452B-92CB-F2D5F6B3AB34}" Version="1.0.0">
+    <Package InstallerVersion="200" Compressed="yes" />
+
+    <Media Id="1" Cabinet="FreePIE.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="FreePIE">
+          <!--
+          TODO: Remove the comments around this Component element 
+          and the ComponentRef below in order to add resources to this installer.
+          -->
+          <!-- <Component Id="ProductComponent" Guid="PUT-GUID-HERE"> -->
+          <!-- TODO: Insert files, registry keys, and other resources here. -->
+          <!-- </Component> -->
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER"/>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="TextFileComponent" Guid="861307C0-72ED-11E2-9DC7-75C16188709B">
+        <File Id="TextFile" Name="TextFile.txt" DiskId="1"
+              Source="TextFile.txt" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="ProductFeature" Title="FreePIE" ConfigurableDirectory="INSTALLFOLDER" Description="This will install FreePIE on the computer" Level="1">
+      <ComponentRef Id="TextFileComponent" />
+    </Feature>
+  </Product>
+</Wix>
