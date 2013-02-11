@@ -30,7 +30,7 @@
 
 
   <Target Name="WriteVersion">
-    <GitVersion Path="master">
+    <GitVersion>
       <Output PropertyName="GitCommitCount" TaskParameter="CommitCount" />
     </GitVersion>
 

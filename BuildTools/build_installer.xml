@@ -49,7 +49,7 @@
   </Target>
 
   <Target Name="GetGitVersion">
-    <GitVersion Path="master">
+    <GitVersion>
       <Output PropertyName="GitCommitCount" TaskParameter="CommitCount" />        
     </GitVersion>
     <PropertyGroup>

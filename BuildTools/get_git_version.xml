@@ -7,8 +7,6 @@
 
   <UsingTask TaskName="GitVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
     <ParameterGroup>
-      <LocalPath ParameterType="System.String" />
-      <Path ParameterType="System.String" />
       <CommitCount ParameterType="System.Int32" Output="true" />
     </ParameterGroup>
     <Task>
@@ -17,15 +15,11 @@
       <Using Namespace="System.Diagnostics"/>
       <Code Type="Fragment" Language="cs">
         <![CDATA[
-LocalPath = LocalPath ?? ".";
-Path = Path ?? "master";
-Log.LogMessage(MessageImportance.Low, "LocalPath is {0}", LocalPath);
-Log.LogMessage(MessageImportance.Low, "Path is {0}", Path);
-var psi = new ProcessStartInfo("cmd", "/c git rev-list " + Path + " --count") {
+var psi = new ProcessStartInfo("cmd", "/c git rev-list --count HEAD") {
 UseShellExecute = false,
 ErrorDialog = false,
 CreateNoWindow = false,
-WorkingDirectory = LocalPath,
+WorkingDirectory = ".",
 RedirectStandardOutput = true,
 RedirectStandardError = true
 };
