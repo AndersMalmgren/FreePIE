@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Start">
+  <PropertyGroup>
+
+    <OutputTemp>$(OutputTemp)</OutputTemp>
+    <Lib>$(Lib)</Lib>
+    <Help>$(Help)</Help>  
+
+  </PropertyGroup>
+
+  <Target Name="Start">
+    <CallTarget Targets="DeleteOutput"/>
+    <CallTarget Targets="DeleteOutputTemp"/>
+    <CallTarget Targets="Build"/>
+    <CallTarget Targets="CopyOutputTemp"/>
+    <CallTarget Targets="BuildPlugins"/>
+    <CallTarget Targets="CopyPlugins"/>
+    <CallTarget Targets="CopyPython"/>
+    <CallTarget Targets="CopyHelp"/>
+    <CallTarget Targets="CopyDependecies"/>
+  </Target>
+
+  <Target Name="DeleteOutput">
+    <RemoveDir Directories="$(BuildDir)"/>
+  </Target>
+
+  <Target Name="DeleteOutputTemp">
+    <RemoveDir Directories="$(OutputTemp)"/>
+  </Target>
+
+  <Target Name="Build">
+    <MSBuild Projects="..\FreePIE.GUI\FreePIE.GUI.csproj" Properties="Configuration=Release;PreBuildEvent=;PostBuildEvent=;OutDir=$(OutputTemp)\"/>
+  </Target>
+
+  <Target Name="BuildPlugins">
+    <MSBuild Projects="..\FreePIE.Core.Plugins\FreePIE.Core.Plugins.csproj" Properties="Configuration=Release;PreBuildEvent=;PostBuildEvent=;OutDir=$(OutputTemp)\"/>
+  </Target>
+
+  <Target Name="CopyOutputTemp">
+    <MakeDir Directories="$(BuildDir)"/>
+    <ItemGroup>
+      <ReleaseFiles
+              Include="$(OutputTemp)\**\*.*;"
+              Exclude ="$(OutputTemp)\*.pdb;
+                        $(OutputTemp)\*.xml">
+      </ReleaseFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(ReleaseFiles)" DestinationFiles="@(ReleaseFiles -> '$(BuildDir)\%(RecursiveDir)%(Filename)%(Extension)')"/>
+  </Target>
+
+  <Target Name="CopyPlugins">
+    <ItemGroup>
+      <PluginFiles
+              Include="$(OutputTemp)\FreePIE.Core.Plugins.dll">
+      </PluginFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(PluginFiles)" DestinationFiles="@(PluginFiles -> '$(BuildDir)\plugins\%(Filename)%(Extension)')"/>
+  </Target>
+
+  <Target Name="CopyPython">
+    <ItemGroup>
+      <PythonFiles
+              Include="$(Lib)\IronPython\pylib\**\*.*;">
+      </PythonFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(PythonFiles)" DestinationFiles="@(PythonFiles -> '$(BuildDir)\pylib\%(RecursiveDir)%(Filename)%(Extension)')"/>
+  </Target>
+
+  <Target Name="CopyHelp">
+    <ItemGroup>
+      <HelpFiles
+              Include="$(Help)\**\*.*">
+      </HelpFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(HelpFiles)" DestinationFiles="@(HelpFiles -> '$(BuildDir)\help\%(RecursiveDir)%(Filename)%(Extension)')"/>
+  </Target>
+
+  <Target Name="CopyDependecies">
+    <ItemGroup>
+      <DependecieFiles
+              Include="$(Lib)\TrackIR\NPClient.dll;
+                      $(Lib)\Wiimote\*.*;
+                      $(Lib)\PPJoyWrapper\*.*;
+                      $(Lib)\SlimDX\*.*;
+                      $(Lib)\Sixense\*.dll;
+                      $(Lib)\piefreespace\*.dll;
+                      $(Lib)\Android\com.freepie.android.imu.apk">
+      </DependecieFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(DependecieFiles)" DestinationFiles="@(DependecieFiles -> '$(BuildDir)\%(Filename)%(Extension)')"/>
+  </Target>
+</Project>

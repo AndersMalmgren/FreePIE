@@ -39,12 +39,8 @@
       <HintPath>..\Lib\IronPython\IronPython.Modules.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Dynamic">
-      <HintPath>..\Lib\IronPython\Microsoft.Dynamic.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Scripting">
-      <HintPath>..\Lib\IronPython\Microsoft.Scripting.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL" />
     <Reference Include="Ninject">
       <HintPath>..\Lib\Ninject\Ninject.dll</HintPath>
     </Reference>
@@ -126,7 +122,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>cd $(SolutionDir)BuildTools
-$(MSBuildBinPath)\msbuild msbuild.xml</PreBuildEvent>
+$(MSBuildBinPath)\msbuild write_VersionInfo.xml</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

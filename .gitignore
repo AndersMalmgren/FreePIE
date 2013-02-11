@@ -19,3 +19,8 @@ VersionInfo.cs
 # ncrunch test settings
 *.ncrunchsolution
 *.ncrunchproject
+
+# Build output
+Output
+OutputTemp
+InstallerTemp

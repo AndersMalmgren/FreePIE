@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Start">
+  <PropertyGroup>
+    <InstallerTemp>$(InstallerTemp)</InstallerTemp>
+    <wix>$(WIX)\bin</wix>
+    </PropertyGroup>
+
+  <Import Project="get_git_version.xml"/>
+
+  <Target Name="Start">
+    <CallTarget Targets="DeleteInstallerTemp"/>
+    <CallTarget Targets="CreateInstallerTemp"/>
+    <CallTarget Targets="CreateFragment"/>
+    <CallTarget Targets="CopyMainDefinition"/>
+    <CallTarget Targets="CopyLicense"/>
+    <CallTarget Targets="GetGitVersion"/>
+    <CallTarget Targets="Candle"/>
+    <CallTarget Targets="Light"/>
+  </Target>
+
+  <Target Name="DeleteInstallerTemp">
+    <RemoveDir Directories="$(InstallerTemp)"/>
+  </Target>
+
+  <Target Name="CreateInstallerTemp">
+    <MakeDir Directories="$(InstallerTemp)"/>
+  </Target>
+
+  <Target Name="CreateFragment">
+    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WIX)\heat.exe&quot; dir ..\Output -nologo -suid -srd -sfrag -ag -wx -dr INSTALLFOLDER -var var.OutputDir -cg Output -out ..\InstallerTemp\Output.wxs"/>
+  </Target>
+
+  <Target Name="CopyMainDefinition">
+    <ItemGroup>
+      <MainFiles
+              Include="Main.wxs">
+      </MainFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(MainFiles)" DestinationFiles="@(MainFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
+  </Target>
+
+  <Target Name="CopyLicense">
+    <ItemGroup>
+      <LicenseFiles
+              Include="License.rtf">
+      </LicenseFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(LicenseFiles)" DestinationFiles="@(LicenseFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
+  </Target>
+
+  <Target Name="GetGitVersion">
+    <GitVersion Path="master">
+      <Output PropertyName="GitCommitCount" TaskParameter="CommitCount" />        
+    </GitVersion>
+    <PropertyGroup>
+      <Version>$(MajorVersion).$(GitCommitCount).0</Version>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="Candle">
+    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WIX)\candle.exe&quot; -dOutputDir=&quot;..\Output&quot; -dVersion=&quot;$(Version)&quot; -dProductName=&quot;FreePIE&quot; $(InstallerTemp)\Main.wxs $(InstallerTemp)\Output.wxs"/>
+  </Target>
+
+  <Target Name="Light">
+    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WIX)\light.exe&quot; -ext WixUIExtension -ext WiXNetFxExtension -out FreePIE.$(Version).msi $(InstallerTemp)\Main.wixobj $(InstallerTemp)\Output.wixobj"/>
+  </Target>
+</Project>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="WriteVersion">
+  <PropertyGroup>
+  </PropertyGroup>
+
+  <Import Project="get_git_version.xml"/>
+
+  <UsingTask TaskName="WriteFileIfNewRevision" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+    <ParameterGroup>
+      <FilePath ParameterType="System.String" />
+      <Version ParameterType="System.Int32" />
+      <MajorVersion ParameterType="System.String" />
+
+    </ParameterGroup>
+    <Task>
+      <!--<Reference Include="" />-->
+      <Using Namespace="System"/>
+      <Using Namespace="System.IO"/>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        if(!File.Exists(FilePath) || !File.ReadAllText(FilePath).Contains(MajorVersion + "." + Version + ".")) {
+          File.WriteAllText(FilePath, string.Format(@"using System.Reflection;  
+[assembly: AssemblyVersion(""$(MajorVersion).{0}.0"")]
+[assembly: AssemblyFileVersion(""$(MajorVersion).{0}.0"")]", Version));
+        }
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+
+  <Target Name="WriteVersion">
+    <GitVersion Path="master">
+      <Output PropertyName="GitCommitCount" TaskParameter="CommitCount" />
+    </GitVersion>
+
+    <WriteFileIfNewRevision Version="$(GitCommitCount)" MajorVersion="$(MajorVersion)" FilePath="..\VersionInfo.cs">
+    </WriteFileIfNewRevision>
+  </Target>
+</Project>  
