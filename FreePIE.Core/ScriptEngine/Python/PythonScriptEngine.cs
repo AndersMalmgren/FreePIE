@@ -174,7 +174,8 @@ namespace FreePIE.Core.ScriptEngine.Python
         private void StopPlugin(IPlugin obj, CountdownEvent @event)
         {
             ExecuteSafe(obj.Stop);
-            @event.Signal();
+            if(@event.CurrentCount > 0)
+                @event.Signal();
         }        
 
         string PreProcessScript(string script, IEnumerable<IPlugin> plugins, IDictionary<string, object> globals)
