@@ -35,7 +35,8 @@
                   Target="[INSTALLFOLDER]FreePIE.exe"
                   WorkingDirectory="INSTALLFOLDER"/>
         <RemoveFolder Id="INSTALLFOLDER" On="uninstall"/>
-        <RegistryValue Root="HKCU" Key="Software\$(var.ProductName)\$(var.ProductName)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\$(var.ProductName)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\$(var.ProductName)" Name="path" Type="string" Value="[INSTALLFOLDER]" KeyPath="no"/>
       </Component>
     </DirectoryRef>
 
