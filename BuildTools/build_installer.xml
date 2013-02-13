@@ -13,6 +13,7 @@
     <CallTarget Targets="CreateFragment"/>
     <CallTarget Targets="CopyMainDefinition"/>
     <CallTarget Targets="CopyLicense"/>
+    <CallTarget Targets="CopyIcon"/>
     <CallTarget Targets="GetGitVersion"/>
     <CallTarget Targets="Candle"/>
     <CallTarget Targets="Light"/>
@@ -46,6 +47,15 @@
       </LicenseFiles>
     </ItemGroup>
     <Copy SourceFiles="@(LicenseFiles)" DestinationFiles="@(LicenseFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
+  </Target>
+
+  <Target Name="CopyIcon">
+    <ItemGroup>
+      <IconFiles
+              Include="..\FreePIE.Gui\free-pie.ico">
+      </IconFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(IconFiles)" DestinationFiles="@(IconFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
   </Target>
 
   <Target Name="GetGitVersion">
