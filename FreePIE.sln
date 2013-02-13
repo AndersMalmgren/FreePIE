@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Console", "FreePIE.Console\FreePIE.Console.csproj", "{D0368562-09D1-4E6E-8BD3-C1138764971E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Core.Contracts", "FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj", "{58285BD6-810D-4BBD-8249-230C3B0AC76F}"
@@ -25,6 +25,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Tests.Test", "FreePIE.Tests.Test\FreePIE.Tests.Test.csproj", "{DFBE147A-E57B-42AC-A560-B69C6FAC1C38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.GUI", "FreePIE.GUI\FreePIE.GUI.csproj", "{EF29A2A3-A29C-4D9A-A8E2-A59925DEA82D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{65D8F959-C4AD-4EC9-9EFA-9EBB9D8CA7CB} = {65D8F959-C4AD-4EC9-9EFA-9EBB9D8CA7CB}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.GUI.CodeCompletion", "FreePIE.GUI.CodeCompletion\FreePIE.GUI.CodeCompletion.csproj", "{8487DD8C-896C-4597-A377-5620DCA04C62}"
 EndProject
