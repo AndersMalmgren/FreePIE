@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using FreePIE.Core.Contracts;
+using Microsoft.Win32;
 
 namespace FreePIE.Core.Plugins
 {
@@ -42,6 +44,11 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(FreeTrackGlobal))]
     public class FreeTrackPlugin : Plugin
     {
+        private const string keyName = "Software\\Freetrack\\FreetrackClient";
+        private const string valueName = "Path";
+        private const string dllName = "FreeTrackClient.dll";
+
+
         private MemoryMappedFile memoryMappedFile;
         private MemoryMappedViewAccessor accessor;
         public FreeTrackData Data { get; set; }
@@ -53,12 +60,25 @@ namespace FreePIE.Core.Plugins
         
         public override Action Start()
         {
+            RegisterDll();
+
             memoryMappedFile = MemoryMappedFile.CreateOrOpen("FT_SharedMem", Marshal.SizeOf(typeof(FreeTrackData)));
             accessor = memoryMappedFile.CreateViewAccessor();
             
             OnStarted(this, new EventArgs());
 
             return null;
+        }
+
+        private void RegisterDll()
+        {
+            var key = Path.Combine(Registry.CurrentUser.ToString(), keyName);
+            var path = Path.Combine(Registry.GetValue(key, valueName, null) as string, dllName);
+            
+            if (path == null || !File.Exists(path))
+            {
+                Registry.SetValue(key, valueName, Environment.CurrentDirectory);
+            }
         }
 
         public override void Stop()
