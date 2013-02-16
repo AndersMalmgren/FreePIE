@@ -3,7 +3,8 @@
   <PropertyGroup>
     <InstallerTemp>$(InstallerTemp)</InstallerTemp>
     <wix>$(WIX)\bin</wix>
-    </PropertyGroup>
+    <Lib>$(Lib)</Lib>
+  </PropertyGroup>
 
   <Import Project="get_git_version.xml"/>
 
@@ -14,6 +15,7 @@
     <CallTarget Targets="CopyMainDefinition"/>
     <CallTarget Targets="CopyLicense"/>
     <CallTarget Targets="CopyIcon"/>
+    <CallTarget Targets="CopyDependencies"/>
     <CallTarget Targets="GetGitVersion"/>
     <CallTarget Targets="Candle"/>
     <CallTarget Targets="Light"/>
@@ -58,6 +60,15 @@
     <Copy SourceFiles="@(IconFiles)" DestinationFiles="@(IconFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
   </Target>
 
+  <Target Name="CopyDependencies">
+    <ItemGroup>
+      <DependencyFiles
+              Include="$(Lib)\VC++\*.msm">
+      </DependencyFiles>
+    </ItemGroup>
+    <Copy SourceFiles="@(DependencyFiles)" DestinationFiles="@(DependencyFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
+  </Target>
+  
   <Target Name="GetGitVersion">
     <GitVersion>
       <Output PropertyName="GitCommitCount" TaskParameter="CommitCount" />        

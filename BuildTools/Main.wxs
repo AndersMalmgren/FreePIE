@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" Codepage="1252" Language="1033" Manufacturer="$(var.ProductName)" Name="$(var.ProductName)" UpgradeCode="{9534A27D-FC9C-452B-92CB-F2D5F6B3AB34}" Version="$(var.Version)">
-    <Package InstallerVersion="200" Compressed="yes" />
+    <Package InstallerVersion="300" Compressed="yes" />
     <MajorUpgrade
       Schedule="afterInstallInitialize"
       DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
@@ -40,12 +40,20 @@
       </Component>
     </DirectoryRef>
 
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Merge Id="VCRedist" SourceFile="Microsoft_VC100_CRT_x86.msm" DiskId="1" Language="0"/>
+    </DirectoryRef>
+
     <Icon Id="icon.ico" SourceFile="free-pie.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <Feature Id="ProductFeature" Title="$(var.ProductName)" ConfigurableDirectory="INSTALLFOLDER" Description="This will install $(var.ProductName) on the computer" Level="1">
       <ComponentGroupRef Id="Output"/>
       <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    <Feature Id="VCRedist" Title="Visual C++ 10.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+      <MergeRef Id="VCRedist"/>
     </Feature>
   </Product>
 </Wix>
