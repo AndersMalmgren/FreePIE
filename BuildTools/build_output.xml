@@ -84,7 +84,8 @@
                       $(Lib)\SlimDX\*.*;
                       $(Lib)\Sixense\*.dll;
                       $(Lib)\piefreespace\*.dll;
-                      $(Lib)\Android\com.freepie.android.imu.apk">
+                      $(Lib)\Android\com.freepie.android.imu.apk;
+                      $(Lib)\FreeTrack\*.dll">
       </DependecieFiles>
     </ItemGroup>
     <Copy SourceFiles="@(DependecieFiles)" DestinationFiles="@(DependecieFiles -> '$(BuildDir)\%(Filename)%(Extension)')"/>

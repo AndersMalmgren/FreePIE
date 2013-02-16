@@ -73,9 +73,9 @@ namespace FreePIE.Core.Plugins
         private void RegisterDll()
         {
             var key = Path.Combine(Registry.CurrentUser.ToString(), keyName);
-            var path = Path.Combine(Registry.GetValue(key, valueName, null) as string, dllName);
+            var path = Registry.GetValue(key, valueName, null) as string;
             
-            if (path == null || !File.Exists(path))
+            if (path == null || !File.Exists(Path.Combine(path, dllName)))
             {
                 Registry.SetValue(key, valueName, Environment.CurrentDirectory);
             }
