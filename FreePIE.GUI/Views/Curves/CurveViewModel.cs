@@ -2,25 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Model;
 using FreePIE.Core.Model.Events;
 using FreePIE.GUI.Common.Visiblox;
 using FreePIE.GUI.Events;
+using FreePIE.GUI.Result;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
+using Point = FreePIE.Core.Model.Point;
 
 namespace FreePIE.GUI.Views.Curves
 {
     public class CurveViewModel : PropertyChangedBase
     {
         private readonly IEventAggregator eventAggregator;
+        private readonly IResultFactory resultFactory;
         public Curve Curve { get; private set; }
         public int? selectedPointIndex;
 
-        public CurveViewModel(IEventAggregator eventAggregator)
+        public CurveViewModel(IEventAggregator eventAggregator, IResultFactory resultFactory)
         {
             this.eventAggregator = eventAggregator;
+            this.resultFactory = resultFactory;
         }
 
         public CurveViewModel Configure(Curve curve)
@@ -53,9 +58,13 @@ namespace FreePIE.GUI.Views.Curves
             }
         }
 
-        public void Delete()
+        public IEnumerable<IResult> Delete()
         {
-            eventAggregator.Publish(new DeleteCurveEvent(this));
+            var message = resultFactory.ShowMessageBox(string.Format("Delete {0}?", Curve.Name), "Curve will be deleted, continue?", MessageBoxButton.OKCancel);
+            yield return message;
+
+            if(message.Result == System.Windows.MessageBoxResult.OK)
+                eventAggregator.Publish(new DeleteCurveEvent(this));
         }
 
         public bool HasSelectedPoint
