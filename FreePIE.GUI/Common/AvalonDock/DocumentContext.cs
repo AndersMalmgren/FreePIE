@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AvalonDock;
+using AvalonDock.Layout;
 using Caliburn.Micro;
 
 namespace FreePIE.GUI.Common.AvalonDock
@@ -13,10 +14,20 @@ namespace FreePIE.GUI.Common.AvalonDock
         {
             MessageBinder.SpecialValues.Add("$documentcontext", context =>
                 {
-                    var args = context.EventArgs as DocumentClosingEventArgs;
+                    LayoutDocument doc = null;
+                    if (context.EventArgs is DocumentClosingEventArgs)
+                    {
+                        var args = context.EventArgs as DocumentClosingEventArgs;
 
-                    var fe = args.Document;
-                    return fe.Content;
+                        doc = args.Document;
+                    } 
+                    else if (context.EventArgs is DocumentClosedEventArgs)
+                    {
+                        var args = context.EventArgs as DocumentClosedEventArgs;
+                        doc = args.Document;
+                    }
+
+                    return doc.Content;
                 });
         }
     }

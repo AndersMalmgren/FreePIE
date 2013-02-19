@@ -16,7 +16,9 @@ using FreePIE.GUI.Views.Main;
 using FreePIE.GUI.Views.Plugin;
 using FreePIE.GUI.Views.Script;
 using FreePIE.GUI.Views.Script.Output;
+using Action = System.Action;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
+using MessageBoxResult = System.Windows.MessageBoxResult;
 
 namespace FreePIE.GUI.Shells
 {
@@ -105,22 +107,32 @@ namespace FreePIE.GUI.Shells
 
         public IEnumerable<IResult> DocumentClosing(ScriptEditorViewModel document, DocumentClosingEventArgs e)
         {
-            if (document.IsDirty)
+            return HandleScriptClosing(document, () => e.Cancel = true);
+        }
+
+        public void DocumentClosed(ScriptEditorViewModel document)
+        {
+            Scripts.Remove(document);
+        }
+
+        private IEnumerable<IResult> HandleScriptClosing(ScriptEditorViewModel script, Action cancelCallback)
+        {
+            if (script.IsDirty)
             {
-                var message = Result.ShowMessageBox(document.Filename, string.Format("Do you want to save changes to {0}", document.Filename), MessageBoxButton.YesNoCancel);
+                var message = Result.ShowMessageBox(script.Filename, string.Format("Do you want to save changes to {0}", script.Filename), MessageBoxButton.YesNoCancel);
                 yield return message;
-                
-                if (message.Result == System.Windows.MessageBoxResult.Cancel)
+
+                if (message.Result == MessageBoxResult.Cancel)
                 {
-                    e.Cancel = true;
+                    cancelCallback();
                 }
-                else if (message.Result == System.Windows.MessageBoxResult.Yes)
+                else if (message.Result == MessageBoxResult.Yes)
                 {
-                    foreach (var result in scriptDialogStrategy.SaveAs(document, true, path => fileSystem.WriteAllText(path, document.FileContent)))
+                    foreach (var result in scriptDialogStrategy.SaveAs(script, true, path => fileSystem.WriteAllText(path, script.FileContent)))
                         yield return result;
                 }
             }
-        }
+        } 
 
         public BindableCollection<ScriptEditorViewModel> Scripts { get; set; }
         public BindableCollection<PanelViewModel> Tools { get; set; }
@@ -128,15 +140,31 @@ namespace FreePIE.GUI.Shells
         public ScriptEditorViewModel ScriptEditor { get; set; }
         public MainMenuViewModel Menu { get; set; }
 
-        public override void CanClose(Action<bool> callback)
+
+        protected override IEnumerable<IResult> CanClose(Action cancelCallback)
         {
-            eventAggregator.Publish(new ExitingEvent());
+            var cancel = false;
+            var wrappedCallback = new Action(() =>
+            {
+                cancel = true;
+                cancelCallback();
+            });
 
-            persistanceManager.Save();
-            var layoutSerializer = new XmlLayoutSerializer(DockingManager);
-            layoutSerializer.Serialize(dockingConfig);
+            var handleDirtyResults = Scripts.SelectMany(s => HandleScriptClosing(s, wrappedCallback));
+            foreach (var result in handleDirtyResults)
+            {
+                yield return result;
+                if (cancel) break;
+            }
 
-            base.CanClose(callback);
+            if (!cancel)
+            {
+                eventAggregator.Publish(new ExitingEvent());
+
+                persistanceManager.Save();
+                var layoutSerializer = new XmlLayoutSerializer(DockingManager);
+                layoutSerializer.Serialize(dockingConfig);
+            }
         }
 
         public void Handle(ScriptDocumentAddedEvent message)

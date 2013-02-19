@@ -22,6 +22,11 @@
             ActiveContent="{Binding ActiveDocument, Mode=TwoWay}"
             Grid.Row="1">
             <i:Interaction.Triggers>
+                <i:EventTrigger EventName="DocumentClosed">
+                    <cal:ActionMessage MethodName="DocumentClosed">
+                        <cal:Parameter Value="$documentcontext" />
+                    </cal:ActionMessage>
+                </i:EventTrigger>
                 <i:EventTrigger EventName="DocumentClosing">
                     <cal:ActionMessage MethodName="DocumentClosing">
                         <cal:Parameter Value="$documentcontext" />
