@@ -163,7 +163,7 @@ namespace FreePIE.GUI.Shells
 
         public void Handle(ScriptDocumentAddedEvent message)
         {
-            var script = Scripts.FirstOrDefault(s => s.FilePath == message.Document.FilePath);
+            var script = Scripts.FirstOrDefault(s => s.ContentId == message.Document.ContentId);
 
             if (script == null)
             {
