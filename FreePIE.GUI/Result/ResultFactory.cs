@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Caliburn.Micro;
 using FreePIE.GUI.Shells;
 using Ninject;
 
@@ -31,6 +32,11 @@ namespace FreePIE.GUI.Result
         public MessageBoxResult ShowMessageBox(string caption, string text, MessageBoxButton buttons)
         {
             return new MessageBoxResult(caption, text, buttons);
+        }
+
+        public IResult Cancel(System.Action cancelCallback)
+        {
+            return new CancelResult(cancelCallback);
         }
 
         public CloseResult Close()

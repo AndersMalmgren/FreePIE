@@ -115,6 +115,11 @@ namespace FreePIE.GUI.Shells
             Scripts.Remove(document);
         }
 
+        private IEnumerable<IResult> HandleScriptClosing(ScriptEditorViewModel script)
+        {
+            return HandleScriptClosing(script, null);
+        }
+
         private IEnumerable<IResult> HandleScriptClosing(ScriptEditorViewModel script, Action cancelCallback)
         {
             if (script.IsDirty)
@@ -124,7 +129,7 @@ namespace FreePIE.GUI.Shells
 
                 if (message.Result == MessageBoxResult.Cancel)
                 {
-                    cancelCallback();
+                    yield return Result.Cancel(cancelCallback);
                 }
                 else if (message.Result == MessageBoxResult.Yes)
                 {
@@ -141,30 +146,19 @@ namespace FreePIE.GUI.Shells
         public MainMenuViewModel Menu { get; set; }
 
 
-        protected override IEnumerable<IResult> CanClose(Action cancelCallback)
+        protected override IEnumerable<IResult> CanClose()
         {
-            var cancel = false;
-            var wrappedCallback = new Action(() =>
-            {
-                cancel = true;
-                cancelCallback();
-            });
-
-            var handleDirtyResults = Scripts.SelectMany(s => HandleScriptClosing(s, wrappedCallback));
+            var handleDirtyResults = Scripts.SelectMany(HandleScriptClosing);
             foreach (var result in handleDirtyResults)
             {
                 yield return result;
-                if (cancel) break;
             }
 
-            if (!cancel)
-            {
-                eventAggregator.Publish(new ExitingEvent());
+            eventAggregator.Publish(new ExitingEvent());
 
-                persistanceManager.Save();
-                var layoutSerializer = new XmlLayoutSerializer(DockingManager);
-                layoutSerializer.Serialize(dockingConfig);
-            }
+            persistanceManager.Save();
+            var layoutSerializer = new XmlLayoutSerializer(DockingManager);
+            layoutSerializer.Serialize(dockingConfig);
         }
 
         public void Handle(ScriptDocumentAddedEvent message)
