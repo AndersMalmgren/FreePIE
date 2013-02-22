@@ -29,6 +29,7 @@ namespace FreePIE.GUI.Shells
         private readonly IPersistanceManager persistanceManager;
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
+        private readonly IPaths paths;
 
         public MainShellViewModel(IResultFactory resultFactory,
                                   IEventAggregator eventAggregator,
@@ -39,8 +40,9 @@ namespace FreePIE.GUI.Shells
                                   ErrorViewModel errorViewModel,
                                   WatchesViewModel watchesViewModel,
                                   IFileSystem fileSystem,
-                                  ScriptDialogStrategy scriptDialogStrategy
-                                  )
+                                  ScriptDialogStrategy scriptDialogStrategy,
+                                  IPaths paths
+            )
             : base(resultFactory)
         {
             this.eventAggregator = eventAggregator;
@@ -48,6 +50,7 @@ namespace FreePIE.GUI.Shells
             this.persistanceManager = persistanceManager;
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
+            this.paths = paths;
 
             Scripts = new BindableCollection<ScriptEditorViewModel>();
             Tools = new BindableCollection<PanelViewModel>();
@@ -57,8 +60,10 @@ namespace FreePIE.GUI.Shells
             Tools.Add(watchesViewModel);
 
             Menu = mainMenuViewModel;
-            Menu.Plugins = settingsManager.ListConfigurablePluginSettings().Select(ps => new PluginSettingsMenuViewModel(ps));
-            Menu.HelpFiles = settingsManager.ListPluginSettingsWithHelpFile().Select(ps => new PluginHelpFileViewModel(ps)).ToList();
+            Menu.Plugins =
+                settingsManager.ListConfigurablePluginSettings().Select(ps => new PluginSettingsMenuViewModel(ps));
+            Menu.HelpFiles =
+                settingsManager.ListPluginSettingsWithHelpFile().Select(ps => new PluginHelpFileViewModel(ps)).ToList();
             Menu.Views = Tools;
 
             DisplayName = "FreePIE - Programmable Input Emulator";
@@ -72,15 +77,17 @@ namespace FreePIE.GUI.Shells
 
         private void InitDocking()
         {
-            if (!fileSystem.Exists(dockingConfig)) return;
+            var path = paths.GetDataPath(dockingConfig);
+
+            if (!fileSystem.Exists(path)) return;
             try
             {
                 var layoutSerializer = new XmlLayoutSerializer(DockingManager);
-                layoutSerializer.Deserialize(dockingConfig);
+                layoutSerializer.Deserialize(path);
             }
             catch
             {
-                fileSystem.Delete(dockingConfig);
+                fileSystem.Delete(path);
             }
         }
 
@@ -145,7 +152,6 @@ namespace FreePIE.GUI.Shells
         public ScriptEditorViewModel ScriptEditor { get; set; }
         public MainMenuViewModel Menu { get; set; }
 
-
         protected override IEnumerable<IResult> CanClose()
         {
             var handleDirtyResults = Scripts.SelectMany(HandleScriptClosing);
@@ -158,7 +164,7 @@ namespace FreePIE.GUI.Shells
 
             persistanceManager.Save();
             var layoutSerializer = new XmlLayoutSerializer(DockingManager);
-            layoutSerializer.Serialize(dockingConfig);
+            layoutSerializer.Serialize(paths.GetDataPath(dockingConfig));
         }
 
         public void Handle(ScriptDocumentAddedEvent message)

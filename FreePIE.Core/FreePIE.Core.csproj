@@ -77,7 +77,9 @@
     <Compile Include="Model\PluginProperty.cs" />
     <Compile Include="Model\PluginSetting.cs" />
     <Compile Include="Model\Settings.cs" />
+    <Compile Include="Persistence\IPaths.cs" />
     <Compile Include="Persistence\IPersistanceManager.cs" />
+    <Compile Include="Persistence\UacCompliantPaths.cs" />
     <Compile Include="Persistence\PersistanceManager.cs" />
     <Compile Include="Plugins\IPluginInvoker.cs" />
     <Compile Include="Plugins\PluginInvoker.cs" />

@@ -24,6 +24,7 @@ namespace FreePIE.GUI.Bootstrap
             kernel = ServiceBootstrapper.Create();
             kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             kernel.Bind<IResultFactory>().To<ResultFactory>();
+            kernel.Bind<IPaths>().To<UacCompliantPaths>().InSingletonScope();
 
             SetupCustomMessageBindings();
             kernel.Get<IPersistanceManager>().Load();

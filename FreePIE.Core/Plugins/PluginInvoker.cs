@@ -17,17 +17,19 @@ namespace FreePIE.Core.Plugins
         private readonly ISettingsManager settingsManager;
         private readonly Func<Type, IPlugin> pluginFactory;
         private readonly IFileSystem fileSystem;
+        private readonly IPaths paths;
         private const string pluginFolder = "plugins";
         private const string helpFolder = "help";
 
         private IEnumerable<Type> pluginTypes;
         private IEnumerable<Type> globalEnumTypes; 
 
-        public PluginInvoker(ISettingsManager settingsManager, Func<Type, IPlugin> pluginFactory, IFileSystem fileSystem)
+        public PluginInvoker(ISettingsManager settingsManager, Func<Type, IPlugin> pluginFactory, IFileSystem fileSystem, IPaths paths)
         {
             this.settingsManager = settingsManager;
             this.pluginFactory = pluginFactory;
             this.fileSystem = fileSystem;
+            this.paths = paths;
         }
 
         public IEnumerable<Type> ListAllPluginTypes()
@@ -35,7 +37,7 @@ namespace FreePIE.Core.Plugins
             if (pluginTypes != null)
                 return pluginTypes;
 
-            var path = Utils.GetAbsolutePath(pluginFolder);
+            var path = paths.GetApplicationPath(pluginFolder);
             var dlls = fileSystem.GetFiles(path, "*.dll");
 
             pluginTypes = dlls
@@ -71,7 +73,7 @@ namespace FreePIE.Core.Plugins
                 pluginSettings.FriendlyName = plugin.FriendlyName;
                 InitProperties(plugin, pluginSettings.PluginProperties);
 
-                var helpFile = string.Format(@"{0}\{1}.rtf", Utils.GetAbsolutePath(helpFolder), pluginType.FullName);
+                var helpFile = string.Format(@"{0}\{1}.rtf", paths.GetApplicationPath(helpFolder), pluginType.FullName);
 
                 if(fileSystem.Exists(helpFile))
                 {

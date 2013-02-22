@@ -10,11 +10,6 @@ namespace FreePIE.Core.Common
 {
     public static class Utils
     {
-        public static string GetAbsolutePath(string path)
-        {
-            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\" + path;
-        }
-
         public static IEnumerable<Type> GetTypes<T>()
         {
             return typeof (T).GetTypes();

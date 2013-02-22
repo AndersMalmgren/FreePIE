@@ -11,11 +11,17 @@ namespace FreePIE.Core.Persistence
 {
     internal class SettingsManager : ISettingsManager
     {
+        private readonly IPaths paths;
         private const string filename = "settings.xml";
+
+        public SettingsManager(IPaths paths)
+        {
+            this.paths = paths;
+        }
 
         public void Load()
         {
-            var path = Utils.GetAbsolutePath(filename);
+            var path = paths.GetDataPath(filename);
 
             if (!File.Exists(path))
             {
@@ -35,7 +41,7 @@ namespace FreePIE.Core.Persistence
         public void Save()
         {
             var serializer = new DataContractSerializer(typeof(Settings));
-            using (var stream = new FileStream(Utils.GetAbsolutePath(filename), FileMode.Create))
+            using (var stream = new FileStream(paths.GetDataPath(filename), FileMode.Create))
             {
                 serializer.WriteObject(stream, Settings);
             }
