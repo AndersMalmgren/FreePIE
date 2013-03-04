@@ -13,5 +13,7 @@
     <string name="gyr">Gyro</string>
     <string name="mag">Magnometer</string>
     <string name="imu">Orientation</string>
+    <string name="send_GPS">Send GPS</string>
+    <string name="gps">GPS</string>
 
 </resources>

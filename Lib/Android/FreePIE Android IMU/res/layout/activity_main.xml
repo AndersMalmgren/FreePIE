@@ -73,6 +73,15 @@
 	        android:layout_alignParentRight="true"
 	        android:layout_below="@+id/sendOrientation"
 	        android:text="@string/send_raw" />
+
+		<CheckBox
+	        android:id="@+id/sendGPS"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_below="@+id/sendRaw"
+	        android:text="@string/send_GPS" />	    
 	
 	    <Spinner
 	        android:id="@+id/sampleRate"
@@ -80,7 +89,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_alignParentLeft="true"
 	        android:layout_alignParentRight="true"
-	        android:layout_below="@+id/sendRaw" />
+	        android:layout_below="@+id/sendGPS" />
 	
 	    <ToggleButton
 	        android:id="@+id/start"
@@ -186,6 +195,26 @@
 	
 	            <TextView
 	                android:id="@+id/imu"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:padding="@dimen/padding_medium"
+	                tools:context=".MainActivity" />
+	
+	        </LinearLayout>
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content" >
+	
+	            <TextView
+	                android:id="@+id/TextView06"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="@dimen/padding_medium"
+	                android:text="@string/gps"
+	                tools:context=".MainActivity" />
+	
+	            <TextView
+	                android:id="@+id/gps"
 	                android:layout_width="match_parent"
 	                android:layout_height="wrap_content"
 	                android:padding="@dimen/padding_medium"

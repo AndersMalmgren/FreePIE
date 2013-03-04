@@ -7,6 +7,7 @@ import android.R.string;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.hardware.SensorManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -28,16 +29,19 @@ public class MainActivity extends Activity implements IDebugListener {
 	private static final String PORT = "port";
 	private static final String SEND_ORIENTATION = "send_orientation";
 	private static final String SEND_RAW = "send_raw";
+	private static final String SEND_GPS = "send_gps";
 	private static final String SAMPLE_RATE = "sample_rate";
 	private static final String DEBUG = "debug";
 	
 	private static final String DEBUG_FORMAT = "%.2f;%.2f;%.2f";
+	private static final String DEBUG_GPS_FORMAT = "%.2f;%.2f";
 	
 	private ToggleButton start;
 	private EditText txtIp;
 	private EditText txtPort;
 	private CheckBox chkSendOrientation;
 	private CheckBox chkSendRaw;
+	private CheckBox chkSendGPS;
 	private Spinner spnSampleRate;
 	private CheckBox chkDebug; 
 	private LinearLayout debugView;
@@ -45,6 +49,7 @@ public class MainActivity extends Activity implements IDebugListener {
 	private TextView gyr;
 	private TextView mag;
 	private TextView imu;
+	private TextView gps;
 		
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,24 +63,28 @@ public class MainActivity extends Activity implements IDebugListener {
         txtPort = (EditText) findViewById(R.id.port);
         chkSendOrientation = (CheckBox) findViewById(R.id.sendOrientation);
         chkSendRaw = (CheckBox) findViewById(R.id.sendRaw);
+        chkSendGPS = (CheckBox) findViewById(R.id.sendGPS);
         debugView = (LinearLayout) findViewById(R.id.debugView);
         chkDebug = (CheckBox) findViewById(R.id.debug);
         acc = (TextView) findViewById(R.id.acc);
         gyr = (TextView) findViewById(R.id.gyr);
         mag = (TextView) findViewById(R.id.mag);
         imu = (TextView) findViewById(R.id.imu);
+        gps = (TextView) findViewById(R.id.gps);
         
         txtIp.setText(preferences.getString(IP,  "192.168.1.1"));
         txtPort.setText(preferences.getString(PORT,  "5555"));
         chkSendOrientation.setChecked(preferences.getBoolean(SEND_ORIENTATION, true));
         chkSendRaw.setChecked(preferences.getBoolean(SEND_RAW, true));
+        chkSendGPS.setChecked(preferences.getBoolean(SEND_GPS, true));
         chkDebug.setChecked(preferences.getBoolean(DEBUG, false));
         spnSampleRate = (Spinner)this.findViewById(R.id.sampleRate);
         populateSampleRates(preferences.getInt(SAMPLE_RATE, 0));
         setDebugVisability(chkDebug.isChecked());
         
         final SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-            
+        final LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+        
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         
@@ -95,14 +104,15 @@ public class MainActivity extends Activity implements IDebugListener {
             	boolean on = ((ToggleButton) view).isChecked();
             	
             	if(on) {
-                String ip = txtIp.getText().toString();
-                int port = Integer.parseInt(txtPort.getText().toString());
-                boolean sendOrientation = chkSendOrientation.isChecked();
-                boolean sendRaw = chkSendRaw.isChecked();
-                boolean debug = chkDebug.isChecked();
-            	
-	        	udpSender = new UdpSenderTask();
-	        	udpSender.start(new TargetSettings(ip, port, sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId(), debug, debugListener));
+	                String ip = txtIp.getText().toString();
+	                int port = Integer.parseInt(txtPort.getText().toString());
+	                boolean sendOrientation = chkSendOrientation.isChecked();
+	                boolean sendRaw = chkSendRaw.isChecked();
+	                boolean sendGPS = chkSendGPS.isChecked();
+	                boolean debug = chkDebug.isChecked();
+	            	
+		        	udpSender = new UdpSenderTask();
+		        	udpSender.start(new TargetSettings(ip, port, sensorManager, locationManager, sendOrientation, sendRaw, sendGPS, getSelectedSampleRateId(), debug, debugListener));
             	} else {
             		udpSender.stop();
             		udpSender = null;
@@ -153,6 +163,7 @@ public class MainActivity extends Activity implements IDebugListener {
 		this.imu.setText(String.format(DEBUG_FORMAT, imu[0], imu[1], imu[2]));		
 	}
 
+
     @Override
     protected void onStop(){
     	super.onStop();    	
@@ -163,6 +174,7 @@ public class MainActivity extends Activity implements IDebugListener {
 			.putString(PORT, txtPort.getText().toString())
 			.putBoolean(SEND_ORIENTATION, chkSendOrientation.isChecked())
 			.putBoolean(SEND_RAW, chkSendRaw.isChecked())
+			.putBoolean(SEND_GPS, chkSendGPS.isChecked())
 			.putInt(SAMPLE_RATE,  getSelectedSampleRateId())
 			.putBoolean(DEBUG, chkDebug.isChecked())
 			.commit();
@@ -172,5 +184,12 @@ public class MainActivity extends Activity implements IDebugListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
-    }    
+    }
+
+	@Override
+	public void debugGPS(float[] distanceBetween) {
+		this.gps.setText(String.format(DEBUG_GPS_FORMAT, distanceBetween[0], distanceBetween[1]));
+		
+	}    
+   
 }

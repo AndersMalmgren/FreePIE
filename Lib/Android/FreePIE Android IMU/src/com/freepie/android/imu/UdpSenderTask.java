@@ -11,13 +11,19 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 
-public class UdpSenderTask implements SensorEventListener {
+public class UdpSenderTask implements SensorEventListener, LocationListener {
 
 	float[] acc;
 	float[] mag;
 	float[] gyr;
 	float[] imu;
+	Location lastLocation; 
+	float[] distanceBetween = new float[2];
 	
 	float[]  orientation;
 	final float[] rotationMatrix = new float[16];
@@ -27,10 +33,12 @@ public class UdpSenderTask implements SensorEventListener {
 	int port;
 	boolean sendOrientation;
 	boolean sendRaw;
+	boolean sendGPS;
 	boolean debug;
 	private int sampleRate;
 	private IDebugListener debugListener;
 	private SensorManager sensorManager;
+	private LocationManager locationManager;
 	
 	byte sendFlag;
 	
@@ -42,8 +50,11 @@ public class UdpSenderTask implements SensorEventListener {
 
 	public void start(TargetSettings target) {
 		sensorManager = target.getSensorManager();		
+		locationManager = target.getLocationManager();
 		sendRaw = target.getSendRaw();
+		sendGPS = target.getSendGPS();
 		sendOrientation = target.getSendOrientation();
+		
 		sampleRate = target.getSampleRate();		
 		debug = target.getDebug();
 		debugListener = target.getDebugListener();
@@ -99,6 +110,10 @@ public class UdpSenderTask implements SensorEventListener {
 					sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
 					sampleRate);
 		
+		if(sendGPS)
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 
+                       0, 0, this);   
+		
 	}
 	
 	public void onSensorChanged(SensorEvent sensorEvent) {
@@ -128,7 +143,7 @@ public class UdpSenderTask implements SensorEventListener {
 	    	debugListener.debugRaw(acc, gyr, mag);
 	    
 	    if(debug && imu != null)
-	    	debugListener.debugImu(imu);	    
+	    	debugListener.debugImu(imu);	
 	    
 		if(sync.getNumberWaiting() > 0)
 			sync.reset();			
@@ -141,6 +156,7 @@ public class UdpSenderTask implements SensorEventListener {
 	public void stop() {
 		running = false;
 		sensorManager.unregisterListener(this);		
+		locationManager.removeUpdates(this);
 	}
 
 	private void Send() {
@@ -185,5 +201,35 @@ public class UdpSenderTask implements SensorEventListener {
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;		
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		if(lastLocation != null) {			
+			Location.distanceBetween(lastLocation.getLatitude(), lastLocation.getLongitude(), location.getLatitude(), location.getLongitude(), distanceBetween);
+		    
+			if(debug)
+		    	debugListener.debugGPS(distanceBetween);
+		}
+		
+		lastLocation = location;		
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
 	}
 }
