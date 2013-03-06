@@ -81,6 +81,7 @@
     <Compile Include="SensorFusion\Quaternion.cs" />
     <Compile Include="Strategies\GetPressedStrategy.cs" />
     <Compile Include="Strategies\SetPressedStrategy.cs" />
+    <Compile Include="Strategies\VRWalkStrategy.cs" />
     <Compile Include="TrackIRPlugin.cs" />
     <Compile Include="MemoryMapping\DisconnectedFreepieData.cs" />
     <Compile Include="TrackIR\DllRegistrar.cs" />

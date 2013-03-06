@@ -7,17 +7,28 @@ using System.Text;
 using AHRS;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.SensorFusion;
+using FreePIE.Core.Plugins.Strategies;
 
 namespace FreePIE.Core.Plugins
 {
     [GlobalType(Type = typeof(AndroidGlobal))]
     public class AndroidPlugin : Plugin
     {
+        [Flags]
+        private enum Flags
+        {
+            Raw = 0x01,
+            Orientation = 0x02,
+            Gps = 0x04
+        }
+
         private UdpClient udpClient;
         private bool stopping;
         private int udpPort;
         private bool newData;
         private Quaternion quaternion;
+
+        private VRWalkStrategy vrWalkStrategy;
 
         public double Yaw { get { return quaternion.Yaw; } }
         public double Pitch { get { return quaternion.Pitch; } }
@@ -85,6 +96,8 @@ namespace FreePIE.Core.Plugins
             MahonyAHRS ahrs = null;
             quaternion = new Quaternion();
 
+            vrWalkStrategy = new VRWalkStrategy();
+
             var freeqSampled = false;
             int samples = 0;
             var started = DateTime.Now;
@@ -106,11 +119,21 @@ namespace FreePIE.Core.Plugins
                     break;
                 }
 
-                var flag = bytes[0];
-                var sendRaw = (flag & 1) == 1;
-                var sendOrientation = (flag & 2) == 2;
+                var flag = (Flags)bytes[0];
+                bool sendRaw;
+                bool sendOrientation;
+                bool sendGps;
 
-                if (!freeqSampled && sendRaw)
+                SetFlags(flag, out sendRaw, out sendOrientation, out sendGps);
+
+                var dataInPackage = (Flags) bytes[1];
+                bool raw;
+                bool orientation;
+                bool gps;
+
+                SetFlags(dataInPackage, out raw, out orientation, out gps);
+
+                if (!freeqSampled && raw)
                 {
                     if (samples == 0)
                         started = DateTime.Now;
@@ -130,9 +153,9 @@ namespace FreePIE.Core.Plugins
                         continue;
                 }
 
-                var index = 1;
+                var index = 2;
                 
-                if (sendRaw)
+                if (raw)
                 {
                     var ax = GetFloat(bytes, index, 0);
                     var ay = GetFloat(bytes, index, 4);
@@ -152,11 +175,21 @@ namespace FreePIE.Core.Plugins
                     index += 36;
                 }
 
-                if (sendOrientation)
+                if (orientation)
                 {
                     GoogleYaw = GetFloat(bytes, index, 0);
                     GooglePitch = GetFloat(bytes, index, 4);
                     GoogleRoll = GetFloat(bytes, index, 8);
+                    index += 12;
+                }
+
+                if (gps)
+                {
+                    if(!sendOrientation)
+                        throw new Exception("VR Walk needs orientation data to calculate speeds relative to body yaw");
+                    var distance = GetFloat(bytes, index, 0);
+                    var bearing = GetFloat(bytes, index, 4);
+                    vrWalkStrategy.Update(distance, bearing, GoogleYaw);
                 }
 
                 newData = true;
@@ -166,6 +199,13 @@ namespace FreePIE.Core.Plugins
         private static float GetFloat(byte[] buffer, int offset, int index)
         {
             return BitConverter.ToSingle(buffer, offset + index);
+        }
+
+        private void SetFlags(Flags flag, out bool raw, out bool orientation, out bool gps)
+        {
+            raw = (flag & Flags.Raw) == Flags.Raw;
+            orientation = (flag & Flags.Orientation) == Flags.Orientation;
+            gps = (flag & Flags.Gps) == Flags.Gps;
         }
     }
 
