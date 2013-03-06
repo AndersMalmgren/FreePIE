@@ -70,7 +70,7 @@ public class UdpSenderTask implements SensorEventListener, LocationListener {
 		
 		sync = new CyclicBarrier(2);
 			
-		buffer = ByteBuffer.allocate(49);
+		buffer = ByteBuffer.allocate(58);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		
 		try {	
@@ -192,38 +192,31 @@ public class UdpSenderTask implements SensorEventListener, LocationListener {
 	}
 
 	private void Send() {
-		float[] localAcc = acc;
-		float[] localGyr = gyr;
-		float[] localMag = mag;
-		
-		float[] localImu = imu;
-		float[] localDistanceBetween = distanceBetween;
-		
 		buffer.clear();			
 		
 		buffer.put(sendFlag);
 		
-		boolean raw = sendRaw && localAcc != null && localGyr != null && localMag != null;
-		boolean orientation = sendOrientation && localImu != null;
+		boolean raw = sendRaw && acc != null && gyr != null && mag != null;
+		boolean orientation = sendOrientation && imu != null;
 		boolean gps = newGpsDataToSend;
 		
 		buffer.put(getFlagByte(raw, orientation, gps));
 		
 		if(raw) {
 			//Acc
-			buffer.putFloat(localAcc[0]);
-			buffer.putFloat(localAcc[1]);
-			buffer.putFloat(localAcc[2]);
+			buffer.putFloat(acc[0]);
+			buffer.putFloat(acc[1]);
+			buffer.putFloat(acc[2]);
 			
 			//Gyro
-			buffer.putFloat(localGyr[0]);
-			buffer.putFloat(localGyr[1]);
-			buffer.putFloat(localGyr[2]);	
+			buffer.putFloat(gyr[0]);
+			buffer.putFloat(gyr[1]);
+			buffer.putFloat(gyr[2]);	
 			
 			//Mag
-			buffer.putFloat(localMag[0]);
-			buffer.putFloat(localMag[1]);
-			buffer.putFloat(localMag[2]);
+			buffer.putFloat(mag[0]);
+			buffer.putFloat(mag[1]);
+			buffer.putFloat(mag[2]);
 			
 			acc = null;
 			mag = null;
@@ -231,15 +224,15 @@ public class UdpSenderTask implements SensorEventListener, LocationListener {
 		}
 		
 		if(orientation) {			
-			buffer.putFloat(localImu[0]);
-			buffer.putFloat(localImu[1]);
-			buffer.putFloat(localImu[2]);
+			buffer.putFloat(imu[0]);
+			buffer.putFloat(imu[1]);
+			buffer.putFloat(imu[2]);
 			imu = null;
 		}
 		
 		if(gps) {		
-			buffer.putFloat(localDistanceBetween[0]);
-			buffer.putFloat(localDistanceBetween[1]);
+			buffer.putFloat(distanceBetween[0]);
+			buffer.putFloat(distanceBetween[1]);
 			newGpsDataToSend = false;
 		}
       				
