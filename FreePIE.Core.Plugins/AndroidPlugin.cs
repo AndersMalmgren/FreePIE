@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using AHRS;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.Extensions;
 using FreePIE.Core.Plugins.SensorFusion;
 using FreePIE.Core.Plugins.Strategies;
 
@@ -36,6 +37,9 @@ namespace FreePIE.Core.Plugins
         public double GoogleYaw { get; private set; }
         public double GooglePitch { get; private set; }
         public double GoogleRoll { get; private set; }
+
+        public double DeltaX { get { return vrWalkStrategy.DeltaX;} }
+        public double DeltaY { get { return vrWalkStrategy.DeltaY; } }
 
         public override object CreateGlobal()
         {
@@ -188,8 +192,12 @@ namespace FreePIE.Core.Plugins
                     if(!sendOrientation)
                         throw new Exception("VR Walk needs orientation data to calculate speeds relative to body yaw");
                     var distance = GetFloat(bytes, index, 0);
-                    var bearing = GetFloat(bytes, index, 4);
-                    vrWalkStrategy.Update(distance, bearing, GoogleYaw);
+                    double bearing = GetFloat(bytes, index, 4);
+
+                    if (bearing < 0)
+                        bearing += 360;
+
+                    vrWalkStrategy.Update(distance, bearing.Rad(), GoogleYaw);
                 }
 
                 newData = true;
@@ -221,5 +229,8 @@ namespace FreePIE.Core.Plugins
         public double googleYaw { get { return plugin.GoogleYaw; } }
         public double googlePitch { get { return plugin.GooglePitch; } }
         public double googleRoll { get { return plugin.GoogleRoll; } }
+
+        public double deltaX { get { return plugin.DeltaX; } }
+        public double deltaY { get { return plugin.DeltaY; } }
     }
 }

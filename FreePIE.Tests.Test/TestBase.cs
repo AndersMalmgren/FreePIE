@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FreePIE.Core.Services;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Ninject;
 using Rhino.Mocks;
 using Rhino.Mocks.Interfaces;
@@ -55,6 +56,14 @@ namespace FreePIE.Tests.Test
             kernel.Bind<T>().ToConstant(instance);
         }
 
+        protected void AssertDouble(double expected, double actual)
+        {
+            int magnitude = 1 + (Math.Abs(expected) < 1E-15 ? -1 : Convert.ToInt32(Math.Floor(Math.Log10(Math.Abs(expected)))));
+            int precision = 15 - magnitude;
+
+            double tolerance = 1.0 / Math.Pow(10, precision);
+            Assert.IsTrue(Math.Abs(expected - actual) <= tolerance, "{0} <> {1}", expected, actual);
+        }
 
     }
 }

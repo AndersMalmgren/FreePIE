@@ -7,9 +7,16 @@ namespace FreePIE.Core.Plugins.Strategies
 {
     public class VRWalkStrategy
     {
-        public void Update(float distance, float bearing, double yaw)
+        private const double deltaAngle = 270*Math.PI / 180;
+
+        public void Update(double delta, double bearing, double yaw)
         {
-            //TODO: calulate x and y delta relative to body yaw
+            var aXY = yaw - deltaAngle - bearing;
+            DeltaX = delta * Math.Cos(aXY);
+            DeltaY = delta * Math.Sin(aXY);
         }
+
+        public double DeltaX { get; private set; }
+        public double DeltaY { get; private set; }
     }
 }

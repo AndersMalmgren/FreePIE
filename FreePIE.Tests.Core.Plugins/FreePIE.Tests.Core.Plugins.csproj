@@ -53,6 +53,7 @@
     <Compile Include="PPJoyPluginTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FreetrackPluginTest.cs" />
+    <Compile Include="VRWalkStrategyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj">
