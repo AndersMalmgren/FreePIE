@@ -27,29 +27,19 @@ namespace FreePIE.Core.Plugins
     {
         private MemoryMappedFile memoryMappedFile;
         private MemoryMappedViewAccessor accessor;
+        private const int deviceCount = 4;
+        
         private Generic6DOF[] data;
         private Generic6DOF[] remoteData;
-
-        private bool[] newDataToWrite;
-        private int[] sameDataCount;
-        private const int deviceCount = 4;
+        private List<GenericPluginHolder> holders;
 
         public override object CreateGlobal()
         {
             data = new Generic6DOF[deviceCount];
             remoteData = new Generic6DOF[deviceCount];
-            newDataToWrite = new bool[deviceCount];
-            sameDataCount = new int[deviceCount];
 
-            return new int[deviceCount].Select((x, i) => new GenericPluginGlobal(this, d =>
-            {
-                if (!newDataToWrite[i])
-                    d.DataId++;
-
-                data[i] = d;
-                newDataToWrite[i] = true;
-
-            }, () => data[i])).ToList();
+            holders = data.Select((x, i) => new GenericPluginHolder(data, i)).ToList();
+            return holders.Select(h => h.Global).ToArray();
         }
 
         public override Action Start()
@@ -62,7 +52,7 @@ namespace FreePIE.Core.Plugins
 
         public override void DoBeforeNextExecute()
         {
-            if (newDataToWrite.Any(nd => nd))
+            if (holders.Any(h => h.NewDataToWrite))
                 Write();
             else
                 Read();
@@ -71,23 +61,27 @@ namespace FreePIE.Core.Plugins
         private void Read()
         {
             accessor.ReadArray(0, remoteData, 0, deviceCount);
+
             for (int i = 0; i < deviceCount; i++)
             {
                 var local = data[i];
                 var remote = remoteData[i];
+                var holder = holders[i];
 
                 if (local.DataId == remote.DataId)
-                    sameDataCount[i]++;
+                    holder.SameDataCount++;
                 else
                 {
-                    sameDataCount[i] = 0;
-                    OnUpdate();
+                    holder.SameDataCount = 0;
+                    holder.SameDataCountCanTriggerUpdate = true;
+                    holder.OnUpdate();
                 }
 
-                if (sameDataCount[i] > 20)
+                if (holder.SameDataCount > 20 && holder.SameDataCountCanTriggerUpdate)
                 {
+                    holder.SameDataCountCanTriggerUpdate = false;
                     remote = new Generic6DOF {DataId = local.DataId};
-                    OnUpdate();
+                    holder.OnUpdate();
                 }
 
                 data[i] = remote;
@@ -97,11 +91,7 @@ namespace FreePIE.Core.Plugins
         private void Write()
         {
             accessor.WriteArray(0, data, 0, deviceCount);
-
-            for (int i = 0; i < deviceCount; i++)
-            {
-                newDataToWrite[i] = false;
-            }
+            holders.ForEach(h => h.NewDataToWrite = false);
         }
 
         public override string FriendlyName
@@ -110,13 +100,38 @@ namespace FreePIE.Core.Plugins
         }
     }
 
+    public class GenericPluginHolder : IUpdatable
+    {
+        public GenericPluginHolder(Generic6DOF[] data, int index)
+        {
+            SameDataCountCanTriggerUpdate = true;
+            Global = new GenericPluginGlobal(this, d =>
+                {
+                    if (!NewDataToWrite)
+                        d.DataId++;
+
+                    data[index] = d;
+
+                    NewDataToWrite = true;
+                }, () => data[index]);
+        }
+
+        public GenericPluginGlobal Global { get; private set; }
+        public bool NewDataToWrite { get; set; }
+        public int SameDataCount { get; set; }
+        public bool SameDataCountCanTriggerUpdate { get; set; }
+
+        public Action OnUpdate { get; set; }
+        public bool GlobalHasUpdateListener { get; set; }
+    }
+
     [Global(Name = "generic")]
-    public class GenericPluginGlobal : UpdateblePluginGlobal<GenericPlugin>
+    public class GenericPluginGlobal : UpdateblePluginGlobal<GenericPluginHolder>
     {
         private readonly Action<Generic6DOF> setter;
         private readonly Func<Generic6DOF> getter;
 
-        public GenericPluginGlobal(GenericPlugin plugin, Action<Generic6DOF> setter, Func<Generic6DOF> getter) : base(plugin)
+        public GenericPluginGlobal(GenericPluginHolder plugin, Action<Generic6DOF> setter, Func<Generic6DOF> getter) : base(plugin)
         {
             this.setter = setter;
             this.getter = getter;
