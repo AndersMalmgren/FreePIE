@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +17,7 @@ namespace FreePIE.Core.Plugins {
 
       Controller XBoxController = new Controller(0);
       Gamepad Controller;
+      bool connected = false;
       
       //-----------------------------------------------------------------------
       public XBox360Plugin() {
@@ -29,10 +30,7 @@ namespace FreePIE.Core.Plugins {
 
       //-----------------------------------------------------------------------
       public override Action Start() {
-         if (XBoxController.IsConnected)
-            return null;
-         else
-            throw new Exception("XBox360 Controller not connected");
+         return null;
       }
 
       //-----------------------------------------------------------------------
@@ -57,12 +55,16 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public override void DoBeforeNextExecute() {
          //This method will be executed each iteration of the script
-         Controller = XBoxController.GetState().Gamepad;
+          connected = XBoxController.IsConnected;
+          if (XBoxController.IsConnected == true)
+              Controller = XBoxController.GetState().Gamepad;
       }
 
       //-----------------------------------------------------------------------
       public bool A {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.A) != 0);
          }
       }
@@ -70,6 +72,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool B {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.B) != 0);
          }
       }
@@ -77,6 +81,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool X {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.X) != 0);
          }
       }
@@ -84,6 +90,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool Y {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.Y) != 0);
          }
       }
@@ -91,6 +99,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool LeftShoulder {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.LeftShoulder) != 0);
          }
       }
@@ -98,6 +108,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool RightShoulder {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.RightShoulder) != 0);
          }
       }
@@ -105,6 +117,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool StartBtn {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.Start) != 0);
          }
       }
@@ -112,6 +126,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool Back {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.Back) != 0);
          }
       }
@@ -119,6 +135,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool Up {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.DPadUp) != 0);
          }
       }
@@ -126,6 +144,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool Down {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.DPadDown) != 0);
          }
       }
@@ -133,6 +153,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool Left {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.DPadLeft) != 0);
          }
       }
@@ -140,6 +162,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool Right {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.DPadRight) != 0);
          }
       }
@@ -147,6 +171,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public double LeftTrigger {
          get {
+            if (connected == false)
+                return 0.0;
             return (Controller.LeftTrigger / 255.0);
          }
       }
@@ -154,6 +180,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public double RightTrigger {
          get {
+            if (connected == false)
+                return 0.0;
             return (Controller.RightTrigger / 255.0);
          }
       }
@@ -161,6 +189,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool LeftThumb {
          get {
+            if (connected == false)
+                return false;
             return ((Controller.Buttons & GamepadButtonFlags.LeftThumb) != 0);
          }
       }
@@ -169,6 +199,8 @@ namespace FreePIE.Core.Plugins {
       public double LeftStickX {
          // Return -1 to +1
          get {
+            if (connected == false)
+               return 0.0;
             if (Controller.LeftThumbX < 0)
                return Controller.LeftThumbX / 32768.0;
             else
@@ -180,6 +212,8 @@ namespace FreePIE.Core.Plugins {
       public double LeftStickY {
          // Return -1 to +1
          get {
+            if (connected == false)
+               return 0.0;
             if (Controller.LeftThumbY < 0)
                return Controller.LeftThumbY / 32768.0;
             else
@@ -190,6 +224,8 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public bool RightThumb {
          get {
+            if (connected == false)
+               return false;
             return ((Controller.Buttons & GamepadButtonFlags.RightThumb) != 0);
          }
       }
@@ -198,6 +234,8 @@ namespace FreePIE.Core.Plugins {
       public double RightStickX {
          // Return -1 to +1
          get {
+            if (connected == false)
+               return 0.0;
             if (Controller.RightThumbX < 0)
                return Controller.RightThumbX / 32768.0;
             else
@@ -209,6 +247,8 @@ namespace FreePIE.Core.Plugins {
       public double RightStickY {
          // Return -1 to +1
          get {
+            if (connected == false)
+               return 0.0;
             if (Controller.RightThumbY < 0)
                return Controller.RightThumbY / 32768.0;
             else
