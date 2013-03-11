@@ -74,6 +74,7 @@ namespace FreePIE.Core.Plugins
                 {
                     holder.SameDataCount = 0;
                     holder.SameDataCountCanTriggerUpdate = true;
+                    data[i] = remote;
                     holder.OnUpdate();
                 }
 
@@ -81,10 +82,9 @@ namespace FreePIE.Core.Plugins
                 {
                     holder.SameDataCountCanTriggerUpdate = false;
                     remote = new Generic6DOF {DataId = local.DataId};
+                    data[i] = remote;
                     holder.OnUpdate();
                 }
-
-                data[i] = remote;
             }
         }
 
