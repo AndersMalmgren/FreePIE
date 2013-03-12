@@ -166,156 +166,6 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof (KeyboardGlobal))]
     public class KeyboardPlugin : Plugin
     {
-        // Maps SlimDX key codes to virtual key codes
-        private int[] KeyCodeMap = {
-            0x30, // 0
-            0x31,
-            0x32,
-            0x33,
-            0x34,
-            0x35,
-            0x36,
-            0x37,
-            0x38,
-            0x39, // 9
-            0x41, // A
-            0x42,
-            0x43,
-            0x44,
-            0x45,
-            0x46,
-            0x47,
-            0x48,
-            0x49,
-            0x4A,
-            0x4B,
-            0x4C,
-            0x4D,
-            0x4E,
-            0x4F,
-            0x50,
-            0x51,
-            0x52,
-            0x53,
-            0x54,
-            0x55,
-            0x56,
-            0x57,
-            0x58,
-            0x59,
-            0x5A, // Z
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0x08, // Backspace
-            0xDC, // Backslash
-            0,
-            0x14,
-            0,
-            0xBC, // comma
-            0,
-            0x2E, // delete
-            0x2A, // down
-            0x23,
-            0,
-            0x1C, // Escape
-            0x70, // F1
-            0x71,
-            0x72,
-            0x73,
-            0x74,
-            0x75,
-            0x76,
-            0x77,
-            0x78,
-            0x79,
-            0x7A,
-            0x7B,
-            0x7C,
-            0x7D,
-            0x7E, // F15
-            0,
-            0x24, // Home
-            0x2D,
-            0,
-            0,
-            0xDB, // LeftBracket
-            0xA2,
-            0x26, // left array
-            0, // left alt
-            0xA1, // left shit
-            0x5B,
-            0,
-            0,
-            0,
-            0xBD, // minus
-            0,
-            0,
-            0,
-            0,
-            0x90, // num lock
-            0x60, // numpad 0
-            0x61,
-            0x62,
-            0x63,
-            0x64,
-            0x65,
-            0x66,
-            0x67,
-            0x68,
-            0x69, // numpad 9
-            0,
-            0, // numpad enter
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0xE2,
-            0x22, // page down
-            0x21, // page up
-            0,
-            0xBE, // period
-            0,
-            0,
-            0,
-            0, // right bracket
-            0xA4, // right ctrl
-            0x0D, // return
-            0x27, // right arrow
-            0,
-            0xA1, // right shift
-            0,
-            0x91, // scroll lock
-            0,
-            0,
-            0,
-            0x20, // space
-            0,
-            0,
-            0x09, // tab
-            0,
-            0,
-            0x26, // up
-            0,
-            0,
-            0,
-            0, // web back
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0, // web stop
-            0,
-            0
-        };
-
         // Maps SlimDX key codes to scan codes
         private int[] ScanCodeMap = {
             0x0B, //D0 = 0,
@@ -354,17 +204,17 @@ namespace FreePIE.Core.Plugins
             0x2D, //X = 33,
             0x15, //Y = 34,
             0x2C, //Z = 35,
-            0, //AbntC1 = 36,
-            0, //AbntC2 = 37,
+            0x73, //AbntC1 = 36,
+            0x7E, //AbntC2 = 37,
             0x28, //Apostrophe = 38,
-            0, //Applications = 39,
-            0, //AT = 40,
-            0, //AX = 41,
+            0xDD, //Applications = 39,
+            0x91, //AT = 40,
+            0x96, //AX = 41,
             0x0E, //Backspace = 42,
             0x2B, //Backslash = 43,
-            0, //Calculator = 44,
+            0xA1, //Calculator = 44,
             0x3A, //CapsLock = 45,
-            0, //Colon = 46,
+            0x92, //Colon = 46,
             0x33, //Comma = 47,
             0x79, //Convert = 48,
             0xD3, //Delete = 49,
@@ -387,7 +237,7 @@ namespace FreePIE.Core.Plugins
             0x64, //F13 = 66,
             0x65, //F14 = 67,
             0x66, //F15 = 68,
-            0, //Grave = 69,
+            0x29, //Grave = 69,
             0xC7, //Home = 70,
             0xD2, //Insert = 71,
             0x70, //Kana = 72,
@@ -398,13 +248,13 @@ namespace FreePIE.Core.Plugins
             0x38, //LeftAlt = 77,
             0x2A, //LeftShift = 78,
             0xDB, //LeftWindowsKey = 79,
-            0, //Mail = 80,
-            0, //MediaSelect = 81,
-            0, //MediaStop = 82,
+            0xEC, //Mail = 80,
+            0xED, //MediaSelect = 81,
+            0xA4, //MediaStop = 82,
             0x0C, //Minus = 83,
-            0, //Mute = 84,
-            0, //MyComputer = 85,
-            0, //NextTrack = 86,
+            0xA0, //Mute = 84,
+            0xEB, //MyComputer = 85,
+            0x99, //NextTrack = 86,
             0x7B, //NoConvert = 87,
             0x45, //NumberLock = 88,
             0x52, //NumberPad0 = 89,
@@ -425,14 +275,14 @@ namespace FreePIE.Core.Plugins
             0x4E, //NumberPadPlus = 104,
             0xB5, //NumberPadSlash = 105,
             0x37, //NumberPadStar = 106,
-            0, //Oem102 = 107,
+            0x56, //Oem102 = 107,
             0xD1, //PageDown = 108,
             0xC9, //PageUp = 109,
-            0, //Pause = 110,
+            0xC5, //Pause/break = 110,              DIK_PAUSE
             0x34, //Period = 111,
-            0, //PlayPause = 112,
-            0, //Power = 113,
-            0, //PreviousTrack = 114,
+            0xA2, //PlayPause = 112,
+            0xDE, //Power = 113,
+            0x90, //PreviousTrack = 114,
             0x1B, //RightBracket = 115,
             0x9D, //RightControl = 116,
             0x1C, //Return = 117,
@@ -440,29 +290,178 @@ namespace FreePIE.Core.Plugins
             0xB8, //RightAlt = 119,
             0x36, //RightShift = 120,
             0xDC, //RightWindowsKey = 121,
-            0, //ScrollLock = 122,
+            0x46, //ScrollLock = 122,
             0x27, //Semicolon = 123,
             0x35, //Slash = 124,
-            0, //Sleep = 125,
+            0xDF, //Sleep = 125,
             0x39, //Space = 126,
-            0x95, //Stop = 127,
-            0, //PrintScreen = 128,
+            0x95, //Stop = 127,                     DIK_STOP
+            0xB7, //PrintScreen = 128,              DIK_SYSRQ
             0x0F, //Tab = 129,
-            0, //Underline = 130,
-            0, //Unlabeled = 131,
+            0x93, //Underline = 130,
+            0x97, //Unlabeled = 131,
             0xC8, //UpArrow = 132,
-            0, //VolumeDown = 133,
-            0, //VolumeUp = 134,
-            0, //Wake = 135,
-            0, //WebBack = 136,
-            0, //WebFavorites = 137,
-            0, //WebForward = 138,
-            0, //WebHome = 139,
-            0, //WebRefresh = 140,
-            0, //WebSearch = 141,
-            0, //WebStop = 142,
+            0xAE, //VolumeDown = 133,
+            0xB0, //VolumeUp = 134,
+            0xE3, //Wake = 135,
+            0xEA, //WebBack = 136,
+            0xE6, //WebFavorites = 137,
+            0xE9, //WebForward = 138,
+            0xB2, //WebHome = 139,
+            0xE7, //WebRefresh = 140,
+            0xE5, //WebSearch = 141,
+            0xE8, //WebStop = 142,
             0x7D, //Yen = 143,
             0, //Unknown = 144,
+        };
+
+        // Maps SlimDX key codes to dwFlag ExtendedKeyMap
+        private bool[] ExtendedKeyMap = {
+            false, //D0 = 0,
+            false, //D1 = 1,
+            false, //D2 = 2,
+            false, //D3 = 3,
+            false, //D4 = 4,
+            false, //D5 = 5,
+            false, //D6 = 6,
+            false, //D7 = 7,
+            false, //D8 = 8,
+            false, //D9 = 9,
+            false, //A = 10,
+            false, //B = 11,
+            false, //C = 12,
+            false, //D = 13,
+            false, //E = 14,
+            false, //F = 15,
+            false, //G = 16,
+            false, //H = 17,
+            false, //I = 18,
+            false, //J = 19,
+            false, //K = 20,
+            false, //L = 21,
+            false, //M = 22,
+            false, //N = 23,
+            false, //O = 24,
+            false, //P = 25,
+            false, //Q = 26,
+            false, //R = 27,
+            false, //S = 28,
+            false, //T = 29,
+            false, //U = 30,
+            false, //V = 31,
+            false, //W = 32,
+            false, //X = 33,
+            false, //Y = 34,
+            false, //Z = 35,
+            false, //AbntC1 = 36,        not tested
+            false, //AbntC2 = 37,        not tested
+            false, //Apostrophe = 38,
+            true, //Applications = 39,
+            false, //AT = 40,
+            false, //AX = 41,
+            false, //Backspace = 42,
+            false, //Backslash = 43,
+            true, //Calculator = 44,
+            false, //CapsLock = 45,
+            true, //Colon = 46,          not tested
+            false, //Comma = 47,
+            true, //Convert = 48,        not tested
+            true, //Delete = 49,
+            true, //DownArrow = 50,
+            true, //End = 51,
+            false, //Equals = 52,
+            false, //Escape = 53,
+            false, //F1 = 54,
+            false, //F2 = 55,
+            false, //F3 = 56,
+            false, //F4 = 57,
+            false, //F5 = 58,
+            false, //F6 = 59,
+            false, //F7 = 60,
+            false, //F8 = 61,
+            false, //F9 = 62,
+            false, //F10 = 63,
+            false, //F11 = 64,
+            false, //F12 = 65,
+            false, //F13 = 66,
+            false, //F14 = 67,
+            false, //F15 = 68,
+            false, //Grave = 69,
+            true, //Home = 70,
+            true, //Insert = 71,
+            false, //Kana = 72,
+            false, //Kanji = 73,
+            false, //LeftBracket = 74,
+            false, //LeftControl = 75,
+            true, //LeftArrow = 76,
+            false, //LeftAlt = 77,
+            false, //LeftShift = 78,
+            true, //LeftWindowsKey = 79,
+            true, //Mail = 80,
+            true, //MediaSelect = 81,
+            true, //MediaStop = 82,
+            false, //Minus = 83,
+            true, //Mute = 84,
+            true, //MyComputer = 85,
+            true, //NextTrack = 86,
+            false, //NoConvert = 87,     not tested
+            false, //NumberLock = 88,
+            false, //NumberPad0 = 89,
+            false, //NumberPad1 = 90,
+            false, //NumberPad2 = 91,
+            false, //NumberPad3 = 92,
+            false, //NumberPad4 = 93,
+            false, //NumberPad5 = 94,
+            false, //NumberPad6 = 95,
+            false, //NumberPad7 = 96,
+            false, //NumberPad8 = 97,
+            false, //NumberPad9 = 98,
+            false, //NumberPadComma = 99,
+            true, //NumberPadEnter = 100,
+            false, //NumberPadEquals = 101,
+            false, //NumberPadMinus = 102,
+            false, //NumberPadPeriod = 103,
+            false, //NumberPadPlus = 104,
+            true, //NumberPadSlash = 105,
+            false, //NumberPadStar = 106,
+            false, //Oem102 = 107,
+            true, //PageDown = 108,
+            true, //PageUp = 109,
+            true, //Pause = 110,        buggy
+            false, //Period = 111,
+            true, //PlayPause = 112,
+            true, //Power = 113,         not tested
+            true, //PreviousTrack = 114,
+            false, //RightBracket = 115,
+            true, //RightControl = 116,
+            false, //Return = 117,
+            true, //RightArrow = 118,
+            true, //RightAlt = 119,
+            false, //RightShift = 120,
+            true, //RightWindowsKey = 121,
+            false, //ScrollLock = 122,
+            false, //Semicolon = 123,
+            false, //Slash = 124,
+            true, //Sleep = 125,         not tested
+            false, //Space = 126,
+            true, //Stop = 127,          not tested
+            true, //PrintScreen = 128,
+            false, //Tab = 129,
+            false, //Underline = 130,    not tested
+            false, //Unlabeled = 131,    not tested
+            true, //UpArrow = 132,
+            true, //VolumeDown = 133,
+            true, //VolumeUp = 134,
+            true, //Wake = 135,          not tested
+            true, //WebBack = 136,
+            true, //WebFavorites = 137,
+            true, //WebForward = 138,
+            true, //WebHome = 139,
+            true, //WebRefresh = 140,
+            true, //WebSearch = 141,
+            true, //WebStop = 142,
+            true, //Yen = 143,           not tested
+            false, //Unknown = 144,      not tested
         };
 
         private DirectInput DirectInputInstance = new DirectInput();
@@ -598,11 +597,14 @@ namespace FreePIE.Core.Plugins
             {
                 //System.Console.Out.WriteLine("keydown");
                 MyKeyDown[code] = true;
-                code = ScanCodeMap[code]; // convert the keycode for SendInput
+                int scancode = ScanCodeMap[code]; // convert the keycode for SendInput
 
                 MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
                 input[0].type = MouseKeyIO.INPUT_KEYBOARD;
-                input[0].ki = KeyInput((ushort) code, 0);
+                if (ExtendedKeyMap[code])
+                    input[0].ki = KeyInput((ushort)scancode, MouseKeyIO.KEYEVENTF_EXTENDEDKEY);
+                else
+                    input[0].ki = KeyInput((ushort)scancode, 0);
 
                 MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
 
@@ -618,11 +620,14 @@ namespace FreePIE.Core.Plugins
                 //System.Console.Out.WriteLine("keyup");
                 MyKeyDown[code] = false;
 
-                code = ScanCodeMap[code]; // convert the keycode for SendInput
+                int scancode = ScanCodeMap[code]; // convert the keycode for SendInput
 
                 MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
                 input[0].type = MouseKeyIO.INPUT_KEYBOARD;
-                input[0].ki = KeyInput((ushort) code, MouseKeyIO.KEYEVENTF_KEYUP);
+                if (ExtendedKeyMap[code])
+                    input[0].ki = KeyInput((ushort)scancode, MouseKeyIO.KEYEVENTF_EXTENDEDKEY | MouseKeyIO.KEYEVENTF_KEYUP);
+                else
+                    input[0].ki = KeyInput((ushort)scancode, MouseKeyIO.KEYEVENTF_KEYUP);
 
                 MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
 
