@@ -30,7 +30,7 @@ namespace FreePIE.Core.Model
 
         private static List<Point> CalculateDefault(double y)
         {
-            int pointCount = 6;
+            const int pointCount = 6;
             var points = new List<Point>();
 
             var step = y / (pointCount - 1);

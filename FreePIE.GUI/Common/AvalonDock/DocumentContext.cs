@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AvalonDock;
+﻿using AvalonDock;
 using AvalonDock.Layout;
 using Caliburn.Micro;
 

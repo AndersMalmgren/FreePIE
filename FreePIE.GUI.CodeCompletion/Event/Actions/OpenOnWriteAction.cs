@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Input;
-using FreePIE.GUI.CodeCompletion.Event.Events;
 
 namespace FreePIE.GUI.CodeCompletion.Event.Actions
 {

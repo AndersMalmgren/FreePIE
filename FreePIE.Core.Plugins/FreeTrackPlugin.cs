@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using FreePIE.Core.Contracts;
 using Microsoft.Win32;
 
@@ -111,7 +108,7 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        private int sameDataCount = 0;
+        private int sameDataCount;
         public void Read()
         {
             FreeTrackData local;
@@ -126,8 +123,7 @@ namespace FreePIE.Core.Plugins
 
             if (sameDataCount > 20)
             {
-                local = new FreeTrackData();
-                local.DataID = Data.DataID;
+                local = new FreeTrackData {DataID = Data.DataID};
                 OnUpdate();
             }
             

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
@@ -557,7 +555,7 @@ namespace FreePIE.Core.Plugins
         public bool IsKeyDown(int keycode)
         {
             // Returns true if the key is currently being pressed
-            SlimDX.DirectInput.Key key = (SlimDX.DirectInput.Key) keycode;
+            var key = (SlimDX.DirectInput.Key) keycode;
             bool down = KeyState.IsPressed(key) || MyKeyDown[keycode];
             return down;
         }
@@ -566,7 +564,7 @@ namespace FreePIE.Core.Plugins
         public bool IsKeyUp(int keycode)
         {
             // Returns true if the key is currently being pressed
-            SlimDX.DirectInput.Key key = (SlimDX.DirectInput.Key) keycode;
+            var key = (SlimDX.DirectInput.Key) keycode;
             bool up = KeyState.IsReleased(key) && !MyKeyDown[keycode];
             return up;
         }
@@ -580,7 +578,7 @@ namespace FreePIE.Core.Plugins
         //--------------------------------------------------------------------------
         private MouseKeyIO.KEYBDINPUT KeyInput(ushort code, uint flag)
         {
-            MouseKeyIO.KEYBDINPUT i = new MouseKeyIO.KEYBDINPUT();
+            var i = new MouseKeyIO.KEYBDINPUT();
             i.wVk = 0;
             i.wScan = code;
             i.time = 0;
@@ -599,7 +597,7 @@ namespace FreePIE.Core.Plugins
                 MyKeyDown[code] = true;
                 int scancode = ScanCodeMap[code]; // convert the keycode for SendInput
 
-                MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
+                var input = new MouseKeyIO.INPUT[1];
                 input[0].type = MouseKeyIO.INPUT_KEYBOARD;
                 if (ExtendedKeyMap[code])
                     input[0].ki = KeyInput((ushort)scancode, MouseKeyIO.KEYEVENTF_EXTENDEDKEY);
@@ -622,7 +620,7 @@ namespace FreePIE.Core.Plugins
 
                 int scancode = ScanCodeMap[code]; // convert the keycode for SendInput
 
-                MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
+                var input = new MouseKeyIO.INPUT[1];
                 input[0].type = MouseKeyIO.INPUT_KEYBOARD;
                 if (ExtendedKeyMap[code])
                     input[0].ki = KeyInput((ushort)scancode, MouseKeyIO.KEYEVENTF_EXTENDEDKEY | MouseKeyIO.KEYEVENTF_KEYUP);

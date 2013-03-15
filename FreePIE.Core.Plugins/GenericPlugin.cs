@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins

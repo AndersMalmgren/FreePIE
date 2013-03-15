@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model;
 using FreePIE.Core.Plugins;
@@ -139,8 +138,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static TokenInfo MapMethod(MethodInfo mi)
         {
-            var expInfo = new ExpressionInfo();
-            expInfo.Name = mi.Name;
+            var expInfo = new ExpressionInfo {Name = mi.Name};
 
             var parameters = string.Join(",", GetParametersWithoutIndexer(mi).Select(pi => string.Format("{0} {1}", pi.ParameterType.Name, pi.Name)));
             expInfo.Description = string.Format("{0} {1} ({2})", mi.ReturnType.Name == "Void" ? "void" : mi.ReturnType.Name, mi.Name, parameters);

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Events;
@@ -17,7 +14,6 @@ namespace FreePIE.Console
         private readonly IScriptEngine scriptEngine;
         private readonly IPersistanceManager persistanceManager;
         private readonly IFileSystem fileSystem;
-        private readonly IEventAggregator eventAggregator;
         private readonly AutoResetEvent waitUntilStopped;
 
         public ConsoleHost(IScriptEngine scriptEngine, IPersistanceManager persistanceManager, IFileSystem fileSystem, IEventAggregator eventAggregator)
@@ -25,7 +21,6 @@ namespace FreePIE.Console
             this.scriptEngine = scriptEngine;
             this.persistanceManager = persistanceManager;
             this.fileSystem = fileSystem;
-            this.eventAggregator = eventAggregator;
             waitUntilStopped = new AutoResetEvent(false);
 
             eventAggregator.Subscribe(this);
@@ -48,7 +43,7 @@ namespace FreePIE.Console
                 {
                     script = fileSystem.ReadAllText(args[0]);
                 }
-                catch (IOException e)
+                catch (IOException)
                 {
                     System.Console.WriteLine("Can't open script file");
                     throw;

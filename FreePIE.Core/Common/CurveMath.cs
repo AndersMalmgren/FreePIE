@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FreePIE.Core.Model;
 
 namespace FreePIE.Core.Common
@@ -13,14 +11,12 @@ namespace FreePIE.Core.Common
 
         public static List<Point> GetInterpolatedCubicSplinedCurve(IList<Point> points)
         {
-            List<Point> output = new List<Point>();
+            var output = new List<Point>();
             int np = points.Count; // number of points
             double[] yCoords = new double[np]; // Newton form coefficients
             double[] xCoords = new double[np]; // x-coordinates of nodes
             double y;
             double x;
-
-            int npp = np*precision; // number of points used for curve
 
             if (np > 0)
             {

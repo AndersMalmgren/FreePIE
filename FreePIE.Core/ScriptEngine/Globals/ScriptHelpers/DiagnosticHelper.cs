@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using FreePIE.Core.Common.Events;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model.Events;

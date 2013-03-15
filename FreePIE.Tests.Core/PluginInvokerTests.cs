@@ -1,7 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using FreePIE.Core.Common;
 using FreePIE.Core.Contracts;

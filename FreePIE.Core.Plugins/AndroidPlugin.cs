@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using AHRS;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.SensorFusion;

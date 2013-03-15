@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.ScriptEngine.Globals
@@ -49,13 +48,9 @@ namespace FreePIE.Core.ScriptEngine.Globals
         public static IEnumerable<string> GetGlobalMehods(Type pluginType)
         {
             var globalType = GetAttribute<GlobalType>(pluginType).Type;
-            var methods = new List<string>();
-            foreach(var methodInfo in globalType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
-            {
-                methods.Add(methodInfo.Name);
-            }
 
-            return methods;
+            return globalType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+                .Select(methodInfo => methodInfo.Name).ToList();
         }
 
         private static T GetAttribute<T>(Type type) where T : Attribute

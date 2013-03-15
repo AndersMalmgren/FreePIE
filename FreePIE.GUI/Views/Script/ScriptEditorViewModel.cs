@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using FreePIE.Core.Common;
+using FreePIE.Core.Common.Events;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.CodeCompletion;
 using FreePIE.GUI.CodeCompletion.Event.Actions;
 using FreePIE.GUI.Common.AvalonEdit;
 using FreePIE.GUI.Common.CodeCompletion;
 using FreePIE.GUI.Events;
-using FreePIE.Core.Common.Events;
 using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script
@@ -32,7 +32,7 @@ namespace FreePIE.GUI.Views.Script
             completionModel.Observers.Add(new CloseOnWritingEndOfExpression(IsEndOfExpression));
         }
         
-        private static int untitledIndex = 0;
+        private static int untitledIndex;
         private int untitledId;
 
         public ScriptEditorViewModel Configure(string filePath)

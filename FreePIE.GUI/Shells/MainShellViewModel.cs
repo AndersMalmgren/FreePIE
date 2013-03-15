@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using AvalonDock;
 using AvalonDock.Layout.Serialization;
-//using Caliburn.Micro;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
@@ -19,6 +17,7 @@ using FreePIE.GUI.Views.Script.Output;
 using Action = System.Action;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 using MessageBoxResult = System.Windows.MessageBoxResult;
+//using Caliburn.Micro;
 
 namespace FreePIE.GUI.Shells
 {
@@ -53,11 +52,7 @@ namespace FreePIE.GUI.Shells
             this.paths = paths;
 
             Scripts = new BindableCollection<ScriptEditorViewModel>();
-            Tools = new BindableCollection<PanelViewModel>();
-
-            Tools.Add(consoleViewModel);
-            Tools.Add(errorViewModel);
-            Tools.Add(watchesViewModel);
+            Tools = new BindableCollection<PanelViewModel> {consoleViewModel, errorViewModel, watchesViewModel};
 
             Menu = mainMenuViewModel;
             Menu.Plugins =

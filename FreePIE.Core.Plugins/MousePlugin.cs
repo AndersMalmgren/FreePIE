@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
@@ -15,15 +13,15 @@ namespace FreePIE.Core.Plugins
     public class MousePlugin : Plugin
     {
         // Mouse position state variables
-        int DeltaXOut = 0;
-        int DeltaYOut = 0;
+        int DeltaXOut;
+        int DeltaYOut;
 
         DirectInput DirectInputInstance = new DirectInput();
         Mouse MouseDevice;
         MouseState CurrentMouseState;
-        bool LeftPressed = false;
-        bool RightPressed = false;
-        bool MiddlePressed = false;
+        bool LeftPressed;
+        bool RightPressed;
+        bool MiddlePressed;
         private GetPressedStrategy getButtonPressedStrategy;
         private SetPressedStrategy setButtonPressedStrategy;
 
@@ -91,13 +89,8 @@ namespace FreePIE.Core.Plugins
         //--------------------------------------------------------------------------
         static private MouseKeyIO.MOUSEINPUT MouseInput(int x, int y, uint data, uint t, uint flag)
         {
-           MouseKeyIO.MOUSEINPUT mi = new MouseKeyIO.MOUSEINPUT();
-           mi.dx = x;
-           mi.dy = y;
-           mi.mouseData = data;
-           mi.time = t;
-           mi.dwFlags = flag;
-           return mi;
+           var mi = new MouseKeyIO.MOUSEINPUT {dx = x, dy = y, mouseData = data, time = t, dwFlags = flag};
+            return mi;
         }
 
         //---------------------------------------------------------------------
@@ -107,7 +100,7 @@ namespace FreePIE.Core.Plugins
             if ((DeltaXOut != 0) || (DeltaYOut != 0))
             {
 
-                MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
+                var input = new MouseKeyIO.INPUT[1];
                 input[0].type = MouseKeyIO.INPUT_MOUSE;
                 input[0].mi = MouseInput(DeltaXOut, DeltaYOut, 0, 0, MouseKeyIO.MOUSEEVENTF_MOVE);
 
@@ -236,7 +229,7 @@ namespace FreePIE.Core.Plugins
             }
            
             if (btn_flag != 0) {
-               MouseKeyIO.INPUT[] input = new MouseKeyIO.INPUT[1];
+               var input = new MouseKeyIO.INPUT[1];
                input[0].type = MouseKeyIO.INPUT_MOUSE;
                input[0].mi = MouseInput(0, 0, 0, 0, btn_flag);
             

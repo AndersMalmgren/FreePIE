@@ -30,17 +30,17 @@ namespace FreePIE.Tests.Core.Plugins
 
                         while (run)
                         {
-                            FreeTrackData model = new FreeTrackData();
-
-                           
                             count++;
-                            model.DataID = count;
-                            model.Yaw = rand.Next(0, 5);
-                            model.Pitch = rand.Next(5, 10);
-                            model.Roll = rand.Next(10, 15);
-                            model.X = rand.Next(15, 20);
-                            model.Y = rand.Next(20, 25);
-                            model.Z = rand.Next(25, 30);
+                            var model = new FreeTrackData
+                                {
+                                    DataID = count,
+                                    Yaw = rand.Next(0, 5),
+                                    Pitch = rand.Next(5, 10),
+                                    Roll = rand.Next(10, 15),
+                                    X = rand.Next(15, 20),
+                                    Y = rand.Next(20, 25),
+                                    Z = rand.Next(25, 30)
+                                };
 
                             accessor.Write(0, ref model);
                      

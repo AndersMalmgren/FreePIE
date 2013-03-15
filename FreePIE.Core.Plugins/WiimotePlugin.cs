@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FreePIE.Core.Contracts;
 using WiimoteLib;
 
@@ -17,17 +16,14 @@ namespace FreePIE.Core.Plugins {
 
       const int MAX_WIIMOTES = 4;
 
-      WiimoteCollection Motes = null;
-      WiimoteLib.ButtonState[] Buttons = null;
+      WiimoteCollection Motes;
+      ButtonState[] Buttons;
+       
 
-      //-----------------------------------------------------------------------
-      public WiimotePlugin() {
-      }
-
-      //----------------------------------------------------------------------- 
+       //----------------------------------------------------------------------- 
       public override object CreateGlobal() {
 
-         WiimotePluginGlobal[] plugins = new WiimotePluginGlobal[MAX_WIIMOTES];
+         var plugins = new WiimotePluginGlobal[MAX_WIIMOTES];
          for (int i=0; i<MAX_WIIMOTES; i++) {
             plugins[i] = new WiimotePluginGlobal(this, i);
          }
@@ -41,7 +37,7 @@ namespace FreePIE.Core.Plugins {
 
          // Find and connect to all Wiimotes.  Wiimotes must have been 
          // previously attached via a bluetooth manager
-         WiimoteCollection motes = new WiimoteCollection();
+         var motes = new WiimoteCollection();
 			motes.FindAllWiimotes();
 
          if (motes.Count > 0) {
@@ -107,7 +103,7 @@ namespace FreePIE.Core.Plugins {
          if (Motes == null)
             return;
 
-         Wiimote wii = (Wiimote)sender;
+         var wii = (Wiimote)sender;
          for (int i=0; i<Motes.Count; i++) {
             // Find which Wiimote the data originated from and update the button state
             if (wii == Motes.ElementAt(i)) {

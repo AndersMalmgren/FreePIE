@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using FreePIE.Core.Plugins;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

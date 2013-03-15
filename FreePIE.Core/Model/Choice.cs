@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FreePIE.Core.Contracts;
+﻿using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Model
 {

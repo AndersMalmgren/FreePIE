@@ -1,4 +1,3 @@
-using System;
 using FreePIE.GUI.CodeCompletion.Event;
 
 namespace FreePIE.GUI.CodeCompletion

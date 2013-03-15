@@ -1,11 +1,9 @@
-﻿using System.Windows.Controls;
-
-namespace FreePIE.GUI.Views.Script
+﻿namespace FreePIE.GUI.Views.Script
 {
     /// <summary>
     /// Interaction logic for ScriptEditorView.xaml
     /// </summary>
-    public partial class ScriptEditorView : UserControl
+    public partial class ScriptEditorView
     {
         public ScriptEditorView()
         {

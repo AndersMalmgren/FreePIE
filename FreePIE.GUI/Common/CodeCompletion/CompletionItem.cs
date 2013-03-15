@@ -1,6 +1,5 @@
 using System;
 using FreePIE.Core.Common;
-using FreePIE.Core.ScriptEngine;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.GUI.CodeCompletion;
 

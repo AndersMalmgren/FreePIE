@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 
 namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
@@ -12,8 +9,8 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         public ExpressionInfo()
         {
-            this.Name = string.Empty;
-            this.Description = string.Empty;
+            Name = string.Empty;
+            Description = string.Empty;
         }
 
         public override string ToString()
@@ -23,7 +20,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         public virtual string GetFormattedDescription()
         {
-            StringBuilder b = new StringBuilder(Name.Length + Description.Length + 5);
+            var b = new StringBuilder(Name.Length + Description.Length + 5);
 
             b.AppendLine(Name);
             b.AppendLine();

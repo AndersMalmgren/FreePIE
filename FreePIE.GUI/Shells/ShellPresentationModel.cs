@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Caliburn.Micro;
 using FreePIE.GUI.Result;
-using Action = System.Action;
 
 namespace FreePIE.GUI.Shells
 {

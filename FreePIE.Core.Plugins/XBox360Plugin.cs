@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using FreePIE.Core.Contracts;
-using System.Runtime.InteropServices;
-using SlimDX;
 using SlimDX.XInput;
 
 namespace FreePIE.Core.Plugins {
@@ -17,13 +13,9 @@ namespace FreePIE.Core.Plugins {
 
       Controller XBoxController = new Controller(0);
       Gamepad Controller;
-      bool connected = false;
+      bool connected;
       
-      //-----------------------------------------------------------------------
-      public XBox360Plugin() {
-      }
-
-      //----------------------------------------------------------------------- 
+       //----------------------------------------------------------------------- 
       public override object CreateGlobal() {
          return new XBox360PluginGlobal(this);
       }
