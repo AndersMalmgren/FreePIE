@@ -39,7 +39,7 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
 
             lastSamples[indexer] = x;
 
-            return lastSample - x;
+            return x - lastSample;
         }
     }
 }
