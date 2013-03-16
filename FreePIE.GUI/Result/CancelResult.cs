@@ -7,12 +7,12 @@ namespace FreePIE.GUI.Result
     {
         private readonly Action cancelCallback;
 
-        public CancelResult(System.Action cancelCallback)
+        public CancelResult(Action cancelCallback)
         {
             this.cancelCallback = cancelCallback;
         }
 
-        public override void Execute(Caliburn.Micro.ActionExecutionContext context)
+        public override void Execute(ActionExecutionContext context)
         {
             if (cancelCallback != null)
                 cancelCallback();

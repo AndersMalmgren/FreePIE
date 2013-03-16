@@ -19,21 +19,6 @@ namespace FreePIE.GUI.Shells
             Coroutine.BeginExecute(CanClose().GetEnumerator(), null, (s, e) => callback(!e.WasCancelled));
         }
 
-        //public override void CanClose(Action<bool> callback)
-        //{
-        //    var cancel = false;
-        //    var cancelCallback = new Action(() => cancel = true);
-
-        //    EventHandler<ResultCompletionEventArgs> completed = (s, e) =>
-        //    {
-        //        if (!cancel)
-        //            base.CanClose(callback);
-        //    };
-
-        //    var results = CanClose(cancelCallback);
-        //    Coroutine.BeginExecute(results.GetEnumerator(), null, completed);
-        //}
-
         protected virtual IEnumerable<IResult> CanClose()
         {
             yield break;

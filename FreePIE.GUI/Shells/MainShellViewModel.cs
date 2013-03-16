@@ -144,7 +144,6 @@ namespace FreePIE.GUI.Shells
         public BindableCollection<ScriptEditorViewModel> Scripts { get; set; }
         public BindableCollection<PanelViewModel> Tools { get; set; }
 
-        public ScriptEditorViewModel ScriptEditor { get; set; }
         public MainMenuViewModel Menu { get; set; }
 
         protected override IEnumerable<IResult> CanClose()

@@ -26,7 +26,7 @@ namespace FreePIE.GUI.Views.Main
             get { return false; }
         }
 
-        public virtual string Filename { get; private set; }
+        public virtual string Filename { get { return null; } }
         public virtual string FilePath { get; set; }
         public virtual string FileContent { get; set; }
         
@@ -34,7 +34,7 @@ namespace FreePIE.GUI.Views.Main
         {
             get 
             { 
-                return this.GetType().ToString(); 
+                return GetType().ToString(); 
             }
         }
 

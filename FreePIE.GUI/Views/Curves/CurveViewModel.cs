@@ -18,7 +18,7 @@ namespace FreePIE.GUI.Views.Curves
         private readonly IEventAggregator eventAggregator;
         private readonly IResultFactory resultFactory;
         public Curve Curve { get; private set; }
-        public int? selectedPointIndex;
+        private int? selectedPointIndex;
 
         public CurveViewModel(IEventAggregator eventAggregator, IResultFactory resultFactory)
         {
@@ -203,9 +203,7 @@ namespace FreePIE.GUI.Views.Curves
 
         private IEnumerable<Point> CalculateNewPoints()
         {
-            var points = CurveMath.GetInterpolatedCubicSplinedCurve(Curve.Points);
-
-            return points;
+            return CurveMath.GetInterpolatedCubicSplinedCurve(Curve.Points);
         }
 
         private IEnumerable<Point> points;
