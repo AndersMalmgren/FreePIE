@@ -108,7 +108,6 @@
     <Compile Include="Events\DeleteCurveEvent.cs" />
     <Compile Include="Events\ScriptDocumentAddedEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
-    <Compile Include="Events\ScriptErrorEvent.cs" />
     <Compile Include="Events\ScriptEvent.cs" />
     <Compile Include="Events\ScriptStateChangedEvent.cs" />
     <Compile Include="Events\ScriptUpdatedEvent.cs" />

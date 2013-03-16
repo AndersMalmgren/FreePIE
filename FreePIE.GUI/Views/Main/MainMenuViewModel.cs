@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
+using FreePIE.Core.Model.Events;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
@@ -16,7 +17,8 @@ namespace FreePIE.GUI.Views.Main
     public class MainMenuViewModel : PropertyChangedBase, 
         Core.Common.Events.IHandle<ScriptUpdatedEvent>, 
         Core.Common.Events.IHandle<ExitingEvent>, 
-        Core.Common.Events.IHandle<ActiveScriptDocumentChangedEvent>
+        Core.Common.Events.IHandle<ActiveScriptDocumentChangedEvent>,
+        Core.Common.Events.IHandle<ScriptErrorEvent>
     {
         private readonly IResultFactory resultFactory;
         private readonly IEventAggregator eventAggregator;
@@ -130,8 +132,6 @@ namespace FreePIE.GUI.Views.Main
             scriptRunning = true;
 
             currentScriptEngine = scriptEngineFactory();
-            currentScriptEngine.Error += ScriptEngineError;
-            CanStopScript = scriptRunning;
             currentScriptEngine.Start(activeDocument.FileContent);
 
             PublishScriptStateChange();
@@ -140,10 +140,7 @@ namespace FreePIE.GUI.Views.Main
         public void StopScript()
         {
             scriptRunning = false;
-
-            CanStopScript = scriptRunning;
             currentScriptEngine.Stop();
-
             PublishScriptStateChange();
         }
 
@@ -155,24 +152,13 @@ namespace FreePIE.GUI.Views.Main
         private void PublishScriptStateChange()
         {
             NotifyOfPropertyChange(() => CanRunScript);
+            NotifyOfPropertyChange(() => CanStopScript);
             eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning));
         }
 
-        private void ScriptEngineError(object sender, ScriptErrorEventArgs e)
-        {
-            StopScript();
-            eventAggregator.Publish(new ScriptErrorEvent(e.Exception, e.LineNumber));
-        }
-
-        private bool canStopScript;
         public bool CanStopScript
         {
-            get { return canStopScript; }
-            set
-            { 
-                canStopScript = value; 
-                NotifyOfPropertyChange(() => CanStopScript);
-            }
+            get { return scriptRunning; }
         }
 
         public bool CanRunScript
@@ -194,6 +180,12 @@ namespace FreePIE.GUI.Views.Main
         public void Handle(ActiveScriptDocumentChangedEvent message)
         {
             ActiveDocument = message.Document;
+        }
+
+        public void Handle(ScriptErrorEvent message)
+        {
+            scriptRunning = false;
+            PublishScriptStateChange();
         }
 
         public IEnumerable<IResult> Close()

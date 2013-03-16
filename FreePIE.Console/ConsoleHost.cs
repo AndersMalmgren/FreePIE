@@ -9,7 +9,7 @@ using FreePIE.Core.ScriptEngine;
 
 namespace FreePIE.Console
 {
-    public class ConsoleHost : IHandle<WatchEvent>
+    public class ConsoleHost : IHandle<WatchEvent>, IHandle<ScriptErrorEvent>
     {
         private readonly IScriptEngine scriptEngine;
         private readonly IPersistanceManager persistanceManager;
@@ -54,7 +54,6 @@ namespace FreePIE.Console
 
                 persistanceManager.Load();
 
-                scriptEngine.Error += ScriptEngineError;
                 System.Console.WriteLine("Starting script parser");
                 scriptEngine.Start(script);
                 waitUntilStopped.WaitOne();
@@ -74,21 +73,20 @@ namespace FreePIE.Console
             waitUntilStopped.Set();
         }
 
-        private void ScriptEngineError(object sender, ScriptErrorEventArgs e)
-        {
-            System.Console.WriteLine(e.Exception);
-            Stop();
-        }
-
         public void Handle(WatchEvent message)
         {
             System.Console.WriteLine("{0}: {1}", message.Name, message.Value);
+        }
+
+        public void Handle(ScriptErrorEvent message)
+        {
+            System.Console.WriteLine(message.Exception);
+            Stop();
         }
 
         private void PrintHelp()
         {
             System.Console.WriteLine("FreePIE.Console.exe <script_file>");
         }
-
     }
 }

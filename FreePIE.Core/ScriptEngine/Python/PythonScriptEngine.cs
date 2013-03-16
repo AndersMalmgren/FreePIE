@@ -7,8 +7,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using FreePIE.Core.Common;
+using FreePIE.Core.Common.Events;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Model.Events;
 using FreePIE.Core.ScriptEngine.Globals;
 using IronPython;
 using IronPython.Compiler;
@@ -62,6 +64,7 @@ namespace FreePIE.Core.ScriptEngine.Python
     {
         private readonly IScriptParser parser;
         private readonly IEnumerable<IGlobalProvider> globalProviders;
+        private readonly IEventAggregator eventAggregator;
         private static Microsoft.Scripting.Hosting.ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
         private InterlockableBool stopRequested;
@@ -85,10 +88,11 @@ namespace FreePIE.Core.ScriptEngine.Python
             throw new InvalidOperationException("Do not use this method - it is only to force local copy.");
         }
 
-        public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders)
+        public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders, IEventAggregator eventAggregator)
         {
             this.parser = parser;
             this.globalProviders = globalProviders;
+            this.eventAggregator = eventAggregator;
         }
 
         public void Start(string script)
@@ -207,16 +211,20 @@ namespace FreePIE.Core.ScriptEngine.Python
                 .Select(s => (int?)s.GetFileLineNumber())
                 .FirstOrDefault();
 
-            ThreadPool.QueueUserWorkItem(obj => OnError(this, new ScriptErrorEventArgs(e, lineNumber)));
+            ThreadPool.QueueUserWorkItem(obj =>
+                {
+                    try
+                    {
+                        Stop();
+                    }
+                    finally
+                    {
+                        eventAggregator.Publish(new ScriptErrorEvent(e, lineNumber));
+                    }
+                });
         }
 
-        private void OnError(object sender, ScriptErrorEventArgs e)
-        {
-            if (Error != null)
-                Error(sender, e);
-        }
-
-        ScriptScope CreateScope(IDictionary<string, object> globals)
+        private ScriptScope CreateScope(IDictionary<string, object> globals)
         {
             globals.Add("starting", true);
             globals.Add("stopping", false);
@@ -271,8 +279,5 @@ namespace FreePIE.Core.ScriptEngine.Python
             usedPlugins.ForEach(p => StopPlugin(p, pluginStopped));
             pluginStopped.Wait();
         }
-
-        public event EventHandler<ScriptErrorEventArgs> Error;
-        
     }
 }

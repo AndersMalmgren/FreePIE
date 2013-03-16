@@ -6,18 +6,5 @@ namespace FreePIE.Core.ScriptEngine
     {
         void Start(string script);
         void Stop();
-        event EventHandler<ScriptErrorEventArgs> Error;
-    }
-
-    public class ScriptErrorEventArgs : EventArgs
-    {
-        public Exception Exception { get; set; }
-        public int? LineNumber { get; set; }
-
-        public ScriptErrorEventArgs(Exception e, int? lineNumber)
-        {
-            Exception = e;
-            LineNumber = lineNumber;
-        }
     }
 }

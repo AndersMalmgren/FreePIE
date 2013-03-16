@@ -1,11 +1,11 @@
 ﻿using System;
 using FreePIE.Core.Common.Events;
-using FreePIE.GUI.Events;
+using FreePIE.Core.Model.Events;
 using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script.Output
 {
-    public class ErrorViewModel : PanelViewModel, Core.Common.Events.IHandle<ScriptErrorEvent>
+    public class ErrorViewModel : PanelViewModel, IHandle<ScriptErrorEvent>
     {
         public ErrorViewModel(IEventAggregator eventAggregator)
         {
