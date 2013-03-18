@@ -42,7 +42,7 @@
                   Name="Uninstall $(var.ProductName)"
                   Target="[SystemFolder]msiexec.exe"
                   Arguments="/x [ProductCode]"
-                  Description="Uninstalls [ProductName]" />
+                  Description="Uninstalls $(var.ProductName)" />
         <RemoveFolder Id="INSTALLFOLDER" On="uninstall"/>
         <RemoveFolder Id="RemoveAppData" Directory="MyAppFolder" On="uninstall" />
         <RegistryValue Root="HKCU" Key="Software\$(var.ProductName)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
