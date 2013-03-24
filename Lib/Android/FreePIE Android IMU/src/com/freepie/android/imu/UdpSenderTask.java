@@ -150,6 +150,7 @@ public class UdpSenderTask implements SensorEventListener, LocationListener {
             SensorManager.getRotationMatrixFromVector(rotationMatrix , rotationVector);
             SensorManager.getOrientation(rotationMatrix, rotationVector);
             imu = rotationVector;
+            rotationVector = null;
        }
 	    	    
 	    if(debug && acc != null && gyr != null && mag != null)
