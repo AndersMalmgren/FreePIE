@@ -29,6 +29,11 @@ namespace FreePIE.Core.Plugins
             return null;
         }
 
+        public override void Stop()
+        {
+            globals.ForEach(g => g.CloseDevice());
+        }
+
         private Yei3SpaceGlobal CreateDevice(int index)
         {
             if (index >= ports.Count)
@@ -74,6 +79,13 @@ namespace FreePIE.Core.Plugins
                 throw new Exception(string.Format("Error while reading device: {0}", error));
 
             OnUpdate();
+        }
+
+        public void CloseDevice()
+        {
+            var error = Api.CloseDevice(deviceId);
+            if(error != TssError.TSS_NO_ERROR) 
+                throw new Exception(string.Format("Error while closing device: {0}", error));
         }
 
         public Quaternion Quaternion { get; private set; }

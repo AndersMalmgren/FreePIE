@@ -30,6 +30,14 @@ namespace FreePIE.Core.Plugins.Yei3Space
             quaternion.Udate(quat[3], quat[0], quat[1], quat[2]);
             return error;
         }
+
+        public static TssError CloseDevice(int deviceId)
+        {
+            return tss_closeTSDevice((uint)deviceId);
+        }
+
+        [DllImport("ThreeSpace_API.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern TssError tss_closeTSDevice(uint device);
             
         [DllImport("ThreeSpace_API.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int tss_getComPorts(TssComPort[] ports, uint size, int offset, TssFind filter);
