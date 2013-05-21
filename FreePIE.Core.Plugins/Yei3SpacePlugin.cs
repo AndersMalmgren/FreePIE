@@ -101,9 +101,9 @@ namespace FreePIE.Core.Plugins
             : base(plugin)
         {
         }
-        public double Yaw { get { return plugin.Quaternion.Yaw; } }
-        public double Pitch { get { return plugin.Quaternion.Pitch; } }
-        public double Roll { get { return plugin.Quaternion.Roll; } }
+        public double yaw { get { return plugin.Quaternion.Yaw; } }
+        public double pitch { get { return plugin.Quaternion.Pitch; } }
+        public double roll { get { return plugin.Quaternion.Roll; } }
 
     }
 }
