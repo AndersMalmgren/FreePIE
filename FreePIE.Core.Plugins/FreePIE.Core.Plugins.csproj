@@ -57,6 +57,7 @@
     <Compile Include="ApplePlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="GenericPlugin.cs" />
+    <Compile Include="Globals\GlobalIndexer.cs" />
     <Compile Include="HydraPlugin.cs" />
     <Compile Include="FreeImuPlugin.cs" />
     <Compile Include="FreeSpacePlugin.cs" />
@@ -90,6 +91,10 @@
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
     <Compile Include="XBox360Plugin.cs" />
+    <Compile Include="Yei3SpacePlugin.cs" />
+    <Compile Include="Yei3Space\Api.cs" />
+    <Compile Include="Yei3Space\Enums.cs" />
+    <Compile Include="Yei3Space\TssComPort.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj">
