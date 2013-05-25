@@ -58,88 +58,87 @@ namespace FreePIE.Core.Plugins {
 
       //-----------------------------------------------------------------------
       public bool a {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.A) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.A) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool b {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.B) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.B) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool x {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.X) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.X) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool y {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.Y) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.Y) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool leftShoulder {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.LeftShoulder) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.LeftShoulder) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool rightShoulder {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.RightShoulder) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.RightShoulder) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool start {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.Start) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.Start) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool back {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.Back) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.Back) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool up {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.DPadUp) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.DPadUp) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool down {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.DPadDown) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.DPadDown) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool left {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.DPadLeft) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.DPadLeft) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool right {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.DPadRight) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.DPadRight) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public double leftTrigger {
-          get { Update(); return (pad.LeftTrigger / 255.0); }
+          get { return (pad.LeftTrigger / 255.0); }
       }
 
       //-----------------------------------------------------------------------
       public double rightTrigger {
-          get { Update(); return (pad.RightTrigger / 255.0); }
+          get { return (pad.RightTrigger / 255.0); }
       }
 
       //-----------------------------------------------------------------------
       public bool leftThumb {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.LeftThumb) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.LeftThumb) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public bool rightThumb {
-          get { Update(); return ((pad.Buttons & GamepadButtonFlags.RightThumb) != 0); }
+          get { return ((pad.Buttons & GamepadButtonFlags.RightThumb) != 0); }
       }
 
       //-----------------------------------------------------------------------
       public double leftStickX {
          get {
-             Update();
              if (pad.LeftThumbX < 0)
                  return pad.LeftThumbX / 32768.0;
              else
@@ -150,7 +149,6 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public double leftStickY {
          get {
-             Update();
              if (pad.LeftThumbY < 0)
                  return pad.LeftThumbY / 32768.0;
              else
@@ -161,7 +159,6 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public double rightStickX {
           get {
-              Update();
               if (pad.RightThumbX < 0)
                   return pad.RightThumbX / 32768.0;
               else
@@ -172,7 +169,6 @@ namespace FreePIE.Core.Plugins {
       //-----------------------------------------------------------------------
       public double rightStickY {
          get {
-             Update();
              if (pad.RightThumbY < 0)
                  return pad.RightThumbY / 32768.0;
              else
