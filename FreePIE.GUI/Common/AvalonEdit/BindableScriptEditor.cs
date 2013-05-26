@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Xml;
 using FreePIE.GUI.Shells;
-using FreePIE.GUI.Views.Script;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
@@ -86,8 +85,9 @@ namespace FreePIE.GUI.Common.AvalonEdit
         public static void OnScriptChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var editor = sender as BindableScriptEditor;
-            if(editor.Text != e.NewValue)
-                editor.Text = e.NewValue as string;
+            var newValue = e.NewValue as string;
+            if (editor.Text != newValue)
+                editor.Text = newValue;
         }
 
         public static readonly DependencyProperty ScriptProperty = DependencyProperty.Register(

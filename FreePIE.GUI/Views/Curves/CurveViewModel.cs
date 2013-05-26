@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
@@ -20,7 +18,7 @@ namespace FreePIE.GUI.Views.Curves
         private readonly IEventAggregator eventAggregator;
         private readonly IResultFactory resultFactory;
         public Curve Curve { get; private set; }
-        public int? selectedPointIndex;
+        private int? selectedPointIndex;
 
         public CurveViewModel(IEventAggregator eventAggregator, IResultFactory resultFactory)
         {
@@ -30,7 +28,7 @@ namespace FreePIE.GUI.Views.Curves
 
         public CurveViewModel Configure(Curve curve)
         {
-            this.Curve = curve;
+            Curve = curve;
             InitCurve();
 
             return this;
@@ -177,7 +175,6 @@ namespace FreePIE.GUI.Views.Curves
             var newPoint = e.NewPoint;
 
             var index = Curve.IndexOf(e.OldPoint);
-            var prevPoint = Curve.Points[index - 1];
             var biggestValueForY = double.MinValue;
 
             var newCurve = Curve.Points.GetRange(0, Curve.Points.Count);
@@ -206,9 +203,7 @@ namespace FreePIE.GUI.Views.Curves
 
         private IEnumerable<Point> CalculateNewPoints()
         {
-            var points = CurveMath.GetInterpolatedCubicSplinedCurve(Curve.Points);
-
-            return points;
+            return CurveMath.GetInterpolatedCubicSplinedCurve(Curve.Points);
         }
 
         private IEnumerable<Point> points;

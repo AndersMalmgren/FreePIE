@@ -47,10 +47,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +69,7 @@
     <Compile Include="Model\Choice.cs" />
     <Compile Include="Model\Choices.cs" />
     <Compile Include="Model\Events\CurveChangedNameEvent.cs" />
+    <Compile Include="Model\Events\ScriptErrorEvent.cs" />
     <Compile Include="Model\Events\WatchEvent.cs" />
     <Compile Include="Model\PluginProperty.cs" />
     <Compile Include="Model\PluginSetting.cs" />

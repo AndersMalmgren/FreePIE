@@ -1,12 +1,10 @@
 package com.freepie.android.imu;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Vector;
 import java.util.concurrent.CyclicBarrier;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -59,13 +57,13 @@ public class UdpSenderTask implements SensorEventListener, LocationListener {
 		sensorManager = target.getSensorManager();		
 		locationManager = target.getLocationManager();
 		sendRaw = target.getSendRaw();
-		sendGPS = target.getSendGPS();
 		sendOrientation = target.getSendOrientation();
-		
+		sendGPS = target.getSendGPS();		
+
 		sampleRate = target.getSampleRate();		
 		debug = target.getDebug();
 		debugListener = target.getDebugListener();
-		
+
 		sendFlag = getFlagByte(sendRaw, sendOrientation, sendGPS);
 		
 		sync = new CyclicBarrier(2);
@@ -129,6 +127,11 @@ public class UdpSenderTask implements SensorEventListener, LocationListener {
 				(gps ? SEND_GPS : SEND_NONE)); 
 	}
 	
+	private byte getFlagByte(boolean raw, boolean orientation) {
+		return (byte)((raw ? SEND_RAW : SEND_NONE) | 
+				(orientation ? SEND_ORIENTATION : SEND_NONE)); 
+	}
+	
 	public void onSensorChanged(SensorEvent sensorEvent) {
 	    switch (sensorEvent.sensor.getType()) {  
 	        case Sensor.TYPE_ACCELEROMETER:
@@ -188,21 +191,24 @@ public class UdpSenderTask implements SensorEventListener, LocationListener {
 	
 	public void stop() {
 		running = false;
-		sensorManager.unregisterListener(this);		
+		sensorManager.unregisterListener(this);
 		locationManager.removeUpdates(this);
+		
+		releaseSendThread();
 	}
 
 	private void Send() {
-		buffer.clear();			
-		
-		buffer.put(sendFlag);
-		
 		boolean raw = sendRaw && acc != null && gyr != null && mag != null;
 		boolean orientation = sendOrientation && imu != null;
 		boolean gps = newGpsDataToSend;
 		
-		buffer.put(getFlagByte(raw, orientation, gps));
+		if(!raw && !orientation && !gps) return;
 		
+		buffer.clear();		
+		
+		buffer.put(sendFlag);
+		buffer.put(getFlagByte(raw, orientation));	
+
 		if(raw) {
 			//Acc
 			buffer.putFloat(acc[0]);

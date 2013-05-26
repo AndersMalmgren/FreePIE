@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Caliburn.Micro;
-using FreePIE.Core.Model;
 using FreePIE.Core.Persistence;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;

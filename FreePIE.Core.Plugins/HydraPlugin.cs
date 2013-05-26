@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FreePIE.Core.Contracts;
 using System.Runtime.InteropServices;
 using System.Threading;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins {
 
@@ -89,7 +87,7 @@ namespace FreePIE.Core.Plugins {
       //----------------------------------------------------------------------- 
       public override object CreateGlobal() {
 
-         HydraPluginGlobal[] globals = new HydraPluginGlobal[2];
+         var globals = new HydraPluginGlobal[2];
          globals[0] = new HydraPluginGlobal(0, this);
          globals[1] = new HydraPluginGlobal(1, this);
          return globals;
@@ -151,7 +149,7 @@ namespace FreePIE.Core.Plugins {
       public override void DoBeforeNextExecute() {
          //This method will be executed each iteration of the script
          for (int i=0; i<2; i++) {
-            int r = Sixense.GetNewestData(i, out Controller[i]);
+            Sixense.GetNewestData(i, out Controller[i]);
 
             // Convert quaternions to clock-wise Euler angles
             float q0 = Controller[i].rot_quat0;

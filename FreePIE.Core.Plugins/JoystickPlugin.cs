@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
@@ -68,12 +67,7 @@ namespace FreePIE.Core.Plugins
 
         public JoystickState State
         {
-            get {
-                if (state == null)
-                    state = joystick.GetCurrentState();
-
-                return state;
-            }
+            get { return state ?? (state = joystick.GetCurrentState()); }
         }
 
         public void Reset()

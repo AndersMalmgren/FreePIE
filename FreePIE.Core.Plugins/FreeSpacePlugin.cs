@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FreePIE.Core.Contracts;
-//using HillcrestLabs.Freespace;
 using System.Runtime.InteropServices;
 using System.Threading;
+using FreePIE.Core.Contracts;
+//using HillcrestLabs.Freespace;
 
 namespace FreePIE.Core.Plugins {
    
@@ -94,12 +92,12 @@ namespace FreePIE.Core.Plugins {
    [GlobalType(Type = typeof(FreeSpacePluginGlobal))]
    public class FreeSpacePlugin : Plugin {
 
-      Thread PollThread = null;
+      Thread PollThread;
       Object PollThreadLock = new Object();
-      bool Stopped = false;
+      bool Stopped;
       
-      float YawSample = 0;
-      float ContinuousYaw = 0;
+      float YawSample;
+      float ContinuousYaw;
       float PitchSample;
       float RollSample;
       public bool ContinousYawMode { get; set; }
@@ -230,10 +228,7 @@ namespace FreePIE.Core.Plugins {
       public double Yaw {
          get {
             double yaw;
-            if (ContinousYawMode)
-               yaw = ContinuousYaw;
-            else
-               yaw = YawSample;
+            yaw = ContinousYawMode ? ContinuousYaw : YawSample;
                
             return yaw;
          }

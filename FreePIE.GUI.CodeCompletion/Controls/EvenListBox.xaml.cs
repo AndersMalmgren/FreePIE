@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
-using System.Collections.Specialized;
 using System.Windows.Input;
 
 namespace FreePIE.GUI.CodeCompletion.Controls
@@ -21,7 +21,7 @@ namespace FreePIE.GUI.CodeCompletion.Controls
     /// <summary>
     /// Interaction logic for EvenListBox.xaml
     /// </summary>
-    public partial class EvenListBox : ListBox
+    public partial class EvenListBox
     {
 
         public EvenListBox()

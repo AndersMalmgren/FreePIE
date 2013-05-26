@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
@@ -41,7 +39,7 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
 
             lastSamples[indexer] = x;
 
-            return lastSample - x;
+            return x - lastSample;
         }
     }
 }

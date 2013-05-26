@@ -31,7 +31,7 @@ namespace FreePIE.GUI.CodeCompletion.Data
 
         public IEnumerator<T> GetEnumerator()
         {
-            List<T> list = new List<T>();
+            var list = new List<T>();
 
             for (int i = 0, j = head + 1; i < size; i++, j++)
                 list.Add(array[j % size]);

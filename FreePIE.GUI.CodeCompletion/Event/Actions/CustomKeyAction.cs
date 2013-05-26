@@ -12,7 +12,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
             this.Action = action;
         }
 
-        public CustomKeyAction() : base()
+        public CustomKeyAction()
         { }
 
         [TypeConverter(typeof(ActionConverter))]
@@ -43,7 +43,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
 
         public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
         {
-            string val = value as string;
+            var val = value as string;
 
             return Delegate.CreateDelegate(typeof (Action<CompletionPopupView>), typeof (PopupActions), val);
         }

@@ -1,27 +1,28 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using FreePIE.Core.Common;
+using FreePIE.Core.Common.Events;
+using FreePIE.Core.Common.Extensions;
+using FreePIE.Core.Contracts;
+using FreePIE.Core.Model.Events;
+using FreePIE.Core.ScriptEngine.Globals;
 using IronPython;
 using IronPython.Compiler;
+using IronPython.Hosting;
 using IronPython.Runtime.Operations;
 using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Providers;
 using Microsoft.Scripting.Runtime;
 
 namespace FreePIE.Core.ScriptEngine.Python
 {
-    using System.Threading;
-    using Common.Extensions;
-    using Contracts;
-    using Globals;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Scripting.Hosting;
-    using IronPython.Hosting;
-
     public static class PythonExtensions
     {
         public static void AddReferences(this ScriptRuntime runtime, params Assembly[] assemblies)
@@ -63,15 +64,16 @@ namespace FreePIE.Core.ScriptEngine.Python
     {
         private readonly IScriptParser parser;
         private readonly IEnumerable<IGlobalProvider> globalProviders;
-        private static ScriptEngine engine;
+        private readonly IEventAggregator eventAggregator;
+        private static Microsoft.Scripting.Hosting.ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
         private InterlockableBool stopRequested;
         private const int LoopDelay = 1;
         private CountdownEvent pluginStopped;
 
-        private static ScriptEngine Engine
+        private static Microsoft.Scripting.Hosting.ScriptEngine Engine
         {
-            get { return engine ?? (engine = Python.CreateEngine()); }
+            get { return engine ?? (engine = IronPython.Hosting.Python.CreateEngine()); }
         }
 
         private Parser CreatePythonParser(string script)
@@ -84,13 +86,13 @@ namespace FreePIE.Core.ScriptEngine.Python
         {
             var x = IronPython.Modules.PythonMath.degrees(10);
             throw new InvalidOperationException("Do not use this method - it is only to force local copy.");
-            return x;
         }
 
-        public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders)
+        public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders, IEventAggregator eventAggregator)
         {
             this.parser = parser;
             this.globalProviders = globalProviders;
+            this.eventAggregator = eventAggregator;
         }
 
         public void Start(string script)
@@ -121,9 +123,8 @@ namespace FreePIE.Core.ScriptEngine.Python
                 script = PreProcessScript(script, usedPlugins, globals);
 
                 RunLoop(Engine.CreateScriptSourceFromString(script).Compile(), scope);
-            }));
+            })) {Name = "PythonEngine Worker"};
 
-            thread.Name = "PythonEngine Worker";
             thread.Start();
         }
 
@@ -153,7 +154,7 @@ namespace FreePIE.Core.ScriptEngine.Python
             try
             {
                 func();
-            } catch(ThreadAbortException e)
+            } catch(ThreadAbortException)
             {
                 Thread.ResetAbort();
                 throw new Exception("Had to forcibly shut down script - try removing infinite loops from the script");
@@ -210,16 +211,20 @@ namespace FreePIE.Core.ScriptEngine.Python
                 .Select(s => (int?)s.GetFileLineNumber())
                 .FirstOrDefault();
 
-            ThreadPool.QueueUserWorkItem(obj => OnError(this, new ScriptErrorEventArgs(e, lineNumber)));
+            ThreadPool.QueueUserWorkItem(obj =>
+                {
+                    try
+                    {
+                        Stop();
+                    }
+                    finally
+                    {
+                        eventAggregator.Publish(new ScriptErrorEvent(e, lineNumber));
+                    }
+                });
         }
 
-        private void OnError(object sender, ScriptErrorEventArgs e)
-        {
-            if (Error != null)
-                Error(sender, e);
-        }
-
-        ScriptScope CreateScope(IDictionary<string, object> globals)
+        private ScriptScope CreateScope(IDictionary<string, object> globals)
         {
             globals.Add("starting", true);
             globals.Add("stopping", false);
@@ -274,8 +279,5 @@ namespace FreePIE.Core.ScriptEngine.Python
             usedPlugins.ForEach(p => StopPlugin(p, pluginStopped));
             pluginStopped.Wait();
         }
-
-        public event EventHandler<ScriptErrorEventArgs> Error;
-        
     }
 }

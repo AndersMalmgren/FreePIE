@@ -80,7 +80,7 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
         public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture,
                                            object value)
         {
-            string val = value as string;
+            var val = value as string;
 
             if (val == null)
                 throw new InvalidOperationException("Can only convert from strings.");

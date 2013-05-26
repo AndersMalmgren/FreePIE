@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using FreePIE.GUI.CodeCompletion.Event.Events;
 
 namespace FreePIE.GUI.CodeCompletion.Event.Actions
 {

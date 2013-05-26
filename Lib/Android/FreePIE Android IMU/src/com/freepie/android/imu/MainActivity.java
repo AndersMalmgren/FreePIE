@@ -2,8 +2,6 @@ package com.freepie.android.imu;
 
 import java.util.Arrays;
 import java.util.List;
-
-import android.R.string;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.hardware.SensorManager;

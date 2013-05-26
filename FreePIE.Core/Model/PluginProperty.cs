@@ -24,13 +24,7 @@ namespace FreePIE.Core.Model
 
         public IEnumerable<Choice> ConcreteChoices
         {
-            get
-            {
-                if (choices == null)
-                    choices = new Choices();
-
-                return choices;
-            }
+            get { return choices ?? (choices = new Choices()); }
         }
 
         public Choice SelectedChoice
@@ -51,10 +45,5 @@ namespace FreePIE.Core.Model
         [DataMember]
         public object Value { get; set; }
         public string HelpText { get; set; }
-
-        public PluginProperty()
-        {
-            
-        }
     }
 }

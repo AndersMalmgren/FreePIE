@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Model
@@ -10,9 +7,7 @@ namespace FreePIE.Core.Model
     {
         public void Add(string caption, object value)
         {
-            var choice = new Choice();
-            choice.Caption = caption;
-            choice.Value = value;
+            var choice = new Choice {Caption = caption, Value = value};
             Add(choice);
         }
     }

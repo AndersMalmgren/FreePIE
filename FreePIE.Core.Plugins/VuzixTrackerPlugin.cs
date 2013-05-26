@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FreePIE.Core.Contracts;
 using System.Runtime.InteropServices;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins {
 
@@ -45,9 +43,9 @@ namespace FreePIE.Core.Plugins {
    [GlobalType(Type = typeof(VuzixTrackerPluginGlobal))]
    public class VuzixTrackerPlugin : Plugin {
 
-      bool Sampled = false;
-      int YawSample = 0;
-      int ContinuousYaw = 0;
+      bool Sampled;
+      int YawSample;
+      int ContinuousYaw;
       int PitchSample;
       int RollSample;
       int XSample;

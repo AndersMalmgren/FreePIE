@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins

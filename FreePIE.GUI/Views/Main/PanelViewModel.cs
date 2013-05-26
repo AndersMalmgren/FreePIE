@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Caliburn.Micro;
@@ -29,7 +26,7 @@ namespace FreePIE.GUI.Views.Main
             get { return false; }
         }
 
-        public virtual string Filename { get; private set; }
+        public virtual string Filename { get { return null; } }
         public virtual string FilePath { get; set; }
         public virtual string FileContent { get; set; }
         
@@ -37,7 +34,7 @@ namespace FreePIE.GUI.Views.Main
         {
             get 
             { 
-                return this.GetType().ToString(); 
+                return GetType().ToString(); 
             }
         }
 
@@ -65,7 +62,7 @@ namespace FreePIE.GUI.Views.Main
         {
             set
             {
-                BitmapImage bi = new BitmapImage();
+                var bi = new BitmapImage();
                 bi.BeginInit();
                 bi.UriSource = new Uri("pack://application:,,/Resources/" + value);
                 bi.EndInit();

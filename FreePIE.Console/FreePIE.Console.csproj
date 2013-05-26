@@ -39,11 +39,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleHost.cs" />
@@ -51,10 +46,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj">
-      <Project>{58285BD6-810D-4BBD-8249-230C3B0AC76F}</Project>
-      <Name>FreePIE.Core.Contracts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\FreePIE.Core\FreePIE.Core.csproj">
       <Project>{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}</Project>
       <Name>FreePIE.Core</Name>

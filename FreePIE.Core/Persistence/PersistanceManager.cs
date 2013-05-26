@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FreePIE.Core.Plugins;
+﻿using FreePIE.Core.Plugins;
 
 namespace FreePIE.Core.Persistence
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace FreePIE.GUI.CodeCompletion.Event.Events
+﻿namespace FreePIE.GUI.CodeCompletion.Event.Events
 {
     public class PopupStateChanged : IPopupEvent
     {

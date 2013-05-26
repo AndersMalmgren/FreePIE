@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Events;
@@ -12,12 +9,11 @@ using FreePIE.Core.ScriptEngine;
 
 namespace FreePIE.Console
 {
-    public class ConsoleHost : IHandle<WatchEvent>
+    public class ConsoleHost : IHandle<WatchEvent>, IHandle<ScriptErrorEvent>
     {
         private readonly IScriptEngine scriptEngine;
         private readonly IPersistanceManager persistanceManager;
         private readonly IFileSystem fileSystem;
-        private readonly IEventAggregator eventAggregator;
         private readonly AutoResetEvent waitUntilStopped;
 
         public ConsoleHost(IScriptEngine scriptEngine, IPersistanceManager persistanceManager, IFileSystem fileSystem, IEventAggregator eventAggregator)
@@ -25,7 +21,6 @@ namespace FreePIE.Console
             this.scriptEngine = scriptEngine;
             this.persistanceManager = persistanceManager;
             this.fileSystem = fileSystem;
-            this.eventAggregator = eventAggregator;
             waitUntilStopped = new AutoResetEvent(false);
 
             eventAggregator.Subscribe(this);
@@ -48,7 +43,7 @@ namespace FreePIE.Console
                 {
                     script = fileSystem.ReadAllText(args[0]);
                 }
-                catch (IOException e)
+                catch (IOException)
                 {
                     System.Console.WriteLine("Can't open script file");
                     throw;
@@ -59,7 +54,6 @@ namespace FreePIE.Console
 
                 persistanceManager.Load();
 
-                scriptEngine.Error += ScriptEngineError;
                 System.Console.WriteLine("Starting script parser");
                 scriptEngine.Start(script);
                 waitUntilStopped.WaitOne();
@@ -79,21 +73,20 @@ namespace FreePIE.Console
             waitUntilStopped.Set();
         }
 
-        private void ScriptEngineError(object sender, ScriptErrorEventArgs e)
-        {
-            System.Console.WriteLine(e.Exception);
-            Stop();
-        }
-
         public void Handle(WatchEvent message)
         {
             System.Console.WriteLine("{0}: {1}", message.Name, message.Value);
+        }
+
+        public void Handle(ScriptErrorEvent message)
+        {
+            System.Console.WriteLine(message.Exception);
+            Stop();
         }
 
         private void PrintHelp()
         {
             System.Console.WriteLine("FreePIE.Console.exe <script_file>");
         }
-
     }
 }

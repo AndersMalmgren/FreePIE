@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using FreePIE.Core.Contracts;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins {
 
@@ -13,9 +12,9 @@ namespace FreePIE.Core.Plugins {
    //==========================================================================
    public abstract class ApplePlugin : Plugin {
 
-      bool Stopped = false;
+      bool Stopped;
       int UdpPort = 10552;
-      UdpClient UdpSock = null;
+      UdpClient UdpSock;
 
 
       int PitchIndex = 4;
@@ -23,17 +22,11 @@ namespace FreePIE.Core.Plugins {
       int YawIndex = 6;
       
       double YawSample;
-      int YawPeriod = 0;      // the number of full yaw rotations
+      int YawPeriod;      // the number of full yaw rotations
       double PitchSample;
       double RollSample;
 
-      DateTime PollTime = DateTime.Now;
-
-      //-----------------------------------------------------------------------
-      public ApplePlugin() {
-      }
-
-      //-----------------------------------------------------------------------
+       //-----------------------------------------------------------------------
       public override Action Start() {
          
          return RunSensorPoll;
@@ -79,15 +72,14 @@ namespace FreePIE.Core.Plugins {
       private void RunSensorPoll() {
        
          try {
-            IPEndPoint peer = new IPEndPoint(IPAddress.Any, 0);
+            var peer = new IPEndPoint(IPAddress.Any, 0);
             UdpSock = new UdpClient(UdpPort);
 
             char[] delims = new char[] {','};
          
             Stopped = false;
             OnStarted(this, new EventArgs());
-            DateTime start = DateTime.Now;
-            while (!Stopped) {
+             while (!Stopped) {
                
                Byte[] bytes = UdpSock.Receive(ref peer);
                int len = bytes.Length;

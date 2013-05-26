@@ -1,12 +1,13 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using FreePIE.Core.Common;
+using FreePIE.Core.Common.Events;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.CodeCompletion;
 using FreePIE.GUI.CodeCompletion.Event.Actions;
 using FreePIE.GUI.Common.AvalonEdit;
 using FreePIE.GUI.Common.CodeCompletion;
 using FreePIE.GUI.Events;
-using FreePIE.Core.Common.Events;
 using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script
@@ -32,7 +33,7 @@ namespace FreePIE.GUI.Views.Script
             completionModel.Observers.Add(new CloseOnWritingEndOfExpression(IsEndOfExpression));
         }
         
-        private static int untitledIndex = 0;
+        private static int untitledIndex;
         private int untitledId;
 
         public ScriptEditorViewModel Configure(string filePath)
@@ -49,9 +50,9 @@ namespace FreePIE.GUI.Views.Script
         private bool IsBeginningOfExpression(char nextChar)
         {
             var caret = CaretPosition;
-            var script = (Script ?? string.Empty).Insert(CaretPosition, nextChar.ToString());
+            var scriptWithNextChar = (Script ?? string.Empty).Insert(CaretPosition, nextChar.ToString(CultureInfo.InvariantCulture));
             caret++;
-            return provider.IsBeginningOfExpression(Script, CaretPosition) || provider.IsBeginningOfExpression(script, caret);
+            return provider.IsBeginningOfExpression(Script, CaretPosition) || provider.IsBeginningOfExpression(scriptWithNextChar, caret);
         }
 
         private bool IsEndOfExpression(char nextChar)
@@ -115,9 +116,9 @@ namespace FreePIE.GUI.Views.Script
                 CompletionWindow.SelectedCompletionItem = CompletionWindow.CompletionItems.First();
         }
 
-        private void OnInsertion(string script, int caretOffset, int range)
+        private void OnInsertion(string insertedScript, int caretOffset, int range)
         {
-            Replacer.Replace(caretOffset, range, script);
+            Replacer.Replace(caretOffset, range, insertedScript);
         }
 
         public override bool IsFileContent

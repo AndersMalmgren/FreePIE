@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Caliburn.Micro;
-using FreePIE.GUI.Events;
+using FreePIE.Core.Common.Events;
+using FreePIE.Core.Model.Events;
 using FreePIE.GUI.Views.Main;
-using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Script.Output
 {
-    public class ErrorViewModel : PanelViewModel, Core.Common.Events.IHandle<ScriptErrorEvent>
+    public class ErrorViewModel : PanelViewModel, IHandle<ScriptErrorEvent>
     {
-        private readonly IEventAggregator eventAggregator;
-
         public ErrorViewModel(IEventAggregator eventAggregator)
         {
-            this.eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
 
             Title = "Error";

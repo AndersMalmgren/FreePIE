@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Threading;
-using Caliburn.Micro;
 using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script.Output

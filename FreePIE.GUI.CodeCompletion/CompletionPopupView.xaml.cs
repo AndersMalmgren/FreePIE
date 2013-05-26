@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
-using Caliburn.Micro;
-using FreePIE.GUI.CodeCompletion.Controls;
 using FreePIE.GUI.CodeCompletion.Data;
 using FreePIE.GUI.CodeCompletion.Event;
 using FreePIE.GUI.CodeCompletion.Event.Actions;
@@ -93,9 +89,9 @@ namespace FreePIE.GUI.CodeCompletion
             if (e.NewValue == null || obj == null)
                 return;
 
-            EditorAdapterBase target = e.NewValue as EditorAdapterBase;
-            EditorAdapterBase oldTarget = e.OldValue as EditorAdapterBase;
-            CompletionPopupView view = obj as CompletionPopupView;
+            var target = e.NewValue as EditorAdapterBase;
+            var oldTarget = e.OldValue as EditorAdapterBase;
+            var view = obj as CompletionPopupView;
             
             EventHandler selectionChanged = (sender, args) => view.Publish(new SelectionChangedEvent(target.CaretIndex));
             KeyEventHandler previewKeyDown = (sender, args) => view.Publish(new CancellableKeyEvent(args, EventSource.Editor));

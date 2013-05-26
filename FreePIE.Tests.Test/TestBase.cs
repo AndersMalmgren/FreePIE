@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using FreePIE.Core.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Ninject;

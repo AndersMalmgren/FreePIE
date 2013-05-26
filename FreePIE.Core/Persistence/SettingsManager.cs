@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
-using FreePIE.Core.Common;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model;
 
