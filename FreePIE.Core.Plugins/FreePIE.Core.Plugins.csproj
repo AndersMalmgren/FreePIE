@@ -57,6 +57,7 @@
     <Compile Include="ApplePlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="GenericPlugin.cs" />
+    <Compile Include="Globals\GlobalIndexer.cs" />
     <Compile Include="HydraPlugin.cs" />
     <Compile Include="FreeImuPlugin.cs" />
     <Compile Include="FreeSpacePlugin.cs" />
