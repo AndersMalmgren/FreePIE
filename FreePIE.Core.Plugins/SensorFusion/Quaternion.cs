@@ -8,7 +8,7 @@ namespace FreePIE.Core.Plugins.SensorFusion
         public double Roll { get; private set; }
         public double Pitch { get; private set; }
 
-        public void Udate(double w, double x, double y, double z)
+        public void Update(double w, double x, double y, double z)
         {
             // normalize the vector
             double len = Math.Sqrt((w * w) + (x * x) + (y * y) + (z * z));

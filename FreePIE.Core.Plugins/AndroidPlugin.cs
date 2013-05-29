@@ -158,7 +158,7 @@ namespace FreePIE.Core.Plugins
                     var mz = GetFloat(bytes, index, 32);
 
                     ahrs.Update(gx, gy, gz, ax, ay, az, mx, my, mz);
-                    quaternion.Udate(ahrs.Quaternion[0], ahrs.Quaternion[1], ahrs.Quaternion[2], ahrs.Quaternion[3]);
+                    quaternion.Update(ahrs.Quaternion[0], ahrs.Quaternion[1], ahrs.Quaternion[2], ahrs.Quaternion[3]);
 
                     index += 36;
                 }
