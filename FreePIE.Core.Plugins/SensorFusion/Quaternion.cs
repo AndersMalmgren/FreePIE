@@ -17,14 +17,6 @@ namespace FreePIE.Core.Plugins.SensorFusion
             y /= len;
             z /= len;
 
-            // The Freespace quaternion gives the rotation in terms of
-            // rotating the world around the object. We take the conjugate to
-            // get the rotation in the object's reference frame.
-            w = w;
-            x = -x;
-            y = -y;
-            z = -z;
-
             // Convert to angles in radians
             double m11 = (2.0f * w * w) + (2.0f * x * x) - 1.0f;
             double m12 = (2.0f * x * y) + (2.0f * w * z);
@@ -36,6 +28,5 @@ namespace FreePIE.Core.Plugins.SensorFusion
             Pitch = Math.Asin(-m13);
             Yaw = Math.Atan2(m12, m11);
         }
-
     }
 }
