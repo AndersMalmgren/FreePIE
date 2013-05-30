@@ -95,6 +95,7 @@
     <Compile Include="Yei3Space\Api.cs" />
     <Compile Include="Yei3Space\Enums.cs" />
     <Compile Include="Yei3Space\TssComPort.cs" />
+    <Compile Include="Yei3Space\TssStreamPacket.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj">
