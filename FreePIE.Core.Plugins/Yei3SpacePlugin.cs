@@ -11,7 +11,7 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(Yei3SpaceGlobal), IsIndexed = true)]
     public class Yei3SpacePlugin : Plugin
     {
-        private IList<TssComPort> ports;
+        private int countSensors;
         private List<Yei3SpaceGlobalHolder> globals;
 
         public override object CreateGlobal()
@@ -22,8 +22,8 @@ namespace FreePIE.Core.Plugins
         public override Action Start()
         {
             globals = new List<Yei3SpaceGlobalHolder>();
-            ports = Api.GetComPorts();
-            if(!ports.Any())
+            countSensors = Api.GetComPorts();
+            if (countSensors == 0)
                 throw new Exception("No YEI3 Space devices connected!");
             
             return null;
@@ -36,11 +36,10 @@ namespace FreePIE.Core.Plugins
 
         private Yei3SpaceGlobal CreateDevice(int index)
         {
-            if (index >= ports.Count)
-                throw new Exception(string.Format("Only {0} connected devices, {1} is out of bounds", ports.Count, index));
+            if (index >= countSensors)
+                throw new Exception(string.Format("Only {0} connected devices, {1} is out of bounds", countSensors, index));
 
-            var port = ports[index];
-            var deviceId = Api.CreateDevice(port);
+            var deviceId = Api.CreateDevice(index);
             if ((TssDeviceIdMask)deviceId == TssDeviceIdMask.TSS_NO_DEVICE_ID)
                 throw new Exception(string.Format("Could not create device: {0} on port {1}", port.FriendlyName, port.Port));
 
@@ -72,6 +71,15 @@ namespace FreePIE.Core.Plugins
             Quaternion = new Quaternion();
         }
 
+        public void StopStreaming()
+        {
+            Api.StopStreaming(deviceId);
+        }
+        public void StartStreaming()
+        {
+            Api.StartStreaming(deviceId);
+        }
+        
         public void Update()
         {
             var error = Api.UpdateQuaternion(deviceId, Quaternion);
@@ -104,6 +112,13 @@ namespace FreePIE.Core.Plugins
         public double yaw { get { return plugin.Quaternion.Yaw; } }
         public double pitch { get { return plugin.Quaternion.Pitch; } }
         public double roll { get { return plugin.Quaternion.Roll; } }
-
+        public void stopStreaming()
+        {
+            plugin.StopStreaming();
+        }
+        public void startStreaming()
+        {
+            plugin.StartStreaming();
+        }
     }
 }

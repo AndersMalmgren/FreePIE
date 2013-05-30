@@ -10,9 +10,9 @@ namespace FreePIE.Core.Plugins.Yei3Space
     public struct TssComPort
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-        public string Port;
+        public string com_port;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-        public string FriendlyName;
-        public int SensorType;
+        public string friendly_name;
+        public int sensor_type;
     }
 }
