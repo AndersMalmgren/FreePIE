@@ -41,7 +41,7 @@ namespace FreePIE.Core.Plugins
 
             var deviceId = Api.CreateDevice(index);
             if ((TssDeviceIdMask)deviceId == TssDeviceIdMask.TSS_NO_DEVICE_ID)
-                throw new Exception(string.Format("Could not create device: {0} on port {1}", port.FriendlyName, port.Port));
+                throw new Exception(string.Format("Could not create device"));
 
             var holder = new  Yei3SpaceGlobalHolder(deviceId);
             globals.Add(holder);

@@ -40,7 +40,7 @@ namespace FreePIE.Core.Plugins.SensorFusion
             Yaw = Math.Atan2(m12, m11);
         }
 
-        public void Udate(double w, double x, double y, double z)
+        public void Update(double w, double x, double y, double z)
         {
             Update(w, x, y, z, true);
         }
