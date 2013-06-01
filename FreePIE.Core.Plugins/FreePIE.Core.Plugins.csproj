@@ -91,6 +91,9 @@
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
     <Compile Include="XBox360Plugin.cs" />
+    <Compile Include="ZeissPlugin.cs" />
+    <Compile Include="Zeiss\Api.cs" />
+    <Compile Include="Zeiss\Structs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj">
