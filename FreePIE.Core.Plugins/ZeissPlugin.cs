@@ -12,6 +12,7 @@ namespace FreePIE.Core.Plugins
     public class ZeissPlugin : Plugin
     {
         private bool running;
+        private bool newData = false;
 
         public override object CreateGlobal()
         {
@@ -43,6 +44,15 @@ namespace FreePIE.Core.Plugins
             Api.Release();
         }
 
+        public override void DoBeforeNextExecute()
+        {
+            if (newData)
+            {
+                OnUpdate();
+                newData = false;
+            }
+        }
+
         private void BackgroundWorker()
         {
             running = true;
@@ -51,8 +61,7 @@ namespace FreePIE.Core.Plugins
             while (running)
             {
                 if (!(Api.WaitNextFrame())) Thread.Sleep(10);
-
-
+                
                 var frame = new Frame();
                 var euler = new Euler();
 
@@ -60,6 +69,8 @@ namespace FreePIE.Core.Plugins
                 {
                     Api.QuatGetEuler(ref euler, frame.Rot);
                     Euler = euler;
+
+                    newData = true;
                 }
             }
         }
