@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Zeiss;
@@ -12,7 +9,7 @@ namespace FreePIE.Core.Plugins
     public class ZeissPlugin : Plugin
     {
         private bool running;
-        private bool newData = false;
+        private bool newData;
 
         public override object CreateGlobal()
         {
@@ -27,13 +24,6 @@ namespace FreePIE.Core.Plugins
             {
                 throw new Exception(string.Format("Error while initializing tracker: {0}", Api.GetError(error)));
             }
-
-            /*result = Api.SetBootloaderMode(false, out error);
-            if (!result)
-            {
-                throw new Exception(string.Format("Error while setting bootloader mode: {0}", Api.GetError(error)));
-            }*/
-
 
             return BackgroundWorker;
         }
