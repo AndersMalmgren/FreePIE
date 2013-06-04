@@ -15,13 +15,13 @@ namespace FreePIE.Core.Plugins.Zeiss
             return result;
         }
 
-        public static bool SetBootloaderMode(bool activationMode, out int error)
+        /*public static bool SetBootloaderMode(bool activationMode, out int error)
         {
             var result = Tracker_SetBootloaderMode(false);
             error = GetLastError();
 
             return result;
-        }
+        }*/
 
 
         public static string GetError(int error)

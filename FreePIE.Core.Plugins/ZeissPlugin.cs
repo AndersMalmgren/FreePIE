@@ -28,11 +28,11 @@ namespace FreePIE.Core.Plugins
                 throw new Exception(string.Format("Error while initializing tracker: {0}", Api.GetError(error)));
             }
 
-            result = Api.SetBootloaderMode(false, out error);
+            /*result = Api.SetBootloaderMode(false, out error);
             if (!result)
             {
                 throw new Exception(string.Format("Error while setting bootloader mode: {0}", Api.GetError(error)));
-            }
+            }*/
 
 
             return BackgroundWorker;
@@ -64,11 +64,16 @@ namespace FreePIE.Core.Plugins
                 
                 var frame = new Frame();
                 var euler = new Euler();
+                var cinemizerRot = new Quat(); 
+                var cinemizerEuler = new Euler(); 
 
                 if (Api.GetFrame(ref frame))
                 {
                     Api.QuatGetEuler(ref euler, frame.Rot);
-                    Euler = euler;
+                    Api.RotateTrackerToCinemizer(ref cinemizerRot, frame.Rot); 
+                    Api.QuatGetEuler(ref cinemizerEuler, cinemizerRot); 
+                    
+                    Euler = cinemizerEuler; 
 
                     newData = true;
                 }
