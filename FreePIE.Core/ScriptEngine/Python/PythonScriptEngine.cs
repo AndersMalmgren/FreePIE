@@ -137,7 +137,7 @@ namespace FreePIE.Core.ScriptEngine.Python
                     usedPlugins.ForEach(p => p.DoBeforeNextExecute());
                     CatchThreadAbortedException(() => compiled.Execute(scope));
                     scope.SetVariable("starting", false);
-                    Thread.Sleep(LoopDelay);
+                    Thread.Sleep(16);
                 }
                 scope.SetVariable("stopping", true);
                 CatchThreadAbortedException(() => compiled.Execute(scope));
@@ -275,7 +275,7 @@ namespace FreePIE.Core.ScriptEngine.Python
 
             if(thread.IsAlive)
                 thread.Abort();
-
+            
             usedPlugins.ForEach(p => StopPlugin(p, pluginStopped));
             pluginStopped.Wait();
         }

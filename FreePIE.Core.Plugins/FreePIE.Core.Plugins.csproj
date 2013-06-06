@@ -68,6 +68,9 @@
     <Compile Include="MemoryMapping\SharedMemoryWorker.cs" />
     <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
+    <Compile Include="Wiimote\IMotionPlusFuser.cs" />
+    <Compile Include="Wiimote\Integrator.cs" />
+    <Compile Include="Wiimote\MotionPlus.cs" />
     <Compile Include="MouseKeyIO.cs" />
     <Compile Include="MousePlugin.cs" />
     <Compile Include="Plugin.cs" />
@@ -77,6 +80,9 @@
     <Compile Include="SensorFusion\Quaternion.cs" />
     <Compile Include="Strategies\GetPressedStrategy.cs" />
     <Compile Include="Strategies\SetPressedStrategy.cs" />
+    <Compile Include="Wiimote\SamplePeriodCounter.cs" />
+    <Compile Include="Wiimote\WiimoteButton.cs" />
+    <Compile Include="Wiimote\Subscribable.cs" />
     <Compile Include="TrackIRPlugin.cs" />
     <Compile Include="MemoryMapping\DisconnectedFreepieData.cs" />
     <Compile Include="TrackIR\DllRegistrar.cs" />
@@ -89,6 +95,12 @@
     <Compile Include="TrackIR\TrackIRHeadposeData.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
+    <Compile Include="Wiimote\Acceleration.cs" />
+    <Compile Include="Wiimote\DolphiimoteBridge.cs" />
+    <Compile Include="Wiimote\DolphiimoteDLL.cs" />
+    <Compile Include="Wiimote\IWiimoteBridge.cs" />
+    <Compile Include="Wiimote\IWiimoteData.cs" />
+    <Compile Include="Wiimote\WiimoteCalibration.cs" />
     <Compile Include="XBox360Plugin.cs" />
   </ItemGroup>
   <ItemGroup>

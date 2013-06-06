@@ -1,264 +1,189 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FreePIE.Core.Contracts;
-using WiimoteLib;
+using FreePIE.Core.Plugins.TrackIR;
+using FreePIE.Core.Plugins.Wiimote;
+using System.Linq;
 
-namespace FreePIE.Core.Plugins {
-   
-   
-   
-   //==========================================================================
-   //                          WiimotePlugin
-   //==========================================================================
-   [GlobalType(Type = typeof(WiimotePluginGlobal), IsIndexed = true)]
-   public class WiimotePlugin : Plugin {
+namespace FreePIE.Core.Plugins
+{
+    [GlobalEnum]
+    public enum WiimoteButtons : ushort
+    {
+        DPadLeft = 0x0100,
+        DPadRight = 0x0200,
+        DPadDown = 0x0400,
+        DPadUp = 0x0800,
+        A = 0x0008,
+        B = 0x0004,
+        Plus = 0x1000,
+        Minus = 0x0010,
+        One = 0x0002,
+        Two = 0x0001,
+        Home = 0x080
+    }
 
-      const int MAX_WIIMOTES = 4;
+    [GlobalEnum]
+    public enum WiimoteCapabilities : ushort
+    {
+        None = 0,
+        MotionPlus = 2,
+        Extension = 4,
+        IR = 8
+    }
 
-      WiimoteCollection Motes;
-      ButtonState[] Buttons;
-       
+    public enum WiimoteDataValid
+    {
+        Acceleration = 0x0002,
+        MotionPlus = 0x0004, 
+        Nunchuck = 0x0008
+    }
 
-       //----------------------------------------------------------------------- 
-      public override object CreateGlobal() {
+    public enum WiimoteExtensions
+    {
+        None = 0,
+        Nunchuck = 1,
+        ClassicController = 2,
+        ClassicControllerPro = 4,
+        GuitarHeroGuitar = 8,
+        GuitarHeroDrums = 16,
+        MotionPlus = 32
+    }
 
-         var plugins = new WiimotePluginGlobal[MAX_WIIMOTES];
-         for (int i=0; i<MAX_WIIMOTES; i++) {
-            plugins[i] = new WiimotePluginGlobal(this, i);
-         }
+    [GlobalType(Type = typeof(WiimoteGlobal), IsIndexed = true)]
+    public class WiimotePlugin : Plugin
+    {
+        private LogLevel logLevel;
+        private IWiimoteBridge wiimoteBridge;
+        private Dictionary<uint, Action> globalUpdators;
+        private IList<uint> updatedWiimotes; 
 
-         return plugins;
-      }
+        public override object CreateGlobal()
+        {
+            wiimoteBridge = new DolphiimoteBridge(logLevel);
+            globalUpdators = new Dictionary<uint, Action>();
+            updatedWiimotes = new List<uint>();
+            return Enumerable.Range(0, 4).Select(i => new WiimoteGlobal(this, wiimoteBridge.GetData((uint)i), globalUpdators)).ToArray();
+        }
 
-      //-----------------------------------------------------------------------
-      public override Action Start() {
-         // This method is called just before script starts
+        public override bool GetProperty(int index, IPluginProperty property)
+        {
+            if (index > 0)
+                return false;
 
-         // Find and connect to all Wiimotes.  Wiimotes must have been 
-         // previously attached via a bluetooth manager
-         var motes = new WiimoteCollection();
-			motes.FindAllWiimotes();
+            property.Name = "LogLevel";
+            property.Caption = "Log level";
 
-         if (motes.Count > 0) {
+            foreach(var val in Enum.GetNames(typeof(LogLevel)))
+                property.Choices.Add(val, val);
 
-            Buttons = new WiimoteLib.ButtonState[motes.Count];
+            property.DefaultValue = LogLevel.Warning.ToString();
+            property.HelpText = "Set the log level for Dolphiimote library";
 
-            // Connect and start each wiimote
-            for (int i=0; i<motes.Count; i++) {
-               Wiimote wii = motes.ElementAt(i);
-               wii.Connect();
-               // set the wiimote leds to the wiimote number
-               wii.SetLEDs(i+1);   // set the wiimote leds to the wiimote number
-               Buttons[i] = wii.WiimoteState.ButtonState;
-               wii.WiimoteChanged += OnWiimoteChanged;        // set the event handler
-               wii.SetReportType(InputReport.Buttons, false); // start the data callbacks
-            }
+            return true;
+        }
 
-            Motes = motes;
-         }
-         else {
-            throw new Exception("No Wiimotes found");
-         }
+        public override bool SetProperties(Dictionary<string, object> properties)
+        {
+            logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), (string)properties["LogLevel"]);
+            return true;
+        }
 
-         return null;
-      }
+        public override Action Start()
+        {
+            wiimoteBridge.DataReceived += WiimoteDataReceived;
+            wiimoteBridge.Init();
+            return null;
+        }
 
-      //-----------------------------------------------------------------------
-      public override void Stop() {
-         if (Motes != null) {
+        public void Enable(byte wiimote, WiimoteCapabilities flags)
+        {
+            wiimoteBridge.Enable(wiimote, flags);
+        }
 
-            for (int i=0; i<Motes.Count; i++) {
-               Wiimote wii = Motes.ElementAt(i);
-               wii.SetLEDs(false, false, false, false);
-               wii.Disconnect();
-            }
-            Motes = null;
-         }
-      }
+        private void WiimoteDataReceived(object sender, UpdateEventArgs<uint> updated)
+        {
+            updatedWiimotes.Add(updated.UpdatedValue);
+        }
 
-      //-----------------------------------------------------------------------
-      public override string FriendlyName {
-         get { return "Wiimote"; }
-      }
+        public override void Stop()
+        {
+            wiimoteBridge.Dispose();
+        }
 
-      //-----------------------------------------------------------------------
-      public override bool GetProperty(int index, IPluginProperty property) {
-         return false;
-      }
+        public override string FriendlyName
+        {
+            get { return "Wiimote"; }
+        }
 
-      //-----------------------------------------------------------------------
-      public override bool SetProperties(Dictionary<string, object> properties) {
-         return true;
-      }
+        public override void DoBeforeNextExecute()
+        {
+            updatedWiimotes.Clear();
+            wiimoteBridge.DoTick();
+            foreach(var wiimote in updatedWiimotes)
+                globalUpdators[wiimote]();
+        }
+    }
 
-      //-----------------------------------------------------------------------
-      public override void DoBeforeNextExecute() {
-         //This method will be executed each iteration of the script
-      }
+    [Global(Name = "wiimote")]
+    public class WiimoteGlobal
+    {
+        private readonly WiimotePlugin plugin;
+        private readonly IWiimoteData data;
 
-      //-----------------------------------------------------------------------
-      void OnWiimoteChanged(object sender, WiimoteChangedEventArgs args) {
-     
-         if (Motes == null)
-            return;
+        private readonly Action accelerationTrigger;
+        private readonly Action buttonTrigger;
+        private readonly Action motionPlusTrigger;
 
-         var wii = (Wiimote)sender;
-         for (int i=0; i<Motes.Count; i++) {
-            // Find which Wiimote the data originated from and update the button state
-            if (wii == Motes.ElementAt(i)) {
-               lock (Buttons) {
-                  Buttons[i] = args.WiimoteState.ButtonState;
-               }
-            }
-         }
-      }
+        public WiimoteGlobal(WiimotePlugin plugin, IWiimoteData data, Dictionary<uint, Action> updaters)
+        {
+            this.plugin = plugin;
+            this.data = data;
 
-      //-----------------------------------------------------------------------
-      public bool GetUp(int index) {
-         lock (Buttons) {
-            return Buttons[index].Up;
-         }
-      }
+            acceleration = new Acceleration(data, out accelerationTrigger);
+            buttons = new WiimoteButtonState(data, out buttonTrigger);
+            motionplus = new MotionPlus(data, out motionPlusTrigger);
 
-      //-----------------------------------------------------------------------
-      public bool GetDown(int index) {
-         lock (Buttons) {
-            return Buttons[index].Down;
-         }
-      }
+            updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
+        }
 
-      //-----------------------------------------------------------------------
-      public bool GetLeft(int index) {
-         lock (Buttons) {
-            return Buttons[index].Left;
-         }
-      }
+        public void enable(WiimoteCapabilities flags)
+        {
+            plugin.Enable(data.WiimoteNumber, flags);
+        }
 
-      //-----------------------------------------------------------------------
-      public bool GetRight(int index) {
-         lock (Buttons) {
-            return Buttons[index].Right;
-         }
-      }
+        private void OnWiimoteDataReceived()
+        {
+            buttonTrigger();
 
-      //-----------------------------------------------------------------------
-      public bool GetA(int index) {
-         lock (Buttons) {
-            return Buttons[index].A;
-         }
-      }
+            if(data.IsDataValid(WiimoteDataValid.Acceleration))
+                accelerationTrigger();
 
-      //-----------------------------------------------------------------------
-      public bool GetB(int index) {
-         lock (Buttons) {
-            return Buttons[index].B;
-         }
-      }
+            if (data.IsDataValid(WiimoteDataValid.MotionPlus))
+                motionPlusTrigger();
+        }
 
-      //-----------------------------------------------------------------------
-      public bool GetMinus(int index) {
-         lock (Buttons) {
-            return Buttons[index].Minus;
-         }
-      }
+        public MotionPlus motionplus
+        { 
+            get;
+            private set;
+        }
 
-      //-----------------------------------------------------------------------
-      public bool GetHome(int index) {
-         lock (Buttons) {
-            return Buttons[index].Home;
-         }
-      }
+        public EulerAngles ahrs
+        {
+            get { return data.MotionPlusEulerAngles; }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool GetPlus(int index) {
-         lock (Buttons) {
-            return Buttons[index].Plus;
-         }
-      }
+        public Acceleration acceleration
+        {
+            get;
+            private set;
+        }
 
-      //-----------------------------------------------------------------------
-      public bool GetOne(int index) {
-         lock (Buttons) {
-            return Buttons[index].One;
-         }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool GetTwo(int index) {
-         lock (Buttons) {
-            return Buttons[index].Two;
-         }
-      }
-   }
-
-   //==========================================================================
-   //                          WiimotePluginGlobal
-   //==========================================================================
-   [Global(Name = "wiimote")]
-   public class WiimotePluginGlobal {
-      private readonly WiimotePlugin Wii;
-      private readonly int index;
-
-      //-----------------------------------------------------------------------
-      public WiimotePluginGlobal(WiimotePlugin plugin, int index) {
-         Wii = plugin;
-         this.index = index;
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getUp() {
-         return Wii.GetUp(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getDown() {
-         return Wii.GetDown(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getLeft() {
-         return Wii.GetLeft(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getRight() {
-         return Wii.GetRight(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getA() {
-         return Wii.GetA(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getB() {
-         return Wii.GetB(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getMinus() {
-         return Wii.GetMinus(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getHome() {
-         return Wii.GetHome(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getPlus() {
-         return Wii.GetPlus(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getOne() {
-         return Wii.GetOne(index);
-      }
-
-      //-----------------------------------------------------------------------
-      public bool getTwo() {
-         return Wii.GetTwo(index);
-      }
-   }
+        public WiimoteButtonState buttons
+        { 
+            get;
+            private set;
+        }
+    }
 }
