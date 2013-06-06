@@ -9,13 +9,17 @@ namespace FreePIE.Core.Plugins.Wiimote
 {
     public class DolphiimoteBridge : IWiimoteBridge
     {
-        private DolphiimoteDLL dll;
-        private WiimoteCalibration calibration;
-        private Dictionary<uint, DolphiimoteWiimoteData> data;
+        private readonly DolphiimoteDLL dll;
+        private readonly WiimoteCalibration calibration;
+        private readonly Dictionary<uint, DolphiimoteWiimoteData> data;
+        private readonly string logFile;
+
         public event EventHandler<UpdateEventArgs<uint>> DataReceived;
 
-        public DolphiimoteBridge(LogLevel logLevel)
+        public DolphiimoteBridge(LogLevel logLevel, string logFile)
         {
+            this.logFile = logFile;
+
             double motionPlusSlowGain = 1.0 / (8192.0 / 595.0) / 1.44; //TODO: FIX CALIBRATION
             calibration = new WiimoteCalibration(9.8 / 0x19, -0x80, motionPlusSlowGain , motionPlusSlowGain * 2000 / 440 ,-0x2000);
             dll = new DolphiimoteDLL(Path.Combine(Environment.CurrentDirectory, "DolphiiMote.dll"));
@@ -45,7 +49,9 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         private void WiimoteLogReceived(string log)
         {
-            Debug.WriteLine(log);
+            if(logFile == null)
+                Debug.WriteLine(log);
+            else File.AppendAllText(logFile, log);
         }
 
         private Exception occuredException;

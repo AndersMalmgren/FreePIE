@@ -54,13 +54,14 @@ namespace FreePIE.Core.Plugins
     public class WiimotePlugin : Plugin
     {
         private LogLevel logLevel;
+        private bool doLog;
         private IWiimoteBridge wiimoteBridge;
         private Dictionary<uint, Action> globalUpdators;
         private IList<uint> updatedWiimotes; 
 
         public override object CreateGlobal()
         {
-            wiimoteBridge = new DolphiimoteBridge(logLevel);
+            wiimoteBridge = new DolphiimoteBridge(logLevel, doLog ? "dolphiimote.log" : null);
             globalUpdators = new Dictionary<uint, Action>();
             updatedWiimotes = new List<uint>();
             return Enumerable.Range(0, 4).Select(i => new WiimoteGlobal(this, wiimoteBridge.GetData((uint)i), globalUpdators)).ToArray();
@@ -68,17 +69,27 @@ namespace FreePIE.Core.Plugins
 
         public override bool GetProperty(int index, IPluginProperty property)
         {
-            if (index > 0)
+            if (index > 1)
                 return false;
+            if (index == 0)
+            {
+                property.Name = "LogLevel";
+                property.Caption = "Log level";
 
-            property.Name = "LogLevel";
-            property.Caption = "Log level";
+                foreach (var val in Enum.GetNames(typeof (LogLevel)))
+                    property.Choices.Add(val, val);
 
-            foreach(var val in Enum.GetNames(typeof(LogLevel)))
-                property.Choices.Add(val, val);
+                property.DefaultValue = LogLevel.Warning.ToString();
+                property.HelpText = "Set the log level for Dolphiimote library";
+            }
 
-            property.DefaultValue = LogLevel.Warning.ToString();
-            property.HelpText = "Set the log level for Dolphiimote library";
+            if (index == 1)
+            {
+                property.Name = "DoLog";
+                property.Caption = "Enable logging";
+                property.DefaultValue = false;
+                property.HelpText = "Enable logging for Dolphiimote library. Look for dolphiimote.log in the application directory.";
+            }
 
             return true;
         }
@@ -86,6 +97,7 @@ namespace FreePIE.Core.Plugins
         public override bool SetProperties(Dictionary<string, object> properties)
         {
             logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), (string)properties["LogLevel"]);
+            doLog = (bool)properties["DoLog"];
             return true;
         }
 
