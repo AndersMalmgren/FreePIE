@@ -165,6 +165,11 @@ namespace FreePIE.Core.Plugins.Yei3Space
             }
         }
 
+        public static TssError TareSensor(int device_id)
+        {
+            return tss_tareWithCurrentOrientation(device_id);
+        }
+
         public static TssError CloseDevice(int deviceId)
         {
             if (is_streaming)
@@ -198,6 +203,9 @@ namespace FreePIE.Core.Plugins.Yei3Space
         private static extern TssError tss_getTaredOrientationAsQuaternion(uint deviceId, float[] quat,
                                                                             out uint timestamp);
 
+        [DllImport("ThreeSpace_API.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern TssError tss_tareWithCurrentOrientation(int deviceId);        
+        
         [DllImport("ThreeSpace_API.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern TssError tss_tareWithQuaternion(int deviceId, float[] quat);
 

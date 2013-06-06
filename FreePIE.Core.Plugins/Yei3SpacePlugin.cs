@@ -79,7 +79,18 @@ namespace FreePIE.Core.Plugins
         {
             Api.StartStreaming(deviceId);
         }
-        
+        public void TareSensor()
+        {
+            TssError error = Api.TareSensor(deviceId);
+            if (error != TssError.TSS_NO_ERROR)
+            {
+                throw new Exception(string.Format("Error while taring: {0}", error));
+            }
+            else
+            {
+                Console.WriteLine(string.Format("Device Id: {0} Tared", deviceId));
+            }
+        }
         public void Update()
         {
             var error = Api.UpdateQuaternion(deviceId, Quaternion);
@@ -119,6 +130,10 @@ namespace FreePIE.Core.Plugins
         public void startStreaming()
         {
             plugin.StartStreaming();
+        }
+        public void tareSensor()
+        {
+            plugin.TareSensor();
         }
     }
 }
