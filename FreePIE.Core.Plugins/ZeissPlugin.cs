@@ -78,13 +78,13 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    [Global(Name = "zeiss")]
+    [Global(Name = "cinemizer")]
     public class ZeissGlobal : UpdateblePluginGlobal<ZeissPlugin>
     {
         public ZeissGlobal(ZeissPlugin plugin) : base(plugin){}
 
-        public float Yaw { get { return plugin.Euler.Yaw; } }
-        public float Pitch { get { return plugin.Euler.Pitch; } }
-        public float Roll { get { return plugin.Euler.Roll; } }
+        public float yaw { get { return plugin.Euler.Yaw; } }
+        public float pitch { get { return plugin.Euler.Pitch; } }
+        public float roll { get { return plugin.Euler.Roll; } }
     }
 }
