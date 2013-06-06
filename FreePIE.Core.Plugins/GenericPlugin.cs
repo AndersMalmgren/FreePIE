@@ -43,7 +43,7 @@ namespace FreePIE.Core.Plugins
 
         public override Action Start()
         {
-            memoryMappedFile = MemoryMappedFile.CreateOrOpen("FPGeneric", Marshal.SizeOf(typeof(Generic6DOF)));
+            memoryMappedFile = MemoryMappedFile.CreateOrOpen("FPGeneric", Marshal.SizeOf(typeof(Generic6DOF)) * deviceCount);
             accessor = memoryMappedFile.CreateViewAccessor();
 
             return null;
