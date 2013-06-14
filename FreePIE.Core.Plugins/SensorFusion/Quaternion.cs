@@ -38,6 +38,12 @@ namespace FreePIE.Core.Plugins.SensorFusion
             Roll = Math.Atan2(m23, m33);
             Pitch = Math.Asin(-m13);
             Yaw = Math.Atan2(m12, m11);
+            if (Double.IsNaN(Roll))
+                Roll = 0d;
+            if (Double.IsNaN(Pitch))
+                Pitch = 0d;
+            if (Double.IsNaN(Yaw))
+                Yaw = 0d;
         }
 
         public void Update(double w, double x, double y, double z)

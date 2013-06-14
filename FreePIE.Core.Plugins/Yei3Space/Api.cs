@@ -39,7 +39,7 @@ namespace FreePIE.Core.Plugins.Yei3Space
                     {
                         tss_getSerialNumber((int)device_id, out serial);
                         Console.WriteLine("Wireless Sensor Found, serial: " + serial.ToString("X") + " on space: " + i);
-                        //StartStreamingU((int)device_id);
+                        StartStreamingU((int)device_id);
                         break;
                     }
                 }
@@ -51,7 +51,7 @@ namespace FreePIE.Core.Plugins.Yei3Space
                 {
                     tss_getSerialNumber((int)device_id, out serial);
                     Console.WriteLine("TSS:Created, device serial is " + serial.ToString("X"));
-                    //StartStreamingU((int)device_id);
+                    StartStreamingU((int)device_id);
                 }
             }
 
@@ -66,7 +66,7 @@ namespace FreePIE.Core.Plugins.Yei3Space
             TssError error;
             if (is_streaming)
             {
-                error = tss_getLastStreamData(deviceId, out packet, 16);
+                error = tss_getLastStreamData(deviceId, out packet, 16, out timestamp);
                 quat[0] = packet.quat[0];
                 quat[1] = packet.quat[1];
                 quat[2] = packet.quat[2];
@@ -222,7 +222,7 @@ namespace FreePIE.Core.Plugins.Yei3Space
         private static extern TssError tss_stopStreaming(int id);
 
         [DllImport("ThreeSpace_API.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern TssError tss_getLastStreamData(int id, out TssStreamPacket packet, int size);
+        private static extern TssError tss_getLastStreamData(int id, out TssStreamPacket packet, int size, out uint timestamp);
 
         [DllImport("ThreeSpace_API.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern TssDeviceIdMask tss_getDeviceType(int id, out TssDeviceIdMask device_type);
