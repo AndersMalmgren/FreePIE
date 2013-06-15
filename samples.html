@@ -36,74 +36,71 @@
         <h3>Script examples</h3>
         <p>FreePIE uses Python as the scripting language of choice since v0.4.211.0. Here follows a collection of simple script examples to get you started.</p>
         <h4>PPJoy joystick emulation</h4>
-        <pre><code data-language="python">
-            def update():
-                x = math.degrees(freeTrack.yaw) * ratio
-                y = math.degrees(freeTrack.pitch) * ratio
+        <pre><code data-language="python">def update():
+    x = math.degrees(freeTrack.yaw) * ratio
+    y = math.degrees(freeTrack.pitch) * ratio
    
-                ppJoy[0].setAxis(AxisTypes.X, x)
-                ppJoy[0].setAxis(AxisTypes.Y, y)
+    ppJoy[0].setAxis(AxisTypes.X, x)
+    ppJoy[0].setAxis(AxisTypes.Y, y)
    
-            if starting:
-                maxAngle = 180
-                axisRange = 1000
-                ratio = axisRange / maxAngle
-                freeTrack.update += update
+if starting:
+    maxAngle = 180
+    axisRange = 1000
+    ratio = axisRange / maxAngle
+    freeTrack.update += update
         </code></pre>
         <h4>Android > Freetrack</h4>
-        <pre><code data-language="python">
-            def update():
-                global yaw
-                yaw = android.yaw
-                global pitch
-                pitch = -android.roll
-                global roll
-                roll = android.pitch
+        <pre><code data-language="python">def update():
+    global yaw
+    yaw = android.yaw
+    global pitch
+    pitch = -android.roll
+    global roll
+    roll = android.pitch
 
-            if starting:
-                centerYaw = 0
-                centerPitch = 0
-                centerRoll = 0
+if starting:
+    centerYaw = 0
+    centerPitch = 0
+    centerRoll = 0
    
-                yaw = 0
-                pitch = 0
-                roll = 0
-                android.update += update
+    yaw = 0
+    pitch = 0
+    roll = 0
+    android.update += update
 
-            freeTrack.yaw  = yaw - centerYaw
-            freeTrack.pitch = pitch - centerPitch
-            freeTrack.roll = roll - centerRoll
+freeTrack.yaw  = yaw - centerYaw
+freeTrack.pitch = pitch - centerPitch
+freeTrack.roll = roll - centerRoll
 
-            if keyboard.getKeyDown(Key.LeftControl) and keyboard.getPressed(Key.C):
-                centerYaw = yaw
-                centerPitch = pitch
-                centerRoll = roll
+if keyboard.getKeyDown(Key.LeftControl) and keyboard.getPressed(Key.C):
+    centerYaw = yaw
+    centerPitch = pitch
+    centerRoll = roll
         </code></pre>
         <h4>TrackIR mouse emulation</h4>
-        <pre><code data-language="python">
-            #Use Z to toggle on/off and right mouse to activate head tracking 
-            #(Good for games like Battlefield 3)
-            def update():
-               yaw = trackIR.yaw
-               pitch = trackIR.pitch
+        <pre><code data-language="python">#Use Z to toggle on/off and right mouse to activate head tracking 
+#(Good for games like Battlefield 3)
+def update():
+    yaw = trackIR.yaw
+    pitch = trackIR.pitch
    
-               deltaYaw = filters.delta(yaw)
-               deltaPitch = filters.delta(pitch)   
+    deltaYaw = filters.delta(yaw)
+    deltaPitch = filters.delta(pitch)   
      
-               if (enabled and hotkey):
-                  mouse.deltaX = deltaYaw*multiply
-                  mouse.deltaY = -deltaPitch*multiply
+    if (enabled and hotkey):
+        mouse.deltaX = deltaYaw*multiply
+        mouse.deltaY = -deltaPitch*multiply
 
-            if starting:
-               enabled = False
-               multiply = 20
-               trackIR.update += update
+if starting:
+    enabled = False
+    multiply = 20
+    trackIR.update += update
 
-            hotkey = mouse.rightButton
-            toggle = keyboard.getPressed(Key.Z)
+hotkey = mouse.rightButton
+toggle = keyboard.getPressed(Key.Z)
 
-            if toggle:
-               enabled = not enabled
+if toggle:
+    enabled = not enabled
         </code></pre>
       </section>
       <footer>
