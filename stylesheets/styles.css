@@ -297,6 +297,10 @@ a.github {
 	background: url(../images/octocat-small.png) no-repeat 1px;
 }
 
+a.samples {
+	background: url(../images/pipette.png) no-repeat 1px;
+}
+
 a.buttons:hover {
 	color: #fff;
 	text-decoration: none;
