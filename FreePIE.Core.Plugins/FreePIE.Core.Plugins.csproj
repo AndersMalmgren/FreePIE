@@ -76,6 +76,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SensorFusion\MahonyAHRS.cs" />
     <Compile Include="SensorFusion\Quaternion.cs" />
+    <Compile Include="Strategies\ContinousYawStrategy.cs" />
     <Compile Include="Strategies\GetPressedStrategy.cs" />
     <Compile Include="Strategies\SetPressedStrategy.cs" />
     <Compile Include="TrackIRPlugin.cs" />
