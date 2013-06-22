@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using FreePIE.Core.Contracts;
-using FreePIE.Core.Plugins.TrackIR;
 using FreePIE.Core.Plugins.Wiimote;
 using System.Linq;
 
@@ -21,6 +20,12 @@ namespace FreePIE.Core.Plugins
         One = 0x0002,
         Two = 0x0001,
         Home = 0x080
+    }
+
+    [GlobalEnum]
+    public enum NunchuckButtons
+    {
+        Z = 0x01, C = 0x02
     }
 
     [GlobalEnum]
@@ -146,15 +151,17 @@ namespace FreePIE.Core.Plugins
         private readonly Action accelerationTrigger;
         private readonly Action buttonTrigger;
         private readonly Action motionPlusTrigger;
+        private readonly Action nunchuckTrigger;
 
         public WiimoteGlobal(WiimotePlugin plugin, IWiimoteData data, Dictionary<uint, Action> updaters)
         {
             this.plugin = plugin;
             this.data = data;
 
-            acceleration = new Acceleration(data, out accelerationTrigger);
+            acceleration = new AccelerationGlobal(data, out accelerationTrigger);
             buttons = new WiimoteButtonState(data, out buttonTrigger);
-            motionplus = new MotionPlus(data, out motionPlusTrigger);
+            motionplus = new MotionPlusGlobal(data, out motionPlusTrigger);
+            nunchuck = new NunchuckGlobal(data, out nunchuckTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
         }
@@ -168,14 +175,17 @@ namespace FreePIE.Core.Plugins
         {
             buttonTrigger();
 
-            if(data.IsDataValid(WiimoteDataValid.Acceleration))
+            if (data.IsDataValid(WiimoteDataValid.Acceleration))
                 accelerationTrigger();
 
             if (data.IsDataValid(WiimoteDataValid.MotionPlus))
                 motionPlusTrigger();
+
+            if (data.IsDataValid(WiimoteDataValid.Nunchuck))
+                nunchuckTrigger();
         }
 
-        public MotionPlus motionplus
+        public MotionPlusGlobal motionplus
         { 
             get;
             private set;
@@ -186,7 +196,13 @@ namespace FreePIE.Core.Plugins
             get { return data.MotionPlusEulerAngles; }
         }
 
-        public Acceleration acceleration
+        public AccelerationGlobal acceleration
+        {
+            get;
+            private set;
+        }
+
+        public NunchuckGlobal nunchuck
         {
             get;
             private set;

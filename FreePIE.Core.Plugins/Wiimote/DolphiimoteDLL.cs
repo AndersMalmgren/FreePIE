@@ -58,7 +58,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public byte WiimoteNumber { get; private set; }
 
-        public Tuple<double, double, double> MotionPlus { get; private set; }
+        public Gyro MotionPlus { get; private set; }
 
         public EulerAngles MotionPlusEulerAngles
         {
@@ -68,7 +68,9 @@ namespace FreePIE.Core.Plugins.Wiimote
             }
         }
 
-        public Tuple<double, double, double> Acceleration { get; private set; }
+        public Nunchuck Nunchuck { get; private set; }
+
+        public Acceleration Acceleration { get; private set; }
 
         public DolphiimoteWiimoteData(byte wiimoteNumber, WiimoteCalibration calibration)
         {
@@ -94,9 +96,15 @@ namespace FreePIE.Core.Plugins.Wiimote
             return (data.valid_data_flags & value) == value;
         }
 
-        private Tuple<double, double, double> CalculateMotionPlus(DolphiimoteMotionplus motionplus)
+        public bool IsNunchuckButtonPressed(NunchuckButtons nunchuckButtons)
         {
-            return new Tuple<double, double, double>(TransformLinear((motionplus.slow_modes & 0x1) == 0x1 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.yaw_down_speed),
+            UInt16 value = (UInt16)nunchuckButtons;
+            return (data.nunchuck.buttons & value) == value;
+        }
+
+        private Gyro CalculateMotionPlus(DolphiimoteMotionplus motionplus)
+        {
+            return new Gyro(TransformLinear((motionplus.slow_modes & 0x1) == 0x1 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.yaw_down_speed),
                                                      TransformLinear((motionplus.slow_modes & 0x4) == 0x4 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.pitch_left_speed),
                                                      TransformLinear((motionplus.slow_modes & 0x2) == 0x2 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.roll_left_speed));
         }
@@ -104,13 +112,22 @@ namespace FreePIE.Core.Plugins.Wiimote
         public void Update(DolphiimoteData data)
         {
             this.data = data;
-            Acceleration = new Tuple<double, double, double>(TransformLinear(calibration.AccelerationGain, calibration.AccelerationOffset, data.acceleration.x),
+            Acceleration = new Acceleration(TransformLinear(calibration.AccelerationGain, calibration.AccelerationOffset, data.acceleration.x),
                                                              TransformLinear(calibration.AccelerationGain, calibration.AccelerationOffset, data.acceleration.y),
                                                              TransformLinear(calibration.AccelerationGain, calibration.AccelerationOffset, data.acceleration.z));
             if (IsDataValid(WiimoteDataValid.MotionPlus))
             {
                 MotionPlus = CalculateMotionPlus(data.motionplus);
-                fuser.HandleIMUData(MotionPlus.Item1, MotionPlus.Item2, MotionPlus.Item3, Acceleration.Item1, Acceleration.Item2, Acceleration.Item3);
+                fuser.HandleIMUData(MotionPlus.x, MotionPlus.y, MotionPlus.z, Acceleration.x, Acceleration.y, Acceleration.z);
+            }
+
+            if (IsDataValid(WiimoteDataValid.Nunchuck))
+            {
+                Nunchuck = new Nunchuck
+                {
+                    Acceleration = new Acceleration(data.nunchuck.x, data.nunchuck.y, data.nunchuck.z),
+                    Stick = new NunchuckStick(data.nunchuck.stick_x, data.nunchuck.stick_y)
+                };
             }
         }
     }
@@ -139,7 +156,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public UInt16 enabled_capabilities;
     }
 
-    public class DolphiimoteDLL : IDisposable
+    public class DolphiimoteDll : IDisposable
     {
         private readonly NativeDll nativeDll;
 
@@ -168,7 +185,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         private ConnectionCallback connectionCallback;
         private OnLog onLog;
 
-        public DolphiimoteDLL(string path)
+        public DolphiimoteDll(string path)
         {
             nativeDll = new NativeDll(path);
 

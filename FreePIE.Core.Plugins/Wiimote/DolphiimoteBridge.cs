@@ -9,7 +9,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 {
     public class DolphiimoteBridge : IWiimoteBridge
     {
-        private readonly DolphiimoteDLL dll;
+        private readonly DolphiimoteDll dll;
         private readonly WiimoteCalibration calibration;
         private readonly Dictionary<uint, DolphiimoteWiimoteData> data;
         private readonly string logFile;
@@ -22,7 +22,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
             double motionPlusSlowGain = 1.0 / (8192.0 / 595.0) / 1.44; //TODO: FIX CALIBRATION
             calibration = new WiimoteCalibration(9.8 / 0x19, -0x80, motionPlusSlowGain , motionPlusSlowGain * 2000 / 440 ,-0x2000);
-            dll = new DolphiimoteDLL(Path.Combine(Environment.CurrentDirectory, "DolphiiMote.dll"));
+            dll = new DolphiimoteDll(Path.Combine(Environment.CurrentDirectory, "DolphiiMote.dll"));
 
             data = new Dictionary<uint, DolphiimoteWiimoteData>();
 
