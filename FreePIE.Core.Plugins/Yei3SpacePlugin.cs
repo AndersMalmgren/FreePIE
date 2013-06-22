@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.SensorFusion;
@@ -83,13 +82,7 @@ namespace FreePIE.Core.Plugins
         {
             TssError error = Api.TareSensor(deviceId);
             if (error != TssError.TSS_NO_ERROR)
-            {
                 throw new Exception(string.Format("Error while taring: {0}", error));
-            }
-            else
-            {
-                Console.WriteLine(string.Format("Device Id: {0} Tared", deviceId));
-            }
         }
         public void Update()
         {
@@ -123,17 +116,5 @@ namespace FreePIE.Core.Plugins
         public double yaw { get { return plugin.Quaternion.Yaw; } }
         public double pitch { get { return plugin.Quaternion.Pitch; } }
         public double roll { get { return plugin.Quaternion.Roll; } }
-        public void stopStreaming()
-        {
-            plugin.StopStreaming();
-        }
-        public void startStreaming()
-        {
-            plugin.StartStreaming();
-        }
-        public void tareSensor()
-        {
-            plugin.TareSensor();
-        }
     }
 }
