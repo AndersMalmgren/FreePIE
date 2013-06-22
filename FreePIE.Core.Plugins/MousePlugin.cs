@@ -13,8 +13,8 @@ namespace FreePIE.Core.Plugins
     public class MousePlugin : Plugin
     {
         // Mouse position state variables
-        float DeltaXOut;
-        float DeltaYOut;
+        int DeltaXOut;
+        int DeltaYOut;
 
         DirectInput DirectInputInstance = new DirectInput();
         Mouse MouseDevice;
@@ -102,19 +102,13 @@ namespace FreePIE.Core.Plugins
 
                 var input = new MouseKeyIO.INPUT[1];
                 input[0].type = MouseKeyIO.INPUT_MOUSE;
-                input[0].mi = MouseInput((int)DeltaXOut, (int)DeltaYOut, 0, 0, MouseKeyIO.MOUSEEVENTF_MOVE);
+                input[0].mi = MouseInput(DeltaXOut, DeltaYOut, 0, 0, MouseKeyIO.MOUSEEVENTF_MOVE);
 
                 MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
 
                 // Reset the mouse values
-                if ((int)DeltaXOut != 0)
-                {
-                    DeltaXOut = DeltaXOut - (int)DeltaXOut;
-                }
-                if ((int)DeltaYOut != 0)
-                {
-                    DeltaYOut = DeltaYOut - (int)DeltaYOut;
-                }
+                DeltaXOut = 0;
+                DeltaYOut = 0;
             }
 
             CurrentMouseState = null;  // flush the mouse state
@@ -123,11 +117,11 @@ namespace FreePIE.Core.Plugins
         }
 
         //-----------------------------------------------------------------------
-        public float DeltaX
+        public int DeltaX
         {
             set
             {
-                DeltaXOut = DeltaXOut + value;
+                DeltaXOut = value;
             }
 
             get
@@ -142,11 +136,11 @@ namespace FreePIE.Core.Plugins
         }
 
         //-----------------------------------------------------------------------
-        public float DeltaY
+        public int DeltaY
         {
             set
             {
-                DeltaYOut = DeltaYOut + value;
+                DeltaYOut = value;
             }
 
             get
@@ -259,13 +253,13 @@ namespace FreePIE.Core.Plugins
         public double deltaX
         {
             get { return plugin.DeltaX; }
-            set { plugin.DeltaX = (float)value; }
+            set { plugin.DeltaX = (int) Math.Round(value); }
         }
 
         public double deltaY
         {
             get { return plugin.DeltaY; }
-            set { plugin.DeltaY = (float)value; }
+            set { plugin.DeltaY = (int) Math.Round(value); }
         }
 
         public bool leftButton
