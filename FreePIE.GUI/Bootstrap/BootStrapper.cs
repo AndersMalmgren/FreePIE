@@ -48,8 +48,9 @@ namespace FreePIE.GUI.Bootstrap
             if (e == null) return;
 
             var fileSystem = kernel.Get<IFileSystem>();
+            var paths = kernel.Get<IPaths>();
             var log = string.Format("{0} - {1}: {2}{3}{3}", DateTime.Now, e.Message, e.StackTrace, Environment.NewLine);
-            fileSystem.AppendAllText("FreePIE.log", log);
+            fileSystem.AppendAllText(paths.GetDataPath("FreePIE.log"), log);
 
             Log(e.InnerException);
         }
