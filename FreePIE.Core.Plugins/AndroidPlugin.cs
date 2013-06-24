@@ -25,11 +25,22 @@ namespace FreePIE.Core.Plugins
         private bool newData;
         private Quaternion quaternion;
         private ContinousYawStrategy continousYawStrategy;
+        private ContinousYawStrategy googleContinousYawStrategy;
 
-        public bool ContinousYaw { get { return continousYawStrategy.Enable; } set { continousYawStrategy.Enable = value; } }
+        public bool ContinousYaw
+        {
+            get { return continousYawStrategy.Enable; }
+            set
+            {
+                continousYawStrategy.Enable = value;
+                googleContinousYawStrategy.Enable = value;
+            }
+        }
+
         public double Yaw { get { return continousYawStrategy.Yaw; } }
         public double Pitch { get { return quaternion.Pitch; } }
         public double Roll { get { return quaternion.Roll; } }
+        public double GoogleYaw { get { return googleContinousYawStrategy.Yaw; } }
         public double GooglePitch { get; private set; }
         public double GoogleRoll { get; private set; }
 
@@ -92,6 +103,7 @@ namespace FreePIE.Core.Plugins
             MahonyAHRS ahrs = null;
             quaternion = new Quaternion();
             continousYawStrategy = new ContinousYawStrategy(Units.Radians);
+            googleContinousYawStrategy = new ContinousYawStrategy(Units.Radians);
 
             var freeqSampled = false;
             int samples = 0;
@@ -172,7 +184,7 @@ namespace FreePIE.Core.Plugins
                     var yaw = GetFloat(bytes, index, 0);
                     GooglePitch = GetFloat(bytes, index, 4);
                     GoogleRoll = GetFloat(bytes, index, 8);
-                    continousYawStrategy.Update(yaw);
+                    googleContinousYawStrategy.Update(yaw);
                     index += 12;
                 }
 
@@ -202,7 +214,7 @@ namespace FreePIE.Core.Plugins
         public double pitch { get { return plugin.Pitch; } }
         public double roll { get { return plugin.Roll; } }
 
-        public double googleYaw { get { return plugin.Yaw; } }
+        public double googleYaw { get { return plugin.GoogleYaw; } }
         public double googlePitch { get { return plugin.GooglePitch; } }
         public double googleRoll { get { return plugin.GoogleRoll; } }
     }
