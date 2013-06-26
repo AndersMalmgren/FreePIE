@@ -116,5 +116,9 @@ namespace FreePIE.Core.Plugins
         public double yaw { get { return plugin.Quaternion.Yaw; } }
         public double pitch { get { return plugin.Quaternion.Pitch; } }
         public double roll { get { return plugin.Quaternion.Roll; } }
+        public void tareSensor()
+        {
+            plugin.TareSensor();
+        }
     }
 }
