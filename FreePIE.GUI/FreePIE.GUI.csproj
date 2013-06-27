@@ -384,7 +384,9 @@ copy "$(SolutionDir)\Lib\piefreespace\*.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\Sixense\*.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\FreeTrack\*.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\Zeiss\*.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Lib\YEI3-Space\*.dll" "$(TargetDir)"</PostBuildEvent>
+copy "$(SolutionDir)\Lib\YEI3-Space\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\IO\Binaries\*.dll" "$(TargetDir)"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
