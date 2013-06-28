@@ -1,3 +1,7 @@
+// freepie_io.h
+// (c) Max Malmgren - https://github.com/AndersMalmgren/FreePIE
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
 #ifndef FREEPIE_IO_H
 #define FREEPIE_IO_H
 

@@ -1,3 +1,7 @@
+// freepie_io_6dof.cpp
+// (c) Max Malmgren - https://github.com/AndersMalmgren/FreePIE
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
 extern "C"
 {
   #include "../include/freepie_io.h"
