@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" Codepage="1252" Language="1033" Manufacturer="$(var.ProductName)" Name="$(var.ProductName)" UpgradeCode="{9534A27D-FC9C-452B-92CB-F2D5F6B3AB34}" Version="$(var.Version)">
-    <Package InstallerVersion="300" Compressed="yes" />
+    <Package InstallerVersion="405" Compressed="yes" />
     <MajorUpgrade
       Schedule="afterInstallInitialize"
       DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
@@ -51,7 +51,11 @@
     </DirectoryRef>
 
     <DirectoryRef Id="INSTALLFOLDER">
-      <Merge Id="VCRedist" SourceFile="Microsoft_VC100_CRT_x86.msm" DiskId="1" Language="0"/>
+      <Merge Id="VCRedist" SourceFile="Microsoft_VC100_CRT_x86.msm" DiskId="1" Language="0"/>      
+    </DirectoryRef>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Merge Id="VCRedist11" SourceFile="Microsoft_VC110_CRT_x86.msm" DiskId="1" Language="0"/>
     </DirectoryRef>
 
     <Icon Id="icon.ico" SourceFile="free-pie.ico"/>
@@ -65,5 +69,9 @@
     <Feature Id="VCRedist" Title="Visual C++ 10.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
       <MergeRef Id="VCRedist"/>
     </Feature>
+
+    <Feature Id="VCRedist11" Title="Visual C++ 11.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+      <MergeRef Id="VCRedist11"/>
+    </Feature>    
   </Product>
 </Wix>
