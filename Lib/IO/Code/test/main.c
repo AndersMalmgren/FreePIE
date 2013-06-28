@@ -1,4 +1,4 @@
-#include "../include/freepie_io.h"
+#include "../Generic6DoF/include/freepie_io.h"
 #include <stdio.h>
 #include <string.h>
 #include <Windows.h>
@@ -49,7 +49,7 @@ void increment(int count, freepie_io_6dof_data *data)
 
 int main()
 {
-  int do_read = 0;
+  int do_read = 1;
   int i = 0;
   int count = 0;
   uint32_t slots;
@@ -62,8 +62,9 @@ int main()
     printf("Allocated data too small to accomodate %i slots.", slots);
     return 0;
   }
-
-  printf("\nAttempting to read...");
+  if(do_read)
+    printf("\nAttempting to read...");
+  else printf("\nAttempting to write...");
   
   while(1)
   {

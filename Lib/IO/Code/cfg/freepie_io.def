@@ -1,4 +1,4 @@
-LIBRARY   Generic6DoF
+LIBRARY freepie_io
 EXPORTS
    freepie_io_6dof_slots   @1
    freepie_io_6dof_write   @2
