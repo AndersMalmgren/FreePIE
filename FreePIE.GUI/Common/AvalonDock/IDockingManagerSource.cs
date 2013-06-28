@@ -1,4 +1,4 @@
-﻿using AvalonDock;
+﻿using Xceed.Wpf.AvalonDock;
 
 namespace FreePIE.GUI.Common.AvalonDock
 {

@@ -8,7 +8,7 @@ using FreePIE.Core.Contracts;
 namespace FreePIE.Core.Plugins
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct Generic6DOF
+    public struct FreePieIO6Dof
     {
         public int DataId;
 
@@ -21,29 +21,29 @@ namespace FreePIE.Core.Plugins
         public float Z;
     }
 
-    [GlobalType( Type = typeof(GenericPluginGlobal), IsIndexed = true)]
-    public class GenericPlugin : Plugin
+    [GlobalType( Type = typeof(FreePieIOPluginGlobal), IsIndexed = true)]
+    public class FreePieIOPlugin : Plugin
     {
         private MemoryMappedFile memoryMappedFile;
         private MemoryMappedViewAccessor accessor;
         private const int deviceCount = 4;
         
-        private Generic6DOF[] data;
-        private Generic6DOF[] remoteData;
-        private List<GenericPluginHolder> holders;
+        private FreePieIO6Dof[] data;
+        private FreePieIO6Dof[] remoteData;
+        private List<FrePieIOPluginHolder> holders;
 
         public override object CreateGlobal()
         {
-            data = new Generic6DOF[deviceCount];
-            remoteData = new Generic6DOF[deviceCount];
+            data = new FreePieIO6Dof[deviceCount];
+            remoteData = new FreePieIO6Dof[deviceCount];
 
-            holders = data.Select((x, i) => new GenericPluginHolder(data, i)).ToList();
+            holders = data.Select((x, i) => new FrePieIOPluginHolder(data, i)).ToList();
             return holders.Select(h => h.Global).ToArray();
         }
 
         public override Action Start()
         {
-            memoryMappedFile = MemoryMappedFile.CreateOrOpen("FPGeneric", Marshal.SizeOf(typeof(Generic6DOF)) * deviceCount);
+            memoryMappedFile = MemoryMappedFile.CreateOrOpen("FPGeneric", Marshal.SizeOf(typeof(FreePieIO6Dof)) * deviceCount);
             accessor = memoryMappedFile.CreateViewAccessor();
 
             return null;
@@ -80,7 +80,7 @@ namespace FreePIE.Core.Plugins
                 if (holder.SameDataCount > 20 && holder.SameDataCountCanTriggerUpdate)
                 {
                     holder.SameDataCountCanTriggerUpdate = false;
-                    remote = new Generic6DOF {DataId = local.DataId};
+                    remote = new FreePieIO6Dof {DataId = local.DataId};
                     data[i] = remote;
                     holder.OnUpdate();
                 }
@@ -95,16 +95,16 @@ namespace FreePIE.Core.Plugins
 
         public override string FriendlyName
         {
-            get { return "Generic plugin"; }
+            get { return "FreePIE IO Plugin"; }
         }
     }
 
-    public class GenericPluginHolder : IUpdatable
+    public class FrePieIOPluginHolder : IUpdatable
     {
-        public GenericPluginHolder(Generic6DOF[] data, int index)
+        public FrePieIOPluginHolder(FreePieIO6Dof[] data, int index)
         {
             SameDataCountCanTriggerUpdate = true;
-            Global = new GenericPluginGlobal(this, d =>
+            Global = new FreePieIOPluginGlobal(this, d =>
                 {
                     if (!NewDataToWrite)
                         d.DataId++;
@@ -115,7 +115,7 @@ namespace FreePIE.Core.Plugins
                 }, () => data[index]);
         }
 
-        public GenericPluginGlobal Global { get; private set; }
+        public FreePieIOPluginGlobal Global { get; private set; }
         public bool NewDataToWrite { get; set; }
         public int SameDataCount { get; set; }
         public bool SameDataCountCanTriggerUpdate { get; set; }
@@ -124,19 +124,19 @@ namespace FreePIE.Core.Plugins
         public bool GlobalHasUpdateListener { get; set; }
     }
 
-    [Global(Name = "generic")]
-    public class GenericPluginGlobal : UpdateblePluginGlobal<GenericPluginHolder>
+    [Global(Name = "freePieIO")]
+    public class FreePieIOPluginGlobal : UpdateblePluginGlobal<FrePieIOPluginHolder>
     {
-        private readonly Action<Generic6DOF> setter;
-        private readonly Func<Generic6DOF> getter;
+        private readonly Action<FreePieIO6Dof> setter;
+        private readonly Func<FreePieIO6Dof> getter;
 
-        public GenericPluginGlobal(GenericPluginHolder plugin, Action<Generic6DOF> setter, Func<Generic6DOF> getter) : base(plugin)
+        public FreePieIOPluginGlobal(FrePieIOPluginHolder plugin, Action<FreePieIO6Dof> setter, Func<FreePieIO6Dof> getter) : base(plugin)
         {
             this.setter = setter;
             this.getter = getter;
         }
 
-        private void Write(Func<Generic6DOF, Generic6DOF> setValue)
+        private void Write(Func<FreePieIO6Dof, FreePieIO6Dof> setValue)
         {
             var data = getter();
             setter(setValue(data));

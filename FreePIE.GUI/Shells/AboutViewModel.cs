@@ -10,11 +10,11 @@ namespace FreePIE.GUI.Shells
 
         static AboutViewModel()
         {
-            version = String.Format("{0} Alpha",Assembly
-                    .GetExecutingAssembly()
-                    .GetName()
-                    .Version
-                    .ToString());
+            version = Assembly
+                .GetExecutingAssembly()
+                .GetName()
+                .Version
+                .ToString();
         }
 
         public AboutViewModel(IResultFactory resultFactory) : base(resultFactory)
@@ -29,7 +29,7 @@ namespace FreePIE.GUI.Shells
 
         public string ProjectPageUrl
         {
-            get { return "http://andersmalmgren.github.com/FreePIE/"; }
+            get { return "http://andersmalmgren.github.io/FreePIE/"; }
         }
 
         public void GotoProjectPage()
