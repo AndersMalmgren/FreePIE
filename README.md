@@ -7,6 +7,17 @@ Latest downloadable installer can be found [here](http://www.mtbs3d.com/phpBB/vi
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+Changelog 1.0.355.0
+* FreePIE should now work on w7 and w8 without admin rights
+* Fixed bugs with Android data contract (Requires reinstall of APK)
+* Freetrack client is no longer required to spoof Freetrack (Client dll is included with FreePIE)
+* Added a IO plugin that third party software can use to read/write from/to FreePIE
+* Added support for Carl Zeiss Cinemizer OLED
+* Added support for Yei 3 Space trackers
+* Added support for multiple XBox controllers
+* GUI performance fixes
+* Various stability fixes
+
 Changelog 0.6.277.0
 * Totaly remade GUI to use a Visual Studio like docking view
 * Added a apply button to Edit Selected Curve point for usability reasons (Curve settings)
