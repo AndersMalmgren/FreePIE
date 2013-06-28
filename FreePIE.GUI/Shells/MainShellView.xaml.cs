@@ -1,5 +1,5 @@
-﻿using AvalonDock;
-using FreePIE.GUI.Common.AvalonDock;
+﻿using FreePIE.GUI.Common.AvalonDock;
+using Xceed.Wpf.AvalonDock;
 
 namespace FreePIE.GUI.Shells
 {

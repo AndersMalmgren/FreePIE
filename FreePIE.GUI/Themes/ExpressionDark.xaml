@@ -11,8 +11,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:Caliburn="clr-namespace:FreePIE.GUI.Common.Caliburn"
-  xmlns:avalondock="http://avalondock.codeplex.com">
+  xmlns:Caliburn="clr-namespace:FreePIE.GUI.Common.Caliburn" xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock">
 
     <BitmapImage x:Key="IconOpen" UriSource="../Resources/open-16.png" />
     <BitmapImage x:Key="IconSave" UriSource="../Resources/save-16.png" />
@@ -1826,7 +1825,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="{x:Type avalondock:ContextMenuEx}" BasedOn="{StaticResource {x:Type ContextMenu}}">
+    <Style TargetType="{x:Type xcad:ContextMenuEx}" BasedOn="{StaticResource {x:Type ContextMenu}}">
     </Style>
     <Style TargetType="{x:Type MenuItem}">
         <Setter Property="HorizontalContentAlignment" Value="{Binding Path=HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
@@ -1942,7 +1941,7 @@
     </Style>
     <Style TargetType="{x:Type Caliburn:GestureMenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
     </Style>
-    <Style TargetType="{x:Type avalondock:MenuItemEx}" BasedOn="{StaticResource {x:Type MenuItem}}">
+    <Style TargetType="{x:Type xcad:MenuItemEx}" BasedOn="{StaticResource {x:Type MenuItem}}">
     </Style>
     <Style TargetType="{x:Type Separator}">
         <Setter Property="Height" Value="1" />
