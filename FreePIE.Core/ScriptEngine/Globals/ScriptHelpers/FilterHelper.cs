@@ -17,7 +17,7 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
         [NeedIndexer]
         public double simple(double x, double smoothing, string indexer)
         {
-            if(smoothing < 0 && smoothing > 1)
+            if(smoothing < 0 || smoothing > 1)
                 throw new ArgumentException("Smoothing must be a value between 0 and 1");
 
             var lastSample = x;
