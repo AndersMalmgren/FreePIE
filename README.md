@@ -7,7 +7,7 @@ Latest downloadable installer can be found [here](http://www.mtbs3d.com/phpBB/vi
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
-Changelog 1.1.360.0
+Changelog 1.1.362.0
 * Added support for Oculus Rift
 
 Changelog 1.0.355.0
