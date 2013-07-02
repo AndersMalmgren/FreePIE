@@ -39,9 +39,9 @@ namespace FreePIE.Core.Plugins
             OnUpdate();
         }
 
-        public void ReCenter()
+        public void Center()
         {
-            Api.ReCenter();
+            Api.Center();
         }
 
         public OculusVr3Dof Data
@@ -59,9 +59,9 @@ namespace FreePIE.Core.Plugins
         public float pitch { get { return plugin.Data.Pitch; } }
         public float roll { get { return plugin.Data.Roll; } }
 
-        public void ReCenter()
+        public void center()
         {
-            plugin.ReCenter();
+            plugin.Center();
         }
     }
 }

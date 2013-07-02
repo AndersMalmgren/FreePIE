@@ -34,7 +34,7 @@ namespace FreePIE.Core.Plugins.OculusVR
             return ovr_freepie_destroy() == 0;
         }
 
-        public static bool ReCenter()
+        public static bool Center()
         {
             return ovr_freepie_reset_orientation() == 0;
         }
