@@ -7,6 +7,9 @@ Latest downloadable installer can be found [here](http://www.mtbs3d.com/phpBB/vi
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+Changelog 1.1.360.0
+* Added support for Oculus Rift
+
 Changelog 1.0.355.0
 * FreePIE should now work on w7 and w8 without admin rights
 * Fixed bugs with Android data contract (Requires reinstall of APK)
