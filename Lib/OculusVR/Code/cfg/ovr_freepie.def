@@ -1,0 +1,6 @@
+LIBRARY OVRFreepie
+
+EXPORTS ovr_freepie_init
+		ovr_freepie_read
+		ovr_freepie_destroy
+		ovr_freepie_reset_orientation
