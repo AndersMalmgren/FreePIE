@@ -71,6 +71,9 @@
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
     <Compile Include="MouseKeyIO.cs" />
     <Compile Include="MousePlugin.cs" />
+    <Compile Include="OculusPlugin.cs" />
+    <Compile Include="OculusVR\Api.cs" />
+    <Compile Include="OculusVR\OVR3DOF.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="PPJoyPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

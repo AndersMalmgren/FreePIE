@@ -386,6 +386,7 @@ copy "$(SolutionDir)\Lib\FreeTrack\*.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\Zeiss\*.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\YEI3-Space\*.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\IO\Binaries\Release-DllMultiThreadRuntime\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\OculusVR\Binaries\*.dll" "$(TargetDir)"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
