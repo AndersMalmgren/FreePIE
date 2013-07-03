@@ -3,7 +3,7 @@ FreePIE
 
 Programmable Input Emulator
 
-Latest downloadable installer can be found [here](http://www.mtbs3d.com/phpBB/viewtopic.php?f=139&t=14483)
+Latest downloadable installer can be found [here](http://andersmalmgren.github.io/FreePIE/)
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
