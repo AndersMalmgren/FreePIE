@@ -91,6 +91,9 @@
     <Compile Include="TrackIR\NPClientSpoof.cs" />
     <Compile Include="TrackIR\TrackIRDll.cs" />
     <Compile Include="TrackIR\TrackIRHeadposeData.cs" />
+    <Compile Include="VJoyPlugin.cs" />
+    <Compile Include="VJoy\Api.cs" />
+    <Compile Include="VJoy\VJoyState.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
     <Compile Include="XBox360Plugin.cs" />
