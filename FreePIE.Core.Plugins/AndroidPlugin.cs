@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using AHRS;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.SensorFusion;
+using FreePIE.Core.Plugins.Strategies;
 
 namespace FreePIE.Core.Plugins
 {
@@ -23,11 +24,23 @@ namespace FreePIE.Core.Plugins
         private int udpPort;
         private bool newData;
         private Quaternion quaternion;
+        private ContinousYawStrategy continousYawStrategy;
+        private ContinousYawStrategy googleContinousYawStrategy;
 
-        public double Yaw { get { return quaternion.Yaw; } }
+        public bool ContinousYaw
+        {
+            get { return continousYawStrategy.Enable; }
+            set
+            {
+                continousYawStrategy.Enable = value;
+                googleContinousYawStrategy.Enable = value;
+            }
+        }
+
+        public double Yaw { get { return continousYawStrategy.Yaw; } }
         public double Pitch { get { return quaternion.Pitch; } }
         public double Roll { get { return quaternion.Roll; } }
-        public double GoogleYaw { get; private set; }
+        public double GoogleYaw { get { return googleContinousYawStrategy.Yaw; } }
         public double GooglePitch { get; private set; }
         public double GoogleRoll { get; private set; }
 
@@ -89,6 +102,8 @@ namespace FreePIE.Core.Plugins
 
             MahonyAHRS ahrs = null;
             quaternion = new Quaternion();
+            continousYawStrategy = new ContinousYawStrategy(Units.Radians);
+            googleContinousYawStrategy = new ContinousYawStrategy(Units.Radians);
 
             var freeqSampled = false;
             int samples = 0;
@@ -159,15 +174,17 @@ namespace FreePIE.Core.Plugins
 
                     ahrs.Update(gx, gy, gz, ax, ay, az, mx, my, mz);
                     quaternion.Update(ahrs.Quaternion[0], ahrs.Quaternion[1], ahrs.Quaternion[2], ahrs.Quaternion[3]);
+                    continousYawStrategy.Update(quaternion.Yaw);
 
                     index += 36;
                 }
 
                 if (orientation)
                 {
-                    GoogleYaw = GetFloat(bytes, index, 0);
+                    var yaw = GetFloat(bytes, index, 0);
                     GooglePitch = GetFloat(bytes, index, 4);
                     GoogleRoll = GetFloat(bytes, index, 8);
+                    googleContinousYawStrategy.Update(yaw);
                     index += 12;
                 }
 
@@ -192,6 +209,7 @@ namespace FreePIE.Core.Plugins
     {
         public AndroidGlobal(AndroidPlugin plugin) : base(plugin){ }
 
+        public bool continousYaw { get { return plugin.ContinousYaw; } set { plugin.ContinousYaw = value; } }
         public double yaw { get { return plugin.Yaw; } }
         public double pitch { get { return plugin.Pitch; } }
         public double roll { get { return plugin.Roll; } }
