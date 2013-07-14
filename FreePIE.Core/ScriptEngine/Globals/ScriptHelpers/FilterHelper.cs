@@ -71,5 +71,13 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
 
             return strategy.Out;
         }
+
+        public double deadband(double x, double deadZone)
+        {
+            if (Math.Abs(x) >= Math.Abs(deadZone))
+                return x;
+
+            return 0;
+        }
     }
 }

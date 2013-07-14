@@ -13,36 +13,34 @@ namespace FreePIE.Core.Plugins
     public class MousePlugin : Plugin
     {
         // Mouse position state variables
-        int DeltaXOut;
-        int DeltaYOut;
+        private double deltaXOut;
+        private double deltaYOut;
 
-        DirectInput DirectInputInstance = new DirectInput();
-        Mouse MouseDevice;
-        MouseState CurrentMouseState;
-        bool LeftPressed;
-        bool RightPressed;
-        bool MiddlePressed;
+        private DirectInput directInputInstance = new DirectInput();
+        private Mouse mouseDevice;
+        private MouseState currentMouseState;
+        private bool leftPressed;
+        private bool rightPressed;
+        private bool middlePressed;
         private GetPressedStrategy getButtonPressedStrategy;
         private SetPressedStrategy setButtonPressedStrategy;
 
-        //-----------------------------------------------------------------------
         public override object CreateGlobal()
         {
             return new MouseGlobal(this);
         }
 
-        //-----------------------------------------------------------------------
-        public override System.Action Start()
+        public override Action Start()
         {
             IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
 
-            MouseDevice = new Mouse(DirectInputInstance);
-            if (MouseDevice == null)
+            mouseDevice = new Mouse(directInputInstance);
+            if (mouseDevice == null)
                 throw new Exception("Failed to create mouse device");
 
-            MouseDevice.SetCooperativeLevel(handle, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
-            MouseDevice.Properties.AxisMode = DeviceAxisMode.Relative;   // Get delta values
-            MouseDevice.Acquire();
+            mouseDevice.SetCooperativeLevel(handle, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
+            mouseDevice.Properties.AxisMode = DeviceAxisMode.Relative;   // Get delta values
+            mouseDevice.Acquire();
 
             getButtonPressedStrategy = new GetPressedStrategy(IsButtonDown);
             setButtonPressedStrategy = new SetPressedStrategy(SetButtonDown, SetButtonUp);
@@ -51,119 +49,116 @@ namespace FreePIE.Core.Plugins
             return null;
         }
 
-        //-----------------------------------------------------------------------
         public override void Stop()
         {
-            if (MouseDevice != null)
+            if (mouseDevice != null)
             {
-                MouseDevice.Unacquire();
-                MouseDevice.Dispose();
-                MouseDevice = null;
+                mouseDevice.Unacquire();
+                mouseDevice.Dispose();
+                mouseDevice = null;
             }
 
-            if (DirectInputInstance != null)
+            if (directInputInstance != null)
             {
-                DirectInputInstance.Dispose();
-                DirectInputInstance = null;
+                directInputInstance.Dispose();
+                directInputInstance = null;
             }
         }
         
-        //---------------------------------------------------------------------
         public override string FriendlyName
         {
             get { return "Mouse"; }
         }
 
-        //---------------------------------------------------------------------
         public override bool GetProperty(int index, IPluginProperty property)
         {
             return false;
         }
 
-        //---------------------------------------------------------------------
         public override bool SetProperties(Dictionary<string, object> properties)
         {
            return true;
         }
 
-        //--------------------------------------------------------------------------
         static private MouseKeyIO.MOUSEINPUT MouseInput(int x, int y, uint data, uint t, uint flag)
         {
            var mi = new MouseKeyIO.MOUSEINPUT {dx = x, dy = y, mouseData = data, time = t, dwFlags = flag};
             return mi;
         }
 
-        //---------------------------------------------------------------------
         public override void DoBeforeNextExecute()
         {
             // If a mouse command was given in the script, issue it all at once right here
-            if ((DeltaXOut != 0) || (DeltaYOut != 0))
+            if ((deltaXOut != 0) || (deltaYOut != 0))
             {
 
                 var input = new MouseKeyIO.INPUT[1];
                 input[0].type = MouseKeyIO.INPUT_MOUSE;
-                input[0].mi = MouseInput(DeltaXOut, DeltaYOut, 0, 0, MouseKeyIO.MOUSEEVENTF_MOVE);
+                input[0].mi = MouseInput((int)deltaXOut, (int)deltaYOut, 0, 0, MouseKeyIO.MOUSEEVENTF_MOVE);
 
                 MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
 
                 // Reset the mouse values
-                DeltaXOut = 0;
-                DeltaYOut = 0;
+                if ((int)deltaXOut != 0)
+                {
+                    deltaXOut = deltaXOut - (int)deltaXOut;
+                }
+                if ((int)deltaYOut != 0)
+                {
+                    deltaYOut = deltaYOut - (int)deltaYOut;
+                }
             }
 
-            CurrentMouseState = null;  // flush the mouse state
+            currentMouseState = null;  // flush the mouse state
 
             setButtonPressedStrategy.Do();
         }
 
-        //-----------------------------------------------------------------------
-        public int DeltaX
+        public double DeltaX
         {
             set
             {
-                DeltaXOut = value;
+                deltaXOut = deltaXOut + value;
             }
 
             get
             {
                 // Retrieve the mouse state only once per iteration to avoid getting
                 // zeros on subsequent calls
-                if (CurrentMouseState == null)
-                    CurrentMouseState = MouseDevice.GetCurrentState();
+                if (currentMouseState == null)
+                    currentMouseState = mouseDevice.GetCurrentState();
 
-                return CurrentMouseState.X;
+                return currentMouseState.X;
             }
         }
 
-        //-----------------------------------------------------------------------
-        public int DeltaY
+        public double DeltaY
         {
             set
             {
-                DeltaYOut = value;
+                deltaYOut = deltaYOut + value;
             }
 
             get
             {
                 // Retrieve the mouse state only once per iteration to avoid getting
                 // zeros on subsequent calls
-                if (CurrentMouseState == null)
-                    CurrentMouseState = MouseDevice.GetCurrentState();
+                if (currentMouseState == null)
+                    currentMouseState = mouseDevice.GetCurrentState();
 
-                return CurrentMouseState.Y;
+                return currentMouseState.Y;
             }
         }
 
-        //-----------------------------------------------------------------------
         public bool IsButtonDown(int index)
         {
 
             // Retrieve the mouse state only once per iteration to avoid getting
             // zeros on subsequent calls
-            if (CurrentMouseState == null)
-                CurrentMouseState = MouseDevice.GetCurrentState();
+            if (currentMouseState == null)
+                currentMouseState = mouseDevice.GetCurrentState();
 
-            return CurrentMouseState.IsPressed(index);
+            return currentMouseState.IsPressed(index);
         }
 
         public bool IsButtonPressed(int button)
@@ -181,7 +176,6 @@ namespace FreePIE.Core.Plugins
             SetButtonPressed(button, false);
         }
 
-        //----------------------------------------------------------------------
         public void SetButtonPressed(int index, bool pressed)
         {
             uint btn_flag = 0;
@@ -189,43 +183,43 @@ namespace FreePIE.Core.Plugins
             {
                if (pressed)
                {
-                  if (!LeftPressed)
+                  if (!leftPressed)
                      btn_flag = MouseKeyIO.MOUSEEVENTF_LEFTDOWN;
                }
                else
                {
-                  if (LeftPressed)
+                  if (leftPressed)
                      btn_flag = MouseKeyIO.MOUSEEVENTF_LEFTUP;
                }
-               LeftPressed = pressed;
+               leftPressed = pressed;
             }
             else if (index == 1)
             {
                if (pressed)
                {
-                  if (!RightPressed)
+                  if (!rightPressed)
                      btn_flag = MouseKeyIO.MOUSEEVENTF_RIGHTDOWN;
                }
                else
                {
-                  if (RightPressed)
+                  if (rightPressed)
                      btn_flag = MouseKeyIO.MOUSEEVENTF_RIGHTUP;
                }
-               RightPressed = pressed;
+               rightPressed = pressed;
             }
             else
             {
                if (pressed)
                {
-                  if (!MiddlePressed)
+                  if (!middlePressed)
                      btn_flag = MouseKeyIO.MOUSEEVENTF_MIDDLEDOWN;
                }
                else
                {
-                  if (MiddlePressed)
+                  if (middlePressed)
                      btn_flag = MouseKeyIO.MOUSEEVENTF_MIDDLEUP;
                }
-               MiddlePressed = pressed;
+               middlePressed = pressed;
             }
            
             if (btn_flag != 0) {
@@ -243,23 +237,21 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    //==========================================================================
     [Global(Name = "mouse")]
     public class MouseGlobal : UpdateblePluginGlobal<MousePlugin>
     {
-        //-----------------------------------------------------------------------
         public MouseGlobal(MousePlugin plugin) : base(plugin) { }
 
         public double deltaX
         {
             get { return plugin.DeltaX; }
-            set { plugin.DeltaX = (int) Math.Round(value); }
+            set { plugin.DeltaX = value; }
         }
 
         public double deltaY
         {
             get { return plugin.DeltaY; }
-            set { plugin.DeltaY = (int) Math.Round(value); }
+            set { plugin.DeltaY = value; }
         }
 
         public bool leftButton
