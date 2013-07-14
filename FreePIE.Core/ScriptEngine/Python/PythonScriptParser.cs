@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FreePIE.Core.Common;
@@ -33,6 +34,13 @@ namespace FreePIE.Core.ScriptEngine.Python
                 .Select(info => info.PluginType).ToList();
 
             return pluginInvoker.InvokeAndConfigurePlugins(pluginTypes);
+        }
+
+        public IEnumerable<Type> GetAllUsedGlobalEnums(string script)
+        {
+            return pluginInvoker.ListAllGlobalEnumTypes()
+                    .Where(t => script.Contains(t.Name))
+                    .ToList();
         }
 
         private static readonly char[] ExpressionDelimiters = "(){}\t \r\n:".ToArray();
