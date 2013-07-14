@@ -101,6 +101,7 @@
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\DiagnosticHelper.cs" />
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\FilterHelper.cs" />
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\IScriptHelper.cs" />
+    <Compile Include="ScriptEngine\Globals\ScriptHelpers\Strategies\ContinuesRotationStrategy.cs" />
     <Compile Include="ScriptEngine\ICodeCompletionProvider.cs" />
     <Compile Include="ScriptEngine\IScriptEngine.cs" />
     <Compile Include="ScriptEngine\IScriptParser.cs" />
