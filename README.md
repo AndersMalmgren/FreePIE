@@ -10,7 +10,7 @@ Latest downloadable installer can be found [here](http://andersmalmgren.github.i
 Changelog 1.2.375.0
 * Fixed mouse emulation so that it works with very small movements
 * Deadband filter added that can be used to eliminate drift with the new more sensitive mouse emulation
-* Added continues rotation filter that can be used to eliminate jumps in mouse emulation when passing tracker center
+* Added continous rotation filter that can be used to eliminate jumps in mouse emulation when passing tracker center
 * Added support for VJoy
 
 Changelog 1.1.362.0
