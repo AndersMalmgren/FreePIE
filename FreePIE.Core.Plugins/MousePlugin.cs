@@ -89,7 +89,7 @@ namespace FreePIE.Core.Plugins
         public override void DoBeforeNextExecute()
         {
             // If a mouse command was given in the script, issue it all at once right here
-            if ((deltaXOut != 0) || (deltaYOut != 0))
+            if ((int)deltaXOut != 0 || (int)deltaYOut != 0)
             {
 
                 var input = new MouseKeyIO.INPUT[1];
