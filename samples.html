@@ -25,17 +25,31 @@
         <h2 class="header">Programmable Input Emulator</h2>
 
         <ul>
-          <li class="download"><a class="buttons" href="http://rapidshare.com/files/1570934103/FreePIE.1.1.362.0.msi">MSI v1.1.362.0</a></li>
-          <li><a class="buttons github" href="https://github.com/AndersMalmgren/FreePIE">View On GitHub</a></li>
+          <li class="download"><a class="buttons" target="_blank" href="http://rapidshare.com/files/1635590458/FreePIE.1.2.375.0.msi">MSI v1.2.375.0</a></li>
+          <li><a class="buttons github" target="_blank" href="https://github.com/AndersMalmgren/FreePIE">View On GitHub</a></li>
           <li><a class="buttons samples" href="samples.html">Script examples</a></li>
         </ul>
 
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/AndersMalmgren">AndersMalmgren</a></p>
+        <p class="header">This project is maintained by <a class="header name" target="_blank" href="https://github.com/AndersMalmgren">AndersMalmgren</a></p>
         
       </header>
       <section>
         <h3>Script examples</h3>
         <p>FreePIE uses Python as the scripting language of choice since v0.4.211.0. Here follows a collection of simple script examples to get you started.</p>
+        <h4>Android mouse emulation with deadband and continous yaw</h4>      
+        <pre><code data-language="python">def update():   
+    #Apply deadband filter to avoid drift
+    #And continousRotation filter to yaw axis to avoid jumps when passing tracker center
+    x = filters.deadband(filters.delta(math.degrees(filters.continousRotation(android.yaw))), deadband)
+    y = filters.deadband(filters.delta(math.degrees(android.pitch)), deadband)
+      
+    mouse.deltaX = x * multiply
+    mouse.deltaY = y * multiply
+   
+if starting: 
+    deadband = 0.01
+    multiply = 5
+    android.update += update</code></pre> 
         <h4>PPJoy joystick emulation</h4>
         <pre><code data-language="python">def update():
     x = math.degrees(freeTrack.yaw) * ratio
@@ -76,8 +90,7 @@ freeTrack.roll = roll - centerRoll
 if keyboard.getKeyDown(Key.LeftControl) and keyboard.getPressed(Key.C):
     centerYaw = yaw
     centerPitch = pitch
-    centerRoll = roll
-        </code></pre>
+    centerRoll = roll</code></pre>
         <h4>TrackIR mouse emulation</h4>
         <pre><code data-language="python">#Use Z to toggle on/off and right mouse to activate head tracking 
 #(Good for games like Battlefield 3)
@@ -101,8 +114,7 @@ hotkey = mouse.rightButton
 toggle = keyboard.getPressed(Key.Z)
 
 if toggle:
-    enabled = not enabled
-        </code></pre>
+    enabled = not enabled</code></pre>
       </section>
       <footer>
         <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>

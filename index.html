@@ -22,12 +22,12 @@
         <h2 class="header">Programmable Input Emulator</h2>
 
         <ul>
-          <li class="download"><a class="buttons" href="http://rapidshare.com/files/1570934103/FreePIE.1.1.362.0.msi">MSI v1.1.362.0</a></li>
-          <li><a class="buttons github" href="https://github.com/AndersMalmgren/FreePIE">View On GitHub</a></li>
+          <li class="download"><a class="buttons" target="_blank" href="http://rapidshare.com/files/1635590458/FreePIE.1.2.375.0.msi">MSI v1.2.375.0</a></li>
+          <li><a class="buttons github" target="_blank" href="https://github.com/AndersMalmgren/FreePIE">View On GitHub</a></li>
             <li><a class="buttons samples" href="samples.html">Script examples</a></li>
         </ul>
 
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/AndersMalmgren">AndersMalmgren</a></p>
+        <p class="header">This project is maintained by <a class="header name" target="_blank" href="https://github.com/AndersMalmgren">AndersMalmgren</a></p>
 
 
       </header>
@@ -72,6 +72,84 @@
     <li>Carl Zeiss Cinemizer OLED<div class="icon read" title="Read"></div></li>
     <li>Yei 3 Space Trackers<div class="icon read" title="Read"></div></li>
     <li>Oculus Rift<div class="icon read" title="Read"></div></li>
+	<li>vJoy<div class="icon write" title="Write"></div></li>
+</ul>
+<h4>Version history</h4>
+<p>Changelog 1.2.375.0</p>
+<ul>
+    <li>Fixed mouse emulation so that it works with very small movements</li>
+    <li>Deadband filter added that can be used to eliminate drift with the new more sensitive mouse emulation</li>
+    <li>Added continous rotation filter that can be used to eliminate jumps in mouse emulation when passing tracker center</li>
+    <li>Added support for VJoy</li>
+</ul>
+
+<p>Changelog 1.1.362.0</p>
+<ul>
+    <li>Added support for Oculus Rift</li>
+</ul>
+<p>Changelog 1.0.355.0</p>
+
+<ul>
+    <li>FreePIE should now work on w7 and w8 without admin rights</li>
+    <li>Fixed bugs with Android data contract (Requires reinstall of APK)</li>
+    <li>Freetrack client is no longer required to spoof Freetrack (Client dll is included with FreePIE)</li>
+    <li>Added a IO plugin that third party software can use to read/write from/to FreePIE</li>
+    <li>Added support for Carl Zeiss Cinemizer OLED</li>
+    <li>Added support for Yei 3 Space trackers</li>
+    <li>Added support for multiple XBox controllers</li>
+    <li>GUI performance fixes</li>
+    <li>Various stability fixes</li>
+</ul>
+
+<p>Changelog 0.6.277.0</p>
+<ul>
+    <li>Totaly remade GUI to use a Visual Studio like docking view</li>
+    <li>Added a apply button to Edit Selected Curve point for usability reasons (Curve settings)</li>
+    <li>Improved Watch window</li>
+    <li>Improved Error window, added script linenumber for error</li>
+    <li>Improved Console window and added a Context menu</li>
+    <li>Various stability fixes for code completion</li>
+</ul>
+
+<p>Changelog 0.5.249.0</p>
+<ul>
+    <li>TrackIR should now work with TrackIR fixer titles</li>
+    <li>Added Razer Hydra Support</li>
+    <li>Dataformat bug fixed for Android APK</li>
+    <li>Added generic button support to Mouse plugin</li>
+    <li>Added a stopping global that scripts can listen to for tear down tasks</li>
+</ul>
+
+<p>Changelog 0.4.237.0</p>
+<ul>
+    <li>Various stability fixes for the python engine</li>
+    <li>Various bug fixes for code completion</li>
+    <li>Added menu shortcuts</li>
+</ul>
+
+<p>Changelog 0.4.211.0</p>
+<ul>
+    <li>Changed scripting language to Python</li>
+    <li>Added support for TrackIR</li>
+    <li>Added support for Android</li>
+    <li>Added support for Xbox360 controller</li>
+    <li>Added support for DirectX joysticks and controllers</li>
+</ul>
+
+<p>Changelog 0.3.115.0</p>
+<ul>
+    <li>Added code completion (Early beta)</li>
+    <li>Added support for WiiMote (Only buttons)</li>
+    <li>Added support for Hillcrest Labs Freespace IMU</li>
+    <li>Added support for ppJoy Joystick emulation</li>
+    <li>Added proper enum support</li>
+    <li>Added Property support to plugins</li>
+</ul>
+
+<p>Changelog 0.2.47.0</p>
+<ul>
+    <li>Added support for iDevices via Sensor data app</li>
+    <li>Added support for Vuzix tracker</li>
 </ul>
       </section>
       <footer>

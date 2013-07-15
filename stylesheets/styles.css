@@ -70,6 +70,9 @@ h4, h5, h6 {
 	font-family: Arvo, Monaco, sans-serif;
 	font-weight: 700;
 }
+h4 {
+    clear: both;
+}
 
 a {
   color:#C30000;
