@@ -50,20 +50,14 @@ SIXENSE_EXPORT int sixenseExit( void )
 
 SIXENSE_EXPORT int sixenseGetMaxBases()
 {
-		outfile << "sixenseGetMaxBases\r\n"; 
-
   return 4;
 }
 SIXENSE_EXPORT int sixenseSetActiveBase( int i )
 {
-	outfile << "sixenseSetActiveBase\r\n"; 
-
   return SIXENSE_SUCCESS;
 }
 SIXENSE_EXPORT int sixenseIsBaseConnected( int i )
 {
-	outfile << "sixenseIsBaseConnected:" << i << "\r\n"; 
-
   if(i == 0)
     return 1;
   return 0;
@@ -71,21 +65,17 @@ SIXENSE_EXPORT int sixenseIsBaseConnected( int i )
 
 SIXENSE_EXPORT int sixenseGetMaxControllers( void )
 {
-	outfile << "sixenseGetMaxControllers\r\n"; 
   return 4;
 }
 
 SIXENSE_EXPORT int sixenseIsControllerEnabled( int which )
 {
-	outfile << "sixenseIsBaseConnected:" << which << "\r\n"; 
-
   if(which <= 1)
     return 1;
   return 0;
 }
 SIXENSE_EXPORT int sixenseGetNumActiveControllers()
 {
-	outfile << "sixenseGetNumActiveControllers\r\n"; 
   return 2;
 }
 
