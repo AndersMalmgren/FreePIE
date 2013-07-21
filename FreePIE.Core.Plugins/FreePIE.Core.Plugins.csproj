@@ -62,6 +62,9 @@
     <Compile Include="FreeImuPlugin.cs" />
     <Compile Include="FreeSpacePlugin.cs" />
     <Compile Include="FreeTrackPlugin.cs" />
+    <Compile Include="Hydra\EmulatedData.cs" />
+    <Compile Include="Hydra\HydraSpoof.cs" />
+    <Compile Include="Hydra\Sixense.cs" />
     <Compile Include="JoystickPlugin.cs" />
     <Compile Include="KeyboardPlugin.cs" />
     <Compile Include="MemoryMapping\ArgumentExtension.cs" />
