@@ -59,7 +59,7 @@ public class UdpSenderTask implements SensorEventListener {
 		
 		sync = new CyclicBarrier(2);
 			
-		buffer = ByteBuffer.allocate(50);
+		buffer = ByteBuffer.allocate(51);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		
 		try {	
