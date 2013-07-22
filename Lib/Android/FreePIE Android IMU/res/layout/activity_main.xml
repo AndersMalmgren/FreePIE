@@ -6,8 +6,7 @@
     android:scrollbarAlwaysDrawVerticalTrack="true" 
     android:scrollbarStyle="outsideInset" 
     android:scrollbars="vertical">
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:tools="http://schemas.android.com/tools"
+	<RelativeLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content" >
 	
@@ -19,8 +18,7 @@
 	        android:layout_alignParentRight="true"
 	        android:layout_alignParentTop="true"
 	        android:padding="@dimen/padding_medium"
-	        android:text="@string/target_ip"
-	        tools:context=".MainActivity" />
+	        android:text="@string/target_ip" />
 	
 	    <EditText
 	        android:id="@+id/ip"
@@ -43,8 +41,7 @@
 	        android:layout_alignParentRight="true"
 	        android:layout_below="@+id/ip"
 	        android:padding="@dimen/padding_medium"
-	        android:text="@string/target_port"
-	        tools:context=".MainActivity" />
+	        android:text="@string/target_port" />
 	
 	    <EditText
 	        android:id="@+id/port"
@@ -55,6 +52,14 @@
 	        android:layout_below="@+id/lblPort"
 	        android:ems="10"
 	        android:inputType="number" />
+	    
+	    <Spinner
+	        android:id="@+id/index"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_below="@+id/port" />	    
 	
 	    <CheckBox
 	        android:id="@+id/sendOrientation"
@@ -62,7 +67,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_alignParentLeft="true"
 	        android:layout_alignParentRight="true"
-	        android:layout_below="@+id/port"
+	        android:layout_below="@+id/index"
 	        android:text="@string/send_orientation" />
 	
 	    <CheckBox
@@ -119,15 +124,13 @@
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:padding="@dimen/padding_medium"
-	                android:text="@string/acc"
-	                tools:context=".MainActivity" />
+	                android:text="@string/acc" />
 	
 	            <TextView
 	                android:id="@+id/acc"
 	                android:layout_width="match_parent"
 	                android:layout_height="wrap_content"
-	                android:padding="@dimen/padding_medium"
-	                tools:context=".MainActivity" />
+	                android:padding="@dimen/padding_medium" />
 	
 	        </LinearLayout>
 	        
@@ -140,15 +143,13 @@
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:padding="@dimen/padding_medium"
-	                android:text="@string/gyr"
-	                tools:context=".MainActivity" />
+	                android:text="@string/gyr" />
 	
 	            <TextView
 	                android:id="@+id/gyr"
 	                android:layout_width="match_parent"
 	                android:layout_height="wrap_content"
-	                android:padding="@dimen/padding_medium"
-	                tools:context=".MainActivity" />
+	                android:padding="@dimen/padding_medium" />
 	
 	        </LinearLayout>
 	
@@ -161,15 +162,13 @@
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:padding="@dimen/padding_medium"
-	                android:text="@string/mag"
-	                tools:context=".MainActivity" />
+	                android:text="@string/mag" />
 	
 	            <TextView
 	                android:id="@+id/mag"
 	                android:layout_width="match_parent"
 	                android:layout_height="wrap_content"
-	                android:padding="@dimen/padding_medium"
-	                tools:context=".MainActivity" />
+	                android:padding="@dimen/padding_medium" />
 	
 	        </LinearLayout>
 	                 <LinearLayout
@@ -181,15 +180,13 @@
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:padding="@dimen/padding_medium"
-	                android:text="@string/imu"
-	                tools:context=".MainActivity" />
+	                android:text="@string/imu" />
 	
 	            <TextView
 	                android:id="@+id/imu"
 	                android:layout_width="match_parent"
 	                android:layout_height="wrap_content"
-	                android:padding="@dimen/padding_medium"
-	                tools:context=".MainActivity" />
+	                android:padding="@dimen/padding_medium" />
 	
 	        </LinearLayout>
     	</LinearLayout>

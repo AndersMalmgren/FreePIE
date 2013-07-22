@@ -4,36 +4,30 @@ using System.Net;
 using System.Net.Sockets;
 using AHRS;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.SensorFusion;
 
 namespace FreePIE.Core.Plugins
 {
-    [GlobalType(Type = typeof(AndroidGlobal))]
+    [GlobalType(Type = typeof(AndroidGlobal), IsIndexed = true)]
     public class AndroidPlugin : Plugin
     {
-        [Flags]
-        private enum Flags
-        {
-            Raw = 0x01,
-            Orientation = 0x02
-        }
-
         private UdpClient udpClient;
         private bool stopping;
         private int udpPort;
-        private bool newData;
-        private Quaternion quaternion;
-
-        public double Yaw { get { return quaternion.Yaw; } }
-        public double Pitch { get { return quaternion.Pitch; } }
-        public double Roll { get { return quaternion.Roll; } }
-        public double GoogleYaw { get; private set; }
-        public double GooglePitch { get; private set; }
-        public double GoogleRoll { get; private set; }
+        private Dictionary<int, AndroidGlobalHolder> holders; 
 
         public override object CreateGlobal()
         {
-            return new AndroidGlobal(this);
+            holders = new Dictionary<int, AndroidGlobalHolder>();
+            return new GlobalIndexer<AndroidGlobal>(Create);
+        }
+
+        private AndroidGlobal Create(int index)
+        {
+            var holder = new AndroidGlobalHolder(index);
+            holders[index] = holder;
+            return holder.Global;
         }
 
         public override string FriendlyName
@@ -64,10 +58,13 @@ namespace FreePIE.Core.Plugins
 
         public override void DoBeforeNextExecute()
         {
-            if (newData)
+            foreach (var holder in holders.Values)
             {
-                OnUpdate();
-                newData = false;
+                if (holder.NewData)
+                {
+                    holder.OnUpdate();
+                    holder.NewData = false;
+                }
             }
         }
 
@@ -87,13 +84,6 @@ namespace FreePIE.Core.Plugins
             var endpoint = new IPEndPoint(IPAddress.Any, udpPort);
             udpClient = new UdpClient(endpoint);
 
-            MahonyAHRS ahrs = null;
-            quaternion = new Quaternion();
-
-            var freeqSampled = false;
-            int samples = 0;
-            var started = DateTime.Now;
-
             OnStarted(this, new EventArgs());
 
             while (true)
@@ -110,14 +100,49 @@ namespace FreePIE.Core.Plugins
                         throw;
                     break;
                 }
+                var deviceIndex = bytes[0];
+                if(holders.ContainsKey(deviceIndex))
+                    holders[deviceIndex].Update(bytes);
+            }
+        }
+    }
 
-                var flag = (Flags)bytes[0];
+    public class AndroidGlobalHolder : IUpdatable
+    {
+        [Flags]
+        private enum Flags
+        {
+            Raw = 0x01,
+            Orientation = 0x02
+        }
+
+        private MahonyAHRS ahrs;
+        private readonly Quaternion quaternion;
+        private bool freeqSampled;
+        private int samples;
+        private DateTime started;
+
+        public AndroidGlobalHolder(int index)
+        {
+            Index = index;
+            Global  = new AndroidGlobal(this);
+
+            quaternion = new Quaternion();
+
+            freeqSampled = false;
+            samples = 0;
+            started = DateTime.Now;
+        }
+
+        public void Update(byte[] bytes)
+        {
+                var flag = (Flags)bytes[1];
                 bool sendRaw;
                 bool sendOrientation;
 
                 SetFlags(flag, out sendRaw, out sendOrientation);
 
-                var dataInPackage = (Flags) bytes[1];
+                var dataInPackage = (Flags) bytes[2];
                 bool raw;
                 bool orientation;
 
@@ -138,10 +163,10 @@ namespace FreePIE.Core.Plugins
                         ahrs = new MahonyAHRS(1f / freq, 0.1f);
                     }
                     else
-                        continue;
+                        return;
                 }
 
-                var index = 2;
+                var index = 3;
                 
                 if (raw)
                 {
@@ -171,8 +196,7 @@ namespace FreePIE.Core.Plugins
                     index += 12;
                 }
 
-                newData = true;
-            }
+                NewData = true;            
         }
 
         private static float GetFloat(byte[] buffer, int offset, int index)
@@ -185,12 +209,26 @@ namespace FreePIE.Core.Plugins
             raw = (flag & Flags.Raw) == Flags.Raw;
             orientation = (flag & Flags.Orientation) == Flags.Orientation;
         }
+
+        public AndroidGlobal Global { get; private set; }
+        public int Index { get; private set; }
+        public Action OnUpdate { get; set; }
+        public bool GlobalHasUpdateListener { get; set; }
+
+        public bool NewData { get; set; }
+
+        public double Yaw { get { return quaternion.Yaw; } }
+        public double Pitch { get { return quaternion.Pitch; } }
+        public double Roll { get { return quaternion.Roll; } }
+        public double GoogleYaw { get; private set; }
+        public double GooglePitch { get; private set; }
+        public double GoogleRoll { get; private set; }
     }
 
     [Global(Name = "android")]
-    public class AndroidGlobal : UpdateblePluginGlobal<AndroidPlugin>
+    public class AndroidGlobal : UpdateblePluginGlobal<AndroidGlobalHolder>
     {
-        public AndroidGlobal(AndroidPlugin plugin) : base(plugin){ }
+        public AndroidGlobal(AndroidGlobalHolder plugin) : base(plugin) { }
 
         public double yaw { get { return plugin.Yaw; } }
         public double pitch { get { return plugin.Pitch; } }
