@@ -54,12 +54,6 @@
     <ApplicationIcon>free-pie.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AvalonDock">
-      <HintPath>..\Lib\AvalonDock\AvalonDock.dll</HintPath>
-    </Reference>
-    <Reference Include="AvalonDock.Themes.Expression">
-      <HintPath>..\Lib\AvalonDock\AvalonDock.Themes.Expression.dll</HintPath>
-    </Reference>
     <Reference Include="Caliburn.Micro">
       <HintPath>..\Lib\Caliburn.Micro\Caliburn.Micro.dll</HintPath>
     </Reference>
@@ -85,6 +79,12 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.AvalonDock">
+      <HintPath>..\Lib\AvalonDock\Xceed.Wpf.AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Expression">
+      <HintPath>..\Lib\AvalonDock\Xceed.Wpf.AvalonDock.Themes.Expression.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -382,7 +382,12 @@ copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\SlimDX\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\piefreespace\*.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\Sixense\*.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Lib\FreeTrack\*.dll" "$(TargetDir)"</PostBuildEvent>
+copy "$(SolutionDir)\Lib\FreeTrack\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\Zeiss\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\YEI3-Space\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\IO\Binaries\Release-DllMultiThreadRuntime\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\OculusVR\Binaries\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\VJoy\*.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

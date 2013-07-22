@@ -85,7 +85,12 @@
                       $(Lib)\Sixense\*.dll;
                       $(Lib)\piefreespace\*.dll;
                       $(Lib)\Android\com.freepie.android.imu.apk;
-                      $(Lib)\FreeTrack\*.dll">
+                      $(Lib)\FreeTrack\*.dll;
+                      $(Lib)\Zeiss\*.dll;
+                      $(Lib)\YEI3-Space\*.dll;
+                      $(Lib)\IO\Binaries\Release-DllMultiThreadRuntime\*.dll;
+                      $(Lib)\OculusVR\Binaries\*.dll;
+                      $(Lib)\VJoy\*.dll">
       </DependecieFiles>
     </ItemGroup>
     <Copy SourceFiles="@(DependecieFiles)" DestinationFiles="@(DependecieFiles -> '$(BuildDir)\%(Filename)%(Extension)')"/>

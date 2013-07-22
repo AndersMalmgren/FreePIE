@@ -1,13 +1,12 @@
 ﻿<Window x:Class="FreePIE.GUI.Shells.MainShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:cal="http://www.caliburnproject.org"
-        xmlns:avalonDock="clr-namespace:AvalonDock;assembly=AvalonDock"
-        xmlns:avalondock="http://avalondock.codeplex.com"
-        xmlns:avalonDock1="clr-namespace:FreePIE.GUI.Common.AvalonDock"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:avalonDock1="clr-namespace:FreePIE.GUI.Common.AvalonDock"
         Title="FreePIE" Background="{DynamicResource WindowBackgroundBrush}">
     <Window.Resources>
-        <avalondock:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <xcad:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -15,7 +14,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <ContentControl x:Name="Menu" Grid.Row="0"/>
-        <avalonDock:DockingManager
+        <xcad:DockingManager
             x:Name="Manager"
             AnchorablesSource="{Binding Tools}"
             DocumentsSource="{Binding Scripts}"
@@ -34,19 +33,19 @@
                     </cal:ActionMessage>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-            <avalonDock:DockingManager.Theme>
-                <avalondock:ExpressionDarkTheme/>
-            </avalonDock:DockingManager.Theme>
-            <avalonDock:DockingManager.LayoutItemContainerStyle>
-                <Style TargetType="{x:Type avalondock:LayoutItem}">
+            <xcad:DockingManager.Theme>
+                <xcad:ExpressionDarkTheme/>
+            </xcad:DockingManager.Theme>
+            <xcad:DockingManager.LayoutItemContainerStyle>
+                <Style TargetType="{x:Type xcad:LayoutItem}">
                     <Setter Property="Title" Value="{Binding Model.Title}" />
                     <Setter Property="IconSource" Value="{Binding Model.Icon}"/>
                     <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
                     <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
                     <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"/>
                 </Style>
-            </avalonDock:DockingManager.LayoutItemContainerStyle>
-            <avalonDock:DockingManager.LayoutItemTemplateSelector>
+            </xcad:DockingManager.LayoutItemContainerStyle>
+            <xcad:DockingManager.LayoutItemTemplateSelector>
                 <avalonDock1:AutobinderTemplateSelector>
                     <avalonDock1:AutobinderTemplateSelector.Template>
                         <DataTemplate>
@@ -54,15 +53,15 @@
                         </DataTemplate>
                     </avalonDock1:AutobinderTemplateSelector.Template>
                 </avalonDock1:AutobinderTemplateSelector>
-            </avalonDock:DockingManager.LayoutItemTemplateSelector>
-            <avalondock:LayoutRoot>
-                <avalondock:LayoutPanel Orientation="Vertical">
-                    <avalondock:LayoutDocumentPane/>
-                    <avalondock:LayoutAnchorablePane DockHeight="150">
-                    </avalondock:LayoutAnchorablePane>
-                </avalondock:LayoutPanel>
-            </avalondock:LayoutRoot>
-        </avalonDock:DockingManager>
+            </xcad:DockingManager.LayoutItemTemplateSelector>
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel Orientation="Vertical">
+                    <xcad:LayoutDocumentPane/>
+                    <xcad:LayoutAnchorablePane DockHeight="150">
+                    </xcad:LayoutAnchorablePane>
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
 
     </Grid>
 </Window>

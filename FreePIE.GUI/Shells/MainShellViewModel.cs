@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using AvalonDock;
-using AvalonDock.Layout.Serialization;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
@@ -14,6 +12,8 @@ using FreePIE.GUI.Views.Main;
 using FreePIE.GUI.Views.Plugin;
 using FreePIE.GUI.Views.Script;
 using FreePIE.GUI.Views.Script.Output;
+using Xceed.Wpf.AvalonDock;
+using Xceed.Wpf.AvalonDock.Layout.Serialization;
 using Action = System.Action;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 using MessageBoxResult = System.Windows.MessageBoxResult;

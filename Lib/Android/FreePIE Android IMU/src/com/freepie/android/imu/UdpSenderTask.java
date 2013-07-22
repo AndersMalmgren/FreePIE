@@ -14,12 +14,16 @@ import android.hardware.SensorManager;
 
 public class UdpSenderTask implements SensorEventListener {
 
+	private static final byte SEND_RAW = 0x01;
+	private static final byte SEND_ORIENTATION = 0x02;
+	private static final byte SEND_NONE = 0x00;
+	
 	float[] acc;
 	float[] mag;
 	float[] gyr;
 	float[] imu;
 	
-	float[]  orientation;
+	float[]  rotationVector;
 	final float[] rotationMatrix = new float[16];
 	
 	DatagramSocket socket;
@@ -43,16 +47,16 @@ public class UdpSenderTask implements SensorEventListener {
 	public void start(TargetSettings target) {
 		sensorManager = target.getSensorManager();		
 		sendRaw = target.getSendRaw();
-		sendOrientation = target.getSendOrientation();
+		sendOrientation = target.getSendOrientation();		
 		sampleRate = target.getSampleRate();		
 		debug = target.getDebug();
 		debugListener = target.getDebugListener();
 		
-		sendFlag = (byte)((sendRaw ? 0x01 : 0x00) | (sendOrientation ? 0x02 : 0x00)); 
+		sendFlag = getFlagByte(sendRaw, sendOrientation);
 		
 		sync = new CyclicBarrier(2);
 			
-		buffer = ByteBuffer.allocate(49);
+		buffer = ByteBuffer.allocate(50);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		
 		try {	
@@ -101,6 +105,11 @@ public class UdpSenderTask implements SensorEventListener {
 		
 	}
 	
+	private byte getFlagByte(boolean raw, boolean orientation) {
+		return (byte)((raw ? SEND_RAW : SEND_NONE) | 
+				(orientation ? SEND_ORIENTATION : SEND_NONE)); 
+	}
+	
 	public void onSensorChanged(SensorEvent sensorEvent) {
 	    switch (sensorEvent.sensor.getType()) {  
 	        case Sensor.TYPE_ACCELEROMETER:
@@ -114,24 +123,29 @@ public class UdpSenderTask implements SensorEventListener {
 	            gyr = sensorEvent.values.clone();
 	            break;
 	        case Sensor.TYPE_ROTATION_VECTOR:
-	        	orientation = sensorEvent.values.clone();
+	        	rotationVector = sensorEvent.values.clone();
 	        	break;
 	    }	
 	    
-       if(sendOrientation && orientation != null) {
-            SensorManager.getRotationMatrixFromVector(rotationMatrix , orientation);
-            SensorManager.getOrientation(rotationMatrix, orientation);
-            imu = orientation;
+       if(sendOrientation && rotationVector != null) {
+            SensorManager.getRotationMatrixFromVector(rotationMatrix , rotationVector);
+            SensorManager.getOrientation(rotationMatrix, rotationVector);
+            imu = rotationVector;
+            rotationVector = null;
        }
 	    	    
 	    if(debug && acc != null && gyr != null && mag != null)
 	    	debugListener.debugRaw(acc, gyr, mag);
 	    
 	    if(debug && imu != null)
-	    	debugListener.debugImu(imu);	    
+	    	debugListener.debugImu(imu);	
 	    
+	    releaseSendThread();
+	}
+	
+	private void releaseSendThread() {
 		if(sync.getNumberWaiting() > 0)
-			sync.reset();			
+			sync.reset();	
 	}
 	
 	@Override
@@ -141,14 +155,23 @@ public class UdpSenderTask implements SensorEventListener {
 	public void stop() {
 		running = false;
 		sensorManager.unregisterListener(this);		
+		releaseSendThread();
 	}
 
 	private void Send() {
+		boolean raw = sendRaw && acc != null && gyr != null && mag != null;
+		boolean orientation = sendOrientation && imu != null;
+		
+		if(!raw && !orientation) return;
+		
 		buffer.clear();			
 		
 		buffer.put(sendFlag);
+	
 		
-		if(sendRaw && acc != null && mag != null && gyr != null) {
+		buffer.put(getFlagByte(raw, orientation));
+		
+		if(raw) {
 			//Acc
 			buffer.putFloat(acc[0]);
 			buffer.putFloat(acc[1]);
@@ -163,15 +186,19 @@ public class UdpSenderTask implements SensorEventListener {
 			buffer.putFloat(mag[0]);
 			buffer.putFloat(mag[1]);
 			buffer.putFloat(mag[2]);
+			
+			acc = null;
+			mag = null;
+			gyr = null;
 		}
 		
-		if(sendOrientation && imu != null) {		
-			//Orientation
+		if(orientation) {			
 			buffer.putFloat(imu[0]);
 			buffer.putFloat(imu[1]);
 			buffer.putFloat(imu[2]);
 			imu = null;
-		}		
+		}
+		
       				
 		byte[] arr = buffer.array();
 	    DatagramPacket p = new DatagramPacket(arr, arr.length, endPoint, port);	    

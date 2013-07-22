@@ -1,364 +1,183 @@
 using System;
 using System.Collections.Generic;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.Globals;
 using SlimDX.XInput;
 
 namespace FreePIE.Core.Plugins {
-      
-   //==========================================================================
-   //                          XBox360Plugin
-   //==========================================================================
-   [GlobalType(Type = typeof(XBox360PluginGlobal))]
-   public class XBox360Plugin : Plugin {
 
-      Controller XBoxController = new Controller(0);
-      Gamepad Controller;
-      bool connected;
-      
-       //----------------------------------------------------------------------- 
-      public override object CreateGlobal() {
-         return new XBox360PluginGlobal(this);
-      }
+    [GlobalType(Type = typeof (XBox360PluginGlobal), IsIndexed = true)]
+    public class XBox360Plugin : Plugin
+    {
 
-      //-----------------------------------------------------------------------
-      public override Action Start() {
-         return null;
-      }
+        private List<XBox360PluginGlobal> globals;
 
-      //-----------------------------------------------------------------------
-      public override void Stop() {
-      }
+        public override object CreateGlobal()
+        {
+            globals = new List<XBox360PluginGlobal>();
 
-      //-----------------------------------------------------------------------
-      public override string FriendlyName {
-         get { return "XBox360 Controller"; }
-      }
+            return new GlobalIndexer<XBox360PluginGlobal>(CreateGlobal);
+        }
 
-      //-----------------------------------------------------------------------
-      public override bool GetProperty(int index, IPluginProperty property) {
-         return false;
-      }
+        private XBox360PluginGlobal CreateGlobal(int index)
+        {
+            var global = new XBox360PluginGlobal((UserIndex) index);
+            globals.Add(global);
 
-      //-----------------------------------------------------------------------
-      public override bool SetProperties(Dictionary<string, object> properties) {
-         return true;
-      }
+            return global;
+        }
 
-      //-----------------------------------------------------------------------
-      public override void DoBeforeNextExecute() {
-         //This method will be executed each iteration of the script
-          connected = XBoxController.IsConnected;
-          if (XBoxController.IsConnected == true)
-              Controller = XBoxController.GetState().Gamepad;
-      }
+        public override void DoBeforeNextExecute()
+        {
+            globals.ForEach(d => d.Update());
+        }
 
-      //-----------------------------------------------------------------------
-      public bool A {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.A) != 0);
-         }
-      }
+        public override string FriendlyName
+        {
+            get { return "XBox360 Controller"; }
+        }
+    }
 
-      //-----------------------------------------------------------------------
-      public bool B {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.B) != 0);
-         }
-      }
+    [Global(Name = "xbox360")]
+    public class XBox360PluginGlobal
+    {
+        private Gamepad pad;
+        private Controller controller;
 
-      //-----------------------------------------------------------------------
-      public bool X {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.X) != 0);
-         }
-      }
+        public XBox360PluginGlobal(UserIndex index)
+        {
+            controller = new Controller(index);
+            pad = new Gamepad();
+        }
 
-      //-----------------------------------------------------------------------
-      public bool Y {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.Y) != 0);
-         }
-      }
+        internal void Update()
+        {
+            if (controller.IsConnected) 
+                pad = controller.GetState().Gamepad;
+        }
 
-      //-----------------------------------------------------------------------
-      public bool LeftShoulder {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.LeftShoulder) != 0);
-         }
-      }
+        public bool a
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.A) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool RightShoulder {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.RightShoulder) != 0);
-         }
-      }
+        public bool b
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.B) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool StartBtn {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.Start) != 0);
-         }
-      }
+        public bool x
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.X) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool Back {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.Back) != 0);
-         }
-      }
+        public bool y
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.Y) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool Up {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.DPadUp) != 0);
-         }
-      }
+        public bool leftShoulder
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.LeftShoulder) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool Down {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.DPadDown) != 0);
-         }
-      }
+        public bool rightShoulder
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.RightShoulder) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool Left {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.DPadLeft) != 0);
-         }
-      }
+        public bool start
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.Start) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool Right {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.DPadRight) != 0);
-         }
-      }
+        public bool back
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.Back) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public double LeftTrigger {
-         get {
-            if (connected == false)
-                return 0.0;
-            return (Controller.LeftTrigger / 255.0);
-         }
-      }
+        public bool up
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.DPadUp) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public double RightTrigger {
-         get {
-            if (connected == false)
-                return 0.0;
-            return (Controller.RightTrigger / 255.0);
-         }
-      }
+        public bool down
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.DPadDown) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool LeftThumb {
-         get {
-            if (connected == false)
-                return false;
-            return ((Controller.Buttons & GamepadButtonFlags.LeftThumb) != 0);
-         }
-      }
+        public bool left
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.DPadLeft) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public double LeftStickX {
-         // Return -1 to +1
-         get {
-            if (connected == false)
-               return 0.0;
-            if (Controller.LeftThumbX < 0)
-               return Controller.LeftThumbX / 32768.0;
-            else
-               return Controller.LeftThumbX / 32767.0;
-         }
-      }
+        public bool right
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.DPadRight) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public double LeftStickY {
-         // Return -1 to +1
-         get {
-            if (connected == false)
-               return 0.0;
-            if (Controller.LeftThumbY < 0)
-               return Controller.LeftThumbY / 32768.0;
-            else
-               return Controller.LeftThumbY / 32767.0;
-         }
-      }
+        public double leftTrigger
+        {
+            get { return (pad.LeftTrigger/255.0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool RightThumb {
-         get {
-            if (connected == false)
-               return false;
-            return ((Controller.Buttons & GamepadButtonFlags.RightThumb) != 0);
-         }
-      }
+        public double rightTrigger
+        {
+            get { return (pad.RightTrigger/255.0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public double RightStickX {
-         // Return -1 to +1
-         get {
-            if (connected == false)
-               return 0.0;
-            if (Controller.RightThumbX < 0)
-               return Controller.RightThumbX / 32768.0;
-            else
-               return Controller.RightThumbX / 32767.0;
-         }
-      }
+        public bool leftThumb
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.LeftThumb) != 0); }
+        }
 
-      //-----------------------------------------------------------------------
-      public double RightStickY {
-         // Return -1 to +1
-         get {
-            if (connected == false)
-               return 0.0;
-            if (Controller.RightThumbY < 0)
-               return Controller.RightThumbY / 32768.0;
-            else
-               return Controller.RightThumbY / 32767.0;
-         }
-      }
-   }
+        public bool rightThumb
+        {
+            get { return ((pad.Buttons & GamepadButtonFlags.RightThumb) != 0); }
+        }
 
-   //==========================================================================
-   //                          FreeSpacePluginGlobal
-   //==========================================================================
-   [Global(Name = "xbox360")]
-   public class XBox360PluginGlobal {
-      private readonly XBox360Plugin Device;
+        public double leftStickX
+        {
+            get
+            {
+                if (pad.LeftThumbX < 0)
+                    return pad.LeftThumbX/32768.0;
+                else
+                    return pad.LeftThumbX/32767.0;
+            }
+        }
 
-      //-----------------------------------------------------------------------
-      public XBox360PluginGlobal(XBox360Plugin plugin) {
-         Device = plugin;
-      }
+        public double leftStickY
+        {
+            get
+            {
+                if (pad.LeftThumbY < 0)
+                    return pad.LeftThumbY/32768.0;
+                else
+                    return pad.LeftThumbY/32767.0;
+            }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool a {
-         get { return Device.A; }
-      }
+        public double rightStickX
+        {
+            get
+            {
+                if (pad.RightThumbX < 0)
+                    return pad.RightThumbX/32768.0;
+                else
+                    return pad.RightThumbX/32767.0;
+            }
+        }
 
-      //-----------------------------------------------------------------------
-      public bool b {
-         get { return Device.B; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool x {
-         get { return Device.X; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool y {
-         get { return Device.Y; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool leftShoulder {
-         get { return Device.LeftShoulder; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool rightShoulder {
-         get { return Device.RightShoulder; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool start {
-         get { return Device.StartBtn; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool back {
-         get { return Device.Back; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool up {
-         get { return Device.Up; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool down {
-         get { return Device.Down; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool left {
-         get { return Device.Left; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool right {
-         get { return Device.Right; }
-      }
-
-      //-----------------------------------------------------------------------
-      public double leftTrigger {
-         get { return Device.LeftTrigger; }
-      }
-
-      //-----------------------------------------------------------------------
-      public double rightTrigger {
-         get { return Device.RightTrigger; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool leftThumb {
-         get { return Device.LeftThumb; }
-      }
-
-      //-----------------------------------------------------------------------
-      public double leftStickX {
-         get { return Device.LeftStickX; }
-      }
-
-      //-----------------------------------------------------------------------
-      public double leftStickY {
-         get { return Device.LeftStickY; }
-      }
-
-      //-----------------------------------------------------------------------
-      public bool rightThumb {
-         get { return Device.RightThumb; }
-      }
-
-      //-----------------------------------------------------------------------
-      public double rightStickX {
-         get { return Device.RightStickX; }
-      }
-
-      //-----------------------------------------------------------------------
-      public double rightStickY {
-         get { return Device.RightStickY; }
-      }
-   }
+        public double rightStickY
+        {
+            get
+            {
+                if (pad.RightThumbY < 0)
+                    return pad.RightThumbY/32768.0;
+                else
+                    return pad.RightThumbY/32767.0;
+            }
+        }
+    }
 }

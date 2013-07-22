@@ -3,9 +3,29 @@ FreePIE
 
 Programmable Input Emulator
 
-Latest downloadable installer can be found [here](http://www.mtbs3d.com/phpBB/viewtopic.php?f=139&t=14483)
+Latest downloadable installer can be found [here](http://andersmalmgren.github.io/FreePIE/)
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
+
+Changelog 1.2.375.0
+* Fixed mouse emulation so that it works with very small movements
+* Deadband filter added that can be used to eliminate drift with the new more sensitive mouse emulation
+* Added continous rotation filter that can be used to eliminate jumps in mouse emulation when passing tracker center
+* Added support for VJoy
+
+Changelog 1.1.362.0
+* Added support for Oculus Rift
+
+Changelog 1.0.355.0
+* FreePIE should now work on w7 and w8 without admin rights
+* Fixed bugs with Android data contract (Requires reinstall of APK)
+* Freetrack client is no longer required to spoof Freetrack (Client dll is included with FreePIE)
+* Added a IO plugin that third party software can use to read/write from/to FreePIE
+* Added support for Carl Zeiss Cinemizer OLED
+* Added support for Yei 3 Space trackers
+* Added support for multiple XBox controllers
+* GUI performance fixes
+* Various stability fixes
 
 Changelog 0.6.277.0
 * Totaly remade GUI to use a Visual Studio like docking view

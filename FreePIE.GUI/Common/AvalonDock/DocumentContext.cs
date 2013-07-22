@@ -1,6 +1,6 @@
-﻿using AvalonDock;
-using AvalonDock.Layout;
-using Caliburn.Micro;
+﻿using Caliburn.Micro;
+using Xceed.Wpf.AvalonDock;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace FreePIE.GUI.Common.AvalonDock
 {

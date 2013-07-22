@@ -31,14 +31,14 @@ namespace FreePIE.Core.ScriptEngine.Python
                 runtime.LoadAssembly(assembly);
         }
 
-        public static string ImportNamespaces(this string script, params string[] namespaces)
+        public static string ImportTypes(this string script, IEnumerable<Type> types)
         {
             var builder = new StringBuilder();
 
-            foreach (var @namespace in namespaces)
-                builder.Append(string.Format("from {0} import *{1}", @namespace, Environment.NewLine));
+            foreach (var type in types)
+                builder.Append(string.Format("from {0} import {1}{2}", type.Namespace, type.Name, Environment.NewLine));
 
-            if(namespaces.Length > 0)
+            if (types.Any())
                 script = builder + Environment.NewLine + script;
 
             return script;
@@ -105,11 +105,11 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                 usedPlugins = parser.InvokeAndConfigureAllScriptDependantPlugins(script).ToList();
 
+                var usedGlobalEnums = parser.GetAllUsedGlobalEnums(script);
+
                 var globals = CreateGlobals(usedPlugins, globalProviders);
 
-                var pluginTypes = usedPlugins.Select(x => x.GetType()).Select(x => new { x.Assembly, x.Namespace }).ToList();
-
-                Engine.Runtime.AddReferences(pluginTypes.Select(x => x.Assembly).Distinct().ToArray());
+                Engine.Runtime.AddReferences(usedPlugins.Select(x => x.GetType().Assembly).Concat(usedGlobalEnums.Select(t => t.Assembly)).Distinct().ToArray());
 
                 var scope = CreateScope(globals);
                 
@@ -120,7 +120,7 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                 Engine.SetSearchPaths(GetPythonPaths());
 
-                script = PreProcessScript(script, usedPlugins, globals);
+                script = PreProcessScript(script, usedGlobalEnums, globals);
 
                 RunLoop(Engine.CreateScriptSourceFromString(script).Compile(), scope);
             })) {Name = "PythonEngine Worker"};
@@ -177,13 +177,12 @@ namespace FreePIE.Core.ScriptEngine.Python
             ExecuteSafe(obj.Stop);
             if(@event.CurrentCount > 0)
                 @event.Signal();
-        }        
+        }
 
-        string PreProcessScript(string script, IEnumerable<IPlugin> plugins, IDictionary<string, object> globals)
+        private string PreProcessScript(string script, IEnumerable<Type> globalEnums, IDictionary<string, object> globals)
         {
             script = parser.PrepareScript(script, globals.Values);
-            var namespaces = plugins.Select(x => x.GetType()).Select(x => x.Namespace).ToArray();
-            return script.ImportNamespaces(namespaces);
+            return script.ImportTypes(globalEnums);
         }
 
         void ExecuteSafe(Action action)

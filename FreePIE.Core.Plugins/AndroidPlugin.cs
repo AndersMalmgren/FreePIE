@@ -11,6 +11,13 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(AndroidGlobal))]
     public class AndroidPlugin : Plugin
     {
+        [Flags]
+        private enum Flags
+        {
+            Raw = 0x01,
+            Orientation = 0x02
+        }
+
         private UdpClient udpClient;
         private bool stopping;
         private int udpPort;
@@ -104,11 +111,19 @@ namespace FreePIE.Core.Plugins
                     break;
                 }
 
-                var flag = bytes[0];
-                var sendRaw = (flag & 1) == 1;
-                var sendOrientation = (flag & 2) == 2;
+                var flag = (Flags)bytes[0];
+                bool sendRaw;
+                bool sendOrientation;
 
-                if (!freeqSampled && sendRaw)
+                SetFlags(flag, out sendRaw, out sendOrientation);
+
+                var dataInPackage = (Flags) bytes[1];
+                bool raw;
+                bool orientation;
+
+                SetFlags(dataInPackage, out raw, out orientation);
+
+                if (!freeqSampled && raw)
                 {
                     if (samples == 0)
                         started = DateTime.Now;
@@ -117,20 +132,18 @@ namespace FreePIE.Core.Plugins
                     var delta = (DateTime.Now - started).TotalSeconds;
                     if (delta > 1)
                     {
-
                         var freq = samples / (float)delta;
                         freeqSampled = true;
 
-                        System.Diagnostics.Debug.WriteLine("Samples / s: {0}", samples);
                         ahrs = new MahonyAHRS(1f / freq, 0.1f);
                     }
                     else
                         continue;
                 }
 
-                var index = 1;
+                var index = 2;
                 
-                if (sendRaw)
+                if (raw)
                 {
                     var ax = GetFloat(bytes, index, 0);
                     var ay = GetFloat(bytes, index, 4);
@@ -145,16 +158,17 @@ namespace FreePIE.Core.Plugins
                     var mz = GetFloat(bytes, index, 32);
 
                     ahrs.Update(gx, gy, gz, ax, ay, az, mx, my, mz);
-                    quaternion.Udate(ahrs.Quaternion[0], ahrs.Quaternion[1], ahrs.Quaternion[2], ahrs.Quaternion[3]);
+                    quaternion.Update(ahrs.Quaternion[0], ahrs.Quaternion[1], ahrs.Quaternion[2], ahrs.Quaternion[3]);
 
                     index += 36;
                 }
 
-                if (sendOrientation)
+                if (orientation)
                 {
                     GoogleYaw = GetFloat(bytes, index, 0);
                     GooglePitch = GetFloat(bytes, index, 4);
                     GoogleRoll = GetFloat(bytes, index, 8);
+                    index += 12;
                 }
 
                 newData = true;
@@ -164,6 +178,12 @@ namespace FreePIE.Core.Plugins
         private static float GetFloat(byte[] buffer, int offset, int index)
         {
             return BitConverter.ToSingle(buffer, offset + index);
+        }
+
+        private void SetFlags(Flags flag, out bool raw, out bool orientation)
+        {
+            raw = (flag & Flags.Raw) == Flags.Raw;
+            orientation = (flag & Flags.Orientation) == Flags.Orientation;
         }
     }
 

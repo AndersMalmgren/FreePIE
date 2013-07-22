@@ -56,7 +56,8 @@
     <Compile Include="AndroidPlugin.cs" />
     <Compile Include="ApplePlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
-    <Compile Include="GenericPlugin.cs" />
+    <Compile Include="FreePieIOPlugin.cs" />
+    <Compile Include="Globals\GlobalIndexer.cs" />
     <Compile Include="HydraPlugin.cs" />
     <Compile Include="FreeImuPlugin.cs" />
     <Compile Include="FreeSpacePlugin.cs" />
@@ -73,6 +74,9 @@
     <Compile Include="Wiimote\MotionPlusGlobal.cs" />
     <Compile Include="MouseKeyIO.cs" />
     <Compile Include="MousePlugin.cs" />
+    <Compile Include="OculusPlugin.cs" />
+    <Compile Include="OculusVR\Api.cs" />
+    <Compile Include="OculusVR\OVR3DOF.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="PPJoyPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -94,6 +98,9 @@
     <Compile Include="TrackIR\NPClientSpoof.cs" />
     <Compile Include="TrackIR\TrackIRDll.cs" />
     <Compile Include="TrackIR\TrackIRHeadposeData.cs" />
+    <Compile Include="VJoyPlugin.cs" />
+    <Compile Include="VJoy\Api.cs" />
+    <Compile Include="VJoy\VJoyState.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
     <Compile Include="Wiimote\AccelerationGlobal.cs" />
@@ -103,6 +110,14 @@
     <Compile Include="Wiimote\IWiimoteData.cs" />
     <Compile Include="Wiimote\WiimoteCalibration.cs" />
     <Compile Include="XBox360Plugin.cs" />
+    <Compile Include="ZeissPlugin.cs" />
+    <Compile Include="Zeiss\Api.cs" />
+    <Compile Include="Zeiss\Structs.cs" />
+    <Compile Include="Yei3SpacePlugin.cs" />
+    <Compile Include="Yei3Space\Api.cs" />
+    <Compile Include="Yei3Space\Enums.cs" />
+    <Compile Include="Yei3Space\TssComPort.cs" />
+    <Compile Include="Yei3Space\TssStreamPacket.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj">

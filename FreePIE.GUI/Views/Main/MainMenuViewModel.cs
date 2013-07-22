@@ -86,7 +86,7 @@ namespace FreePIE.GUI.Views.Main
 
         public IEnumerable<IResult> SaveScript(PanelViewModel document)
         {
-            return scriptDialogStrategy.SaveAs(document, true, path => Save(document, path));
+            return scriptDialogStrategy.SaveAs(document, false, path => Save(document, path));
         }
 
         private void Save(PanelViewModel document)
