@@ -20,8 +20,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             this.logFile = logFile;
 
-            double motionPlusSlowGain = 1.0 / (8192.0 / 595.0) / 1.44; //TODO: FIX CALIBRATION
-            calibration = new WiimoteCalibration(9.8 / 0x19, -0x80, motionPlusSlowGain , motionPlusSlowGain * 2000 / 440 ,-0x2000);
+            
+            calibration = new WiimoteCalibration();
             dll = new DolphiimoteDll(Path.Combine(Environment.CurrentDirectory, "DolphiiMote.dll"));
 
             data = new Dictionary<uint, DolphiimoteWiimoteData>();

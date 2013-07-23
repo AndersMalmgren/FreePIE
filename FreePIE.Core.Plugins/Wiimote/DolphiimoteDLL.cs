@@ -1,12 +1,6 @@
-﻿using System.Threading;
-using AHRS;
-using FreePIE.Core.Plugins.SensorFusion;
-using FreePIE.Core.Plugins.TrackIR;
+﻿using FreePIE.Core.Plugins.TrackIR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
@@ -49,89 +43,6 @@ namespace FreePIE.Core.Plugins.Wiimote
         public DolphiimoteNunchuck nunchuck;
     }
 
-    public class DolphiimoteWiimoteData : IWiimoteData
-    {
-        private DolphiimoteData data;
-        private WiimoteCalibration calibration;
-        private uint wiimoteNumber;
-        private IMotionPlusFuser fuser;
-
-        public byte WiimoteNumber { get; private set; }
-
-        public Gyro MotionPlus { get; private set; }
-
-        public EulerAngles MotionPlusEulerAngles
-        {
-            get
-            {
-                return fuser.FusedValues;
-            }
-        }
-
-        public Nunchuck Nunchuck { get; private set; }
-
-        public Acceleration Acceleration { get; private set; }
-
-        public DolphiimoteWiimoteData(byte wiimoteNumber, WiimoteCalibration calibration)
-        {
-            this.fuser = new SimpleIntegrationMotionPlusFuser();
-            this.WiimoteNumber = wiimoteNumber;
-            this.calibration = calibration;
-        }
-
-        public bool IsButtonPressed(WiimoteButtons b)
-        {
-            UInt16 value = (UInt16)b;
-            return (data.button_state & value) == value;
-        }
-
-        private static double TransformLinear(double gain, double offset, double value)
-        {
-            return (value + offset) * gain;
-        }
-
-        public bool IsDataValid(WiimoteDataValid valid)
-        {
-            UInt32 value = (UInt32)valid;
-            return (data.valid_data_flags & value) == value;
-        }
-
-        public bool IsNunchuckButtonPressed(NunchuckButtons nunchuckButtons)
-        {
-            UInt16 value = (UInt16)nunchuckButtons;
-            return (data.nunchuck.buttons & value) == value;
-        }
-
-        private Gyro CalculateMotionPlus(DolphiimoteMotionplus motionplus)
-        {
-            return new Gyro(TransformLinear((motionplus.slow_modes & 0x1) == 0x1 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.yaw_down_speed),
-                                                     TransformLinear((motionplus.slow_modes & 0x4) == 0x4 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.pitch_left_speed),
-                                                     TransformLinear((motionplus.slow_modes & 0x2) == 0x2 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.roll_left_speed));
-        }
-
-        public void Update(DolphiimoteData data)
-        {
-            this.data = data;
-            Acceleration = new Acceleration(TransformLinear(calibration.AccelerationGain, calibration.AccelerationOffset, data.acceleration.x),
-                                                             TransformLinear(calibration.AccelerationGain, calibration.AccelerationOffset, data.acceleration.y),
-                                                             TransformLinear(calibration.AccelerationGain, calibration.AccelerationOffset, data.acceleration.z));
-            if (IsDataValid(WiimoteDataValid.MotionPlus))
-            {
-                MotionPlus = CalculateMotionPlus(data.motionplus);
-                fuser.HandleIMUData(MotionPlus.x, MotionPlus.y, MotionPlus.z, Acceleration.x, Acceleration.y, Acceleration.z);
-            }
-
-            if (IsDataValid(WiimoteDataValid.Nunchuck))
-            {
-                Nunchuck = new Nunchuck
-                {
-                    Acceleration = new Acceleration(data.nunchuck.x, data.nunchuck.y, data.nunchuck.z),
-                    Stick = new NunchuckStick(data.nunchuck.stick_x, data.nunchuck.stick_y)
-                };
-            }
-        }
-    }
-
     public class EulerAngles
     {
         public double yaw { get; set; }
@@ -166,7 +77,6 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly DolphiimoteSetReportingMode dolphiimoteSetReportingMode;
         private readonly DolphiimoteShutdown dolphiimoteShutdown;
         private readonly DolphiimoteEnableCapabilities dolphiimoteEnableCapabilities;
-        private bool init = false;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void DataCallback(byte wiimote, IntPtr data, IntPtr userdata);
@@ -183,7 +93,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         private DataCallback dataCallback;
         private CapabilitiesCallback capabilitiesCallback;
         private ConnectionCallback connectionCallback;
-        private OnLog onLog;
+        private OnLog logCallback;
 
         public DolphiimoteDll(string path)
         {
@@ -216,29 +126,30 @@ namespace FreePIE.Core.Plugins.Wiimote
             return Marshal.GetFunctionPointerForDelegate(del);
         }
 
-        public int Init(Action<byte, DolphiimoteData> dataCallback, Action<byte, bool> wiimoteConnectionChanged, Action<byte, DolphiimoteCapabilities> capabilitiesChanged, Action<string> onLog)
+        public int Init(Action<byte, DolphiimoteData> newData, Action<byte, bool> wiimoteConnectionChanged, Action<byte, DolphiimoteCapabilities> capabilitiesChanged, Action<string> newLogMessage)
         {
-            this.dataCallback = (wiimote, data, user) => dataCallback(wiimote, MarshalType<DolphiimoteData>(data));
-            this.capabilitiesCallback = (wiimote, capabilities, user) => capabilitiesChanged(wiimote, MarshalType<DolphiimoteCapabilities>(capabilities));
-            this.connectionCallback = (wiimote, status) => wiimoteConnectionChanged(wiimote, Convert.ToBoolean(status));
-            this.onLog = (str, length) => onLog(Marshal.PtrToStringAnsi(str, (int)length));
+            dataCallback = (wiimote, data, user) => newData(wiimote, MarshalType<DolphiimoteData>(data));
+            capabilitiesCallback = (wiimote, capabilities, user) => capabilitiesChanged(wiimote, MarshalType<DolphiimoteCapabilities>(capabilities));
+            connectionCallback = (wiimote, status) => wiimoteConnectionChanged(wiimote, Convert.ToBoolean(status));
+            logCallback = (str, length) => newLogMessage(Marshal.PtrToStringAnsi(str, (int)length));
 
-            DolphiimoteCallbacks callbacks = new DolphiimoteCallbacks();
-
-            callbacks.dataReceived = MarshalFunction(this.dataCallback);
-            callbacks.capabilitiesChanged = MarshalFunction(this.capabilitiesCallback);
-            callbacks.connectionChanged = MarshalFunction(this.connectionCallback);
-            callbacks.onLog = MarshalFunction(this.onLog);
-            callbacks.userData = IntPtr.Zero;
+            var callbacks = new DolphiimoteCallbacks
+            {
+                dataReceived = MarshalFunction(dataCallback),
+                capabilitiesChanged = MarshalFunction(capabilitiesCallback),
+                connectionChanged = MarshalFunction(connectionCallback),
+                onLog = MarshalFunction(logCallback),
+                userData = IntPtr.Zero
+            };
 
             return dolphiimoteInit(callbacks);
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void DolphiimoteEnableCapabilities(byte wiimote_number, ushort capabilities);
+        private delegate void DolphiimoteEnableCapabilities(byte wiimote, ushort capabilities);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate Int32 DolphiimoteInit(DolphiimoteCallbacks on_update);
+        private delegate Int32 DolphiimoteInit(DolphiimoteCallbacks onUpdate);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate Int32 DolphiimoteShutdown();

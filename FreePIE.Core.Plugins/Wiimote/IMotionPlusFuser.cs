@@ -15,14 +15,13 @@ namespace FreePIE.Core.Plugins.Wiimote
 
     public class SimpleIntegrationMotionPlusFuser : IMotionPlusFuser
     {
-        private Integrator integrator;
+        private readonly Integrator integrator;
 
         public SimpleIntegrationMotionPlusFuser()
         {
             integrator = new Integrator(3);
             FusedValues = new EulerAngles(0, 0, 0);
         }
-        
 
         public void HandleIMUData(double yawDown, double pitchLeft, double rollLeft, double accX, double accY, double accZ)
         {
@@ -35,7 +34,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
     public class MahonyMotionPlusFuser : IMotionPlusFuser
     {
-        private SamplePeriodCounter motionPlusPeriodCounter;
+        private readonly SamplePeriodCounter motionPlusPeriodCounter;
         private MahonyAHRS mahonyAHRS;
 
         public MahonyMotionPlusFuser()
@@ -57,7 +56,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                     return new EulerAngles(0, 0, 0);
 
                 var calculator = new Quaternion();
-                calculator.Udate(mahonyAHRS.Quaternion[0], mahonyAHRS.Quaternion[1], mahonyAHRS.Quaternion[2],
+                calculator.Update(mahonyAHRS.Quaternion[0], mahonyAHRS.Quaternion[1], mahonyAHRS.Quaternion[2],
                                  mahonyAHRS.Quaternion[3]);
                 return new EulerAngles(calculator.Yaw*(180/Math.PI), calculator.Pitch*(180/Math.PI),
                                        calculator.Roll*(180/Math.PI));
