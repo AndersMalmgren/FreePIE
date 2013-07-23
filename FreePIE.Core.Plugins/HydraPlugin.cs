@@ -9,7 +9,18 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof (HydraPluginGlobal), IsIndexed = true)]
     public class HydraPlugin : Plugin
     {
-        internal EmulatedData[] EmulatedData;
+        private EmulatedData[] emulatedData;
+
+        internal EmulatedData[] EmulatedData
+        {
+            get
+            {
+                isWriting = true;
+                return emulatedData; 
+
+            }
+            set { emulatedData = value; }
+        }
 
         private Sixense.ControllerData[] controller;
         internal Sixense.ControllerData[] Controller
@@ -36,6 +47,7 @@ namespace FreePIE.Core.Plugins
         private HydraSpoof hydraSpoof;
         private bool readInitlized;
         private bool isReading;
+        private bool isWriting;
 
         public override object CreateGlobal()
         {
@@ -48,7 +60,15 @@ namespace FreePIE.Core.Plugins
 
         public override Action Start()
         {
-            //InitHydraRead();
+            Controller = new Sixense.ControllerData[2];
+            Controller[0] = new Sixense.ControllerData();
+            Controller[1] = new Sixense.ControllerData();
+
+            Angles = new Sixense.ControllerAngles[2];
+            Angles[0] = new Sixense.ControllerAngles();
+            Angles[1] = new Sixense.ControllerAngles();
+
+            isReading = false;
             InitHydraWrite();
             return null;
         }
@@ -66,7 +86,7 @@ namespace FreePIE.Core.Plugins
 
                 int attempts = 0;
                 int base_found = 0;
-                while (base_found == 0 && attempts < 2)
+                while (base_found == 0 && attempts++ < 2)
                 {
                     base_found = Sixense.IsBaseConnected(0);
 
@@ -79,14 +99,6 @@ namespace FreePIE.Core.Plugins
                     Sixense.Exit();
                     throw new Exception("Hydra not attached");
                 }
-
-                Controller = new Sixense.ControllerData[2];
-                Controller[0] = new Sixense.ControllerData();
-                Controller[1] = new Sixense.ControllerData();
-
-                Angles = new Sixense.ControllerAngles[2];
-                Angles[0] = new Sixense.ControllerAngles();
-                Angles[1] = new Sixense.ControllerAngles();
 
                 Sixense.SetActiveBase(0);
             }
@@ -117,9 +129,10 @@ namespace FreePIE.Core.Plugins
 
         public override void DoBeforeNextExecute()
         {
-            if (!isReading)
+            if (isWriting)
                 hydraSpoof.Write(EmulatedData);
-            else
+
+            if (isReading)
             {
                 if (!readInitlized)
                 {
