@@ -85,9 +85,12 @@ outfile << "sixenseGetHistorySize\r\n";
   return 0;
 }
 
- void convert_euler(float yaw, float pitch, float roll, sixenseControllerData *output) {
-  auto quat = sixenseMath::Quat::rotation(yaw, pitch, roll);
-  auto mat = sixenseMath::Matrix3::rotation(quat);
+void convert_euler(float yaw, float pitch, float roll, sixenseControllerData *output) {
+  auto mat =
+    sixenseMath::Matrix3::rotation( roll,  sixenseMath::Vector3( 0,  0, -1 ) ) * 
+    sixenseMath::Matrix3::rotation( pitch, sixenseMath::Vector3( 1,  0,  0 ) ) *
+    sixenseMath::Matrix3::rotation( yaw,   sixenseMath::Vector3( 0, -1,  0 ) );
+  auto quat = sixenseMath::Quat(mat);
   
   quat.fill((float*)&output->rot_quat);
   mat.fill((float(*)[3])&output->rot_mat);  
