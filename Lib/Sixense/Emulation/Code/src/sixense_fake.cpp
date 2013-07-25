@@ -10,7 +10,6 @@
 #include "shared_memory.h"
 #include <algorithm>
 
-std::ofstream outfile;
 std::array<std::vector<sixenseControllerData>, 2> controller_data;
 
 struct emulated_data
@@ -31,9 +30,6 @@ freepie_io::shared_memory<std::array<emulated_data, 2>> shared_memory;
 
 SIXENSE_EXPORT int sixenseInit( void )
 {
-  outfile.open("sixense.log", std::ios_base::app);
-  outfile << "Init\r\n";
-
   shared_memory = freepie_io::shared_memory<std::array<emulated_data, 2>>("SixenseEmulatedData");
 
   return SIXENSE_SUCCESS;
@@ -41,10 +37,6 @@ SIXENSE_EXPORT int sixenseInit( void )
 
 SIXENSE_EXPORT int sixenseExit( void )
 {
-	outfile << "Exit\r\n"; 
-
-	outfile.close();
-
   return SIXENSE_SUCCESS;
 }
 
@@ -81,7 +73,6 @@ SIXENSE_EXPORT int sixenseGetNumActiveControllers()
 
 SIXENSE_EXPORT int sixenseGetHistorySize()
 {
-outfile << "sixenseGetHistorySize\r\n"; 
   return 0;
 }
 
@@ -105,9 +96,6 @@ SIXENSE_EXPORT int sixenseGetData(int which, int index_back, sixenseControllerDa
 
   auto view = shared_memory.open_view();
 
-  if(!view)
-    outfile << "Cannot open view" << std::endl;  
-  
   auto data = view.map()[which];
 
   output->sequence_number = sequence_numbers[which]++;
@@ -152,71 +140,56 @@ SIXENSE_EXPORT int sixenseGetAllNewestData( sixenseAllControllerData *output)
 
 SIXENSE_EXPORT int sixenseSetHemisphereTrackingMode( int which_controller, int state )
 {
-	outfile << "sixenseSetHemisphereTrackingMode\r\n"; 
-
   return SIXENSE_SUCCESS;
 }
 SIXENSE_EXPORT int sixenseGetHemisphereTrackingMode( int which_controller, int *state )
 {
-	outfile << "sixenseGetHemisphereTrackingMode\r\n"; 
   return SIXENSE_SUCCESS;
 }
 
 SIXENSE_EXPORT int sixenseAutoEnableHemisphereTracking( int which_controller )
 {
-	outfile << "sixenseAutoEnableHemisphereTracking\r\n"; 
   return SIXENSE_SUCCESS;
 }
 
 SIXENSE_EXPORT int sixenseSetHighPriorityBindingEnabled( int on_or_off )
 { 
-	outfile << "sixenseSetHighPriorityBindingEnabled\r\n"; 
-
   return SIXENSE_SUCCESS;
 }
 SIXENSE_EXPORT int sixenseGetHighPriorityBindingEnabled( int *on_or_off )
 {
-
-	outfile << "sixenseGetHighPriorityBindingEnabled\r\n"; 
   return SIXENSE_SUCCESS;
 }
 
 SIXENSE_EXPORT int sixenseTriggerVibration( int controller_id, int duration_100ms, int pattern_id )
 {
-	outfile << "sixenseTriggerVibration\r\n"; 
   return SIXENSE_SUCCESS;
 }
 
 SIXENSE_EXPORT int sixenseSetFilterEnabled( int on_or_off )
 {
-	outfile << "sixenseSetFilterEnabled\r\n"; 
   return SIXENSE_SUCCESS;
 }
 SIXENSE_EXPORT int sixenseGetFilterEnabled( int *on_or_off )
 {
-	outfile << "sixenseGetFilterEnabled\r\n"; 
   return SIXENSE_SUCCESS;
 }
 
 SIXENSE_EXPORT int sixenseSetFilterParams( float near_range, float near_val, float far_range, float far_val )
 {
-	outfile << "sixenseSetFilterParams\r\n"; 
   return SIXENSE_SUCCESS;
 }
 
 SIXENSE_EXPORT int sixenseGetFilterParams( float *near_range, float *near_val, float *far_range, float *far_val )
 {
-	outfile << "sixenseGetFilterParams\r\n"; 
   return SIXENSE_SUCCESS;
 }
 
 SIXENSE_EXPORT int sixenseSetBaseColor( unsigned char red, unsigned char green, unsigned char blue )
 {
-	outfile << "sixenseGetFilterParams\r\n"; 
   return SIXENSE_SUCCESS;
 }
 SIXENSE_EXPORT int sixenseGetBaseColor( unsigned char *red, unsigned char *green, unsigned char *blue )
 {
-	outfile << "sixenseGetBaseColor\r\n"; 
   return SIXENSE_SUCCESS;
 }
