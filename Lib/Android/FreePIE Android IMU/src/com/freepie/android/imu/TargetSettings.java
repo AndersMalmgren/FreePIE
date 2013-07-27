@@ -11,8 +11,9 @@ public class TargetSettings {
 	private int sampleRate;
 	private boolean debug;
 	private IDebugListener debugListener;
+	private IErrorHandler errorHandler;
 	
-	public TargetSettings(String toIp, int port, SensorManager sensorManager, boolean sendOrientation, boolean sendRaw, int sampleRate, boolean debug, IDebugListener debugListener) {
+	public TargetSettings(String toIp, int port, SensorManager sensorManager, boolean sendOrientation, boolean sendRaw, int sampleRate, boolean debug, IDebugListener debugListener, IErrorHandler errorHandler) {
 		this.toIp = toIp;
 		this.port = port;
 		this.sensorManager = sensorManager;
@@ -21,6 +22,7 @@ public class TargetSettings {
 		this.sampleRate = sampleRate;
 		this.debug = debug;
 		this.debugListener = debugListener;
+		this.errorHandler = errorHandler;
 	}
 	
 	public String getToIp()
@@ -36,7 +38,7 @@ public class TargetSettings {
 	public SensorManager getSensorManager()
 	{
 		return sensorManager;
-	} 
+	}	
 	
 	public boolean getSendOrientation()
 	{
@@ -58,5 +60,9 @@ public class TargetSettings {
 	
 	public IDebugListener getDebugListener() {
 		return debugListener;
+	}
+	
+	public IErrorHandler getErrorHandler() {
+		return this.errorHandler;
 	}
 }
