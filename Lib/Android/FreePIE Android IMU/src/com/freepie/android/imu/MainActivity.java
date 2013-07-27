@@ -2,10 +2,10 @@ package com.freepie.android.imu;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -22,7 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-public class MainActivity extends Activity implements IDebugListener {
+public class MainActivity extends Activity implements IDebugListener, IErrorHandler {
 
 	private UdpSenderTask udpSender;
 	private static final String IP = "ip";
@@ -94,26 +94,32 @@ public class MainActivity extends Activity implements IDebugListener {
             }
         });
         
-        final IDebugListener debugListener = this;        
+        final IDebugListener debugListener = this;  
+        final IErrorHandler error = this;
         start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
             	boolean on = ((ToggleButton) view).isChecked();
             	
             	if(on) {
-                String ip = txtIp.getText().toString();
-                int port = Integer.parseInt(txtPort.getText().toString());
-                boolean sendOrientation = chkSendOrientation.isChecked();
-                boolean sendRaw = chkSendRaw.isChecked();
-                boolean debug = chkDebug.isChecked();
-            	
-	        	udpSender = new UdpSenderTask();
-	        	udpSender.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId(), debug, debugListener));
+	                String ip = txtIp.getText().toString();
+	                int port = Integer.parseInt(txtPort.getText().toString());
+	                boolean sendOrientation = chkSendOrientation.isChecked();
+	                boolean sendRaw = chkSendRaw.isChecked();
+	                boolean debug = chkDebug.isChecked();
+	            	
+		        	udpSender = new UdpSenderTask();
+		        	udpSender.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId(), debug, debugListener, error));
             	} else {
-            		udpSender.stop();
-            		udpSender = null;
+            		stop();
             	}
             }
         });
+    }
+    
+    private void stop() {
+    	start.setChecked(false);
+		udpSender.stop();
+		udpSender = null;
     }
     
     private void setDebugVisability(boolean show) {
@@ -203,5 +209,17 @@ public class MainActivity extends Activity implements IDebugListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
-    }    
+    }
+
+	@Override
+	public void error(final String title, final String text) {
+		final Activity activity = this;
+		
+		this.runOnUiThread(new Runnable() { 
+            public void run(){
+            	new AlertDialog.Builder(activity).setTitle(title).setMessage(text).setNeutralButton("OK", null).show();         
+        		stop();
+            }
+		});
+	} 
 }
