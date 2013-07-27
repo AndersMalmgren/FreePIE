@@ -9,7 +9,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly TimeSeries nunchuckAccelerationMagnitudes;
         private readonly TimeSeries nunchuckStick;
 
-        private const uint WiimoteStationaryDeltaEpsilon = 1;
+        private const uint WiimoteStationaryDeltaEpsilon = 3;
 
         public WiimoteCalibration()
         {
@@ -172,7 +172,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         private bool IsNunchuckStationary()
         {
-            return nunchuckAccelerationMagnitudes.Size > 10 && nunchuckAccelerationMagnitudes.DurationStable(4) > TimeSpan.FromMilliseconds(1000);
+            return nunchuckAccelerationMagnitudes.Size > 10 && nunchuckAccelerationMagnitudes.DurationStable(WiimoteStationaryDeltaEpsilon) > TimeSpan.FromMilliseconds(1000);
         }
 
         private bool NunchuckStickCalibrated
