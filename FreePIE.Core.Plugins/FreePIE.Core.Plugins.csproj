@@ -69,6 +69,7 @@
     <Compile Include="MemoryMapping\SharedMemoryWorker.cs" />
     <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
+    <Compile Include="Wiimote\CircularBuffer.cs" />
     <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
     <Compile Include="Wiimote\IMotionPlusFuser.cs" />
     <Compile Include="Wiimote\Integrator.cs" />
@@ -87,6 +88,9 @@
     <Compile Include="Strategies\SetPressedStrategy.cs" />
     <Compile Include="Wiimote\Nunchuck.cs" />
     <Compile Include="Wiimote\SamplePeriodCounter.cs" />
+    <Compile Include="Wiimote\SequenceExtensions.cs" />
+    <Compile Include="Wiimote\TimedValue.cs" />
+    <Compile Include="Wiimote\TimeSeries.cs" />
     <Compile Include="Wiimote\WiimoteButton.cs" />
     <Compile Include="Wiimote\Subscribable.cs" />
     <Compile Include="TrackIRPlugin.cs" />

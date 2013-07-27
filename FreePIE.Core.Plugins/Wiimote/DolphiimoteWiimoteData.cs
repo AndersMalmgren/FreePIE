@@ -4,10 +4,9 @@ namespace FreePIE.Core.Plugins.Wiimote
 {
     public class DolphiimoteWiimoteData : IWiimoteData
     {
+        private readonly WiimoteCalibration calibration;
+        private readonly IMotionPlusFuser fuser;
         private DolphiimoteData data;
-        private WiimoteCalibration calibration;
-        private uint wiimoteNumber;
-        private IMotionPlusFuser fuser;
 
         public byte WiimoteNumber { get; private set; }
 
@@ -27,20 +26,23 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public DolphiimoteWiimoteData(byte wiimoteNumber, WiimoteCalibration calibration)
         {
-            this.fuser = new SimpleIntegrationMotionPlusFuser();
-            this.WiimoteNumber = wiimoteNumber;
+            fuser = new SimpleIntegrationMotionPlusFuser();
+            WiimoteNumber = wiimoteNumber;
             this.calibration = calibration;
+
+            MotionPlus = new Gyro(0, 0, 0);
+            Acceleration = new Acceleration(0, 0, 0);
+            Nunchuck = new Nunchuck
+            {
+                Acceleration = new Acceleration(0, 0, 0),
+                Stick = new NunchuckStick(0, 0)
+            };
         }
 
         public bool IsButtonPressed(WiimoteButtons b)
         {
             UInt16 value = (UInt16)b;
             return (data.button_state & value) == value;
-        }
-
-        private static double TransformLinear(double gain, double offset, double value)
-        {
-            return (value + offset) * gain;
         }
 
         public bool IsDataValid(WiimoteDataValid valid)
@@ -57,9 +59,15 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         private Gyro CalculateMotionPlus(DolphiimoteMotionplus motionplus)
         {
-            return new Gyro(TransformLinear((motionplus.slow_modes & 0x1) == 0x1 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.yaw_down_speed),
-                            TransformLinear((motionplus.slow_modes & 0x4) == 0x4 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.pitch_left_speed),
-                            TransformLinear((motionplus.slow_modes & 0x2) == 0x2 ? calibration.MotionPlusGainSlow : calibration.MotionPlusGainFast, calibration.MotionPlusOffset, data.motionplus.roll_left_speed));
+            //const double fastModeFactor = 2000.0 / 440.0; //According to wiibrew
+            const double fastModeFactor = 20.0 / 4.0; //According to wiic
+            var gyro = calibration.NormalizeMotionplus(DateTime.Now, motionplus.yaw_down_speed,
+                                                                     motionplus.pitch_left_speed,
+                                                                     motionplus.roll_left_speed);
+
+            return new Gyro((motionplus.slow_modes & 0x1) == 0x1 ? gyro.x : gyro.x * fastModeFactor,
+                            (motionplus.slow_modes & 0x4) == 0x4 ? gyro.y : gyro.y * fastModeFactor,
+                            (motionplus.slow_modes & 0x2) == 0x2 ? gyro.z : gyro.z * fastModeFactor);
         }
 
         public void Update(DolphiimoteData rawData)
@@ -78,8 +86,13 @@ namespace FreePIE.Core.Plugins.Wiimote
             {
                 Nunchuck = new Nunchuck
                     {
-                        Acceleration = new Acceleration(rawData.nunchuck.x, rawData.nunchuck.y, rawData.nunchuck.z),
-                        Stick = new NunchuckStick(rawData.nunchuck.stick_x, rawData.nunchuck.stick_y)
+                        Stick = calibration.NormalizeNunchuckStick(DateTime.Now,
+                                                                   rawData.nunchuck.stick_x,
+                                                                   rawData.nunchuck.stick_y),
+                        Acceleration = calibration.NormalizeNunchuckAcceleration(DateTime.Now,
+                                                                                 rawData.nunchuck.x,
+                                                                                 rawData.nunchuck.y,
+                                                                                 rawData.nunchuck.z)
                     };
             }
         }

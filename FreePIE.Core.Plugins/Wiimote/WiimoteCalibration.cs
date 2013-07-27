@@ -1,142 +1,21 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
-    public class CircularBuffer<T> : IEnumerable<T>
-    {
-        private readonly T[] data;
-        private int front;
-
-        public int Size { get; private set; }
-
-        public CircularBuffer(uint capacity)
-        {
-            data = new T[capacity];
-            Size = 0;
-            front = -1;
-        }
-
-        public void Push(T element)
-        {
-            front += 1;
-            front = front % data.Length;
-            data[front] = element;
-
-            Size = Math.Min(data.Length, Size + 1);
-        }
-
-        private static uint Modulo(int i, int c)
-        {
-            var result = i % c;
-            return (uint)(result >= 0 ? result : result + c);
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            for (int c = 0, i = front; c < Size; c++, i--)
-                yield return data[Modulo(i, Size)];
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
-
-    public struct TimedValue<T>
-    {
-        public readonly T Value;
-        public readonly DateTime Time;
-
-        public TimedValue(DateTime time, T value)
-        {
-            Time = time;
-            Value = value;
-        }
-    }
-
-    public static class SequenceExtensions
-    {
-        public static IEnumerable<double> Deltas(this IEnumerable<double> values)
-        {
-            return values.AdjacentElements().Select(x => x.Item2 - x.Item1);
-        }
-
-        public static IEnumerable<Tuple<T, T>> AdjacentElements<T>(this IEnumerable<T> values)
-        {
-            var previous = values.FirstOrDefault();
-
-            if (default(double).Equals(previous))
-                yield break;
-
-            foreach (var value in values.Skip(1))
-            {
-                yield return new Tuple<T, T>(previous, value);
-                previous = value;
-            }
-        }
-    }
-
-    public class TimeSeries
-    {
-        private readonly CircularBuffer<TimedValue<double>> buffer;
-
-        public int Size
-        {
-            get { return buffer.Size; }
-        }
-
-        public TimeSeries(uint capacity)
-        {
-            buffer = new CircularBuffer<TimedValue<double>>(capacity);
-        }
-
-        public void Add(DateTime time, double value)
-        {
-            buffer.Push(new TimedValue<double>(time, value));
-        }
-
-        private IEnumerable<TimedValue<double>> DeltaBelowEpsilon(double epsilon)
-        {
-            var latest = buffer.First();
-
-            foreach (var timedValue in buffer.Skip(1))
-                if (Math.Abs(timedValue.Value - latest.Value) < epsilon)
-                    yield return timedValue;
-                else yield break;
-        }
-
-        public TimeSpan DurationStable(double epsilon)
-        {
-            var filtered = DeltaBelowEpsilon(epsilon).ToList();
-            var deltas = filtered.Select(t => t.Time).AdjacentElements().Select(x => x.Item1 - x.Item2);
-            return deltas.Aggregate(TimeSpan.FromMilliseconds(0), (current, pair) => current + (pair));
-        }
-
-        public double Average(double epsilon)
-        {
-            return DeltaBelowEpsilon(epsilon).Select(t => t.Value).Average();
-        }
-    }
-
     public class WiimoteCalibration
     {
         private readonly TimeSeries accelerationMagnitudes;
+        private readonly TimeSeries nunchuckAccelerationMagnitudes;
+        private readonly TimeSeries nunchuckStick;
 
         private const uint WiimoteStationaryDeltaEpsilon = 1;
 
         public WiimoteCalibration()
         {
-            AccelerationGain = 0;
-            AccelerationOffset = 0;
-            MotionPlusGainSlow = 1.0 / (8192.0 / 595.0) / 1.44;
-            MotionPlusGainFast = MotionPlusGainSlow * 2000 / 440;
-            MotionPlusOffset = -0x2000;
-
-            accelerationMagnitudes = new TimeSeries(512);
+            accelerationMagnitudes = new TimeSeries(256);
+            nunchuckAccelerationMagnitudes = new TimeSeries(256);
+            nunchuckStick = new TimeSeries(64);
         }
 
         private double EuclideanDistance(ushort a, ushort b, ushort c)
@@ -144,46 +23,166 @@ namespace FreePIE.Core.Plugins.Wiimote
             return Math.Sqrt(a*a + b*b + c*c);
         }
 
+        private double EuclideanDistance(byte a, byte b)
+        {
+            return Math.Sqrt(a * a + b * b);
+        }
+
         private bool IsStationary()
         {
             return accelerationMagnitudes.Size > 10 && accelerationMagnitudes.DurationStable(WiimoteStationaryDeltaEpsilon) > TimeSpan.FromMilliseconds(1000);
         }
 
-        private void TakeCalibrationSnapshot(ushort accX, ushort accY, ushort accZ)
+        private void TakeAccelerationCalibrationSnapshot(ushort accX, ushort accY, ushort accZ)
         {
-            AccelerationOffset = (accX + accY) / 2d;
-            var gravity = accZ - AccelerationOffset;
+            var offset = (accX + accY) / 2d;
+            var gravity = accZ - offset;
             
-            AccelerationGain = 9.81 / gravity;
+            Acceleration = new LinearCalibration(9.81 / gravity, offset);
         }
 
-        private static double TransformLinear(double gain, double offset, double value)
+        private static double TransformLinear(LinearCalibration calibration, double value)
         {
-            return (value - offset) * gain;
+            if (calibration == null)
+                return 0;
+
+            return (value - calibration.Offset) * calibration.Gain;
         }
 
-        private bool AccelerationCalibrated { get { return AccelerationGain != 0; } }
+        private bool AccelerationCalibrated { get { return Acceleration != null; } }
+
+        private bool MotionPlusCalibrated { get { return MotionPlus != null; } }
 
         public Acceleration NormalizeAcceleration(DateTime measured, ushort x, ushort y, ushort z)
         {
             accelerationMagnitudes.Add(measured, EuclideanDistance(x, y, z));
 
             if (IsStationary() && !AccelerationCalibrated)
-                TakeCalibrationSnapshot(x, y, z);
+                TakeAccelerationCalibrationSnapshot(x, y, z);
 
-            return new Acceleration(TransformLinear(AccelerationGain, AccelerationOffset, x),
-                                    TransformLinear(AccelerationGain, AccelerationOffset, y),
-                                    TransformLinear(AccelerationGain, AccelerationOffset, z));
+            return new Acceleration(TransformLinear(Acceleration, x),
+                                    TransformLinear(Acceleration, y),
+                                    TransformLinear(Acceleration, z));
         }
 
-        public double AccelerationGain { get; set; }
+        public Gyro NormalizeMotionplus(DateTime measured, ushort yaw, ushort pitch, ushort roll)
+        {
+            if (IsStationary() && !MotionPlusCalibrated)
+                TakeMotionPlusCalibrationSnapshot(yaw, pitch, roll);
 
-        public double AccelerationOffset { get; set; }
+            return  MotionPlusCalibrated ? new Gyro(TransformLinear(MotionPlus.X, yaw),
+                                                    TransformLinear(MotionPlus.Y, pitch),
+                                                    TransformLinear(MotionPlus.Z, roll))
+                                         : new Gyro(0, 0, 0);
+        }
 
-        public double MotionPlusGainSlow { get; set; }
+        private void TakeMotionPlusCalibrationSnapshot(ushort yaw, ushort pitch, ushort roll)
+        {
+            // const double gain = 1.0 / (8192.0 / 595.0) // this is gain according to wiibrew?
+            const double gain = 1.0 / 20.0; // this is gain according to wiic
 
-        public double MotionPlusGainFast { get; set; }
+            MotionPlus = new ThreePointCalibration(new LinearCalibration(gain, yaw),
+                                                   new LinearCalibration(gain, pitch),
+                                                   new LinearCalibration(gain, roll));
+        }
 
-        public double MotionPlusOffset { get; set; }
+        private ThreePointCalibration MotionPlus { get; set; }
+        private LinearCalibration Acceleration { get; set; }
+        private TwoPointCalibration NunchuckStick { get; set; }
+        private LinearCalibration NunchuckAcceleration { set; get; }
+
+        private class ThreePointCalibration
+        {
+            public LinearCalibration X { get; private set; }
+            public LinearCalibration Y { get; private set; }
+            public LinearCalibration Z { get; private set; }
+
+            public ThreePointCalibration(LinearCalibration x, LinearCalibration y, LinearCalibration z)
+            {
+                X = x;
+                Y = y;
+                Z = z;
+            }
+        }
+
+        private class TwoPointCalibration
+        {
+            public LinearCalibration X { get; private set; }
+            public LinearCalibration Y { get; private set; }
+
+            public TwoPointCalibration(LinearCalibration x, LinearCalibration y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
+
+        private class LinearCalibration
+        {
+            public LinearCalibration(double gain, double offset)
+            {
+                Gain = gain;
+                Offset = offset;
+            }
+
+            public double Gain { get; private set; }
+
+            public double Offset { get; private set; }
+        }
+
+        private bool IsNunchuckStickStationary()
+        {
+            return nunchuckStick.Size > 10 && nunchuckStick.DurationStable(WiimoteStationaryDeltaEpsilon) > TimeSpan.FromMilliseconds(250);
+        }
+
+        public NunchuckStick NormalizeNunchuckStick(DateTime measured, byte stickX, byte stickY)
+        {
+            nunchuckStick.Add(measured, EuclideanDistance(stickX, stickY));
+
+            if (IsNunchuckStickStationary() && !NunchuckStickCalibrated)
+                TakeNunchuckStickCalibrationSnapshot(stickX, stickY);
+
+            return NunchuckStickCalibrated ? new NunchuckStick(TransformLinear(NunchuckStick.X, stickX), TransformLinear(NunchuckStick.Y, stickY)) : new NunchuckStick(0, 0);
+        }
+
+        public Acceleration NormalizeNunchuckAcceleration(DateTime measured, ushort x, ushort y, ushort z)
+        {
+            nunchuckAccelerationMagnitudes.Add(measured, EuclideanDistance(x, y, z));
+
+            if (IsNunchuckStationary() && !NunchuckAccelerationCalibrated)
+                TakeNunchuckAccelerationCalibrationSnapshot(x, y, z);
+
+            return new Acceleration(TransformLinear(NunchuckAcceleration, x),
+                                    TransformLinear(NunchuckAcceleration, y),
+                                    TransformLinear(NunchuckAcceleration, z));
+        }
+
+        private void TakeNunchuckAccelerationCalibrationSnapshot(ushort x, ushort y, ushort z)
+        {
+            var offset = (x + y) / 2d;
+            var gravity = z - offset;
+
+            NunchuckAcceleration = new LinearCalibration(9.81 / gravity, offset);
+        }
+
+        protected bool NunchuckAccelerationCalibrated
+        {
+            get { return NunchuckAcceleration != null; }
+        }
+
+        private bool IsNunchuckStationary()
+        {
+            return nunchuckAccelerationMagnitudes.Size > 10 && nunchuckAccelerationMagnitudes.DurationStable(4) > TimeSpan.FromMilliseconds(1000);
+        }
+
+        private bool NunchuckStickCalibrated
+        {
+            get { return NunchuckStick != null; }
+        }
+
+        private void TakeNunchuckStickCalibrationSnapshot(byte stickX, byte stickY)
+        {
+            NunchuckStick = new TwoPointCalibration(new LinearCalibration(1, stickX), new LinearCalibration(1, stickY));
+        }
     }
 }
