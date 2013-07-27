@@ -35,6 +35,7 @@ public class UdpSenderTask implements SensorEventListener {
 	private int sampleRate;
 	private IDebugListener debugListener;
 	private SensorManager sensorManager;
+	private IErrorHandler errorHandler;
 	
 	byte sendFlag;
 	
@@ -45,31 +46,35 @@ public class UdpSenderTask implements SensorEventListener {
 	boolean running;
 
 	public void start(TargetSettings target) {
-		sensorManager = target.getSensorManager();		
+		sensorManager = target.getSensorManager();
+		port = target.getPort();
+		final String ip = target.getToIp();
 		sendRaw = target.getSendRaw();
 		sendOrientation = target.getSendOrientation();		
 		sampleRate = target.getSampleRate();		
 		debug = target.getDebug();
 		debugListener = target.getDebugListener();
+		errorHandler = target.getErrorHandler();			
 		
 		sendFlag = getFlagByte(sendRaw, sendOrientation);
 		
 		sync = new CyclicBarrier(2);
 			
 		buffer = ByteBuffer.allocate(50);
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		
-		try {	
-			endPoint = InetAddress.getByName(target.getToIp());
-			port = target.getPort();
-			socket = new DatagramSocket();
-		}
-		catch(Exception e) {			
-		}
+		buffer.order(ByteOrder.LITTLE_ENDIAN);	
+
 					
 		running = true;
 		worker = new Thread(new Runnable() { 
             public void run(){
+        		try {	
+        			endPoint = InetAddress.getByName(ip);
+        			socket = new DatagramSocket();
+        		}
+        		catch(Exception e) {
+        			errorHandler.error("Can't create endpoint", e.getMessage());
+        		}
+            	
         		while(running) {
         			try {
         			sync.await();
@@ -201,12 +206,15 @@ public class UdpSenderTask implements SensorEventListener {
 		
       				
 		byte[] arr = buffer.array();
-	    DatagramPacket p = new DatagramPacket(arr, arr.length, endPoint, port);	    
+		if(endPoint == null)
+			return;
+					
+	    DatagramPacket p = new DatagramPacket(arr, arr.length, endPoint, port);   
+	    
 	    try {
 	    	socket.send(p);
 	    }
-	    catch(IOException w) {
-	    	
+	    catch(IOException w) {	    	
 	    }
 	}
 
