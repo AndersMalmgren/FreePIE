@@ -467,7 +467,7 @@ namespace FreePIE.Core.Plugins
         private KeyboardState KeyState = new KeyboardState();
         private bool[] MyKeyDown = new bool[150];
         private SetPressedStrategy setKeyPressedStrategy;
-        private GetPressedStrategy getKeyPressedStrategy;
+        private GetPressedStrategy<int> getKeyPressedStrategy;
 
         //-----------------------------------------------------------------------
         public override object CreateGlobal()
@@ -497,7 +497,7 @@ namespace FreePIE.Core.Plugins
             KeyboardDevice.GetCurrentState(ref KeyState);
 
             setKeyPressedStrategy = new SetPressedStrategy(KeyDown, KeyUp);
-            getKeyPressedStrategy = new GetPressedStrategy(IsKeyDown);
+            getKeyPressedStrategy = new GetPressedStrategy<int>(IsKeyDown);
 
             OnStarted(this, new EventArgs());
             return null;

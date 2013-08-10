@@ -51,13 +51,13 @@ namespace FreePIE.Core.Plugins
     {
         private readonly Joystick joystick;
         private JoystickState state;
-        private readonly GetPressedStrategy getPressedStrategy;
+        private readonly GetPressedStrategy<int> getPressedStrategy;
 
         public Device(Joystick joystick)
         {
             this.joystick = joystick;
             SetRange(-1000, 1000);
-            getPressedStrategy = new GetPressedStrategy(GetDown);
+            getPressedStrategy = new GetPressedStrategy<int>(GetDown);
         }
 
         public void Dispose()
