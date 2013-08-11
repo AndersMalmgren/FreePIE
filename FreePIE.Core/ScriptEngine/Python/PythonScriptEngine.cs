@@ -12,6 +12,7 @@ using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.ScriptEngine.Globals;
+using FreePIE.Core.ScriptEngine.ThreadTiming;
 using IronPython;
 using IronPython.Compiler;
 using IronPython.Hosting;
@@ -65,6 +66,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         private readonly IScriptParser parser;
         private readonly IEnumerable<IGlobalProvider> globalProviders;
         private readonly IEventAggregator eventAggregator;
+        private readonly IThreadTimingFactory threadTimingFactory;
         private static Microsoft.Scripting.Hosting.ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
         private InterlockableBool stopRequested;
@@ -88,11 +90,12 @@ namespace FreePIE.Core.ScriptEngine.Python
             throw new InvalidOperationException("Do not use this method - it is only to force local copy.");
         }
 
-        public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders, IEventAggregator eventAggregator)
+        public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders, IEventAggregator eventAggregator, IThreadTimingFactory threadTimingFactory)
         {
             this.parser = parser;
             this.globalProviders = globalProviders;
             this.eventAggregator = eventAggregator;
+            this.threadTimingFactory = threadTimingFactory;
         }
 
         public void Start(string script)
@@ -122,6 +125,8 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                 script = PreProcessScript(script, usedGlobalEnums, globals);
 
+                threadTimingFactory.SetDefault();
+
                 RunLoop(Engine.CreateScriptSourceFromString(script).Compile(), scope);
             })) {Name = "PythonEngine Worker"};
 
@@ -137,7 +142,7 @@ namespace FreePIE.Core.ScriptEngine.Python
                     usedPlugins.ForEach(p => p.DoBeforeNextExecute());
                     CatchThreadAbortedException(() => compiled.Execute(scope));
                     scope.SetVariable("starting", false);
-                    Thread.Sleep(LoopDelay);
+                    threadTimingFactory.Get().Wait();
                 }
                 scope.SetVariable("stopping", true);
                 CatchThreadAbortedException(() => compiled.Execute(scope));
@@ -275,6 +280,7 @@ namespace FreePIE.Core.ScriptEngine.Python
             if(thread.IsAlive)
                 thread.Abort();
 
+            threadTimingFactory.Get().Dispose();
             usedPlugins.ForEach(p => StopPlugin(p, pluginStopped));
             pluginStopped.Wait();
         }
