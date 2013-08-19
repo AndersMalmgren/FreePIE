@@ -32,6 +32,7 @@ namespace FreePIE.Core.ScriptEngine.ThreadTiming
         {
             var keyValue = timingStrategyTypes.Single(k => k.Key.Type == type);
             timing = timingFactory(keyValue.Value);
+            timing.ThreadExecutionInterval = 1;
         }
     }
 }

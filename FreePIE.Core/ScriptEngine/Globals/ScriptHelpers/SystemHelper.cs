@@ -22,5 +22,11 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
         {
             threadTimingFactory.Set(timing);
         }
+
+        public int threadExecutionInterval
+        {
+            get { return threadTimingFactory.Get().ThreadExecutionInterval; }
+            set { threadTimingFactory.Get().ThreadExecutionInterval = value; }
+        }
     }
 }

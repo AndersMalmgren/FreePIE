@@ -7,7 +7,7 @@ namespace FreePIE.Core.ScriptEngine.ThreadTiming.Strategies
     {
         public override void Wait()
         {
-            Thread.Sleep(1);
+            Thread.Sleep(ThreadExecutionInterval);
         }
     }
 }
