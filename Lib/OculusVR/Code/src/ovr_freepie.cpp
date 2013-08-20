@@ -54,7 +54,8 @@ int ovr_freepie_destroy()
   pSensor.Clear();
   pHMD.Clear();
   pManager.Clear();
-
+  
+  FusionResult.AttachToSensor(NULL);
   OVR::System::Destroy();
   return 0;
 }
