@@ -54,7 +54,7 @@ int ovr_freepie_destroy()
   pSensor.Clear();
   pHMD.Clear();
   pManager.Clear();
-
+  
   OVR::System::Destroy();
   return 0;
 }
