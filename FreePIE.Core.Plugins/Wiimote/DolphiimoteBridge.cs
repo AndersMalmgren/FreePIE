@@ -14,6 +14,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly Dictionary<uint, DolphiimoteWiimoteData> data;
         private readonly string logFile;
 
+        private readonly Dictionary<byte, WiimoteCapabilities> knownCapabilities;
+        private readonly Queue<KeyValuePair<byte, WiimoteCapabilities>> deferredEnables;
+
         public event EventHandler<UpdateEventArgs<uint>> DataReceived;
 
         public DolphiimoteBridge(LogLevel logLevel, string logFile)
@@ -23,6 +26,9 @@ namespace FreePIE.Core.Plugins.Wiimote
             
             calibration = new WiimoteCalibration();
             dll = new DolphiimoteDll(Path.Combine(Environment.CurrentDirectory, "DolphiiMote.dll"));
+
+            deferredEnables = new Queue<KeyValuePair<byte, WiimoteCapabilities>>();
+            knownCapabilities = new Dictionary<byte, WiimoteCapabilities>();
 
             data = new Dictionary<uint, DolphiimoteWiimoteData>();
 
@@ -44,7 +50,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public void Enable(byte wiimote, WiimoteCapabilities flags)
         {
-            dll.EnableCapabilities(wiimote, flags);
+            deferredEnables.Enqueue(new KeyValuePair<byte, WiimoteCapabilities>(wiimote, flags));
         }
 
         private void WiimoteLogReceived(string log)
@@ -77,6 +83,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         private void WiimoteCapabilitiesChanged(byte wiimote, DolphiimoteCapabilities capabilities)
         {
+            knownCapabilities[wiimote] = (WiimoteCapabilities)capabilities.available_capabilities;
             dll.SetReportingMode(wiimote, 0x35);
         }
 
@@ -88,8 +95,26 @@ namespace FreePIE.Core.Plugins.Wiimote
         public void DoTick()
         {
             dll.Update();
+
             if (occuredException != null)
                 throw occuredException;
+
+            foreach(var deferredEnable in deferredEnables.ToList())
+            {
+                if (!HasRequestedCapabilities(deferredEnable.Key, deferredEnable.Value))
+                    continue;
+
+                dll.EnableCapabilities(deferredEnable.Key, deferredEnable.Value);
+                deferredEnables.Dequeue();
+            }
+        }
+
+        private bool HasRequestedCapabilities(byte wiimote, WiimoteCapabilities capabilities)
+        {
+            if (!knownCapabilities.ContainsKey(wiimote))
+                return false;
+
+            return (knownCapabilities[wiimote] & capabilities) == capabilities;
         }
 
         public void Dispose()

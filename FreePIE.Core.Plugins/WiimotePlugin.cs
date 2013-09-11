@@ -28,7 +28,7 @@ namespace FreePIE.Core.Plugins
         Z = 0x01, C = 0x02
     }
 
-    [GlobalEnum]
+    [GlobalEnum, Flags]
     public enum WiimoteCapabilities : ushort
     {
         None = 0,
@@ -62,7 +62,7 @@ namespace FreePIE.Core.Plugins
         private bool doLog;
         private IWiimoteBridge wiimoteBridge;
         private Dictionary<uint, Action> globalUpdators;
-        private IList<uint> updatedWiimotes; 
+        private IList<uint> updatedWiimotes;
 
         public override object CreateGlobal()
         {
@@ -137,6 +137,7 @@ namespace FreePIE.Core.Plugins
         {
             updatedWiimotes.Clear();
             wiimoteBridge.DoTick();
+
             foreach(var wiimote in updatedWiimotes)
                 globalUpdators[wiimote]();
         }
