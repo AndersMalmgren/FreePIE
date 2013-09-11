@@ -109,6 +109,7 @@
     <Compile Include="ScriptEngine\Python\PythonScriptEngine.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptParser.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\IThreadTimingFactory.cs" />
+    <Compile Include="ScriptEngine\ThreadTiming\Strategies\BeginPeriodSystemTimerStrategy.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\Strategies\TimingTypes.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\Strategies\SystemTimerStrategy.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\Strategies\Timing.cs" />
