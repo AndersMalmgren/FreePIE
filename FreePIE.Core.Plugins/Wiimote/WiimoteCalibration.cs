@@ -13,9 +13,9 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public WiimoteCalibration()
         {
-            accelerationMagnitudes = new TimeSeries(256);
-            nunchuckAccelerationMagnitudes = new TimeSeries(256);
-            nunchuckStick = new TimeSeries(64);
+            accelerationMagnitudes = new TimeSeries(1024);
+            nunchuckAccelerationMagnitudes = new TimeSeries(1024);
+            nunchuckStick = new TimeSeries(256);
         }
 
         private double EuclideanDistance(ushort a, ushort b, ushort c)
@@ -30,7 +30,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         private bool IsStationary()
         {
-            return accelerationMagnitudes.Size > 10 && accelerationMagnitudes.DurationStable(WiimoteStationaryDeltaEpsilon) > TimeSpan.FromMilliseconds(1000);
+            return accelerationMagnitudes.Size > 10 && accelerationMagnitudes.DurationStable(WiimoteStationaryDeltaEpsilon) > TimeSpan.FromMilliseconds(500);
         }
 
         private void TakeAccelerationCalibrationSnapshot(ushort accX, ushort accY, ushort accZ)
