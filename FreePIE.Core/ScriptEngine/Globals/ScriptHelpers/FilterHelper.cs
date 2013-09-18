@@ -79,5 +79,10 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
 
             return 0;
         }
+
+        public double mapRange(double x, double xMin, double xMax, double yMin, double yMax)
+        {
+            return yMin + (yMax - yMin)*(x - xMin)/(xMax - xMin);
+        }
     }
 }
