@@ -17,7 +17,7 @@
                           DisplayedRows="7">
     </Controls:EvenListBox>
     <StackPanel Margin="1">
-        <TextBox Width="300" IsTabStop="false" IsReadOnly="true" Focusable="false">
+        <TextBox MinWidth="300" MaxWidth="600" IsTabStop="false" IsReadOnly="true" Focusable="false">
           <TextBox.Style>
             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
               <Style.Triggers>
