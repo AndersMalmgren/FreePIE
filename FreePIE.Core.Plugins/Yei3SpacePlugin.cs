@@ -18,6 +18,124 @@ namespace FreePIE.Core.Plugins
             return new GlobalIndexer<Yei3SpaceGlobal>(CreateDevice);
         }
 
+        public override bool GetProperty(int index, IPluginProperty property)
+        {
+            switch (index)
+            {
+                case 0:
+                    property.Name = "StreamButtonState";
+                    property.Caption = "Stream Button State";
+                    property.DefaultValue = false;
+                    property.HelpText = "Allows Streaming of the sensor button states";
+                    return true;
+                case 1:
+                    property.Name = "PollUnknownDevices";
+                    property.Caption = "Poll Unknown Devices";
+                    property.DefaultValue = false;
+                    property.HelpText = "Writes bytes to serial ports to find 3-Space devices not listed in registry";
+                    return true;
+                case 2:
+                    property.Name = "Device0";
+                    property.Caption = "Device 0";
+                    property.DefaultValue = "0";
+                    property.HelpText = "Serial Number of the device in slot 0";
+                    return true;
+                case 3:
+                    property.Name = "Device1";
+                    property.Caption = "Device 1";
+                    property.DefaultValue = "0";
+                    property.HelpText = "Serial Number of the device in slot 1";
+                    return true;
+                case 4:
+                    property.Name = "Device2";
+                    property.Caption = "Device 2";
+                    property.DefaultValue = "0";
+                    property.HelpText = "Serial Number of the device in slot 2";
+                    return true;
+                case 5:
+                    property.Name = "Device3";
+                    property.Caption = "Device 3";
+                    property.DefaultValue = "0";
+                    property.HelpText = "Serial Number of the device in slot 3";
+                    return true;
+                case 6:
+                    property.Name = "Device4";
+                    property.Caption = "Device 4";
+                    property.DefaultValue = "0";
+                    property.HelpText = "Serial Number of the device in slot 4";
+                    return true;
+                case 7:
+                    property.Name = "Device5";
+                    property.Caption = "Device 5";
+                    property.DefaultValue = "0";
+                    property.HelpText = "Serial Number of the device in slot 5";
+                    return true;
+            }
+            return false;
+        }
+
+        public override bool SetProperties(Dictionary<string, object> properties)
+        {
+            Api.stream_button_state = (bool)properties["StreamButtonState"];
+            Api.poll_unknown_devices = (bool)properties["PollUnknownDevices"];
+            
+            try
+            {
+                Api.device_serials[0] = (uint)Convert.ToUInt32((string)properties["Device0"], 16);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Device0 serial is invalid");
+            }
+
+            try
+            {
+                Api.device_serials[1] = (uint)Convert.ToUInt32((string)properties["Device1"], 16);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Device1 serial is invalid");
+            } 
+            
+            try
+            {
+                Api.device_serials[2] = (uint)Convert.ToUInt32((string)properties["Device2"], 16);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Device2 serial is invalid");
+            } 
+            
+            try
+            {
+                Api.device_serials[3] = (uint)Convert.ToUInt32((string)properties["Device3"], 16);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Device3 serial is invalid");
+            }
+
+            try
+            {
+                Api.device_serials[4] = (uint)Convert.ToUInt32((string)properties["Device4"], 16);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Device4 serial is invalid");
+            }
+
+            try
+            {
+                Api.device_serials[5] = (uint)Convert.ToUInt32((string)properties["Device5"], 16);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Device5 serial is invalid");
+            }
+
+            return true;
+        }
+
         public override Action Start()
         {
             globals = new List<Yei3SpaceGlobalHolder>();
@@ -31,6 +149,7 @@ namespace FreePIE.Core.Plugins
         public override void Stop()
         {
             globals.ForEach(g => g.CloseDevice());
+            Api.CloseDongles();
         }
 
         private Yei3SpaceGlobal CreateDevice(int index)
@@ -60,9 +179,9 @@ namespace FreePIE.Core.Plugins
 
     public class Yei3SpaceGlobalHolder : IUpdatable
     {
-        private readonly int deviceId;
+        private readonly uint deviceId;
 
-        public Yei3SpaceGlobalHolder(int deviceId)
+        public Yei3SpaceGlobalHolder(uint deviceId)
         {
             this.deviceId = deviceId;
 
@@ -86,9 +205,11 @@ namespace FreePIE.Core.Plugins
         }
         public void Update()
         {
-            var error = Api.UpdateQuaternion(deviceId, Quaternion);
-            if (error != TssError.TSS_NO_ERROR)
+            var error = Api.UpdateSensor(deviceId, Quaternion, out ButtonState);
+            if (error != TssError.TSS_NO_ERROR && error != TssError.TSS_ERROR_READ)
+            {
                 throw new Exception(string.Format("Error while reading device: {0}", error));
+            }
 
             OnUpdate();
         }
@@ -101,6 +222,7 @@ namespace FreePIE.Core.Plugins
         }
 
         public Quaternion Quaternion { get; private set; }
+        public byte ButtonState;
         public Yei3SpaceGlobal Global { get; private set; }
         public Action OnUpdate { get; set; }
         public bool GlobalHasUpdateListener { get; set; }
@@ -116,6 +238,8 @@ namespace FreePIE.Core.Plugins
         public double yaw { get { return plugin.Quaternion.Yaw; } }
         public double pitch { get { return plugin.Quaternion.Pitch; } }
         public double roll { get { return plugin.Quaternion.Roll; } }
+        public bool button0 { get { return Convert.ToBoolean(plugin.ButtonState & 1); } }
+        public bool button1 { get { return Convert.ToBoolean(plugin.ButtonState & 2); } }
         public void tareSensor()
         {
             plugin.TareSensor();
