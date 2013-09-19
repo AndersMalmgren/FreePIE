@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.SensorFusion;
@@ -12,6 +13,7 @@ namespace FreePIE.Core.Plugins
     {
         private int countSensors;
         private List<Yei3SpaceGlobalHolder> globals;
+        private const int settingsDeviceCount = 5;
 
         public override object CreateGlobal()
         {
@@ -34,104 +36,40 @@ namespace FreePIE.Core.Plugins
                     property.DefaultValue = false;
                     property.HelpText = "Writes bytes to serial ports to find 3-Space devices not listed in registry";
                     return true;
-                case 2:
-                    property.Name = "Device0";
-                    property.Caption = "Device 0";
-                    property.DefaultValue = "0";
-                    property.HelpText = "Serial Number of the device in slot 0";
-                    return true;
-                case 3:
-                    property.Name = "Device1";
-                    property.Caption = "Device 1";
-                    property.DefaultValue = "0";
-                    property.HelpText = "Serial Number of the device in slot 1";
-                    return true;
-                case 4:
-                    property.Name = "Device2";
-                    property.Caption = "Device 2";
-                    property.DefaultValue = "0";
-                    property.HelpText = "Serial Number of the device in slot 2";
-                    return true;
-                case 5:
-                    property.Name = "Device3";
-                    property.Caption = "Device 3";
-                    property.DefaultValue = "0";
-                    property.HelpText = "Serial Number of the device in slot 3";
-                    return true;
-                case 6:
-                    property.Name = "Device4";
-                    property.Caption = "Device 4";
-                    property.DefaultValue = "0";
-                    property.HelpText = "Serial Number of the device in slot 4";
-                    return true;
-                case 7:
-                    property.Name = "Device5";
-                    property.Caption = "Device 5";
-                    property.DefaultValue = "0";
-                    property.HelpText = "Serial Number of the device in slot 5";
-                    return true;
+
             }
-            return false;
+
+            int deviceIndex = index - 2;
+
+            if (deviceIndex > settingsDeviceCount) return false;
+
+            property.Name = string.Format("Device{0}", deviceIndex);
+            property.Caption = string.Format("Device {0}", deviceIndex);
+            property.DefaultValue = "0";
+            property.HelpText = string.Format("Serial Number of the device in slot {0}", deviceIndex);
+
+            return true;
         }
 
         public override bool SetProperties(Dictionary<string, object> properties)
         {
-            Api.stream_button_state = (bool)properties["StreamButtonState"];
-            Api.poll_unknown_devices = (bool)properties["PollUnknownDevices"];
-            
-            try
-            {
-                Api.device_serials[0] = (uint)Convert.ToUInt32((string)properties["Device0"], 16);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Device0 serial is invalid");
-            }
+            Api.stream_button_state = (bool) properties["StreamButtonState"];
+            Api.poll_unknown_devices = (bool) properties["PollUnknownDevices"];
 
-            try
-            {
-                Api.device_serials[1] = (uint)Convert.ToUInt32((string)properties["Device1"], 16);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Device1 serial is invalid");
-            } 
-            
-            try
-            {
-                Api.device_serials[2] = (uint)Convert.ToUInt32((string)properties["Device2"], 16);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Device2 serial is invalid");
-            } 
-            
-            try
-            {
-                Api.device_serials[3] = (uint)Convert.ToUInt32((string)properties["Device3"], 16);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Device3 serial is invalid");
-            }
-
-            try
-            {
-                Api.device_serials[4] = (uint)Convert.ToUInt32((string)properties["Device4"], 16);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Device4 serial is invalid");
-            }
-
-            try
-            {
-                Api.device_serials[5] = (uint)Convert.ToUInt32((string)properties["Device5"], 16);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Device5 serial is invalid");
-            }
+            Enumerable.Range(0, settingsDeviceCount)
+                      .ToList()
+                      .ForEach(i =>
+                          {
+                              var key = string.Format("Device{0}", i);
+                              try
+                              {
+                                  Api.device_serials[i] = Convert.ToUInt32((string) properties[key], 16);
+                              }
+                              catch (FormatException)
+                              {
+                                  throw new Exception(string.Format("{0} serial is invalid", key));
+                              }
+                          });
 
             return true;
         }
