@@ -29,6 +29,8 @@ namespace FreePIE.GUI.Common.Strategies
 
                 if (!string.IsNullOrEmpty(result.File))
                     fileSelected(result.File);
+                else
+                    yield return resultFactory.Cancel();
             }
 
         }

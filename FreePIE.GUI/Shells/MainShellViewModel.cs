@@ -109,7 +109,7 @@ namespace FreePIE.GUI.Shells
 
         public IEnumerable<IResult> DocumentClosing(ScriptEditorViewModel document, DocumentClosingEventArgs e)
         {
-            return HandleScriptClosing(document, () => e.Cancel = true);
+            return Result.Coroutinify(HandleScriptClosing(document), () => e.Cancel = true);
         }
 
         public void DocumentClosed(ScriptEditorViewModel document)
@@ -119,11 +119,6 @@ namespace FreePIE.GUI.Shells
 
         private IEnumerable<IResult> HandleScriptClosing(ScriptEditorViewModel script)
         {
-            return HandleScriptClosing(script, null);
-        }
-
-        private IEnumerable<IResult> HandleScriptClosing(ScriptEditorViewModel script, Action cancelCallback)
-        {
             if (script.IsDirty)
             {
                 var message = Result.ShowMessageBox(script.Filename, string.Format("Do you want to save changes to {0}", script.Filename), MessageBoxButton.YesNoCancel);
@@ -131,7 +126,7 @@ namespace FreePIE.GUI.Shells
 
                 if (message.Result == MessageBoxResult.Cancel)
                 {
-                    yield return Result.Cancel(cancelCallback);
+                    yield return Result.Cancel();
                 }
                 else if (message.Result == MessageBoxResult.Yes)
                 {

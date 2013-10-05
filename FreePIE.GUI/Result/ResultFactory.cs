@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using Caliburn.Micro;
 using FreePIE.GUI.Shells;
 using Ninject;
@@ -34,14 +36,25 @@ namespace FreePIE.GUI.Result
             return new MessageBoxResult(caption, text, buttons);
         }
 
-        public IResult Cancel(System.Action cancelCallback)
+        public IResult Cancel()
         {
-            return new CancelResult(cancelCallback);
+            return new CancelResult();
         }
 
-        public CloseResult Close()
+        public IResult Close()
         {
             return kernel.Get<CloseResult>();
+        }
+
+        public IEnumerable<IResult> Coroutinify(IEnumerable<IResult> results, System.Action cancelCallback)
+        {
+            return results.Select(r =>
+                {
+                    if (r is CancelResult)
+                        cancelCallback();
+
+                    return r;
+                });
         }
     }
 }
