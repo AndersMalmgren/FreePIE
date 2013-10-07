@@ -8,6 +8,7 @@ using FreePIE.Core.ScriptEngine;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.Core.ScriptEngine.Globals;
 using FreePIE.Core.ScriptEngine.Python;
+using FreePIE.Core.ScriptEngine.ThreadTiming;
 using Ninject;
 using Ninject.Activation;
 using Ninject.Parameters;
@@ -21,24 +22,40 @@ namespace FreePIE.Core.Services
             var kernel = new StandardKernel();
             AddCustomBindings(kernel);
 
+            BindScriptEngine(kernel);
+            BindPersistance(kernel);
+            BindGlobalsProviders(kernel);
+            BindCommon(kernel);
+
+            return kernel;
+        }
+
+        private static void BindCommon(StandardKernel kernel)
+        {
+            kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
+            kernel.Bind<IFileSystem>().To<FileSystem>();
+        }
+
+        private static void BindGlobalsProviders(StandardKernel kernel)
+        {
+            kernel.Bind<IGlobalProvider>().To<ScriptHelpersGlobalProvider>();
+            kernel.Bind<IGlobalProvider>().To<CurveGlobalProvider>();
+        }
+
+        private static void BindPersistance(StandardKernel kernel)
+        {
+            kernel.Bind<ISettingsManager>().To<SettingsManager>().InSingletonScope();
+            kernel.Bind<IPersistanceManager>().To<PersistanceManager>();
+            kernel.Bind<IPluginInvoker>().To<PluginInvoker>().InSingletonScope();
+        }
+
+        private static void BindScriptEngine(StandardKernel kernel)
+        {
             kernel.Bind<IScriptEngine>().To<PythonScriptEngine>();
             kernel.Bind<IScriptParser>().To<PythonScriptParser>();
             kernel.Bind<ICodeCompletionProvider>().To<CodeCompletionProvider>();
             kernel.Bind<IRuntimeInfoProvider>().To<RuntimeInfoProvider>();
-
-            kernel.Bind<ISettingsManager>().To<SettingsManager>().InSingletonScope();
-            kernel.Bind<IPersistanceManager>().To<PersistanceManager>();
-            kernel.Bind<IPluginInvoker>().To<PluginInvoker>().InSingletonScope();
-
-
-            kernel.Bind<IGlobalProvider>().To<ScriptHelpersGlobalProvider>();
-            kernel.Bind<IGlobalProvider>().To<CurveGlobalProvider>();
-
-            kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
-            kernel.Bind<IFileSystem>().To<FileSystem>();
-
-
-            return kernel;
+            kernel.Bind<IThreadTimingFactory>().To<ThreadTimingFactory>().InSingletonScope();
         }
 
         public static void AddCustomBindings(IKernel kernel)

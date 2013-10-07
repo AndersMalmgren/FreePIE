@@ -12,6 +12,8 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
     internal static class InfoTransformHelper
     {
+        private static readonly IEnumerable<MemberInfo> ObjectMembers = typeof(object).GetMembers();
+
         public static Node<TokenInfo> ConstructExpressionInfoTree(IPluginInvoker invoker, IEnumerable<IGlobalProvider> providers)
         {
             var root = new Node<TokenInfo>();
@@ -126,14 +128,44 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return new TokenInfo(new Token(TokenType.Identifier, ei.Name), expInfo);
         }
 
-        private static TokenInfo MapProperty(PropertyInfo propertyInfo)
+        private static bool IsUserDefinedType(Type type)
         {
-            return new TokenInfo(new Token(TokenType.Identifier, propertyInfo.Name),
+            return !type.IsPrimitive && type != typeof(string) && !type.IsArray;
+        }
+
+        private static Node<TokenInfo> MapProperty(PropertyInfo propertyInfo)
+        {
+            var node = new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Identifier, propertyInfo.Name),
                 new ExpressionInfo
                     {
                         Name = propertyInfo.Name,
                         Description = string.Format("{0} {1}", propertyInfo.PropertyType.Name, propertyInfo.Name)
-                    } );
+                    }));
+
+            if(IsUserDefinedType(propertyInfo.PropertyType))
+            {
+                var dotDelim = ConstructDelimiterNode('.');
+                node.AddChild(dotDelim);
+
+                var members = GetFilteredMembers(propertyInfo.PropertyType);
+
+                AddEvents(dotDelim, members);
+                AddMethods(dotDelim, members);
+                AddProperties(dotDelim, members);
+            }
+
+            return node;
+        }
+
+        private static List<MemberInfo> GetFilteredMembers(Type type)
+        {
+            
+            return type.GetMembers().Where(IsViableForCodeCompletion).ToList();            
+        }
+
+        private static bool IsViableForCodeCompletion(MemberInfo member)
+        {
+            return member.DeclaringType != typeof(object);
         }
 
         private static TokenInfo MapMethod(MethodInfo mi)
@@ -157,7 +189,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return new ExpressionInfo
                        {
                            Name = name,
-                           Description = string.Format("{0} = {1}", name, (int)Enum.Parse(type, name))
+                           Description = string.Format("{0} = {1}", name, Convert.ToInt32(Enum.Parse(type, name)))
                        };
         }
 
