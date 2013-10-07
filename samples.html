@@ -40,8 +40,8 @@
         <pre><code data-language="python">def update():   
     #Apply deadband filter to avoid drift
     #And continousRotation filter to yaw axis to avoid jumps when passing tracker center
-    x = filters.deadband(filters.delta(math.degrees(filters.continousRotation(android.yaw))), deadband)
-    y = filters.deadband(filters.delta(math.degrees(android.pitch)), deadband)
+    x = filters.deadband(filters.delta(math.degrees(filters.continousRotation(android[0].yaw))), deadband)
+    y = filters.deadband(filters.delta(math.degrees(android[0].pitch)), deadband)
       
     mouse.deltaX = x * multiply
     mouse.deltaY = y * multiply
@@ -49,7 +49,7 @@
 if starting: 
     deadband = 0.01
     multiply = 5
-    android.update += update</code></pre> 
+    android[0].update += update</code></pre> 
         <h4>PPJoy joystick emulation</h4>
         <pre><code data-language="python">def update():
     x = math.degrees(freeTrack.yaw) * ratio
@@ -67,11 +67,11 @@ if starting:
         <h4>Android > Freetrack</h4>
         <pre><code data-language="python">def update():
     global yaw
-    yaw = android.yaw
+    yaw = android[0].yaw
     global pitch
-    pitch = -android.roll
+    pitch = -android[0].roll
     global roll
-    roll = android.pitch
+    roll = android[0].pitch
 
 if starting:
     centerYaw = 0
@@ -81,7 +81,7 @@ if starting:
     yaw = 0
     pitch = 0
     roll = 0
-    android.update += update
+    android[0].update += update
 
 freeTrack.yaw  = yaw - centerYaw
 freeTrack.pitch = pitch - centerPitch
