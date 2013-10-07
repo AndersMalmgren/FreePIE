@@ -29,6 +29,7 @@ public class UdpSenderTask implements SensorEventListener {
 	DatagramSocket socket;
 	InetAddress endPoint;
 	int port;
+	byte deviceIndex;
 	boolean sendOrientation;
 	boolean sendRaw;
 	boolean debug;
@@ -46,9 +47,11 @@ public class UdpSenderTask implements SensorEventListener {
 	boolean running;
 
 	public void start(TargetSettings target) {
+		deviceIndex = target.getDeviceIndex();
 		sensorManager = target.getSensorManager();
 		port = target.getPort();
 		final String ip = target.getToIp();
+
 		sendRaw = target.getSendRaw();
 		sendOrientation = target.getSendOrientation();		
 		sampleRate = target.getSampleRate();		
@@ -58,11 +61,10 @@ public class UdpSenderTask implements SensorEventListener {
 		
 		sendFlag = getFlagByte(sendRaw, sendOrientation);
 		
-		sync = new CyclicBarrier(2);
-			
-		buffer = ByteBuffer.allocate(50);
-		buffer.order(ByteOrder.LITTLE_ENDIAN);	
+		sync = new CyclicBarrier(2);		
 
+		buffer = ByteBuffer.allocate(51);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);	
 					
 		running = true;
 		worker = new Thread(new Runnable() { 
@@ -171,6 +173,7 @@ public class UdpSenderTask implements SensorEventListener {
 		
 		buffer.clear();			
 		
+		buffer.put(deviceIndex);
 		buffer.put(sendFlag);
 	
 		

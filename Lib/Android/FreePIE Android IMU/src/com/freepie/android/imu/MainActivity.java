@@ -1,5 +1,6 @@
 package com.freepie.android.imu;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 	private UdpSenderTask udpSender;
 	private static final String IP = "ip";
 	private static final String PORT = "port";
+	private static final String INDEX = "index";
 	private static final String SEND_ORIENTATION = "send_orientation";
 	private static final String SEND_RAW = "send_raw";
 	private static final String SAMPLE_RATE = "sample_rate";
@@ -36,6 +38,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 	private ToggleButton start;
 	private EditText txtIp;
 	private EditText txtPort;
+	private Spinner spnIndex;
 	private CheckBox chkSendOrientation;
 	private CheckBox chkSendRaw;
 	private Spinner spnSampleRate;
@@ -51,13 +54,15 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        final SharedPreferences preferences = getPreferences(MODE_PRIVATE);        
         
-        start = (ToggleButton) findViewById(R.id.start);
         txtIp = (EditText) findViewById(R.id.ip);
         txtPort = (EditText) findViewById(R.id.port);
+        spnIndex = (Spinner) findViewById(R.id.index);        
         chkSendOrientation = (CheckBox) findViewById(R.id.sendOrientation);
         chkSendRaw = (CheckBox) findViewById(R.id.sendRaw);
+        spnSampleRate = (Spinner)this.findViewById(R.id.sampleRate);
+        start = (ToggleButton) findViewById(R.id.start);
         debugView = (LinearLayout) findViewById(R.id.debugView);
         chkDebug = (CheckBox) findViewById(R.id.debug);
         acc = (TextView) findViewById(R.id.acc);
@@ -69,9 +74,9 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
         txtPort.setText(preferences.getString(PORT,  "5555"));
         chkSendOrientation.setChecked(preferences.getBoolean(SEND_ORIENTATION, true));
         chkSendRaw.setChecked(preferences.getBoolean(SEND_RAW, true));
-        chkDebug.setChecked(preferences.getBoolean(DEBUG, false));
-        spnSampleRate = (Spinner)this.findViewById(R.id.sampleRate);
+        chkDebug.setChecked(preferences.getBoolean(DEBUG, false));        
         populateSampleRates(preferences.getInt(SAMPLE_RATE, 0));
+        populateIndex(preferences.getInt(INDEX, 0));
         setDebugVisability(chkDebug.isChecked());
         
         final SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -96,14 +101,14 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
             	boolean on = ((ToggleButton) view).isChecked();
             	
             	if(on) {
-                String ip = txtIp.getText().toString();
-                int port = Integer.parseInt(txtPort.getText().toString());
-                boolean sendOrientation = chkSendOrientation.isChecked();
-                boolean sendRaw = chkSendRaw.isChecked();
-                boolean debug = chkDebug.isChecked();
-            	
-	        	udpSender = new UdpSenderTask();
-	        	udpSender.start(new TargetSettings(ip, port, sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId(), debug, debugListener, error));
+	                String ip = txtIp.getText().toString();
+	                int port = Integer.parseInt(txtPort.getText().toString());
+	                boolean sendOrientation = chkSendOrientation.isChecked();
+	                boolean sendRaw = chkSendRaw.isChecked();
+	                boolean debug = chkDebug.isChecked();
+	            	
+		        	udpSender = new UdpSenderTask();
+		        	udpSender.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId(), debug, debugListener, error));
             	} else {
             		stop();
             	}
@@ -119,6 +124,23 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
     
     private void setDebugVisability(boolean show) {
     	debugView.setVisibility(show ? LinearLayout.VISIBLE : LinearLayout.INVISIBLE);
+    }
+    
+    private void populateIndex(int defaultIndex) {
+    	List<DeviceIndex> deviceIndexes = new ArrayList<DeviceIndex>();
+    	for(byte index = 0; index < 16; index++) {
+    		deviceIndexes.add(new DeviceIndex(index));
+    	}
+    	
+    	DeviceIndex selectedDeviceIndex = null;
+      	for (DeviceIndex deviceIndex : deviceIndexes) {
+  		  if (deviceIndex.getIndex() == defaultIndex) {
+  			selectedDeviceIndex = deviceIndex;
+  		    break;
+  		  }
+  		}
+      	
+      	populateSpinner(spnIndex, deviceIndexes, selectedDeviceIndex);
     }
     
     private void populateSampleRates(int defaultSampleRate) {
@@ -137,14 +159,22 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 		  }
 		}
     	
-    	ArrayAdapter<SampleRate> sampleRatesAdapter = new ArrayAdapter<SampleRate>(this,
-			android.R.layout.simple_spinner_item, sampleRates);
-    	spnSampleRate.setAdapter(sampleRatesAdapter);
-    	spnSampleRate.setSelection(sampleRates.indexOf(selectedSampleRate), false);
+    	populateSpinner(spnSampleRate, sampleRates, selectedSampleRate);    	
+    }
+    
+    private <T>void populateSpinner(Spinner spinner, List<T> items, T selectedItem) {
+    	ArrayAdapter<T> adapter = new ArrayAdapter<T>(this,
+    			android.R.layout.simple_spinner_item, items);
+        	spinner.setAdapter(adapter);
+        	spinner.setSelection(items.indexOf(selectedItem), false);
     }
     
     private int getSelectedSampleRateId() {
     	return ((SampleRate)spnSampleRate.getSelectedItem()).getId();
+    }
+    
+    private byte getSelectedDeviceIndex() {
+    	return ((DeviceIndex)spnIndex.getSelectedItem()).getIndex();
     }
     
 	@Override
@@ -167,6 +197,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
     	preferences.edit()
 			.putString(IP, txtIp.getText().toString())
 			.putString(PORT, txtPort.getText().toString())
+			.putInt(INDEX,  getSelectedDeviceIndex())
 			.putBoolean(SEND_ORIENTATION, chkSendOrientation.isChecked())
 			.putBoolean(SEND_RAW, chkSendRaw.isChecked())
 			.putInt(SAMPLE_RATE,  getSelectedSampleRateId())

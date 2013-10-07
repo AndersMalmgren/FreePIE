@@ -5,6 +5,7 @@ import android.hardware.SensorManager;
 public class TargetSettings {
 	private String toIp;
 	private int port;
+	private byte deviceIndex;
 	private SensorManager sensorManager;
 	private boolean sendOrientation;
 	private boolean sendRaw;
@@ -13,9 +14,10 @@ public class TargetSettings {
 	private IDebugListener debugListener;
 	private IErrorHandler errorHandler;
 	
-	public TargetSettings(String toIp, int port, SensorManager sensorManager, boolean sendOrientation, boolean sendRaw, int sampleRate, boolean debug, IDebugListener debugListener, IErrorHandler errorHandler) {
+	public TargetSettings(String toIp, int port, byte deviceIndex, SensorManager sensorManager, boolean sendOrientation, boolean sendRaw, int sampleRate, boolean debug, IDebugListener debugListener, IErrorHandler errorHandler) {
 		this.toIp = toIp;
 		this.port = port;
+		this.deviceIndex = deviceIndex;
 		this.sensorManager = sensorManager;
 		this.sendOrientation = sendOrientation;
 		this.sendRaw = sendRaw;
@@ -34,6 +36,10 @@ public class TargetSettings {
 	{
 		return port;
 	} 
+	
+	public byte getDeviceIndex() {
+		return deviceIndex;
+	}
 	
 	public SensorManager getSensorManager()
 	{

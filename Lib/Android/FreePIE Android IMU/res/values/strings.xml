@@ -13,5 +13,6 @@
     <string name="gyr">Gyro</string>
     <string name="mag">Magnometer</string>
     <string name="imu">Orientation</string>
+    <string name="index">Index</string>
 
 </resources>
