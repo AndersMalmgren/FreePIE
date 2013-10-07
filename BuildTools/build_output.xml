@@ -90,7 +90,8 @@
                       $(Lib)\YEI3-Space\*.dll;
                       $(Lib)\IO\Binaries\Release-DllMultiThreadRuntime\*.dll;
                       $(Lib)\OculusVR\Binaries\*.dll;
-                      $(Lib)\VJoy\*.dll">
+                      $(Lib)\VJoy\*.dll;
+                      $(Lib)\Sixense\Emulation\Binary\*.dll">
       </DependecieFiles>
     </ItemGroup>
     <Copy SourceFiles="@(DependecieFiles)" DestinationFiles="@(DependecieFiles -> '$(BuildDir)\%(Filename)%(Extension)')"/>
