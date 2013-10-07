@@ -7,6 +7,14 @@ Latest downloadable installer can be found [here](http://andersmalmgren.github.i
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+Changelog 1.3.422.0
+* Added support for multiple android devices (Requires reinstall of APK)
+* Added Hydra (Sixense) SDK emulation 
+* Added possibility to set thread timing, enabling the script to run at 1000hz
+* Wiimote M+ and Nunchuck support added, custom library that should work with most motes (Beta)
+* Yei plugin updated to work with Wireless devices
+* Oculus VR SDK updated,  sensor prediction added in settings
+
 Changelog 1.2.375.0
 * Fixed mouse emulation so that it works with very small movements
 * Deadband filter added that can be used to eliminate drift with the new more sensitive mouse emulation
