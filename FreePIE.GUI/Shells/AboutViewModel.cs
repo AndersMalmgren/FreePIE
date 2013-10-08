@@ -9,7 +9,6 @@ namespace FreePIE.GUI.Shells
     public class AboutViewModel : ShellPresentationModel
     {
         private static readonly string version;
-        private static readonly IEnumerable<string> assemblies;
 
         static AboutViewModel()
         {
@@ -18,16 +17,6 @@ namespace FreePIE.GUI.Shells
                 .GetName()
                 .Version
                 .ToString();
-
-            assemblies = AppDomain
-                .CurrentDomain
-                .GetAssemblies()
-                .Where(a => !a.GlobalAssemblyCache && !a.IsDynamic)
-                .GroupBy(a => a.FullName)
-                .Select(a => a.First())
-                .OrderBy(a => a.FullName)
-                .Select(a => string.Format("{0} {1}", a.GetName().Name, a.GetName().Version))
-                .ToList();
         }
 
         public AboutViewModel(IResultFactory resultFactory) : base(resultFactory)
@@ -42,7 +31,18 @@ namespace FreePIE.GUI.Shells
 
         public IEnumerable<string> Assemblies
         {
-            get { return assemblies; }
+            get
+            {
+                return AppDomain
+                    .CurrentDomain
+                    .GetAssemblies()
+                    .Where(a => !a.GlobalAssemblyCache && !a.IsDynamic)
+                    .GroupBy(a => a.FullName)
+                    .Select(a => a.First())
+                    .OrderBy(a => a.FullName)
+                    .Select(a => string.Format("{0} {1}", a.GetName().Name, a.GetName().Version))
+                    .ToList();
+            }
         }
 
         public string ProjectPageUrl
