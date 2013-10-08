@@ -91,7 +91,7 @@
                       $(Lib)\IO\Binaries\Release-DllMultiThreadRuntime\*.dll;
                       $(Lib)\OculusVR\Binaries\*.dll;
                       $(Lib)\VJoy\*.dll;
-                      $(Lib)\Sixense\Emulation\Binary\sixense_fake.dll">
+                      $(Lib)\Sixense\Emulation\Binary\*.dll">
       </DependecieFiles>
     </ItemGroup>
     <Copy SourceFiles="@(DependecieFiles)" DestinationFiles="@(DependecieFiles -> '$(BuildDir)\%(Filename)%(Extension)')"/>

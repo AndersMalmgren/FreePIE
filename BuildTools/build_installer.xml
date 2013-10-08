@@ -30,7 +30,7 @@
   </Target>
 
   <Target Name="CreateFragment">
-    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WIX)\heat.exe&quot; dir ..\Output -nologo -suid -srd -sfrag -ag -wx -dr INSTALLFOLDER -var var.OutputDir -cg Output -out ..\InstallerTemp\Output.wxs"/>
+    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WIX)\heat.exe&quot; dir ..\Output -sreg suppress registry harvesting -nologo -suid -srd -sfrag -ag -wx -dr INSTALLFOLDER -var var.OutputDir -cg Output -out ..\InstallerTemp\Output.wxs"/>
   </Target>
 
   <Target Name="CopyMainDefinition">
