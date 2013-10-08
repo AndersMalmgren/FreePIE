@@ -4,7 +4,7 @@
         SizeToContent="WidthAndHeight"
         Background="{DynamicResource WindowBackgroundBrush}"
         Icon="{StaticResource IconAbout}"
-        >
+        ResizeMode="CanMinimize">
 
     <Grid>        
         <StackPanel Orientation="Vertical" Margin="5">
