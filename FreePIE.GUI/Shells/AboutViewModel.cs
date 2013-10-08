@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using FreePIE.GUI.Result;
 using System.Linq;
@@ -18,11 +19,14 @@ namespace FreePIE.GUI.Shells
                 .Version
                 .ToString();
 
-            assemblies = Assembly
-                .GetExecutingAssembly()
-                .GetReferencedAssemblies()
-                .OrderBy(a => a.Name)
-                .Select(a => string.Format("{0} {1}", a.Name, a.Version))
+            assemblies = AppDomain
+                .CurrentDomain
+                .GetAssemblies()
+                .Where(a => !a.GlobalAssemblyCache && !a.IsDynamic)
+                .GroupBy(a => a.FullName)
+                .Select(a => a.First())
+                .OrderBy(a => a.FullName)
+                .Select(a => string.Format("{0} {1}", a.GetName().Name, a.GetName().Version))
                 .ToList();
         }
 
