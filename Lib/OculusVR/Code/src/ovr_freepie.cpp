@@ -9,7 +9,7 @@ using namespace OVR;
 Ptr<DeviceManager> pManager = 0;
 Ptr<HMDDevice>     pHMD = 0;
 Ptr<SensorDevice>  pSensor = 0;
-SensorFusion       FusionResult;
+SensorFusion*       pFusionResult;
 bool enableSensorPrediction = false;
 float sensorPrediction = 0;
 
@@ -17,6 +17,8 @@ int ovr_freepie_init(float dt)
 {
 	OVR::System::Init();
 	     
+	pFusionResult = new SensorFusion();
+
 	pManager = *DeviceManager::Create();
 	pHMD     = *pManager->EnumerateDevices<HMDDevice>().CreateDevice();
 	
@@ -33,22 +35,22 @@ int ovr_freepie_init(float dt)
 	pHMD->GetDeviceInfo(&hmdInfo);
     
 	if (pSensor)
-		FusionResult.AttachToSensor(pSensor);
+		pFusionResult->AttachToSensor(pSensor);
 	if(enableSensorPrediction)
-	FusionResult.SetPrediction(sensorPrediction);
+	pFusionResult->SetPrediction(sensorPrediction);
 
 	return 0;
 }
 
 int ovr_freepie_reset_orientation()
 {
-	FusionResult.Reset();
+	pFusionResult->Reset();
 	return 0;
 }
 
 int ovr_freepie_read(ovr_freepie_3dof *output)
 {
-	Quatf q = enableSensorPrediction ? FusionResult.GetPredictedOrientation() : FusionResult.GetOrientation();
+	Quatf q = enableSensorPrediction ? pFusionResult->GetPredictedOrientation() : pFusionResult->GetOrientation();
 
 	Matrix4f bodyFrameMatrix(q); 
 
