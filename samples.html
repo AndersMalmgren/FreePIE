@@ -50,7 +50,7 @@
       <section>
         <h3>Script examples</h3>
         <p>FreePIE uses Python as the scripting language of choice since v0.4.211.0. Here follows a collection of simple script examples to get you started.</p>
-        <h4>Android mouse emulation with deadband and continous yaw</h4>      
+        <h4 id="android-mouse">Android mouse emulation with deadband and continous yaw</h4>      
         <pre><code data-language="python">def update():   
     #Apply deadband filter to avoid drift
     #And continousRotation filter to yaw axis to avoid jumps when passing tracker center
@@ -78,7 +78,7 @@ if starting:
     ratio = axisRange / maxAngle
     freeTrack.update += update
         </code></pre>
-        <h4>Android > Freetrack</h4>
+        <h4 id="android-freetrack">Android > Freetrack</h4>
         <pre><code data-language="python">def update():
     global yaw
     yaw = android[0].yaw
@@ -105,7 +105,7 @@ if keyboard.getKeyDown(Key.LeftControl) and keyboard.getPressed(Key.C):
     centerYaw = yaw
     centerPitch = pitch
     centerRoll = roll</code></pre>
-        <h4>TrackIR mouse emulation</h4>
+        <h4 id="trackir-mouse">TrackIR mouse emulation</h4>
         <pre><code data-language="python">#Use Z to toggle on/off and right mouse to activate head tracking 
 #(Good for games like Battlefield 3)
 def update():
