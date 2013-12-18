@@ -7,6 +7,10 @@ Latest downloadable installer can be found [here](http://andersmalmgren.github.i
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+Changelog 1.4.433.0
+* Fixed bug with TrackIR emulation for games like Euro truck sim 2 among others
+* Oculus VR SDK updated
+
 Changelog 1.3.422.0
 * Added support for multiple Android devices (Requires reinstall of APK)
 * Added Hydra (Sixense) SDK emulation 
