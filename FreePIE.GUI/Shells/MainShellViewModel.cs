@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
+using FreePIE.Core.Model;
 using FreePIE.Core.Persistence;
 using FreePIE.GUI.Common.AvalonDock;
 using FreePIE.GUI.Common.Strategies;
@@ -26,9 +28,12 @@ namespace FreePIE.GUI.Shells
         private const string dockingConfig = "layout.config";
         private readonly IEventAggregator eventAggregator;
         private readonly IPersistanceManager persistanceManager;
+        private readonly ISettingsManager settingsManager;
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
         private readonly IPaths paths;
+        private readonly ViewBag viewBag;
+
 
         public MainShellViewModel(IResultFactory resultFactory,
                                   IEventAggregator eventAggregator,
@@ -50,6 +55,7 @@ namespace FreePIE.GUI.Shells
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
             this.paths = paths;
+            viewBag = settingsManager.Settings.ViewBag;
 
             Scripts = new BindableCollection<ScriptEditorViewModel>();
             Tools = new BindableCollection<PanelViewModel> {consoleViewModel, errorViewModel, watchesViewModel};
@@ -62,6 +68,7 @@ namespace FreePIE.GUI.Shells
             Menu.Views = Tools;
 
             DisplayName = "FreePIE - Programmable Input Emulator";
+            LoadPersistedViewState();
         }
 
         protected override void OnViewLoaded(object view)
@@ -92,6 +99,7 @@ namespace FreePIE.GUI.Shells
         }
 
         private PanelViewModel activeDocument;
+
         public PanelViewModel ActiveDocument
         {
             get { return activeDocument; }
@@ -134,11 +142,28 @@ namespace FreePIE.GUI.Shells
                         yield return result;
                 }
             }
-        } 
+        }
 
+        private void LoadPersistedViewState()
+        {
+            Top = viewBag.Get<double?>("top");
+            Left = viewBag.Get<double?>("left");
+            Width = viewBag.Get<double?>("width");
+            Height = viewBag.Get<double?>("height");
+            State = (WindowState)viewBag.Get<int>("state");
+        }
+
+        private void PersistViewState()
+        {
+            viewBag.Set("top", Top);
+            viewBag.Set("left", Left);
+            viewBag.Set("width", Width);
+            viewBag.Set("height", Height);
+            viewBag.Set("state", (int)State);
+        }
+        
         public BindableCollection<ScriptEditorViewModel> Scripts { get; set; }
         public BindableCollection<PanelViewModel> Tools { get; set; }
-
         public MainMenuViewModel Menu { get; set; }
 
         protected override IEnumerable<IResult> CanClose()
@@ -151,11 +176,11 @@ namespace FreePIE.GUI.Shells
 
             eventAggregator.Publish(new ExitingEvent());
 
+            PersistViewState();
             persistanceManager.Save();
             var layoutSerializer = new XmlLayoutSerializer(DockingManager);
             layoutSerializer.Serialize(paths.GetDataPath(dockingConfig));
         }
-
         public void Handle(ScriptDocumentAddedEvent message)
         {
             var script = Scripts.FirstOrDefault(s => s.ContentId == message.Document.ContentId);
@@ -168,5 +193,11 @@ namespace FreePIE.GUI.Shells
 
             script.IsActive = true;
         }
+
+        public double? Top { get; set; }
+        public double? Left { get; set; }
+        public double? Width { get; set; }
+        public double? Height { get; set; }
+        public WindowState State { get; set; }
     }
 }

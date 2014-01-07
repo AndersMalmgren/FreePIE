@@ -7,11 +7,13 @@ namespace FreePIE.Core.Model
     {
         public List<Curve> Curves { get; set; }
         public List<PluginSetting> PluginSettings { get; set; }
+        public ViewBag ViewBag { get; set; }
 
         public Settings()
         {
             PluginSettings = new List<PluginSetting>();
             Curves = new List<Curve>();
+            ViewBag = new ViewBag();
         }
 
         public void AddPluginSetting(PluginSetting pluginSetting)
