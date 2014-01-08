@@ -16,6 +16,7 @@ using FreePIE.Core.ScriptEngine.ThreadTiming;
 using IronPython;
 using IronPython.Compiler;
 using IronPython.Hosting;
+using IronPython.Modules;
 using IronPython.Runtime.Operations;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
@@ -73,21 +74,16 @@ namespace FreePIE.Core.ScriptEngine.Python
         private const int LoopDelay = 1;
         private CountdownEvent pluginStopped;
 
+        static PythonScriptEngine()
+        {
+            var x = typeof (PythonMath);
+            if(x == null)
+                throw new Exception("Do not remove - Used to force local copy.");
+        }
+
         private static Microsoft.Scripting.Hosting.ScriptEngine Engine
         {
             get { return engine ?? (engine = IronPython.Hosting.Python.CreateEngine()); }
-        }
-
-        private Parser CreatePythonParser(string script)
-        {
-            var src = HostingHelpers.GetSourceUnit(Engine.CreateScriptSourceFromString(script));
-            return Parser.CreateParser(new CompilerContext(src, Engine.GetCompilerOptions(), ErrorSink.Default), new PythonOptions());
-        }
-
-        private static double StaticReferenceForCompilerOnly()
-        {
-            var x = IronPython.Modules.PythonMath.degrees(10);
-            throw new InvalidOperationException("Do not use this method - it is only to force local copy.");
         }
 
         public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders, IEventAggregator eventAggregator, IThreadTimingFactory threadTimingFactory)
