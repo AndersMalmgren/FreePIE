@@ -33,15 +33,22 @@ namespace FreePIE.Core.ScriptEngine.Python
                 runtime.LoadAssembly(assembly);
         }
 
-        public static string ImportTypes(this string script, IEnumerable<Type> types)
+        public static string ImportTypes(this string script, IEnumerable<Type> types, out int startingLine)
         {
+            startingLine = 0;
             var builder = new StringBuilder();
 
             foreach (var type in types)
+            {
+                startingLine++;
                 builder.Append(string.Format("from {0} import {1}{2}", type.Namespace, type.Name, Environment.NewLine));
+            }
 
             if (types.Any())
+            {
+                startingLine++;
                 script = builder + Environment.NewLine + script;
+            }
 
             return script;
         }
@@ -73,6 +80,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         private InterlockableBool stopRequested;
         private const int LoopDelay = 1;
         private CountdownEvent pluginStopped;
+        private int startingLine;
 
         static PythonScriptEngine()
         {
@@ -183,7 +191,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         private string PreProcessScript(string script, IEnumerable<Type> globalEnums, IDictionary<string, object> globals)
         {
             script = parser.PrepareScript(script, globals.Values);
-            return script.ImportTypes(globalEnums);
+            return script.ImportTypes(globalEnums, out startingLine);
         }
 
         void ExecuteSafe(Action action)
@@ -209,7 +217,7 @@ namespace FreePIE.Core.ScriptEngine.Python
             var stack = PythonOps.GetDynamicStackFrames(e);
             var lineNumber = stack
                 .Select(s => (int?)s.GetFileLineNumber())
-                .FirstOrDefault();
+                .FirstOrDefault() - startingLine;
 
             ThreadPool.QueueUserWorkItem(obj =>
                 {

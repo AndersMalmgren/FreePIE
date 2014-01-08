@@ -39,7 +39,7 @@ namespace FreePIE.GUI.Views.Script.Output
 
         public void Handle(ScriptErrorEvent message)
         {
-            var lineNumber = message.LineNumber.HasValue ? string.Format("{0}: ", message.LineNumber) : null;
+            var lineNumber = message.LineNumber.HasValue ? string.Format("Line: {0}: ", message.LineNumber) : null;
             Text += string.Format("{0}{1}{2}", lineNumber,  message.Exception.Message, Environment.NewLine);
 
             IsActive = true;
