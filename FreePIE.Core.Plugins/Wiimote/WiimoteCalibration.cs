@@ -67,13 +67,26 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public Gyro NormalizeMotionplus(DateTime measured, ushort yaw, ushort pitch, ushort roll)
         {
-            if (IsStationary() && !MotionPlusCalibrated)
+            if (IsStationary() && !MotionPlusCalibrated && MotionPlusInsidePermissibleRange(yaw, pitch, roll))
                 TakeMotionPlusCalibrationSnapshot(yaw, pitch, roll);
 
             return  MotionPlusCalibrated ? new Gyro(TransformLinear(MotionPlus.X, yaw),
                                                     TransformLinear(MotionPlus.Y, pitch),
                                                     TransformLinear(MotionPlus.Z, roll))
                                          : new Gyro(0, 0, 0);
+        }
+
+        private bool ValueInsideRange(int value, int min, int max)
+        {
+            return min < value && value < max;
+        }
+
+        private bool MotionPlusInsidePermissibleRange(ushort yaw, ushort pitch, ushort roll)
+        {
+            const int max = 8000 + 1000;
+            const int min = 8000 - 1000;
+
+            return ValueInsideRange(yaw, min, max) && ValueInsideRange(pitch, min, max) && ValueInsideRange(roll, min, max);
         }
 
         private void TakeMotionPlusCalibrationSnapshot(ushort yaw, ushort pitch, ushort roll)
