@@ -44,6 +44,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="vJoyInterfaceWrap, Version=2.0.1.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\vJoy\vJoyInterfaceWrap.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\VersionInfo.cs">
@@ -69,6 +73,7 @@
     <Compile Include="MemoryMapping\SharedMemoryWorker.cs" />
     <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
+    <Compile Include="VJoyPlugin.cs" />
     <Compile Include="Wiimote\CircularBuffer.cs" />
     <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
     <Compile Include="Wiimote\IMotionPlusFuser.cs" />
@@ -103,9 +108,6 @@
     <Compile Include="TrackIR\NPClientSpoof.cs" />
     <Compile Include="TrackIR\TrackIRDll.cs" />
     <Compile Include="TrackIR\TrackIRHeadposeData.cs" />
-    <Compile Include="VJoyPlugin.cs" />
-    <Compile Include="VJoy\Api.cs" />
-    <Compile Include="VJoy\VJoyState.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
     <Compile Include="Wiimote\AccelerationGlobal.cs" />
