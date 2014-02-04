@@ -60,6 +60,8 @@ namespace FreePIE.Core.Plugins
     {
         private readonly vJoy joystick;
         private readonly Dictionary<HID_USAGES, bool> enabledAxis;
+        private readonly Dictionary<HID_USAGES, int> currentAxisValue; 
+
         private readonly int maxButtons;
         private readonly int maxDirPov;
         private readonly int maxContinuousPov;
@@ -115,6 +117,8 @@ namespace FreePIE.Core.Plugins
             maxDirPov = joystick.GetVJDDiscPovNumber(index);
             maxContinuousPov = joystick.GetVJDContPovNumber(index);
 
+            currentAxisValue = new Dictionary<HID_USAGES, int>();
+
             joystick.ResetVJD(index);
         }
 
@@ -142,6 +146,12 @@ namespace FreePIE.Core.Plugins
                 throw new Exception(string.Format("Axis {0} not enabled, enable it from VJoy config", usage));
 
             joystick.SetAxis(x + AxisMax, Index, usage);
+            currentAxisValue[usage] = x;
+        }
+
+        public int GetAxis(HID_USAGES usage)
+        {
+            return currentAxisValue.ContainsKey(usage) ? currentAxisValue[usage] : 0;
         }
 
         public void SetDirectionalPov(int pov, VJoyPov direction)
@@ -185,41 +195,49 @@ namespace FreePIE.Core.Plugins
 
         public int x
         {
-            set { holder.SetAxis(value, HID_USAGES.HID_USAGE_X);}
+            get { return holder.GetAxis(HID_USAGES.HID_USAGE_X); }
+            set { holder.SetAxis(value, HID_USAGES.HID_USAGE_X); }
         }
 
         public int y
         {
+            get { return holder.GetAxis(HID_USAGES.HID_USAGE_Y); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_Y); }
         }
 
         public int z
         {
+            get { return holder.GetAxis(HID_USAGES.HID_USAGE_Z); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_Z); }
         }
 
         public int rx
         {
+            get { return holder.GetAxis(HID_USAGES.HID_USAGE_RX); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_RX); }
         }
 
         public int ry
         {
+            get { return holder.GetAxis(HID_USAGES.HID_USAGE_RY); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_RY); }
         }
 
         public int rz
         {
+            get { return holder.GetAxis(HID_USAGES.HID_USAGE_RZ); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_RZ); }
         }
 
         public int slider
         {
+            get { return holder.GetAxis(HID_USAGES.HID_USAGE_SL0); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_SL0); }
         }
 
         public int dial
         {
+            get { return holder.GetAxis(HID_USAGES.HID_USAGE_SL1); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_SL1); }
         }
 
