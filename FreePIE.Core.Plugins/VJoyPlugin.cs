@@ -52,7 +52,7 @@ namespace FreePIE.Core.Plugins
 
         public override string FriendlyName
         {
-            get { return "vJoystick (Open source)"; }
+            get { return "vJoy (SourceForge)"; }
         }
     }
 
