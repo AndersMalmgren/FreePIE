@@ -45,6 +45,10 @@ namespace FreePIE.Core.Plugins
         private const string valueName = "Path";
         private const string dllName = "FreeTrackClient.dll";
 
+        private string key;
+        private string oldRegistryPath;
+
+        private int sameDataCount;
 
         private MemoryMappedFile memoryMappedFile;
         private MemoryMappedViewAccessor accessor;
@@ -57,6 +61,7 @@ namespace FreePIE.Core.Plugins
         
         public override Action Start()
         {
+            key = Path.Combine(Registry.CurrentUser.ToString(), keyName);
             RegisterDll();
 
             memoryMappedFile = MemoryMappedFile.CreateOrOpen("FT_SharedMem", Marshal.SizeOf(typeof(FreeTrackData)));
@@ -69,19 +74,27 @@ namespace FreePIE.Core.Plugins
 
         private void RegisterDll()
         {
-            var key = Path.Combine(Registry.CurrentUser.ToString(), keyName);
-            var path = Registry.GetValue(key, valueName, null) as string;
-            
-            if (path == null || !File.Exists(Path.Combine(path, dllName)))
-            {
-                Registry.SetValue(key, valueName, Environment.CurrentDirectory);
-            }
+            oldRegistryPath = Registry.GetValue(key, valueName, null) as string;
+            SetRegistry(Environment.CurrentDirectory);
+        }
+
+        private void UnregisterDll()
+        {
+            if (oldRegistryPath != null)
+                SetRegistry(oldRegistryPath);
+        }
+
+        private void SetRegistry(string path)
+        {
+            Registry.SetValue(key, valueName, path);
         }
 
         public override void Stop()
         {
             accessor.Dispose();
             memoryMappedFile.Dispose();
+
+            UnregisterDll();
         }
 
         public override string FriendlyName
@@ -108,7 +121,6 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        private int sameDataCount;
         public void Read()
         {
             FreeTrackData local;
