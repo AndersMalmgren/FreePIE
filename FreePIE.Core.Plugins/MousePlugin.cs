@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
+using SlimDX.RawInput;
 
 namespace FreePIE.Core.Plugins
 {
@@ -15,6 +16,8 @@ namespace FreePIE.Core.Plugins
         // Mouse position state variables
         private double deltaXOut;
         private double deltaYOut;
+        private int wheel;
+        public const int WheelMax = 120;
 
         private DirectInput directInputInstance = new DirectInput();
         private Mouse mouseDevice;
@@ -70,16 +73,6 @@ namespace FreePIE.Core.Plugins
             get { return "Mouse"; }
         }
 
-        public override bool GetProperty(int index, IPluginProperty property)
-        {
-            return false;
-        }
-
-        public override bool SetProperties(Dictionary<string, object> properties)
-        {
-           return true;
-        }
-
         static private MouseKeyIO.MOUSEINPUT MouseInput(int x, int y, uint data, uint t, uint flag)
         {
            var mi = new MouseKeyIO.MOUSEINPUT {dx = x, dy = y, mouseData = data, time = t, dwFlags = flag};
@@ -89,12 +82,12 @@ namespace FreePIE.Core.Plugins
         public override void DoBeforeNextExecute()
         {
             // If a mouse command was given in the script, issue it all at once right here
-            if ((int)deltaXOut != 0 || (int)deltaYOut != 0)
+            if ((int)deltaXOut != 0 || (int)deltaYOut != 0 || wheel != 0)
             {
 
                 var input = new MouseKeyIO.INPUT[1];
                 input[0].type = MouseKeyIO.INPUT_MOUSE;
-                input[0].mi = MouseInput((int)deltaXOut, (int)deltaYOut, 0, 0, MouseKeyIO.MOUSEEVENTF_MOVE);
+                input[0].mi = MouseInput((int)deltaXOut, (int)deltaYOut, (uint)wheel, 0, MouseKeyIO.MOUSEEVENTF_MOVE | MouseKeyIO.MOUSEEVENTF_WHEEL);
 
                 MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
 
@@ -107,6 +100,8 @@ namespace FreePIE.Core.Plugins
                 {
                     deltaYOut = deltaYOut - (int)deltaYOut;
                 }
+
+                wheel = 0;
             }
 
             currentMouseState = null;  // flush the mouse state
@@ -121,15 +116,7 @@ namespace FreePIE.Core.Plugins
                 deltaXOut = deltaXOut + value;
             }
 
-            get
-            {
-                // Retrieve the mouse state only once per iteration to avoid getting
-                // zeros on subsequent calls
-                if (currentMouseState == null)
-                    currentMouseState = mouseDevice.GetCurrentState();
-
-                return currentMouseState.X;
-            }
+            get { return CurrentMouseState.X; }
         }
 
         public double DeltaY
@@ -139,26 +126,30 @@ namespace FreePIE.Core.Plugins
                 deltaYOut = deltaYOut + value;
             }
 
+            get { return CurrentMouseState.Y; }
+        }
+
+        public int Wheel
+        {
+            get { return CurrentMouseState.Z; }
+            set { wheel = value; }
+            
+        }
+
+        private MouseState CurrentMouseState
+        {
             get
             {
-                // Retrieve the mouse state only once per iteration to avoid getting
-                // zeros on subsequent calls
                 if (currentMouseState == null)
                     currentMouseState = mouseDevice.GetCurrentState();
 
-                return currentMouseState.Y;
+                return currentMouseState;
             }
         }
 
         public bool IsButtonDown(int index)
         {
-
-            // Retrieve the mouse state only once per iteration to avoid getting
-            // zeros on subsequent calls
-            if (currentMouseState == null)
-                currentMouseState = mouseDevice.GetCurrentState();
-
-            return currentMouseState.IsPressed(index);
+            return CurrentMouseState.IsPressed(index);
         }
 
         public bool IsButtonPressed(int button)
@@ -242,6 +233,11 @@ namespace FreePIE.Core.Plugins
     {
         public MouseGlobal(MousePlugin plugin) : base(plugin) { }
 
+        public int wheelMax
+        {
+            get { return MousePlugin.WheelMax; }
+        }
+
         public double deltaX
         {
             get { return plugin.DeltaX; }
@@ -252,6 +248,12 @@ namespace FreePIE.Core.Plugins
         {
             get { return plugin.DeltaY; }
             set { plugin.DeltaY = value; }
+        }
+
+        public int wheel
+        {
+            get { return plugin.Wheel; }
+            set { plugin.Wheel = value; }
         }
 
         public bool leftButton
