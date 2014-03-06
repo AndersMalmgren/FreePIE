@@ -12,7 +12,7 @@ namespace FreePIE.Core.Plugins
         private SpeechSynthesizer synth;
         private Prompt prompt;
 
-        private SpeechRecognizer recognizer;
+        private SpeechRecognitionEngine recognitionEngine;
         private Dictionary<string, bool> recognizerResults; 
         
 
@@ -26,8 +26,8 @@ namespace FreePIE.Core.Plugins
             if(synth != null)
                 synth.Dispose();
             
-            if (recognizer != null)
-                recognizer.Dispose();
+            if (recognitionEngine != null)
+                recognitionEngine.Dispose();
         }
 
         public void Say(string text)
@@ -42,13 +42,19 @@ namespace FreePIE.Core.Plugins
 
         public bool Said(string text)
         {
-            EnsureRecognizer();
+            var init = EnsureRecognizer();
 
             if (!recognizerResults.ContainsKey(text))
             {
                 var builder = new GrammarBuilder(text);
-                recognizer.LoadGrammar(new Grammar(builder));
+                recognitionEngine.LoadGrammarAsync(new Grammar(builder));
                 recognizerResults[text] = false;
+            }
+
+            if (init)
+            {
+                recognitionEngine.SetInputToDefaultAudioDevice();
+                recognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
             }
 
             var result = recognizerResults[text];
@@ -57,15 +63,19 @@ namespace FreePIE.Core.Plugins
             return result;
         }
 
-        private void EnsureRecognizer()
+        private bool EnsureRecognizer()
         {
-            if (recognizer == null)
+            var result = recognitionEngine == null;
+
+            if (recognitionEngine == null)
             {
-                recognizer = new SpeechRecognizer();
+                recognitionEngine = new SpeechRecognitionEngine();
                 recognizerResults = new Dictionary<string, bool>();
 
-                recognizer.SpeechRecognized += (s, e) => recognizerResults[e.Result.Text] = true;
+                recognitionEngine.SpeechRecognized += (s, e) => recognizerResults[e.Result.Text] = true;
             }
+
+            return result;
         }
 
         private void EnsureSynthesizer()
