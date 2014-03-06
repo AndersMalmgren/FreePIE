@@ -25,9 +25,13 @@ namespace FreePIE.Core.Plugins
         {
             if(synth != null)
                 synth.Dispose();
-            
+
             if (recognitionEngine != null)
+            {
+                recognitionEngine.RecognizeAsyncStop();
+                recognitionEngine.UnloadAllGrammars();
                 recognitionEngine.Dispose();
+            }
         }
 
         public void Say(string text)
