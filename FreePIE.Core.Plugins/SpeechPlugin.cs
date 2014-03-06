@@ -6,24 +6,24 @@ using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins
 {
-    [GlobalType(Type = typeof(SpeechGlobal))]
+    [GlobalType(Type = typeof (SpeechGlobal))]
     public class SpeechPlugin : Plugin
     {
         private SpeechSynthesizer synth;
         private Prompt prompt;
 
         private SpeechRecognitionEngine recognitionEngine;
-        private Dictionary<string, bool> recognizerResults; 
-        
+        private Dictionary<string, RecognitionInfo> recognizerResults;
+
 
         public override object CreateGlobal()
         {
             return new SpeechGlobal(this);
         }
-        
+
         public override void Stop()
         {
-            if(synth != null)
+            if (synth != null)
                 synth.Dispose();
 
             if (recognitionEngine != null)
@@ -38,21 +38,23 @@ namespace FreePIE.Core.Plugins
         {
             EnsureSynthesizer();
 
-            if(prompt != null)
+            if (prompt != null)
                 synth.SpeakAsyncCancel(prompt);
 
             prompt = synth.SpeakAsync(text);
         }
 
-        public bool Said(string text)
+        public bool Said(string text, float confidence)
         {
+            if(confidence < 0.0 || confidence > 1.0) throw new ArgumentException("Confidence has to be between 0.0 and 1.0");
+
             var init = EnsureRecognizer();
 
             if (!recognizerResults.ContainsKey(text))
             {
                 var builder = new GrammarBuilder(text);
                 recognitionEngine.LoadGrammarAsync(new Grammar(builder));
-                recognizerResults[text] = false;
+                recognizerResults[text] = new RecognitionInfo(confidence);
             }
 
             if (init)
@@ -60,10 +62,10 @@ namespace FreePIE.Core.Plugins
                 recognitionEngine.SetInputToDefaultAudioDevice();
                 recognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
             }
+            var info = recognizerResults[text];
+            var result = info.Result;
+            info.Result = false;
 
-            var result = recognizerResults[text];
-            recognizerResults[text] = false;
-            
             return result;
         }
 
@@ -74,9 +76,16 @@ namespace FreePIE.Core.Plugins
             if (recognitionEngine == null)
             {
                 recognitionEngine = new SpeechRecognitionEngine();
-                recognizerResults = new Dictionary<string, bool>();
+                recognizerResults = new Dictionary<string, RecognitionInfo>();
 
-                recognitionEngine.SpeechRecognized += (s, e) => recognizerResults[e.Result.Text] = true;
+                recognitionEngine.SpeechRecognized += (s, e) =>
+                {
+                    var info = recognizerResults[e.Result.Text];
+
+                    if (e.Result.Confidence >= info.Confidence)
+                        info.Result = true;
+                };
+
             }
 
             return result;
@@ -95,6 +104,17 @@ namespace FreePIE.Core.Plugins
         {
             get { return "Speech"; }
         }
+
+        private class RecognitionInfo
+        {
+            public bool Result { get; set; }
+            public float Confidence { get; private set; }
+
+            public RecognitionInfo(float confidence)
+            {
+                Confidence = confidence;
+            }
+        }
     }
 
     [Global(Name = "speech")]
@@ -105,16 +125,21 @@ namespace FreePIE.Core.Plugins
         public SpeechGlobal(SpeechPlugin plugin)
         {
             this.plugin = plugin;
-        } 
+        }
 
         public void say(string text)
         {
-            plugin.Say(text);   
+            plugin.Say(text);
         }
 
         public bool said(string text)
         {
-            return plugin.Said(text);
+            return plugin.Said(text, 0.9f);
+        }
+
+        public bool said(string text, float confidence)
+        {
+            return plugin.Said(text, confidence);
         }
     }
 }
