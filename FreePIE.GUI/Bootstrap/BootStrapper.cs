@@ -24,7 +24,13 @@ namespace FreePIE.GUI.Bootstrap
             kernel.Bind<IPaths>().To<UacCompliantPaths>().InSingletonScope();
 
             SetupCustomMessageBindings();
+        }
+
+        protected override void OnStartup(object sender, StartupEventArgs e)
+        {
             kernel.Get<IPersistanceManager>().Load();
+
+            base.OnStartup(sender, e);
         }
 
         protected override object GetInstance(Type service, string key)
