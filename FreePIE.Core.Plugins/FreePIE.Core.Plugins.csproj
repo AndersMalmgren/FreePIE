@@ -69,6 +69,7 @@
     <Compile Include="MemoryMapping\SharedMemoryWorker.cs" />
     <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
+    <Compile Include="Wiimote\Calibratable.cs" />
     <Compile Include="Wiimote\CircularBuffer.cs" />
     <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
     <Compile Include="Wiimote\IMotionPlusFuser.cs" />

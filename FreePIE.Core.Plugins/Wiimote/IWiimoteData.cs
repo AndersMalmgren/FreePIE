@@ -9,8 +9,8 @@ namespace FreePIE.Core.Plugins.Wiimote
     {
         byte WiimoteNumber { get; }
         bool IsButtonPressed(WiimoteButtons b);
-        Acceleration Acceleration { get; }
-        Gyro MotionPlus { get; }
+        CalibratedValue<Acceleration> Acceleration { get; }
+        CalibratedValue<Gyro> MotionPlus { get; }
         EulerAngles MotionPlusEulerAngles { get; }
         Nunchuck Nunchuck { get; }
         bool IsDataValid(WiimoteDataValid valid);

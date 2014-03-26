@@ -55,18 +55,31 @@ namespace FreePIE.Core.Plugins
         MotionPlus = 32
     }
 
+    public enum FusionType
+    {
+        SimpleIntegration,
+        Mahony
+    }
+
     [GlobalType(Type = typeof(WiimoteGlobal), IsIndexed = true)]
     public class WiimotePlugin : Plugin
     {
         private LogLevel logLevel;
+        private FusionType fuserType;
         private bool doLog;
         private IWiimoteBridge wiimoteBridge;
         private Dictionary<uint, Action> globalUpdators;
         private IList<uint> updatedWiimotes;
 
+        private Dictionary<FusionType, Func<IMotionPlusFuser>> fuserFactories = new Dictionary <FusionType, Func<IMotionPlusFuser>>()
+            {
+                {FusionType.SimpleIntegration, () => new SimpleIntegrationMotionPlusFuser()},
+                {FusionType.Mahony, () => new MahonyMotionPlusFuser()}
+            };
+
         public override object CreateGlobal()
         {
-            wiimoteBridge = new DolphiimoteBridge(logLevel, doLog ? "dolphiimote.log" : null);
+            wiimoteBridge = new DolphiimoteBridge(logLevel, doLog ? "dolphiimote.log" : null, CreateMotionplusFuser);
             globalUpdators = new Dictionary<uint, Action>();
             updatedWiimotes = new List<uint>();
             return Enumerable.Range(0, 4).Select(i => new WiimoteGlobal(this, wiimoteBridge.GetData((uint)i), globalUpdators)).ToArray();
@@ -74,8 +87,9 @@ namespace FreePIE.Core.Plugins
 
         public override bool GetProperty(int index, IPluginProperty property)
         {
-            if (index > 1)
+            if (index > 2)
                 return false;
+
             if (index == 0)
             {
                 property.Name = "LogLevel";
@@ -96,13 +110,31 @@ namespace FreePIE.Core.Plugins
                 property.HelpText = "Enable logging for Dolphiimote library. Look for dolphiimote.log in the application directory.";
             }
 
+            if (index == 2)
+            {
+                property.Name = "FuserType";
+                property.Caption = "M+ fuser type";
+
+                foreach (var val in Enum.GetNames(typeof(FusionType)))
+                    property.Choices.Add(val, val);
+
+                property.DefaultValue = FusionType.SimpleIntegration.ToString();
+                property.HelpText = "Choose between a extended kalman filter (gyro and acc) or simple integration (only gyro)";
+            }
+
             return true;
+        }
+
+        private IMotionPlusFuser CreateMotionplusFuser()
+        {
+            return fuserFactories[fuserType]();
         }
 
         public override bool SetProperties(Dictionary<string, object> properties)
         {
             logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), (string)properties["LogLevel"]);
             doLog = (bool)properties["DoLog"];
+            fuserType = (FusionType)Enum.Parse(typeof(FusionType), (string)properties["FuserType"]);
             return true;
         }
 
@@ -154,14 +186,17 @@ namespace FreePIE.Core.Plugins
         private readonly Action motionPlusTrigger;
         private readonly Action nunchuckTrigger;
 
+        private readonly Action accelerationCalibratedTrigger;
+        private readonly Action motionPlusCalibratedTrigger;
+
         public WiimoteGlobal(WiimotePlugin plugin, IWiimoteData data, Dictionary<uint, Action> updaters)
         {
             this.plugin = plugin;
             this.data = data;
 
-            acceleration = new AccelerationGlobal(data, out accelerationTrigger);
+            acceleration = new AccelerationGlobal(data, out accelerationTrigger, out accelerationCalibratedTrigger);
             buttons = new WiimoteButtonState(data, out buttonTrigger);
-            motionplus = new MotionPlusGlobal(data, out motionPlusTrigger);
+            motionplus = new MotionPlusGlobal(data, out motionPlusTrigger, out motionPlusCalibratedTrigger);
             nunchuck = new NunchuckGlobal(data, out nunchuckTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
@@ -184,6 +219,12 @@ namespace FreePIE.Core.Plugins
 
             if (data.IsDataValid(WiimoteDataValid.Nunchuck))
                 nunchuckTrigger();
+
+            if (data.Acceleration.DidCalibrate)
+                accelerationCalibratedTrigger();
+
+            if (data.MotionPlus.DidCalibrate)
+                motionPlusCalibratedTrigger();
         }
 
         public MotionPlusGlobal motionplus

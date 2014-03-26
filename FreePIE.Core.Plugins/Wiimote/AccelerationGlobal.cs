@@ -5,26 +5,25 @@ using System.Text;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
-    public class AccelerationGlobal : Subscribable
+    public class AccelerationGlobal : Calibratable
     {
         private IWiimoteData data;
 
-        public AccelerationGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
+        public AccelerationGlobal(IWiimoteData data, out Action trigger, out Action calibrated) : base(out trigger, out calibrated)
         {
             this.data = data;
         }
 
-        public double x { get { return data.Acceleration.x; } }
-        public double y { get { return data.Acceleration.y; } }
-        public double z { get { return data.Acceleration.z; } }
+        public double x { get { return data.Acceleration.Value.x; } }
+        public double y { get { return data.Acceleration.Value.y; } }
+        public double z { get { return data.Acceleration.Value.z; } }
     }
 
     public class NunchuckGlobal : Subscribable
     {
         private IWiimoteData data;
 
-        public NunchuckGlobal(IWiimoteData data, out Action trigger)
-            : base(out trigger)
+        public NunchuckGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
         {
             this.data = data;
             this.buttons = new NunchuckButtonState(data);

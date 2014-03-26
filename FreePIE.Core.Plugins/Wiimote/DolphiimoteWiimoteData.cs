@@ -10,7 +10,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public byte WiimoteNumber { get; private set; }
 
-        public Gyro MotionPlus { get; private set; }
+        public CalibratedValue<Gyro> MotionPlus { get; private set; }
 
         public EulerAngles MotionPlusEulerAngles
         {
@@ -22,16 +22,18 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public Nunchuck Nunchuck { get; private set; }
 
-        public Acceleration Acceleration { get; private set; }
+        public CalibratedValue<Acceleration> Acceleration { get; private set; }
 
-        public DolphiimoteWiimoteData(byte wiimoteNumber, WiimoteCalibration calibration)
+        public DolphiimoteWiimoteData(byte wiimoteNumber, WiimoteCalibration calibration, IMotionPlusFuser fuser)
         {
-            fuser = new SimpleIntegrationMotionPlusFuser();
             WiimoteNumber = wiimoteNumber;
-            this.calibration = calibration;
 
-            MotionPlus = new Gyro(0, 0, 0);
-            Acceleration = new Acceleration(0, 0, 0);
+            this.calibration = calibration;
+            this.fuser = fuser;
+
+            MotionPlus = new CalibratedValue<Gyro>(false, new Gyro(0, 0, 0));
+            Acceleration = new CalibratedValue<Acceleration>(false, new Acceleration(0, 0, 0));
+
             Nunchuck = new Nunchuck
             {
                 Acceleration = new Acceleration(0, 0, 0),
@@ -57,7 +59,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             return (data.nunchuck.buttons & value) == value;
         }
 
-        private Gyro CalculateMotionPlus(DolphiimoteMotionplus motionplus)
+        private CalibratedValue<Gyro> CalculateMotionPlus(DolphiimoteMotionplus motionplus)
         {
             //const double fastModeFactor = 2000.0 / 440.0; //According to wiibrew
             const double fastModeFactor = 20.0 / 4.0; //According to wiic
@@ -65,9 +67,9 @@ namespace FreePIE.Core.Plugins.Wiimote
                                                                      motionplus.pitch_left_speed,
                                                                      motionplus.roll_left_speed);
 
-            return new Gyro((motionplus.slow_modes & 0x1) == 0x1 ? gyro.x : gyro.x * fastModeFactor,
-                            (motionplus.slow_modes & 0x4) == 0x4 ? gyro.y : gyro.y * fastModeFactor,
-                            (motionplus.slow_modes & 0x2) == 0x2 ? gyro.z : gyro.z * fastModeFactor);
+            return new CalibratedValue<Gyro>(gyro.DidCalibrate, new Gyro((motionplus.slow_modes & 0x1) == 0x1 ? gyro.Value.x : gyro.Value.x * fastModeFactor,
+                                                                         (motionplus.slow_modes & 0x4) == 0x4 ? gyro.Value.y : gyro.Value.y * fastModeFactor,
+                                                                         (motionplus.slow_modes & 0x2) == 0x2 ? gyro.Value.z : gyro.Value.z * fastModeFactor));
         }
 
         public void Update(DolphiimoteData rawData)
@@ -79,7 +81,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             if (IsDataValid(WiimoteDataValid.MotionPlus))
             {
                 MotionPlus = CalculateMotionPlus(rawData.motionplus);
-                fuser.HandleIMUData(MotionPlus.x, MotionPlus.y, MotionPlus.z, Acceleration.x, Acceleration.y, Acceleration.z);
+                fuser.HandleIMUData(MotionPlus.Value.x, MotionPlus.Value.y, MotionPlus.Value.z, Acceleration.Value.x, Acceleration.Value.y, Acceleration.Value.z);
             }
 
             if (IsDataValid(WiimoteDataValid.Nunchuck))

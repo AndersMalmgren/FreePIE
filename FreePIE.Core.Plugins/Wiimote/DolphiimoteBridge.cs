@@ -13,17 +13,18 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly WiimoteCalibration calibration;
         private readonly Dictionary<uint, DolphiimoteWiimoteData> data;
         private readonly string logFile;
+        private readonly Func<IMotionPlusFuser> fuserFactory;
 
         private readonly Dictionary<byte, WiimoteCapabilities> knownCapabilities;
         private readonly Queue<KeyValuePair<byte, WiimoteCapabilities>> deferredEnables;
 
         public event EventHandler<UpdateEventArgs<uint>> DataReceived;
 
-        public DolphiimoteBridge(LogLevel logLevel, string logFile)
+        public DolphiimoteBridge(LogLevel logLevel, string logFile, Func<IMotionPlusFuser> fuserFactory)
         {
             this.logFile = logFile;
+            this.fuserFactory = fuserFactory;
 
-            
             calibration = new WiimoteCalibration();
             dll = new DolphiimoteDll(Path.Combine(Environment.CurrentDirectory, "DolphiiMote.dll"));
 
@@ -33,7 +34,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             data = new Dictionary<uint, DolphiimoteWiimoteData>();
 
             for (byte i = 0; i < 4; i++)
-                data[i] = new DolphiimoteWiimoteData(i, calibration);
+                data[i] = new DolphiimoteWiimoteData(i, calibration, fuserFactory());
         }
 
         public void Init()

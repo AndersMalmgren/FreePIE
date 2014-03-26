@@ -3,6 +3,19 @@ using System.Collections.Generic;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
+    public class CalibratedValue<T>
+    {
+        public CalibratedValue(bool didCalibrate, T value)
+        {
+            DidCalibrate = didCalibrate;
+            Value = value;
+        }
+
+        public T Value { get; private set; }
+
+        public bool DidCalibrate { get; private set; }
+    }
+
     public class WiimoteCalibration
     {
         private readonly TimeSeries accelerationMagnitudes;
@@ -53,27 +66,37 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         private bool MotionPlusCalibrated { get { return MotionPlus != null; } }
 
-        public Acceleration NormalizeAcceleration(DateTime measured, ushort x, ushort y, ushort z)
+        public CalibratedValue<Acceleration> NormalizeAcceleration(DateTime measured, ushort x, ushort y, ushort z)
         {
             accelerationMagnitudes.Add(measured, EuclideanDistance(x, y, z));
 
-            if (IsStationary() && !AccelerationCalibrated)
-                TakeAccelerationCalibrationSnapshot(x, y, z);
+            bool calibrated = false;
 
-            return new Acceleration(TransformLinear(Acceleration, x),
-                                    TransformLinear(Acceleration, y),
-                                    TransformLinear(Acceleration, z));
+            if (IsStationary() && !AccelerationCalibrated)
+            {
+                TakeAccelerationCalibrationSnapshot(x, y, z);
+                calibrated = true;
+            }
+
+            return new CalibratedValue<Acceleration>(calibrated, new Acceleration(TransformLinear(Acceleration, x),
+                                                                                  TransformLinear(Acceleration, y),
+                                                                                  TransformLinear(Acceleration, z)));
         }
 
-        public Gyro NormalizeMotionplus(DateTime measured, ushort yaw, ushort pitch, ushort roll)
+        public CalibratedValue<Gyro> NormalizeMotionplus(DateTime measured, ushort yaw, ushort pitch, ushort roll)
         {
-            if (IsStationary() && !MotionPlusCalibrated && MotionPlusInsidePermissibleRange(yaw, pitch, roll))
-                TakeMotionPlusCalibrationSnapshot(yaw, pitch, roll);
+            bool calibrated = false;
 
-            return  MotionPlusCalibrated ? new Gyro(TransformLinear(MotionPlus.X, yaw),
-                                                    TransformLinear(MotionPlus.Y, pitch),
-                                                    TransformLinear(MotionPlus.Z, roll))
-                                         : new Gyro(0, 0, 0);
+            if (IsStationary() && !MotionPlusCalibrated && MotionPlusInsidePermissibleRange(yaw, pitch, roll))
+            {
+                TakeMotionPlusCalibrationSnapshot(yaw, pitch, roll);
+                calibrated = true;
+            }
+
+            return  MotionPlusCalibrated ? new CalibratedValue<Gyro>(calibrated, new Gyro(TransformLinear(MotionPlus.X, yaw),
+                                                                                          TransformLinear(MotionPlus.Y, pitch),
+                                                                                          TransformLinear(MotionPlus.Z, roll)))
+                                         : new CalibratedValue<Gyro>(false, new Gyro(0, 0, 0));
         }
 
         private bool ValueInsideRange(int value, int min, int max)
