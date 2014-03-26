@@ -1,11 +1,12 @@
 ﻿using System;
 using FreePIE.Core.Common.Events;
 using FreePIE.Core.Model.Events;
+using FreePIE.GUI.Events;
 using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script.Output
 {
-    public class ErrorViewModel : PanelViewModel, IHandle<ScriptErrorEvent>
+    public class ErrorViewModel : PanelViewModel, IHandle<ScriptErrorEvent>, IHandle<ScriptStateChangedEvent>
     {
         public ErrorViewModel(IEventAggregator eventAggregator)
         {
@@ -43,6 +44,14 @@ namespace FreePIE.GUI.Views.Script.Output
             Text += string.Format("{0}{1}{2}", lineNumber,  message.Exception.Message, Environment.NewLine);
 
             IsActive = true;
+        }
+
+        public void Handle(ScriptStateChangedEvent message)
+        {
+            if (message.Running)
+            {
+                Text = null;
+            }
         }
     }
 }
