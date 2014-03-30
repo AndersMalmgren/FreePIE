@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Speech" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="vJoyInterfaceWrap, Version=2.0.1.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -74,6 +75,7 @@
     <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
     <Compile Include="Wiimote\Calibratable.cs" />
+    <Compile Include="SpeechPlugin.cs" />
     <Compile Include="VJoyPlugin.cs" />
     <Compile Include="Wiimote\CircularBuffer.cs" />
     <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
