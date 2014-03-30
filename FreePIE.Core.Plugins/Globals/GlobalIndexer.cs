@@ -3,18 +3,25 @@ using System.Collections.Generic;
 
 namespace FreePIE.Core.Plugins.Globals
 {
-    public class GlobalIndexer<T>
+    public class GlobalIndexer<T> : GlobalIndexer<T, int>
     {
-        private readonly Func<int, T> initilizer;
-        private readonly Dictionary<int, T> globals;
+        public GlobalIndexer(Func<int, T> initilizer) : base(initilizer)
+        {
+        }
+    }
 
-        public GlobalIndexer(Func<int, T> initilizer)
+    public class GlobalIndexer<T, TIndex>
+    {
+        private readonly Func<TIndex, T> initilizer;
+        private readonly Dictionary<TIndex, T> globals;
+
+        public GlobalIndexer(Func<TIndex, T> initilizer)
         {
             this.initilizer = initilizer;
-            globals = new Dictionary<int, T>();
+            globals = new Dictionary<TIndex, T>();
         }
 
-        public T this[int index]
+        public T this[TIndex index]
         {
             get
             {
