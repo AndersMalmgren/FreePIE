@@ -256,6 +256,18 @@ namespace FreePIE.Core.Plugins
             set { plugin.Wheel = value; }
         }
 
+        public bool wheelUp
+        {
+            get { return plugin.Wheel == wheelMax; }
+            set { plugin.Wheel = value ? wheelMax : 0; }
+        }
+
+        public bool wheelDown
+        {
+            get { return plugin.Wheel == -wheelMax; }
+            set { plugin.Wheel = value ? -wheelMax : 0; }
+        }
+
         public bool leftButton
         {
             get { return plugin.IsButtonDown(0); }
