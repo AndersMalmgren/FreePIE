@@ -8,6 +8,8 @@ namespace FreePIE.Core.ScriptEngine.Globals
 {
     public static class GlobalsInfo
     {
+        private static readonly Dictionary<Type, string> globalNamesCache = new Dictionary<Type, string>();
+
         public static string GetGlobalName(object global)
         {
             var name = GetGlobalName(global.GetType());
@@ -22,10 +24,17 @@ namespace FreePIE.Core.ScriptEngine.Globals
 
         public static string GetGlobalName(Type type)
         {
-            var typeAttribute = GetAttribute<GlobalType>(type);
-            var globalAttribute = typeAttribute != null ? GetAttribute<Global>(typeAttribute.Type) : GetAttribute<Global>(type);
+            if (!globalNamesCache.ContainsKey(type))
+            {
+                var typeAttribute = GetAttribute<GlobalType>(type);
+                var globalAttribute = typeAttribute != null
+                    ? GetAttribute<Global>(typeAttribute.Type)
+                    : GetAttribute<Global>(type);
 
-            return globalAttribute != null ? globalAttribute.Name : null;
+                globalNamesCache[type] = globalAttribute != null ? globalAttribute.Name : null;
+            }
+
+            return globalNamesCache[type];
         }
 
         public static IEnumerable<MemberInfo> GetGlobalMembers(Type pluginType)

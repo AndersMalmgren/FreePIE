@@ -109,7 +109,8 @@ namespace FreePIE.Core.ScriptEngine.Python
             var globalsThatNeedsIndex = globals
                 .SelectMany(g => g.GetType().GetMethods()
                     .Where(m => m.GetCustomAttributes(typeof(NeedIndexer), false).Length > 0)
-                    .Select(m => new { Global = g, MethodInfo = m }));
+                    .Select(m => new { Global = g, MethodInfo = m }))
+                    .ToList();
 
             for (int i = 0; i < script.Length; i++)
             {
