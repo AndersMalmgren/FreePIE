@@ -7,6 +7,17 @@ Latest downloadable installer can be found [here](http://andersmalmgren.github.i
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+Changelog 1.5.459.0
+* Fixed problems with Wiimote M+ calibration
+* Added Wiimote calibration success event
+* Added Wiimote setting for M+ data fusion
+* Added mouse wheel support
+* Fixed performance issue with large script files
+* Fixed so that FreePIE always inject its own Freetrack client path in registry (Freetrack should now work even if Facetracknoir is installed)
+* MS Speech support addded
+* Headsoft vJoy replaced with Sourceforge open source vJoy
+* FreePIE should now log all managed code crashes
+
 Changelog 1.4.433.0
 * Fixed bug with TrackIR emulation for games like Euro truck sim 2 among others
 * Oculus VR SDK updated
