@@ -42,6 +42,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Buildtools", "Buildtools", 
 		BuildTools\write_VersionInfo.xml = BuildTools\write_VersionInfo.xml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{40AC540E-1AFB-42B0-BAB7-9892CC66AC07}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = FreePIE.vsmdi
