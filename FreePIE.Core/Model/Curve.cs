@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FreePIE.Core.Model
 {
@@ -28,19 +30,14 @@ namespace FreePIE.Core.Model
             return new Curve(CalculateDefault(180));
         }
 
-        private static List<Point> CalculateDefault(double y)
+        private static List<Point> CalculateDefault(double yAxisMaxValue)
         {
             const int pointCount = 6;
-            var points = new List<Point>();
 
-            var step = y / (pointCount - 1);
-            for (int i = 0; i < pointCount; i++)
-            {
-                var point = new Point(i * step, i * step);
-                points.Add(point);
-            }
-
-            return points;
+            var deltaBetweenPoints = yAxisMaxValue/(pointCount - 1);
+            return Enumerable.Range(0, pointCount)
+                      .Select(index => new Point(index*deltaBetweenPoints, index*deltaBetweenPoints))
+                      .ToList();
         }
     }
 
