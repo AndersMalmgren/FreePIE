@@ -68,6 +68,8 @@ namespace FreePIE.GUI.Shells
         {
             base.OnViewLoaded(view);
             InitDocking();
+
+            eventAggregator.Publish(new StartedEvent());
         }
 
         private void InitDocking()

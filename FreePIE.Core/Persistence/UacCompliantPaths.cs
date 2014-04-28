@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Persistence
 {
@@ -15,7 +16,13 @@ namespace FreePIE.Core.Persistence
                 Directory.CreateDirectory(absoluteDataPath);
 
             Data = absoluteDataPath;
-            Application = Environment.CurrentDirectory;
+            Application = AppDomain.CurrentDomain.BaseDirectory;
+            EnureWorkingDirectory();
+        }
+
+        private void EnureWorkingDirectory()
+        {
+            Environment.CurrentDirectory = Application;
         }
 
         public string GetDataPath(string filename)
