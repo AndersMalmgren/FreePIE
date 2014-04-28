@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
@@ -29,6 +30,7 @@ namespace FreePIE.GUI.Shells
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
         private readonly IPaths paths;
+        private readonly Func<ScriptEditorViewModel> scriptEditorFactory;
 
         public MainShellViewModel(IResultFactory resultFactory,
                                   IEventAggregator eventAggregator,
@@ -40,7 +42,8 @@ namespace FreePIE.GUI.Shells
                                   WatchesViewModel watchesViewModel,
                                   IFileSystem fileSystem,
                                   ScriptDialogStrategy scriptDialogStrategy,
-                                  IPaths paths
+                                  IPaths paths,
+                                  Func<ScriptEditorViewModel> scriptEditorFactory
             )
             : base(resultFactory)
         {
@@ -50,6 +53,7 @@ namespace FreePIE.GUI.Shells
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
             this.paths = paths;
+            this.scriptEditorFactory = scriptEditorFactory;
 
             Scripts = new BindableCollection<ScriptEditorViewModel>();
             Tools = new BindableCollection<PanelViewModel> {consoleViewModel, errorViewModel, watchesViewModel};
@@ -67,6 +71,20 @@ namespace FreePIE.GUI.Shells
         protected override void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
+
+            foreach(string path in this.paths.LoadPaths)
+            {
+                ScriptEditorViewModel document = scriptEditorFactory()
+                    .Configure(path);
+
+                if (!string.IsNullOrEmpty(path))
+                {
+                    document.LoadFileContent(fileSystem.ReadAllText(path));
+                    Scripts.Add(document);
+                }
+
+            }
+
             InitDocking();
         }
 
