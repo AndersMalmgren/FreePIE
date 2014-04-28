@@ -13,8 +13,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         CalibratedValue<Gyro> MotionPlus { get; }
         EulerAngles MotionPlusEulerAngles { get; }
         Nunchuck Nunchuck { get; }
+        ClassicController ClassicController { get; }
         bool IsDataValid(WiimoteDataValid valid);
         bool IsNunchuckButtonPressed(NunchuckButtons nunchuckButtons);
+        bool IsClassicControllerButtonPressed(ClassicControllerButtons classicControllerButtons);
     }
 
     public class Gyro

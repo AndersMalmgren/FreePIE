@@ -19,7 +19,6 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly Queue<KeyValuePair<byte, WiimoteCapabilities>> deferredEnables;
 
         public event EventHandler<UpdateEventArgs<uint>> DataReceived;
-
         public DolphiimoteBridge(LogLevel logLevel, string logFile, Func<IMotionPlusFuser> fuserFactory)
         {
             this.logFile = logFile;

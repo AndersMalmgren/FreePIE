@@ -11,6 +11,21 @@ namespace FreePIE.Core.Plugins.Wiimote
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct DolphiimoteClassicController
+    {
+        public byte left_stick_x;
+        public byte left_stick_y;
+
+        public byte right_stick_x;
+        public byte right_stick_y;
+
+        public byte left_trigger;
+        public byte right_trigger;
+
+        public UInt16 buttons;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct DolphiimoteNunchuck
     {
         public byte stick_x;
@@ -41,6 +56,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public DolphiimoteAcceleration acceleration;
         public DolphiimoteMotionplus motionplus;
         public DolphiimoteNunchuck nunchuck;
+        public DolphiimoteClassicController classic_controller;
     }
 
     public class EulerAngles
@@ -102,7 +118,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             if (Marshal.SizeOf(typeof(DolphiimoteCallbacks)) != 20)
                 throw new InvalidOperationException("DolphiimoteCallbacks wrong size.");
 
-            if (Marshal.SizeOf(typeof(DolphiimoteData)) != 32)
+            if (Marshal.SizeOf(typeof(DolphiimoteData)) != 40)
                 throw new InvalidOperationException("DolphiimoteData wrong size.");
 
             if (Marshal.SizeOf(typeof(DolphiimoteCapabilities)) != 16)

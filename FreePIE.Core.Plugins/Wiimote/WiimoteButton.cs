@@ -42,4 +42,19 @@ namespace FreePIE.Core.Plugins.Wiimote
             return data.IsNunchuckButtonPressed(b);
         }
     }
+
+    public class ClassicControllerButtonState
+    {
+        private IWiimoteData data;
+
+        public ClassicControllerButtonState(IWiimoteData data)
+        {
+            this.data = data;
+        }
+
+        public bool button_down(ClassicControllerButtons b)
+        {
+            return data.IsClassicControllerButtonPressed(b);
+        }
+    }
 }
