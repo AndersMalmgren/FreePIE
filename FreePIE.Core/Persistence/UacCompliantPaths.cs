@@ -28,7 +28,13 @@ namespace FreePIE.Core.Persistence
             return Path.Combine(Application, filename);
         }
 
+        public void addLoadPaths(string[] args)
+        {
+            LoadPaths = args;
+        }
+
         public string Data { get; private set; }
         public string Application { get; private set; }
+        public string[] LoadPaths { get; private set; }
     }
 }
