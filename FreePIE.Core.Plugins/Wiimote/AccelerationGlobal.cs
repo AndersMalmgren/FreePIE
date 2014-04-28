@@ -30,13 +30,29 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
 
         public Acceleration acceleration { get { return data.Nunchuck.Acceleration; } }
-        public NunchuckStick stick { get { return data.Nunchuck.Stick; } }
+        public AnalogStick stick { get { return data.Nunchuck.Stick; } }
         public NunchuckButtonState buttons { get; private set; }
     }
 
-    public class NunchuckStick
+    public class ClassicControllerGlobal : Subscribable
     {
-        public NunchuckStick(double x, double y)
+        private IWiimoteData data;
+
+        public ClassicControllerGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
+        {
+            this.data = data;
+            this.buttons = new ClassicControllerButtonState(data);
+        }
+        public ClassicControllerButtonState buttons { get; private set; }
+        public AnalogStick leftStick { get { return data.ClassicController.LeftStick; } }
+        public AnalogStick rightStick { get { return data.ClassicController.RightStick; } }
+        public AnalogTrigger rightTrigger { get { return data.ClassicController.RightTrigger; } }
+        public AnalogTrigger leftTrigger { get { return data.ClassicController.LeftTrigger; } }
+    }
+
+    public class AnalogStick
+    {
+        public AnalogStick(double x, double y)
         {
             this.x = x;
             this.y = y;
@@ -44,5 +60,15 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public double x { get; private set; }
         public double y { get; private set; }
+    }
+
+    public class AnalogTrigger
+    {
+        public AnalogTrigger(double x)
+        {
+            this.x = x;
+        }
+
+        public double x { get; private set; }
     }
 }
