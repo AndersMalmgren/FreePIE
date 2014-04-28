@@ -21,6 +21,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
 
         public Nunchuck Nunchuck { get; private set; }
+        public ClassicController ClassicController { get; private set; }
 
         public CalibratedValue<Acceleration> Acceleration { get; private set; }
 
@@ -37,7 +38,15 @@ namespace FreePIE.Core.Plugins.Wiimote
             Nunchuck = new Nunchuck
             {
                 Acceleration = new Acceleration(0, 0, 0),
-                Stick = new NunchuckStick(0, 0)
+                Stick = new AnalogStick(0, 0)
+            };
+
+            ClassicController = new ClassicController
+            {
+                LeftStick = new AnalogStick(0,0),
+                RightStick = new AnalogStick(0,0),
+                RightTrigger = new AnalogTrigger(0),
+                LeftTrigger = new AnalogTrigger(0)
             };
         }
 
@@ -57,6 +66,12 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             UInt16 value = (UInt16)nunchuckButtons;
             return (data.nunchuck.buttons & value) == value;
+        }
+
+        public bool IsClassicControllerButtonPressed(ClassicControllerButtons classicControllerButtons)
+        {
+            UInt16 value = (UInt16)classicControllerButtons;
+            return (data.classic_controller.buttons & value) == value;
         }
 
         private CalibratedValue<Gyro> CalculateMotionPlus(DolphiimoteMotionplus motionplus)
@@ -96,6 +111,22 @@ namespace FreePIE.Core.Plugins.Wiimote
                                                                                  rawData.nunchuck.y,
                                                                                  rawData.nunchuck.z)
                     };
+            }
+            if (IsDataValid(WiimoteDataValid.ClassicController))
+            {
+                ClassicController = new ClassicController
+                {
+                    RightStick = calibration.NormalizeClassicControllerRightStick(DateTime.Now,
+                                                               rawData.classic_controller.right_stick_x,
+                                                               rawData.classic_controller.right_stick_y),
+                    LeftStick = calibration.NormalizeClassicControllerLeftStick(DateTime.Now,
+                                                               rawData.classic_controller.left_stick_x,
+                                                               rawData.classic_controller.left_stick_y),
+                    RightTrigger = calibration.NormalizeClassicControllerRightTrigger(DateTime.Now,
+                                                                rawData.classic_controller.right_trigger),
+                    LeftTrigger = calibration.NormalizeClassicControllerLeftTrigger(DateTime.Now,
+                                                                rawData.classic_controller.left_trigger),
+                };
             }
         }
     }
