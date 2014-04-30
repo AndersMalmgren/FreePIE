@@ -44,5 +44,11 @@ namespace FreePIE.Core.Common
         {
             File.Delete(path);
         }
+
+        public void CreateDirectory(string path)
+        {
+            if(!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+        }
     }
 }
