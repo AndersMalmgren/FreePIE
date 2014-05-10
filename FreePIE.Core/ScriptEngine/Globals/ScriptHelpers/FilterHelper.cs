@@ -54,14 +54,28 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
             return x - lastSample;
         }
 
+        [Deprecated("continuousRotation")]
         [NeedIndexer]
         public double continousRotation(double x, string indexer)
         {
-            return continousRotation(x, Units.Radians, indexer);
+            return continuousRotation(x, indexer);
+        }
+
+        [Deprecated("continuousRotation")]
+        [NeedIndexer]
+        public double continousRotation(double x, Units unit, string indexer)
+        {
+            return continuousRotation(x, unit, indexer);
         }
 
         [NeedIndexer]
-        public double continousRotation(double x, Units unit, string indexer)
+        public double continuousRotation(double x, string indexer)
+        {
+            return continuousRotation(x, Units.Radians, indexer);
+        }
+
+        [NeedIndexer]
+        public double continuousRotation(double x, Units unit, string indexer)
         {
             if(!continousRotationStrategies.ContainsKey(indexer))
                 continousRotationStrategies[indexer] = new ContinuesRotationStrategy(unit);

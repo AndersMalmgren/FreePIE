@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 using FreePIE.Core.Common;
+using FreePIE.Core.Common.Events;
+using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Model.Events;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.Core.ScriptEngine.Globals;
@@ -102,6 +107,29 @@ namespace FreePIE.Core.ScriptEngine.Python
         public bool IsEndOfExpressionDelimiter(char @char)
         {
             return ExpressionEndDelimiters.Contains(@char);
+        }
+
+        public IEnumerable<ScriptErrorEvent> ListDeprecatedWarnings(string script, IEnumerable<object> globals)
+        {
+            return globals
+                .SelectMany(g => g.GetType().GetMembers() 
+                    .Select(m => new { Atr = m.GetCustomAttributes(typeof(Deprecated), false).FirstOrDefault() as Deprecated, m.Name })
+                    .Where(m => m.Atr != null)
+                    .Select(m => new { m.Atr.ReplacedWith, Deprecated = string.Format("{0}.{1}", GlobalsInfo.GetGlobalName(g), m.Name) })
+                )
+                .GroupBy(m => m.Deprecated)
+                .Select(m => new { Info = m.First(), IndexOf = script.IndexOf(m.Key, StringComparison.Ordinal)})
+                .Where(m => m.IndexOf >= 0)
+                .Select(m => new ScriptErrorEvent(ErrorLevel.Warning, string.Format("{0} marked as deprecated, use {1}", m.Info.Deprecated, m.Info.ReplacedWith), GetLineNumber(script, m.IndexOf)))
+                .ToList();
+        }
+
+        private int GetLineNumber(string script, int indexOf)
+        {
+            return script
+                .Substring(0, indexOf)
+                .Split(Environment.NewLine.ToArray())
+                .Count(s => s != string.Empty) + 1;
         }
 
         private string FindAndInitMethodsThatNeedIndexer(string script, IEnumerable<object> globals)

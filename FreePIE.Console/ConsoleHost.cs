@@ -80,8 +80,9 @@ namespace FreePIE.Console
 
         public void Handle(ScriptErrorEvent message)
         {
-            System.Console.WriteLine(message.Exception);
-            Stop();
+            System.Console.WriteLine(message.Description);
+            if(message.Level == ErrorLevel.Exception)
+                Stop();
         }
 
         private void PrintHelp()
