@@ -19,7 +19,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@id/cutoffLabel"
-        android:baselineAligned="false" >
+        android:baselineAligned="true" >
 
         <SeekBar
             android:id="@+id/cutoffSeekBar"
@@ -51,4 +51,45 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
     
+    <TextView
+        android:id="@+id/fsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_cutoff"
+        android:text="@string/sampling_frequency"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <RadioGroup
+        android:id="@+id/fsRadioGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cutoffLabel"
+        android:layout_below="@+id/fsLabel"
+        android:layout_marginLeft="0dp"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/fs10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:checked="true"
+            android:text="@string/fs10" />
+
+        <RadioButton
+            android:id="@+id/fs25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:text="@string/fs25" />
+
+        <RadioButton
+            android:id="@+id/fs50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:text="@string/fs50" />
+    </RadioGroup>
+    
+
 </RelativeLayout>

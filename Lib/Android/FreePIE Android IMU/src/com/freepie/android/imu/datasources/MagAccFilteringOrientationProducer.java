@@ -18,6 +18,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -27,10 +29,9 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 	private static final String TAG = "MagAccFilteringOrientationProducer";
 	
 	private final static String FILTER_CUTOFF = "filter_cutoff";
+	private final static String SAMPLE_RATE = "filtering_samplefreq";
 	
-	private final static int SAMPLERATE = 50;
 	private final static float FILTERQ = 0.7f;
-	private static float MAX_CUTOFF_FREQ = SAMPLERATE / 5;
 
 	
 	private float[] mAcc = new float[3];
@@ -44,6 +45,7 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 	private TargetSettings mTarget;
 	private boolean mFilterRunning;
 
+	private int mSampleRate = 50;
 	private float mCutoff = 0.5f;
 	
 	private FilterArray mMagFilter;
@@ -61,7 +63,7 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 	private void createFilters() {
 		FilterArray.Builder lowpass = new FilterArray.Builder() {
 			public Filter create() {
-				return new Biquad(Biquad.LOWPASS, SAMPLERATE, mCutoff, FILTERQ);
+				return new Biquad(Biquad.LOWPASS, mSampleRate, mCutoff, FILTERQ);
 			}
 		}; 
 		
@@ -89,7 +91,7 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 				
 				while(mFilterRunning) {
 					try {
-						Thread.sleep(1000/SAMPLERATE); // 50 Hz -> 20ms
+						Thread.sleep(1000 / mSampleRate); // 50 Hz -> 20ms
 					} catch (InterruptedException e) {}
 					
 					synchronized(this) {
@@ -180,7 +182,9 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 
 	private SeekBar mCutoffSeekBar;
 	private TextView mCutoffText;
+	private RadioGroup mSampleRateRadioGroup;
 	private boolean mIgnoreTextChange;
+	private Object mTag = new Object();
 
 	private Object mFilterLock = new Object();
 	
@@ -188,11 +192,29 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 	public void onCreateOptions(Activity context, SharedPreferences preferences) {
 		mCutoffSeekBar = (SeekBar) context.findViewById(R.id.cutoffSeekBar);
 		mCutoffText = (TextView) context.findViewById(R.id.cutoffEditText);
+		mSampleRateRadioGroup = (RadioGroup) context.findViewById(R.id.fsRadioGroup);
 		
-		mCutoffSeekBar.setMax(freqToProgress(MAX_CUTOFF_FREQ));
-		
+		mSampleRate = preferences.getInt(SAMPLE_RATE, 50);
 		mCutoff = preferences.getFloat(FILTER_CUTOFF, 0.5f);
+
+		updateSampleRateRadioGroup();
+		mSampleRateRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				switch(checkedId) {
+				case R.id.fs10:	mSampleRate = 10; break;
+				case R.id.fs25: mSampleRate = 25; break;
+				case R.id.fs50: mSampleRate = 50; break;
+				}
+				limitCutoff();
+				updateCutoffText();
+				mCutoffSeekBar.setMax(freqToProgress(maxCutoffFreq()));
+				mCutoffSeekBar.setProgress(freqToProgress(mCutoff));
+				updateFilters();
+			}
+		});
 		
+		mCutoffSeekBar.setMax(freqToProgress(maxCutoffFreq()));
 		mCutoffSeekBar.setProgress(freqToProgress(mCutoff));
 		mCutoffSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			@Override
@@ -215,20 +237,21 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 		mCutoffText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable s) {
-				if (mIgnoreTextChange)
+				if (mIgnoreTextChange || s.getSpanFlags(mTag) != 0)
 					return;
 				try {
-					mCutoff = Float.parseFloat(s.toString());
-				} catch (NumberFormatException e) {
-					//
-				}
-				if (mCutoff > MAX_CUTOFF_FREQ) {
-					mCutoff = MAX_CUTOFF_FREQ;
-				}
-				if (mCutoff < 0) {
-					mCutoff = 0;
-				}
+					mCutoff = progressToFreq(freqToProgress(Float.parseFloat(s.toString())));
+				} catch (NumberFormatException e) {}
+				limitCutoff();
 				updateCutoffSeekBar();
+				
+				try {
+					s.setSpan(mTag, 0, s.length(), 1);
+					s.replace(0, s.length(), String.format("%2.2f", mCutoff));
+				} 
+				finally {
+					s.removeSpan(mTag);
+				}
 			}
 
 			@Override
@@ -239,6 +262,38 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 			}
 		});
+	}
+
+	private void limitCutoff() {
+		if (mCutoff > maxCutoffFreq()) {
+			mCutoff = maxCutoffFreq();
+		}
+		if (mCutoff < 0) {
+			mCutoff = 0;
+		}
+	}
+	
+	private void updateSampleRateRadioGroup() {
+		int id;
+		switch (mSampleRate) {
+		case 10:
+			id = R.id.fs10;
+			break;
+		case 25:
+			id = R.id.fs25;
+			break;
+		case 50:
+			id = R.id.fs50;
+			break;
+		default:
+			id = -1;
+			break;
+		}
+		mSampleRateRadioGroup.check(id);
+	}
+
+	private float maxCutoffFreq() {
+		return mSampleRate / 5;
 	}
 
 	private int freqToProgress(float f) {
@@ -278,7 +333,9 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 
 	@Override
 	public Editor savePreferences(Editor editor) {
-		return editor.putFloat(FILTER_CUTOFF, mCutoff);
+		return editor
+				.putFloat(FILTER_CUTOFF, mCutoff)
+				.putInt(SAMPLE_RATE, mSampleRate);
 	}
 
 }
