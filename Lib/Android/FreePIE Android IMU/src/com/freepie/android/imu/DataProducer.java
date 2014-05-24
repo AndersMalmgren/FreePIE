@@ -1,6 +1,9 @@
 package com.freepie.android.imu;
 
 import java.nio.ByteBuffer;
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 
 public abstract class DataProducer {
 	public static final byte SEND_RAW = 0x01;
@@ -25,8 +28,10 @@ public abstract class DataProducer {
 	public abstract void fillBuffer(ByteBuffer buffer);
 
 	protected byte getFlagByte(boolean raw, boolean orientation) {
-		return (byte)((raw ? SEND_RAW : SEND_NONE) | 
-				(orientation ? SEND_ORIENTATION : SEND_NONE)); 
+		return (byte)((raw ? SEND_RAW : SEND_NONE) | (orientation ? SEND_ORIENTATION : SEND_NONE)); 
 	}
-
+	
+	public abstract void onCreateOptions(Activity context, SharedPreferences preferences);
+	public abstract int getOptionsLayoutId();
+	public abstract Editor savePreferences(Editor editor);
 }

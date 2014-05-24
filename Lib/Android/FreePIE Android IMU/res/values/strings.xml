@@ -15,5 +15,7 @@
     <string name="imu">Orientation</string>
     <string name="index">Index</string>
     <string name="debug_no_data">(no data)</string>
+    <string name="cutoff_frequency">Cutoff frequency</string>
+    <string name="cycles_per_second">Hz</string>
     
 </resources>

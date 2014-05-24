@@ -1,21 +1,18 @@
 package com.freepie.android.imu;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import com.freepie.android.imu.datasources.MagAccFilteringOrientationProducer;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -32,9 +29,6 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 	private static final String IP = "ip";
 	private static final String PORT = "port";
 	private static final String INDEX = "index";
-	private static final String SEND_ORIENTATION = "send_orientation";
-	private static final String SEND_RAW = "send_raw";
-	private static final String SAMPLE_RATE = "sample_rate";
 	private static final String DEBUG = "debug";
 	private static final String DATAPRODUCER = "producer";
 	
@@ -50,9 +44,6 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 	private EditText txtIp;
 	private EditText txtPort;
 	private Spinner spnIndex;
-	private CheckBox chkSendOrientation;
-	private CheckBox chkSendRaw;
-	private Spinner spnSampleRate;
 	private CheckBox chkDebug; 
 	private LinearLayout debugView;
 	private TextView acc;    
@@ -60,20 +51,19 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 	private TextView mag;
 	private TextView imu;
 	private Spinner spnDataProducers;
+	private DataProducer lastDataProducer;
 		
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
-        
+
         final SharedPreferences preferences = getPreferences(MODE_PRIVATE);        
         
         txtIp = (EditText) findViewById(R.id.ip);
         txtPort = (EditText) findViewById(R.id.port);
         spnIndex = (Spinner) findViewById(R.id.index);        
-        chkSendOrientation = (CheckBox) findViewById(R.id.sendOrientation);
-        chkSendRaw = (CheckBox) findViewById(R.id.sendRaw);
-        spnSampleRate = (Spinner)this.findViewById(R.id.sampleRate);
         spnDataProducers = (Spinner)this.findViewById(R.id.sensors);
         start = (ToggleButton) findViewById(R.id.start);
         debugView = (LinearLayout) findViewById(R.id.debugView);
@@ -89,13 +79,34 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
         
         txtIp.setText(preferences.getString(IP,  "192.168.1.1"));
         txtPort.setText(preferences.getString(PORT,  "5555"));
-        chkSendOrientation.setChecked(preferences.getBoolean(SEND_ORIENTATION, true));
-        chkSendRaw.setChecked(preferences.getBoolean(SEND_RAW, true));
+
+        populateDataProducers(preferences.getString(DATAPRODUCER, producers[0]));
+        
+        final ViewGroup optionsViewGroup = (ViewGroup)findViewById(R.id.producerOptions);
+        View child = LayoutInflater.from(this).inflate(getSelectedDataProducer().getOptionsLayoutId(), null);
+        optionsViewGroup.addView(child);
+        
+        getSelectedDataProducer().onCreateOptions(this, preferences);
+
+        spnDataProducers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				stop();
+				lastDataProducer.savePreferences(preferences.edit()).commit();
+				optionsViewGroup.removeAllViews();
+		        View child = LayoutInflater.from(MainActivity.this).inflate(getSelectedDataProducer().getOptionsLayoutId(), null);
+		        optionsViewGroup.addView(child);
+		        getSelectedDataProducer().onCreateOptions(MainActivity.this, preferences);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+        });
+        
         chkDebug.setChecked(preferences.getBoolean(DEBUG, false));        
-        populateSampleRates(preferences.getInt(SAMPLE_RATE, 0));
         populateIndex(preferences.getInt(INDEX, 0));
-        populateDataProducers(preferences.getString(DATAPRODUCER, "com.freepie.android.imu.datasources.MagGyroAccOrientationProducer"));
-        setDebugVisability(chkDebug.isChecked());
+        setDebugVisibility(chkDebug.isChecked());
         
         final SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
             
@@ -106,7 +117,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
         {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
             {
-            	setDebugVisability(isChecked);
+            	setDebugVisibility(isChecked);
             	
             	if(udpSender != null)
             		udpSender.setDebug(isChecked);
@@ -122,12 +133,10 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
             	if(on) {
 	                String ip = txtIp.getText().toString();
 	                int port = Integer.parseInt(txtPort.getText().toString());
-	                boolean sendOrientation = chkSendOrientation.isChecked();
-	                boolean sendRaw = chkSendRaw.isChecked();
 	                boolean debug = chkDebug.isChecked();
 	            	
 	                udpSender = new UdpSenderTask(getSelectedDataProducer());
-		        	udpSender.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId(), debug, debugListener, error));
+		        	udpSender.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sensorManager, debug, debugListener, error));
             	} else {
             		stop();
             	}
@@ -137,11 +146,13 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
     
     private void stop() {
     	start.setChecked(false);
-		udpSender.stop();
-		udpSender = null;
+    	if (udpSender != null) {
+			udpSender.stop();
+			udpSender = null;
+    	}
     }
     
-    private void setDebugVisability(boolean show) {
+    private void setDebugVisibility(boolean show) {
     	debugView.setVisibility(show ? LinearLayout.VISIBLE : LinearLayout.INVISIBLE);
     }
     
@@ -159,26 +170,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
   		  }
   		}
       	
-      	populateSpinner(spnIndex, deviceIndexes, selectedDeviceIndex);
-    }
-    
-    private void populateSampleRates(int defaultSampleRate) {
-    	List<SampleRate> sampleRates = Arrays.asList(new SampleRate[] {   
-    		new SampleRate(SensorManager.SENSOR_DELAY_UI, "UI"), 
-    		new SampleRate(SensorManager.SENSOR_DELAY_NORMAL, "Normal"), 
-    		new SampleRate(SensorManager.SENSOR_DELAY_GAME, "Game"), 
-    		new SampleRate(SensorManager.SENSOR_DELAY_FASTEST, "Fastest") 
-		});
-    	
-    	SampleRate selectedSampleRate = null;
-    	for (SampleRate sampleRate : sampleRates) {
-		  if (sampleRate.getId() == defaultSampleRate) {
-		    selectedSampleRate = sampleRate;
-		    break;
-		  }
-		}
-    	
-    	populateSpinner(spnSampleRate, sampleRates, selectedSampleRate);    	
+      	Util.populateSpinner(this, spnIndex, deviceIndexes, selectedDeviceIndex);
     }
     
     private void populateDataProducers(String defaultDataProducer) {
@@ -194,18 +186,8 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 			} catch (Exception e) {
 			}
     	}
-    	populateSpinner(spnDataProducers, dataProducers, selected);
-    }
-    
-    private <T>void populateSpinner(Spinner spinner, List<T> items, T selectedItem) {
-    	ArrayAdapter<T> adapter = new ArrayAdapter<T>(this,
-    			R.layout.spinner_item, items);
-    	spinner.setAdapter(adapter);
-    	spinner.setSelection(items.indexOf(selectedItem), false);
-    }
-    
-    private int getSelectedSampleRateId() {
-    	return ((SampleRate)spnSampleRate.getSelectedItem()).getId();
+    	Util.populateSpinner(this, spnDataProducers, dataProducers, selected);
+    	lastDataProducer = selected;
     }
     
     private byte getSelectedDeviceIndex() {
@@ -235,17 +217,14 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
     protected void onStop(){
     	super.onStop();    	
     	final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-    	
-    	preferences.edit()
-			.putString(IP, txtIp.getText().toString())
+
+    	SharedPreferences.Editor editor = preferences.edit().putString(IP, txtIp.getText().toString())
 			.putString(PORT, txtPort.getText().toString())
 			.putInt(INDEX,  getSelectedDeviceIndex())
-			.putBoolean(SEND_ORIENTATION, chkSendOrientation.isChecked())
-			.putBoolean(SEND_RAW, chkSendRaw.isChecked())
-			.putInt(SAMPLE_RATE,  getSelectedSampleRateId())
 			.putBoolean(DEBUG, chkDebug.isChecked())
-			.putString(DATAPRODUCER, getSelectedDataProducer().getClass().getName())
-			.commit();
+			.putString(DATAPRODUCER, getSelectedDataProducer().getClass().getName()); 	
+    	editor = getSelectedDataProducer().savePreferences(editor);
+    	editor.commit();
     }    
     
     @Override

@@ -2,7 +2,6 @@ package com.freepie.android.imu.datasources;
 
 import java.nio.ByteBuffer;
 
-import com.freepie.android.imu.DataProducer;
 import com.freepie.android.imu.TargetSettings;
 
 import android.hardware.Sensor;
@@ -10,10 +9,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-public class MagGyroAccOrientationProducer extends DataProducer implements SensorEventListener {
+public class MagGyroAccOrientationProducer extends ClassicDataProducer implements SensorEventListener {
 	@SuppressWarnings("unused")
 	private static final String TAG = "MagGyroAccOrientationProducer";
-	
+
 	private float[] acc;
 	private float[] mag;
 	private float[] gyr;
@@ -28,24 +27,24 @@ public class MagGyroAccOrientationProducer extends DataProducer implements Senso
 
 	@Override
 	public String toString() {
-		return "Classic sensor";
+		return "Acc+Gyro+Mag Sensor";
 	}
 	
 	public void start(TargetSettings target) {
 		mTarget = target;
-		if (mTarget.getSendRaw()) {
+		if (getSendRaw()) {
 			mTarget.getSensorManager().registerListener(this,
-					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_ACCELEROMETER), mTarget.getSampleRate());
+					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_ACCELEROMETER), getSampleRate());
 
 			mTarget.getSensorManager().registerListener(this,
-					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_GYROSCOPE), mTarget.getSampleRate());
+					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_GYROSCOPE), getSampleRate());
 
 			mTarget.getSensorManager().registerListener(this,
-					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), mTarget.getSampleRate());
+					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), getSampleRate());
 		}
-		if (mTarget.getSendOrientation()) {
+		if (getSendOrientation()) {
 			mTarget.getSensorManager().registerListener(this,
-					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), mTarget.getSampleRate());
+					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), getSampleRate());
 		}
 	}
 
@@ -71,7 +70,7 @@ public class MagGyroAccOrientationProducer extends DataProducer implements Senso
 			break;
 		}
 
-		if (mTarget.getSendOrientation() && rotationVector != null) {
+		if (getSendOrientation() && rotationVector != null) {
 			SensorManager.getRotationMatrixFromVector(rotationMatrix, rotationVector);
 			SensorManager.getOrientation(rotationMatrix, rotationVector);
 			imu = rotationVector;
@@ -84,8 +83,8 @@ public class MagGyroAccOrientationProducer extends DataProducer implements Senso
 		if (mTarget.getDebug() && imu != null)
 			mTarget.getDebugListener().debugImu(imu);
 
-		boolean raw = mTarget.getSendRaw() && acc != null && gyr != null && mag != null;
-		boolean orientation = mTarget.getSendOrientation() && imu != null;
+		boolean raw = getSendRaw() && acc != null && gyr != null && mag != null;
+		boolean orientation = getSendOrientation() && imu != null;
 		if (raw || orientation) {
 			notifySenderTask();
 		}
@@ -99,12 +98,12 @@ public class MagGyroAccOrientationProducer extends DataProducer implements Senso
 
 	@Override
 	public void fillBuffer(ByteBuffer buffer) {
-		boolean raw = mTarget.getSendRaw() && acc != null && gyr != null && mag != null;
-		boolean orientation = mTarget.getSendOrientation() && imu != null;
+		boolean raw = getSendRaw() && acc != null && gyr != null && mag != null;
+		boolean orientation = getSendOrientation() && imu != null;
 		
 		buffer.clear();			
 		buffer.put(mTarget.getDeviceIndex());
-		buffer.put(getFlagByte(mTarget.getSendRaw(), mTarget.getSendOrientation()));
+		buffer.put(getFlagByte(getSendRaw(), getSendOrientation()));
 		buffer.put(getFlagByte(raw, orientation));
 
 		if (raw) {

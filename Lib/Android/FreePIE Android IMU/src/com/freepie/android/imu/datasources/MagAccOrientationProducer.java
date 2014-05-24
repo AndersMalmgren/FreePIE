@@ -2,15 +2,13 @@ package com.freepie.android.imu.datasources;
 
 import java.nio.ByteBuffer;
 
-import com.freepie.android.imu.DataProducer;
 import com.freepie.android.imu.TargetSettings;
-
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-public class MagAccOrientationProducer extends DataProducer implements SensorEventListener {
+public class MagAccOrientationProducer extends ClassicDataProducer implements SensorEventListener {
 	@SuppressWarnings("unused")
 	private static final String TAG = "MagAccOrientationProducer";
 	
@@ -26,17 +24,16 @@ public class MagAccOrientationProducer extends DataProducer implements SensorEve
 
 	@Override
 	public String toString() {
-		return "No gyro sensor";
+		return "Acc+Mag Sensor";
 	}
 
 	public void start(TargetSettings target) {
 		mTarget = target;
-		if (mTarget.getSendRaw()) {
+		if (getSendRaw()) {
 			mTarget.getSensorManager().registerListener(this,
-					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_ACCELEROMETER), mTarget.getSampleRate());
-
+					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_ACCELEROMETER), getSampleRate());
 			mTarget.getSensorManager().registerListener(this,
-					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), mTarget.getSampleRate());
+					mTarget.getSensorManager().getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), getSampleRate());
 		}
 	}
 
@@ -55,7 +52,7 @@ public class MagAccOrientationProducer extends DataProducer implements SensorEve
 			break;
 		}
 
-		if (mTarget.getSendOrientation() && mRotationVector != null) {
+		if (getSendOrientation() && mRotationVector != null) {
 			SensorManager.getRotationMatrixFromVector(rotationMatrix, mRotationVector);
 			SensorManager.getOrientation(rotationMatrix, mRotationVector);
 		}
@@ -66,8 +63,8 @@ public class MagAccOrientationProducer extends DataProducer implements SensorEve
 		if (mTarget.getDebug() && mRotationVector != null)
 			mTarget.getDebugListener().debugImu(mRotationVector);
 
-		boolean raw = mTarget.getSendRaw() && mAcc != null && mMag != null;
-		boolean orientation = mTarget.getSendOrientation() && mRotationVector != null;
+		boolean raw = getSendRaw() && mAcc != null && mMag != null;
+		boolean orientation = getSendOrientation() && mRotationVector != null;
 		if (raw || orientation) {
 			notifySenderTask();
 		}
@@ -81,12 +78,12 @@ public class MagAccOrientationProducer extends DataProducer implements SensorEve
 
 	@Override
 	public void fillBuffer(ByteBuffer buffer) {
-		boolean raw = mTarget.getSendRaw() && mAcc != null && mMag != null;
-		boolean orientation = mTarget.getSendOrientation() && mRotationVector != null;
+		boolean raw = getSendRaw() && mAcc != null && mMag != null;
+		boolean orientation = getSendOrientation() && mRotationVector != null;
 		
 		buffer.clear();			
 		buffer.put(mTarget.getDeviceIndex());
-		buffer.put(getFlagByte(mTarget.getSendRaw(), mTarget.getSendOrientation()));
+		buffer.put(getFlagByte(getSendRaw(), getSendOrientation()));
 		buffer.put(getFlagByte(raw, orientation));
 
 		if (raw) {
