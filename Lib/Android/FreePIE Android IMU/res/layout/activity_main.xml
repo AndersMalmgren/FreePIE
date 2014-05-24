@@ -53,23 +53,30 @@
 	        android:ems="10"
 	        android:inputType="number" />
 	    
-	    <Spinner
-	        android:id="@+id/index"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentLeft="true"
-	        android:layout_alignParentRight="true"
-	        android:layout_below="@+id/port" />	    
-	
-	    <CheckBox
-	        android:id="@+id/sendOrientation"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentLeft="true"
-	        android:layout_alignParentRight="true"
-	        android:layout_below="@+id/index"
-	        android:text="@string/send_orientation" />
-	
+        <Spinner
+            android:id="@+id/index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/port" />
+        <Spinner
+            android:id="@+id/sensors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/index" />
+            
+        <CheckBox
+            android:id="@+id/sendOrientation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/sensors"
+            android:text="@string/send_orientation" />
+	    
 	    <CheckBox
 	        android:id="@+id/sendRaw"
 	        android:layout_width="wrap_content"

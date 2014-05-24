@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.freepie.android.imu.datasources.MagAccFilteringOrientationProducer;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,7 +26,8 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 public class MainActivity extends Activity implements IDebugListener, IErrorHandler {
-
+	public static final String TAG = "FreePIE";
+	
 	private UdpSenderTask udpSender;
 	private static final String IP = "ip";
 	private static final String PORT = "port";
@@ -32,6 +36,13 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 	private static final String SEND_RAW = "send_raw";
 	private static final String SAMPLE_RATE = "sample_rate";
 	private static final String DEBUG = "debug";
+	private static final String DATAPRODUCER = "producer";
+	
+	private static final String[] producers = new String[] {
+		"com.freepie.android.imu.datasources.MagGyroAccOrientationProducer",
+		"com.freepie.android.imu.datasources.MagAccOrientationProducer",
+		"com.freepie.android.imu.datasources.MagAccFilteringOrientationProducer",
+	};
 	
 	private static final String DEBUG_FORMAT = "%.2f;%.2f;%.2f";
 	
@@ -48,6 +59,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 	private TextView gyr;
 	private TextView mag;
 	private TextView imu;
+	private Spinner spnDataProducers;
 		
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +74,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
         chkSendOrientation = (CheckBox) findViewById(R.id.sendOrientation);
         chkSendRaw = (CheckBox) findViewById(R.id.sendRaw);
         spnSampleRate = (Spinner)this.findViewById(R.id.sampleRate);
+        spnDataProducers = (Spinner)this.findViewById(R.id.sensors);
         start = (ToggleButton) findViewById(R.id.start);
         debugView = (LinearLayout) findViewById(R.id.debugView);
         chkDebug = (CheckBox) findViewById(R.id.debug);
@@ -69,6 +82,10 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
         gyr = (TextView) findViewById(R.id.gyr);
         mag = (TextView) findViewById(R.id.mag);
         imu = (TextView) findViewById(R.id.imu);
+        acc.setText(R.string.debug_no_data);
+        gyr.setText(R.string.debug_no_data);
+        mag.setText(R.string.debug_no_data);
+        imu.setText(R.string.debug_no_data);
         
         txtIp.setText(preferences.getString(IP,  "192.168.1.1"));
         txtPort.setText(preferences.getString(PORT,  "5555"));
@@ -77,6 +94,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
         chkDebug.setChecked(preferences.getBoolean(DEBUG, false));        
         populateSampleRates(preferences.getInt(SAMPLE_RATE, 0));
         populateIndex(preferences.getInt(INDEX, 0));
+        populateDataProducers(preferences.getString(DATAPRODUCER, "com.freepie.android.imu.datasources.MagGyroAccOrientationProducer"));
         setDebugVisability(chkDebug.isChecked());
         
         final SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -89,6 +107,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
             {
             	setDebugVisability(isChecked);
+            	
             	if(udpSender != null)
             		udpSender.setDebug(isChecked);
             }
@@ -107,7 +126,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 	                boolean sendRaw = chkSendRaw.isChecked();
 	                boolean debug = chkDebug.isChecked();
 	            	
-		        	udpSender = new UdpSenderTask();
+	                udpSender = new UdpSenderTask(getSelectedDataProducer());
 		        	udpSender.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId(), debug, debugListener, error));
             	} else {
             		stop();
@@ -162,11 +181,27 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
     	populateSpinner(spnSampleRate, sampleRates, selectedSampleRate);    	
     }
     
+    private void populateDataProducers(String defaultDataProducer) {
+    	DataProducer selected = null;
+    	List<DataProducer> dataProducers = new ArrayList<DataProducer>();
+    	for (String pclass: producers) {
+    		try {
+    			DataProducer p = (DataProducer)Class.forName(pclass).newInstance();
+				dataProducers.add(p);
+				if (pclass.equals(defaultDataProducer)) {
+					selected = p;
+				}
+			} catch (Exception e) {
+			}
+    	}
+    	populateSpinner(spnDataProducers, dataProducers, selected);
+    }
+    
     private <T>void populateSpinner(Spinner spinner, List<T> items, T selectedItem) {
     	ArrayAdapter<T> adapter = new ArrayAdapter<T>(this,
-    			android.R.layout.simple_spinner_item, items);
-        	spinner.setAdapter(adapter);
-        	spinner.setSelection(items.indexOf(selectedItem), false);
+    			R.layout.spinner_item, items);
+    	spinner.setAdapter(adapter);
+    	spinner.setSelection(items.indexOf(selectedItem), false);
     }
     
     private int getSelectedSampleRateId() {
@@ -177,16 +212,23 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
     	return ((DeviceIndex)spnIndex.getSelectedItem()).getIndex();
     }
     
+    private DataProducer getSelectedDataProducer() {
+    	return (DataProducer)spnDataProducers.getSelectedItem();
+    }
+    
 	@Override
 	public void debugRaw(float[] acc, float[] gyr, float[] mag) {
-		this.acc.setText(String.format(DEBUG_FORMAT, acc[0], acc[1], acc[2]));
-		this.gyr.setText(String.format(DEBUG_FORMAT, gyr[0], gyr[1], gyr[2]));
-		this.mag.setText(String.format(DEBUG_FORMAT, mag[0], mag[1], mag[2]));
+		if (acc != null)
+			this.acc.setText(String.format(DEBUG_FORMAT, acc[0], acc[1], acc[2]));
+		if (gyr != null) 
+			this.gyr.setText(String.format(DEBUG_FORMAT, gyr[0], gyr[1], gyr[2]));
+		if (mag != null)
+			this.mag.setText(String.format(DEBUG_FORMAT, mag[0], mag[1], mag[2]));
 	}
 	
 	@Override
 	public void debugImu(float[] imu) {
-		this.imu.setText(String.format(DEBUG_FORMAT, imu[0], imu[1], imu[2]));		
+		this.imu.setText(imu != null ? String.format(DEBUG_FORMAT, imu[0], imu[1], imu[2]) : "(no data)");		
 	}
 
     @Override
@@ -202,6 +244,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 			.putBoolean(SEND_RAW, chkSendRaw.isChecked())
 			.putInt(SAMPLE_RATE,  getSelectedSampleRateId())
 			.putBoolean(DEBUG, chkDebug.isChecked())
+			.putString(DATAPRODUCER, getSelectedDataProducer().getClass().getName())
 			.commit();
     }    
     

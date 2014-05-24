@@ -14,5 +14,6 @@
     <string name="mag">Magnometer</string>
     <string name="imu">Orientation</string>
     <string name="index">Index</string>
-
+    <string name="debug_no_data">(no data)</string>
+    
 </resources>

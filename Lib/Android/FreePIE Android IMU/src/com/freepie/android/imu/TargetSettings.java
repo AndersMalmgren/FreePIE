@@ -71,4 +71,8 @@ public class TargetSettings {
 	public IErrorHandler getErrorHandler() {
 		return this.errorHandler;
 	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
 }
