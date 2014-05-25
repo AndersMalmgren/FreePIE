@@ -25,6 +25,9 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class FilteringDataProducerMA extends DataProducer implements SensorEventListener {
+	private static final int DEFAULT_SAMPLE_RATE = 50;
+	private static final float DEFAULT_CUTOFF = 0.5f;
+
 	@SuppressWarnings("unused")
 	private static final String TAG = "FilteringDataProducerMA";
 	
@@ -45,8 +48,8 @@ public class FilteringDataProducerMA extends DataProducer implements SensorEvent
 	private TargetSettings mTarget;
 	private boolean mFilterRunning;
 
-	private int mSampleRate = 50;
-	private float mCutoff = 0.5f;
+	private int mSampleRate = DEFAULT_SAMPLE_RATE;
+	private float mCutoff = DEFAULT_CUTOFF;
 	
 	private FilterArray mMagFilter;
 	private FilterArray mAccFilter;
@@ -91,7 +94,7 @@ public class FilteringDataProducerMA extends DataProducer implements SensorEvent
 				
 				while(mFilterRunning) {
 					try {
-						Thread.sleep(1000 / mSampleRate); // 50 Hz -> 20ms
+						Thread.sleep(1000 / mSampleRate); 
 					} catch (InterruptedException e) {}
 					
 					synchronized(this) {
@@ -194,8 +197,8 @@ public class FilteringDataProducerMA extends DataProducer implements SensorEvent
 		mCutoffText = (TextView) context.findViewById(R.id.cutoffEditText);
 		mSampleRateRadioGroup = (RadioGroup) context.findViewById(R.id.fsRadioGroup);
 		
-		mSampleRate = preferences.getInt(SAMPLE_RATE, 50);
-		mCutoff = preferences.getFloat(FILTER_CUTOFF, 0.5f);
+		mSampleRate = preferences.getInt(SAMPLE_RATE, DEFAULT_SAMPLE_RATE);
+		mCutoff = preferences.getFloat(FILTER_CUTOFF, DEFAULT_CUTOFF);
 
 		updateSampleRateRadioGroup();
 		mSampleRateRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
