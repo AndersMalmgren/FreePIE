@@ -1,5 +1,6 @@
 package com.freepie.android.imu.dataproducers;
 
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
 import com.freepie.android.imu.DataProducer;
@@ -25,14 +26,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class FilteringDataProducerMA extends DataProducer implements SensorEventListener {
-	private static final int DEFAULT_SAMPLE_RATE = 50;
-	private static final float DEFAULT_CUTOFF = 0.5f;
-
 	@SuppressWarnings("unused")
 	private static final String TAG = "FilteringDataProducerMA";
-	
-	private final static String FILTER_CUTOFF = "filter_cutoff";
-	private final static String SAMPLE_RATE = "filtering_samplefreq";
 	
 	private final static float FILTERQ = 0.7f;
 
@@ -48,12 +43,12 @@ public class FilteringDataProducerMA extends DataProducer implements SensorEvent
 	private TargetSettings mTarget;
 	private boolean mFilterRunning;
 
-	private int mSampleRate = DEFAULT_SAMPLE_RATE;
-	private float mCutoff = DEFAULT_CUTOFF;
-	
 	private FilterArray mMagFilter;
 	private FilterArray mAccFilter;
+	private Object mFilterLock = new Object();
 	
+	private Options mOptions;
+
 	public FilteringDataProducerMA() {
 		super();
 	}
@@ -66,7 +61,7 @@ public class FilteringDataProducerMA extends DataProducer implements SensorEvent
 	private void createFilters() {
 		FilterArray.Builder lowpass = new FilterArray.Builder() {
 			public Filter create() {
-				return new Biquad(Biquad.LOWPASS, mSampleRate, mCutoff, FILTERQ);
+				return new Biquad(Biquad.LOWPASS, mOptions.sampleRate(), mOptions.cutoff(), FILTERQ);
 			}
 		}; 
 		
@@ -94,7 +89,7 @@ public class FilteringDataProducerMA extends DataProducer implements SensorEvent
 				
 				while(mFilterRunning) {
 					try {
-						Thread.sleep(1000 / mSampleRate); 
+						Thread.sleep(mOptions.sleepTime()); 
 					} catch (InterruptedException e) {}
 					
 					synchronized(this) {
@@ -169,6 +164,27 @@ public class FilteringDataProducerMA extends DataProducer implements SensorEvent
 		}
 	}
 	
+	@Override
+	public void onCreateOptions(Activity context, SharedPreferences preferences) {
+		mOptions = new Options(context, preferences, this);
+	}
+
+	@Override
+	public int getOptionsLayoutId() {
+		return R.layout.options_filtering;
+	}
+
+	@Override
+	public Editor savePreferences(Editor editor) {
+		return mOptions.savePreferences(editor);
+	}
+
+	private void updateFilters() {
+		if (this.mFilterRunning) {
+			createFilters();
+		}
+	}
+
 	private float[] getOrientation() {
 		float[] orientation = null;
 
@@ -182,163 +198,172 @@ public class FilteringDataProducerMA extends DataProducer implements SensorEvent
 		
 		return orientation;
 	}
-
-	private SeekBar mCutoffSeekBar;
-	private TextView mCutoffText;
-	private RadioGroup mSampleRateRadioGroup;
-	private boolean mIgnoreTextChange;
-	private Object mTag = new Object();
-
-	private Object mFilterLock = new Object();
 	
-	@Override
-	public void onCreateOptions(Activity context, SharedPreferences preferences) {
-		mCutoffSeekBar = (SeekBar) context.findViewById(R.id.cutoffSeekBar);
-		mCutoffText = (TextView) context.findViewById(R.id.cutoffEditText);
-		mSampleRateRadioGroup = (RadioGroup) context.findViewById(R.id.fsRadioGroup);
+	private static class Options {
+		private SeekBar mCutoffSeekBar;
+		private TextView mCutoffText;
+		private RadioGroup mSampleRateRadioGroup;
 		
-		mSampleRate = preferences.getInt(SAMPLE_RATE, DEFAULT_SAMPLE_RATE);
-		mCutoff = preferences.getFloat(FILTER_CUTOFF, DEFAULT_CUTOFF);
+		private boolean mIgnoreTextChange;
+		private WeakReference<FilteringDataProducerMA> mProducer;
+		private Object mTag = new Object();
+		
+		private static final int DEFAULT_SAMPLE_RATE = 50;
+		private static final float DEFAULT_CUTOFF = 0.5f;
+		private final static String FILTER_CUTOFF = "filter_cutoff";
+		private final static String SAMPLE_RATE = "filtering_samplefreq";
 
-		updateSampleRateRadioGroup();
-		mSampleRateRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				switch(checkedId) {
-				case R.id.fs10:	mSampleRate = 10; break;
-				case R.id.fs25: mSampleRate = 25; break;
-				case R.id.fs50: mSampleRate = 50; break;
-				}
-				limitCutoff();
-				updateCutoffText();
-				mCutoffSeekBar.setMax(freqToProgress(maxCutoffFreq()));
-				mCutoffSeekBar.setProgress(freqToProgress(mCutoff));
-				updateFilters();
-			}
-		});
+		private int mSampleRate = DEFAULT_SAMPLE_RATE;
+		private float mCutoff = DEFAULT_CUTOFF;
 		
-		mCutoffSeekBar.setMax(freqToProgress(maxCutoffFreq()));
-		mCutoffSeekBar.setProgress(freqToProgress(mCutoff));
-		mCutoffSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				if (fromUser) {
-					mCutoff = progressToFreq(progress);
+		public Options(Activity context, SharedPreferences preferences, FilteringDataProducerMA producer) {
+			mProducer = new WeakReference<FilteringDataProducerMA>(producer);
+			mCutoffSeekBar = (SeekBar) context.findViewById(R.id.cutoffSeekBar);
+			mCutoffText = (TextView) context.findViewById(R.id.cutoffEditText);
+			mSampleRateRadioGroup = (RadioGroup) context.findViewById(R.id.fsRadioGroup);
+			
+			mSampleRate = preferences.getInt(SAMPLE_RATE, DEFAULT_SAMPLE_RATE);
+			mCutoff = preferences.getFloat(FILTER_CUTOFF, DEFAULT_CUTOFF);
+
+			updateSampleRateRadioGroup();
+			mSampleRateRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(RadioGroup group, int checkedId) {
+					switch(checkedId) {
+					case R.id.fs10:	mSampleRate = 10; break;
+					case R.id.fs25: mSampleRate = 25; break;
+					case R.id.fs50: mSampleRate = 50; break;
+					}
+					limitCutoff();
 					updateCutoffText();
+					mCutoffSeekBar.setMax(freqToProgress(maxCutoffFreq()));
+					mCutoffSeekBar.setProgress(freqToProgress(mCutoff));
+					mProducer.get().updateFilters();
 				}
-			}
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-			}
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-			}
-		});
+			});
+			
+			mCutoffSeekBar.setMax(freqToProgress(maxCutoffFreq()));
+			mCutoffSeekBar.setProgress(freqToProgress(mCutoff));
+			mCutoffSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+				@Override
+				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+					if (fromUser) {
+						mCutoff = progressToFreq(progress);
+						updateCutoffText();
+					}
+				}
+				@Override
+				public void onStartTrackingTouch(SeekBar seekBar) {
+				}
+				@Override
+				public void onStopTrackingTouch(SeekBar seekBar) {
+				}
+			});
+			
+			updateCutoffText();
+
+			mCutoffText.addTextChangedListener(new TextWatcher() {
+				@Override
+				public void afterTextChanged(Editable s) {
+					if (mIgnoreTextChange || s.getSpanFlags(mTag) != 0)
+						return;
+					try {
+						mCutoff = progressToFreq(freqToProgress(Float.parseFloat(s.toString())));
+					} catch (NumberFormatException e) {}
+					limitCutoff();
+					updateCutoffSeekBar();
+					
+					try {
+						s.setSpan(mTag, 0, s.length(), 1);
+						s.replace(0, s.length(), String.format("%2.2f", mCutoff));
+					} 
+					finally {
+						s.removeSpan(mTag);
+					}
+				}
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+				}
+			});
+		}
 		
-		updateCutoffText();
+		public Editor savePreferences(Editor editor) {
+			return editor
+					.putFloat(FILTER_CUTOFF, mCutoff)
+					.putInt(SAMPLE_RATE, mSampleRate);
+		}
 
-		mCutoffText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void afterTextChanged(Editable s) {
-				if (mIgnoreTextChange || s.getSpanFlags(mTag) != 0)
-					return;
-				try {
-					mCutoff = progressToFreq(freqToProgress(Float.parseFloat(s.toString())));
-				} catch (NumberFormatException e) {}
-				limitCutoff();
-				updateCutoffSeekBar();
-				
-				try {
-					s.setSpan(mTag, 0, s.length(), 1);
-					s.replace(0, s.length(), String.format("%2.2f", mCutoff));
-				} 
-				finally {
-					s.removeSpan(mTag);
-				}
+		public int sampleRate() {
+			return mSampleRate;
+		}
+		
+		public float cutoff() {
+			return mCutoff;
+		}
+		
+		public int sleepTime() {
+			return 1000 / mSampleRate;			
+		}
+		
+		private void limitCutoff() {
+			if (mCutoff > maxCutoffFreq()) {
+				mCutoff = maxCutoffFreq();
 			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			if (mCutoff < 0) {
+				mCutoff = 0;
 			}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
+		}
+		
+		private void updateSampleRateRadioGroup() {
+			int id;
+			switch (mSampleRate) {
+			case 10:
+				id = R.id.fs10;
+				break;
+			case 25:
+				id = R.id.fs25;
+				break;
+			case 50:
+				id = R.id.fs50;
+				break;
+			default:
+				id = -1;
+				break;
 			}
-		});
-	}
-
-	private void limitCutoff() {
-		if (mCutoff > maxCutoffFreq()) {
-			mCutoff = maxCutoffFreq();
+			mSampleRateRadioGroup.check(id);
 		}
-		if (mCutoff < 0) {
-			mCutoff = 0;
+
+		private float maxCutoffFreq() {
+			return mSampleRate / 5;
 		}
-	}
-	
-	private void updateSampleRateRadioGroup() {
-		int id;
-		switch (mSampleRate) {
-		case 10:
-			id = R.id.fs10;
-			break;
-		case 25:
-			id = R.id.fs25;
-			break;
-		case 50:
-			id = R.id.fs50;
-			break;
-		default:
-			id = -1;
-			break;
+
+		private int freqToProgress(float f) {
+			return Math.round(f*4);
 		}
-		mSampleRateRadioGroup.check(id);
-	}
-
-	private float maxCutoffFreq() {
-		return mSampleRate / 5;
-	}
-
-	private int freqToProgress(float f) {
-		return Math.round(f*4);
-	}
-	
-	private float progressToFreq(int p) {
-		return p * 0.25f;
-	}
-	
-	private void updateCutoffText() {
-		try {
-			mIgnoreTextChange = true;
-			mCutoffText.setText(String.format("%2.2f", mCutoff));
-		} 
-		finally {
-			mIgnoreTextChange = false;
+		
+		private float progressToFreq(int p) {
+			return p * 0.25f;
 		}
-		updateFilters();
-	}
+		
+		private void updateCutoffText() {
+			try {
+				mIgnoreTextChange = true;
+				mCutoffText.setText(String.format("%2.2f", mCutoff));
+			} 
+			finally {
+				mIgnoreTextChange = false;
+			}
+			mProducer.get().updateFilters();
+		}
 
-	private void updateCutoffSeekBar() {
-		mCutoffSeekBar.setProgress(freqToProgress(mCutoff));
-		updateFilters();
-	}
-
-	private void updateFilters() {
-		if (this.mFilterRunning) {
-			createFilters();
+		private void updateCutoffSeekBar() {
+			mCutoffSeekBar.setProgress(freqToProgress(mCutoff));
+			mProducer.get().updateFilters();
 		}
 	}
-
-	@Override
-	public int getOptionsLayoutId() {
-		return R.layout.options_filtering;
-	}
-
-	@Override
-	public Editor savePreferences(Editor editor) {
-		return editor
-				.putFloat(FILTER_CUTOFF, mCutoff)
-				.putInt(SAMPLE_RATE, mSampleRate);
-	}
-
 }

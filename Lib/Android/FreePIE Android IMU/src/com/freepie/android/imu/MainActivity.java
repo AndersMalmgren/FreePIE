@@ -186,6 +186,9 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 			} catch (Exception e) {
 			}
     	}
+    	if (selected == null) {
+    		selected = dataProducers.get(0);
+    	}
     	Util.populateSpinner(this, spnDataProducers, dataProducers, selected);
     	lastDataProducer = selected;
     }
