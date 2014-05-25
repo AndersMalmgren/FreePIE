@@ -1,4 +1,4 @@
-package com.freepie.android.imu.datasources;
+package com.freepie.android.imu.dataproducers;
 
 import java.util.Arrays;
 import java.util.List;
