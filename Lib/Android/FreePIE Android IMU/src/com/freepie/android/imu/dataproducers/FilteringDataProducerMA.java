@@ -24,9 +24,9 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-public class MagAccFilteringOrientationProducer extends DataProducer implements SensorEventListener {
+public class FilteringDataProducerMA extends DataProducer implements SensorEventListener {
 	@SuppressWarnings("unused")
-	private static final String TAG = "MagAccFilteringOrientationProducer";
+	private static final String TAG = "FilteringDataProducerMA";
 	
 	private final static String FILTER_CUTOFF = "filter_cutoff";
 	private final static String SAMPLE_RATE = "filtering_samplefreq";
@@ -51,7 +51,7 @@ public class MagAccFilteringOrientationProducer extends DataProducer implements 
 	private FilterArray mMagFilter;
 	private FilterArray mAccFilter;
 	
-	public MagAccFilteringOrientationProducer() {
+	public FilteringDataProducerMA() {
 		super();
 	}
 

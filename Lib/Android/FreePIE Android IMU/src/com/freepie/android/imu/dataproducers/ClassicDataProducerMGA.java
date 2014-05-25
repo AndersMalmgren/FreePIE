@@ -9,9 +9,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-public class MagGyroAccOrientationProducer extends ClassicDataProducer implements SensorEventListener {
+public class ClassicDataProducerMGA extends ClassicDataProducer implements SensorEventListener {
 	@SuppressWarnings("unused")
-	private static final String TAG = "MagGyroAccOrientationProducer";
+	private static final String TAG = "ClassicDataProducerMGA";
 
 	private float[] acc;
 	private float[] mag;
@@ -21,7 +21,7 @@ public class MagGyroAccOrientationProducer extends ClassicDataProducer implement
 	private final float[] rotationMatrix = new float[16];
 	private TargetSettings mTarget;
 
-	public MagGyroAccOrientationProducer() {
+	public ClassicDataProducerMGA() {
 		super();
 	}
 

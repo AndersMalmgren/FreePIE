@@ -33,9 +33,9 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 	private static final String DATAPRODUCER = "producer";
 	
 	private static final String[] producers = new String[] {
-		"com.freepie.android.imu.dataproducers.MagGyroAccOrientationProducer",
-		"com.freepie.android.imu.dataproducers.MagAccOrientationProducer",
-		"com.freepie.android.imu.dataproducers.MagAccFilteringOrientationProducer",
+		"com.freepie.android.imu.dataproducers.ClassicDataProducerMGA",
+		"com.freepie.android.imu.dataproducers.ClassicDataProducerMA",
+		"com.freepie.android.imu.dataproducers.FilteringDataProducerMA",
 	};
 	
 	private static final String DEBUG_FORMAT = "%.2f;%.2f;%.2f";
