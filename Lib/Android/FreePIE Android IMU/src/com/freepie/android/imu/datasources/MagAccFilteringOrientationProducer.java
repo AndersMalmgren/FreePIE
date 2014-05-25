@@ -2,12 +2,12 @@ package com.freepie.android.imu.datasources;
 
 import java.nio.ByteBuffer;
 
-import com.freepie.android.imu.Biquad;
 import com.freepie.android.imu.DataProducer;
-import com.freepie.android.imu.Filter;
-import com.freepie.android.imu.FilterArray;
 import com.freepie.android.imu.R;
 import com.freepie.android.imu.TargetSettings;
+import com.freepie.android.imu.dsp.Biquad;
+import com.freepie.android.imu.dsp.Filter;
+import com.freepie.android.imu.dsp.FilterArray;
 
 import android.app.Activity;
 import android.content.SharedPreferences;

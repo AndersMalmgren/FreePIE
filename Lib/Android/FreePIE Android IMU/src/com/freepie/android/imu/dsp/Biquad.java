@@ -1,4 +1,4 @@
-package com.freepie.android.imu;
+package com.freepie.android.imu.dsp;
 
 public class Biquad implements Filter {
 	public final static int LOWPASS = 0;

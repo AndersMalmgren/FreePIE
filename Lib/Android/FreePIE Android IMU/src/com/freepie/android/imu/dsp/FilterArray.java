@@ -1,4 +1,5 @@
-package com.freepie.android.imu;
+package com.freepie.android.imu.dsp;
+
 
 public class FilterArray {
 	static public interface Builder {
