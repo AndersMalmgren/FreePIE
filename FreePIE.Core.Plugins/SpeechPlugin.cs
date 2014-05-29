@@ -34,6 +34,12 @@ namespace FreePIE.Core.Plugins
             }
         }
 
+        public void SelectVoice(string name)
+        {
+            EnsureSynthesizer();
+            synth.SelectVoice(name);
+        }
+
         public void Say(string text)
         {
             EnsureSynthesizer();
@@ -140,6 +146,11 @@ namespace FreePIE.Core.Plugins
         public bool said(string text, float confidence)
         {
             return plugin.Said(text, confidence);
+        }
+
+        public void selectVoice(string name)
+        {
+            plugin.SelectVoice(name);
         }
     }
 }
