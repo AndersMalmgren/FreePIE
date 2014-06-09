@@ -135,8 +135,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>cd $(SolutionDir)BuildTools
-$(MSBuildBinPath)\msbuild write_VersionInfo.xml</PreBuildEvent>
+    <PreBuildEvent>cd "$(SolutionDir)BuildTools"
+"$(MSBuildBinPath)\msbuild" write_VersionInfo.xml</PreBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
