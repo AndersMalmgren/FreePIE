@@ -14,5 +14,12 @@
     <string name="mag">Magnometer</string>
     <string name="imu">Orientation</string>
     <string name="index">Index</string>
-
+    <string name="debug_no_data">(no data)</string>
+    <string name="cutoff_frequency">Cutoff frequency</string>
+    <string name="cycles_per_second">Hz</string>
+    <string name="sampling_frequency">Sampling frequency</string>
+    <string name="fs10">10 Hz</string>
+    <string name="fs25">25 Hz</string>
+    <string name="fs50">50 Hz</string>
+        
 </resources>
