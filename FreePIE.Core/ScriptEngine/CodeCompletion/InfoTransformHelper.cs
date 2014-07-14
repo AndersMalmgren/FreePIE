@@ -65,6 +65,11 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return globalType != null && globalType.IsIndexed;
         }
 
+        private static bool IsDeprecated(MemberInfo info)
+        {
+            return info.GetCustomAttributes(typeof (Deprecated), false).Length > 0;
+        }
+
         private static void AddClassMembers(Node<TokenInfo> node, Type type)
         {
             var globalMembers = GlobalsInfo.GetGlobalMembers(type).ToList();
@@ -79,7 +84,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static void AddProperties(Node<TokenInfo> propDelim, List<MemberInfo> members)
         {
-            propDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Property).Select(m => MapProperty(m as PropertyInfo)));
+            propDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Property && !IsDeprecated(m)).Select(m => MapProperty(m as PropertyInfo)));
         }
 
         private static void AddEvents(Node<TokenInfo> eventDelim, IEnumerable<MemberInfo> members)
@@ -89,7 +94,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static void AddMethods(Node<TokenInfo> methodDelim, IEnumerable<MemberInfo> members)
         {
-            methodDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Method && !(m as MethodInfo).IsSpecialName).Select(m => MapMethod(m as MethodInfo)));
+            methodDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Method && !(m as MethodInfo).IsSpecialName && !IsDeprecated(m)).Select(m => MapMethod(m as MethodInfo)));
         }
 
         private static Node<TokenInfo> MapClassType(Type type)

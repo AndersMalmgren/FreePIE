@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Model.Events;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
 
 namespace FreePIE.Core.ScriptEngine
@@ -12,5 +13,6 @@ namespace FreePIE.Core.ScriptEngine
         IEnumerable<Type> GetAllUsedGlobalEnums(string script);
         string PrepareScript(string script, IEnumerable<object> globals);
         bool IsEndOfExpressionDelimiter(char @char);
+        IEnumerable<ScriptErrorEvent> ListDeprecatedWarnings(string script, IEnumerable<object> globals);
     }
 }

@@ -104,6 +104,7 @@
     <Compile Include="Common\Caliburn\GestureMenuItem.cs" />
     <Compile Include="Common\Caliburn\InputBindingTrigger.cs" />
     <Compile Include="Common\CodeCompletion\CompletionItem.cs" />
+    <Compile Include="Common\Resources\ResourceHelper.cs" />
     <Compile Include="Common\RichTextBox\RtfTextBox.cs" />
     <Compile Include="Common\Strategies\ScriptDialogStrategy.cs" />
     <Compile Include="Common\Visiblox\MovePointBehaviour.cs" />
@@ -174,14 +175,11 @@
       <DependentUpon>ConsoleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Script\Output\ConsoleViewModel.cs" />
-    <Compile Include="Views\Script\Output\ErrorView.xaml.cs">
-      <DependentUpon>ErrorView.xaml</DependentUpon>
+    <Compile Include="Views\Script\Output\ErrorsView.xaml.cs">
+      <DependentUpon>ErrorsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Script\Output\ErrorsViewModel.cs" />
     <Compile Include="Views\Script\Output\ErrorViewModel.cs" />
-    <Compile Include="Views\Script\Output\OutputView.xaml.cs">
-      <DependentUpon>OutputView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Script\Output\OutputViewModel.cs" />
     <Compile Include="Views\Script\Output\WatchesView.xaml.cs">
       <DependentUpon>WatchesView.xaml</DependentUpon>
     </Compile>
@@ -252,11 +250,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Script\Output\ErrorView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Script\Output\OutputView.xaml">
+    <Page Include="Views\Script\Output\ErrorsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -373,6 +367,10 @@
       <ProductName>Windows Installer 4.5</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\exception-16.png" />
+    <Resource Include="Resources\warning-16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

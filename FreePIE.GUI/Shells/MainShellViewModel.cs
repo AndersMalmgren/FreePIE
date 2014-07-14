@@ -36,7 +36,7 @@ namespace FreePIE.GUI.Shells
                                   ISettingsManager settingsManager,
                                   MainMenuViewModel mainMenuViewModel,
                                   ConsoleViewModel consoleViewModel,
-                                  ErrorViewModel errorViewModel,
+                                  ErrorsViewModel errorsViewModel,
                                   WatchesViewModel watchesViewModel,
                                   IFileSystem fileSystem,
                                   ScriptDialogStrategy scriptDialogStrategy,
@@ -52,7 +52,7 @@ namespace FreePIE.GUI.Shells
             this.paths = paths;
 
             Scripts = new BindableCollection<ScriptEditorViewModel>();
-            Tools = new BindableCollection<PanelViewModel> {consoleViewModel, errorViewModel, watchesViewModel};
+            Tools = new BindableCollection<PanelViewModel> {consoleViewModel, errorsViewModel, watchesViewModel};
 
             Menu = mainMenuViewModel;
             Menu.Plugins =

@@ -129,7 +129,7 @@ namespace FreePIE.Core.ScriptEngine.Python
                 pluginStarted.Wait();
 
                 Engine.SetSearchPaths(GetPythonPaths());
-
+                
                 script = PreProcessScript(script, usedGlobalEnums, globals);
 
                 threadTimingFactory.SetDefault();
@@ -193,6 +193,8 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         private string PreProcessScript(string script, IEnumerable<Type> globalEnums, IDictionary<string, object> globals)
         {
+            parser.ListDeprecatedWarnings(script, globals.Values).ForEach(eventAggregator.Publish);
+
             script = parser.PrepareScript(script, globals.Values);
             return script.ImportTypes(globalEnums, out startingLine);
         }
@@ -230,7 +232,7 @@ namespace FreePIE.Core.ScriptEngine.Python
                     }
                     finally
                     {
-                        eventAggregator.Publish(new ScriptErrorEvent(e, lineNumber));
+                        eventAggregator.Publish(new ScriptErrorEvent(ErrorLevel.Exception, e.Message, lineNumber));
                     }
                 });
         }

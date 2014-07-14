@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace FreePIE.Core.Model.Events
+﻿namespace FreePIE.Core.Model.Events
 {
+    public enum ErrorLevel
+    {
+        Exception = 1,
+        Warning = 2
+    }
+
     public class ScriptErrorEvent
     {
-        public ScriptErrorEvent(Exception exception, int? lineNumber)
+        public ScriptErrorEvent(ErrorLevel level, string description, int? lineNumber)
         {
-            Exception = exception;
+            Level = level;
+            Description = description;
             LineNumber = lineNumber;
         }
 
-        public Exception Exception { get; private set; }
+        public ErrorLevel Level { get; private set; }
+        public string Description { get; private set; }
         public int? LineNumber { get; private set; }
     }
 }

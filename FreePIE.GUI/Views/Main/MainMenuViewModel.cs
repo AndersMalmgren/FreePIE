@@ -133,11 +133,10 @@ namespace FreePIE.GUI.Views.Main
         public void RunScript()
         {
             scriptRunning = true;
+            PublishScriptStateChange();
 
             currentScriptEngine = scriptEngineFactory();
             currentScriptEngine.Start(activeDocument.FileContent);
-
-            PublishScriptStateChange();
         }
 
         public void StopScript()
@@ -195,8 +194,11 @@ namespace FreePIE.GUI.Views.Main
 
         public void Handle(ScriptErrorEvent message)
         {
-            scriptRunning = false;
-            PublishScriptStateChange();
+            if (message.Level == ErrorLevel.Exception)
+            {
+                scriptRunning = false;
+                PublishScriptStateChange();
+            }
         }
 
         public IEnumerable<IResult> Close()

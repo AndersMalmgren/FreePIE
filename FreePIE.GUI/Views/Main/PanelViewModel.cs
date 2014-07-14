@@ -2,6 +2,7 @@
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Caliburn.Micro;
+using FreePIE.GUI.Common.Resources;
 
 namespace FreePIE.GUI.Views.Main
 {
@@ -62,11 +63,7 @@ namespace FreePIE.GUI.Views.Main
         {
             set
             {
-                var bi = new BitmapImage();
-                bi.BeginInit();
-                bi.UriSource = new Uri("pack://application:,,/Resources/" + value);
-                bi.EndInit();
-                Icon = bi;
+                Icon = ResourceHelper.Load(value);
             }
         }
 
