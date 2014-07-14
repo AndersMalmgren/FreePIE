@@ -114,6 +114,7 @@
     <Compile Include="Events\ScriptEvent.cs" />
     <Compile Include="Events\ScriptStateChangedEvent.cs" />
     <Compile Include="Events\ScriptUpdatedEvent.cs" />
+    <Compile Include="Events\StartedEvent.cs" />
     <Compile Include="Result\CancelResult.cs" />
     <Compile Include="Result\CloseResult.cs" />
     <Compile Include="Result\FileDialogResult.cs" />

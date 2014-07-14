@@ -11,6 +11,7 @@ using FreePIE.Core.Common.Events;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model.Events;
+using FreePIE.Core.Persistence;
 using FreePIE.Core.ScriptEngine.Globals;
 using FreePIE.Core.ScriptEngine.ThreadTiming;
 using IronPython;
@@ -75,6 +76,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         private readonly IEnumerable<IGlobalProvider> globalProviders;
         private readonly IEventAggregator eventAggregator;
         private readonly IThreadTimingFactory threadTimingFactory;
+        private readonly IPaths paths;
         private static Microsoft.Scripting.Hosting.ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
         private InterlockableBool stopRequested;
@@ -94,12 +96,13 @@ namespace FreePIE.Core.ScriptEngine.Python
             get { return engine ?? (engine = IronPython.Hosting.Python.CreateEngine()); }
         }
 
-        public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders, IEventAggregator eventAggregator, IThreadTimingFactory threadTimingFactory)
+        public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders, IEventAggregator eventAggregator, IThreadTimingFactory threadTimingFactory, IPaths paths)
         {
             this.parser = parser;
             this.globalProviders = globalProviders;
             this.eventAggregator = eventAggregator;
             this.threadTimingFactory = threadTimingFactory;
+            this.paths = paths;
         }
 
         public void Start(string script)
@@ -155,7 +158,7 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         ICollection<string> GetPythonPaths()
         {
-            return new Collection<string> { Path.Combine(Environment.CurrentDirectory, "pylib") };
+            return new Collection<string> { paths.GetApplicationPath("pylib") };
         }
 
         private void CatchThreadAbortedException(Action func)

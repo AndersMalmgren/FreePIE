@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using FreePIE.Core.Common;
 
 namespace FreePIE.Core.Persistence
 {
@@ -7,15 +8,20 @@ namespace FreePIE.Core.Persistence
     {
         private const string appFolder = "%appdata%\\FreePIE";
 
-        public UacCompliantPaths()
+        public UacCompliantPaths(IFileSystem fileSystem)
         {
             var absoluteDataPath = Environment.ExpandEnvironmentVariables(appFolder);
 
-            if (!Directory.Exists(absoluteDataPath))
-                Directory.CreateDirectory(absoluteDataPath);
+            fileSystem.CreateDirectory(absoluteDataPath);
 
             Data = absoluteDataPath;
-            Application = Environment.CurrentDirectory;
+            Application = AppDomain.CurrentDomain.BaseDirectory;
+            EnureWorkingDirectory();
+        }
+
+        private void EnureWorkingDirectory()
+        {
+            Environment.CurrentDirectory = Application;
         }
 
         public string GetDataPath(string filename)

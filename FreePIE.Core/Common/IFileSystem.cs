@@ -13,5 +13,6 @@ namespace FreePIE.Core.Common
         void AppendAllText(string path, string content);
         string GetFilename(string path);
         void Delete(string path);
+        void CreateDirectory(string path);
     }
 }

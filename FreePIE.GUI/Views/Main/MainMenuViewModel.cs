@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
+using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Common.Strategies;
@@ -18,7 +20,8 @@ namespace FreePIE.GUI.Views.Main
         Core.Common.Events.IHandle<ScriptUpdatedEvent>, 
         Core.Common.Events.IHandle<ExitingEvent>, 
         Core.Common.Events.IHandle<ActiveScriptDocumentChangedEvent>,
-        Core.Common.Events.IHandle<ScriptErrorEvent>
+        Core.Common.Events.IHandle<ScriptErrorEvent>,
+        Core.Common.Events.IHandle<StartedEvent>
     {
         private readonly IResultFactory resultFactory;
         private readonly IEventAggregator eventAggregator;
@@ -164,6 +167,14 @@ namespace FreePIE.GUI.Views.Main
         public bool CanRunScript
         {
             get { return !scriptRunning && activeDocument != null && !string.IsNullOrEmpty(activeDocument.FileContent); }
+        }
+
+        public void Handle(StartedEvent message)
+        {
+            Environment
+                .GetCommandLineArgs()
+                .Skip(1)
+                .ForEach(CreateScriptViewModel);
         }
 
         public void Handle(ScriptUpdatedEvent message)
