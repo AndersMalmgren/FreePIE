@@ -7,6 +7,12 @@ Latest downloadable installer can be found [here](http://andersmalmgren.github.i
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
 
+Changelog 1.5.475.0
+* Spelling filters.continousRotation > filters.continuousRotation
+* Added possibility to load scripts from command line
+* Fixed bug with iPhone
+* Added possibility to change voice with MS Speech
+
 Changelog 1.5.459.0
 * Fixed problems with Wiimote M+ calibration
 * Added Wiimote calibration success event
