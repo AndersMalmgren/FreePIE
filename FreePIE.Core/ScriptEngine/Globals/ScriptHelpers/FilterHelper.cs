@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.ScriptEngine.Globals.ScriptHelpers.Strategies;
 
@@ -18,12 +19,14 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
         private readonly Dictionary<string, double> deltaLastSamples;
         private readonly Dictionary<string, double> simpleLastSamples;
         private readonly Dictionary<string, ContinuesRotationStrategy> continousRotationStrategies;
+        private readonly Dictionary<string, Stopwatch> stopwatches; 
 
         public FilterHelper()
         {
             deltaLastSamples = new  Dictionary<string, double>();
             simpleLastSamples = new Dictionary<string, double>();
             continousRotationStrategies = new Dictionary<string, ContinuesRotationStrategy>();
+            stopwatches = new Dictionary<string, Stopwatch>();
         }
 
         [NeedIndexer]
@@ -97,6 +100,34 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
         public double mapRange(double x, double xMin, double xMax, double yMin, double yMax)
         {
             return yMin + (yMax - yMin)*(x - xMin)/(xMax - xMin);
+        }
+
+        [NeedIndexer]
+        public bool stopWatch(bool state, int milliseconds, string indexer)
+        {
+            if (!stopwatches.ContainsKey(indexer) && state)
+            {
+                stopwatches[indexer] = new Stopwatch();
+                stopwatches[indexer].Start();
+            }
+
+            if (stopwatches.ContainsKey(indexer) && !state)
+            {
+                stopwatches[indexer].Stop();
+                stopwatches.Remove(indexer);
+            }
+
+            if (!state) return false;
+
+            var watch = stopwatches[indexer];
+            if (watch.ElapsedMilliseconds >= milliseconds)
+            {
+                watch.Stop();
+                stopwatches.Remove(indexer);
+                return true;
+            }
+
+            return false;
         }
     }
 }
