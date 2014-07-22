@@ -102,6 +102,11 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
             return yMin + (yMax - yMin)*(x - xMin)/(xMax - xMin);
         }
 
+        public double ensureMapRange(double x, double xMin, double xMax, double yMin, double yMax)
+        {
+            return Math.Max(Math.Min(((x - xMin)/(xMax - xMin))*(yMax - yMin) + yMin, yMax), yMin);
+        }
+
         [NeedIndexer]
         public bool stopWatch(bool state, int milliseconds, string indexer)
         {
