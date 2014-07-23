@@ -2,10 +2,16 @@ FreePIE
 =======
 
 Programmable Input Emulator
-
+ 
 Latest downloadable installer can be found [here](http://andersmalmgren.github.io/FreePIE/)
 
 [Please visit wiki or scripting and plugin reference manual](https://github.com/AndersMalmgren/FreePIE/wiki)
+
+**FreePIE** (Programmable Input Emulator) is a application for bridging and emulating input devices. It has applications primarily in video gaming but can also be used for VR interaction, remote control, and other applications. A typical application might be controlling the mouse in a PC game using a Wiimote. Device control schemes are customized for specific applications by executing scripts from the FreePIE GUI. The script language is based on the **Python** syntax and offers non-programmers an easy way to interface devices.
+
+FreePIE is very similar to the popular utility GlovePIE, but encourages open development and integration with any device. The software is designed to allow third party developers to add their own I/O plugins either through direct integration into the core library or through a separately compiled plugin mechanism.
+
+FreePIE is licensed under GPLv2  
 
 Changelog 1.5.475.0
 * Spelling filters.continousRotation > filters.continuousRotation
