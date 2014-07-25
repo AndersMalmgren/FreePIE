@@ -39,7 +39,7 @@ namespace FreePIE.Core.Plugins
                 {
                     Read(serialPort);
                 }
-                catch (IOException)
+                catch (Exception)
                 {
                     if (!stopping)
                         throw;
