@@ -92,12 +92,12 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
         public double deadband(double x, double deadZone, double minY, double maxY)
         {
             var scaled = ensureMapRange(x, minY, maxY, -1, 1);
-            var output = 0d;
+            var y = 0d;
 
             if (Math.Abs(scaled) > deadZone)
-                output = ensureMapRange(Math.Abs(scaled), deadZone, 1, 0, 1) * Math.Sign(x);
+                y = ensureMapRange(Math.Abs(scaled), deadZone, 1, 0, 1) * Math.Sign(x);
 
-            return ensureMapRange(output, -1, 1, minY, maxY);
+            return ensureMapRange(y, -1, 1, minY, maxY);
         }
 
         public double deadband(double x, double deadZone)
