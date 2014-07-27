@@ -5,7 +5,7 @@ namespace FreePIE.GUI.Result
 {
     public abstract class Result : IResult
     {
-        public virtual void Execute(ActionExecutionContext context)
+        public virtual void Execute(CoroutineExecutionContext context)
         {
             OnCompleted(this, new ResultCompletionEventArgs());
         }

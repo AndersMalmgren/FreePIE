@@ -1,12 +1,12 @@
 ﻿<Application x:Class="FreePIE.GUI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:Bootstrap="clr-namespace:FreePIE.GUI.Bootstrap">
+             xmlns:bootstrap="clr-namespace:FreePIE.GUI.Bootstrap">
     <Application.Resources>
         <ResourceDictionary Source="Themes\ExpressionDark.xaml">
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <Bootstrap:BootStrapper x:Key="bootstrapper" />
+                    <bootstrap:Bootstrapper x:Key="Bootstrapper" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

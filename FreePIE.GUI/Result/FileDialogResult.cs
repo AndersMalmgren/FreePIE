@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Caliburn.Micro;
+using Microsoft.Win32;
 
 namespace FreePIE.GUI.Result
 {
@@ -18,7 +19,7 @@ namespace FreePIE.GUI.Result
 
         public FileDialogMode Mode { get; private set; }
         public string File { get; private set; }
-        public override void Execute(Caliburn.Micro.ActionExecutionContext context)
+        public override void Execute(CoroutineExecutionContext context)
         {
             var dialog = Mode == FileDialogMode.Open ? new OpenFileDialog() as FileDialog : new SaveFileDialog();
             dialog.FileName = fileName;

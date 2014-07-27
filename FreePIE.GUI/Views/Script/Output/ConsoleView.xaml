@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro"
+             xmlns:micro="http://www.caliburnproject.org"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -21,7 +22,7 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <Separator></Separator>
-                    <MenuItem cal:Message.Attach="Clear()" Header="Clear All">
+                    <MenuItem micro:Message.Attach="Clear()" Header="Clear All">
                         <MenuItem.Icon>
                             <Image Source="{StaticResource IconDelete}"/>
                         </MenuItem.Icon>

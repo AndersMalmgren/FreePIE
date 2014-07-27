@@ -12,9 +12,14 @@ using Ninject;
 
 namespace FreePIE.GUI.Bootstrap
 {
-    public class BootStrapper : Bootstrapper<MainShellViewModel>
+    public class Bootstrapper : BootstrapperBase
     {
         private IKernel kernel;
+
+        public Bootstrapper()
+        {
+            Initialize();
+        }
 
         protected override void Configure()
         {
@@ -29,7 +34,7 @@ namespace FreePIE.GUI.Bootstrap
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
             kernel.Get<IPersistanceManager>().Load();
-            base.OnStartup(sender, e);
+            DisplayRootViewFor<MainShellViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
@@ -45,7 +50,6 @@ namespace FreePIE.GUI.Bootstrap
         protected override void OnUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             Log(e.Exception, 0);
-            base.OnUnhandledException(sender, e);
         }
 
         private string PrependTabsToLinebreaks(string input, int numberOfTabs)

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Caliburn.Micro;
 
 namespace FreePIE.GUI.Result
 {
@@ -19,7 +20,7 @@ namespace FreePIE.GUI.Result
 
         public System.Windows.MessageBoxResult Result { get; private set; }
 
-        public override void Execute(Caliburn.Micro.ActionExecutionContext context)
+        public override void Execute(CoroutineExecutionContext context)
         {
             Result = MessageBox.Show(text, caption, buttons);
             base.Execute(context);

@@ -21,7 +21,7 @@ namespace FreePIE.GUI.Result
            return this;
         }
 
-        public override void Execute(ActionExecutionContext context)
+        public override void Execute(CoroutineExecutionContext context)
         {
             if(configure != null)
                 configure(model);
