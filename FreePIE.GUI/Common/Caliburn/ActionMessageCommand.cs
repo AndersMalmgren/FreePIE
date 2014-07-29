@@ -8,7 +8,7 @@ namespace FreePIE.GUI.Common.Caliburn
     {
         static ActionMessageCommand()
         {
-            ActionMessage.EnforceGuardsDuringInvocation = true;
+            EnforceGuardsDuringInvocation = true;
         }
 
         public bool CanExecute(object parameter)
@@ -18,7 +18,11 @@ namespace FreePIE.GUI.Common.Caliburn
 
         public void Execute(object parameter)
         {
-            Invoke(parameter);
+            
+        }
+
+        void ICommand.Execute(object parameter)
+        {
         }
 
         public event EventHandler CanExecuteChanged;
