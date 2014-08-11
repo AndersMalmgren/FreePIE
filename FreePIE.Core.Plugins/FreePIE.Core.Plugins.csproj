@@ -57,6 +57,7 @@
     <Compile Include="AhrsImuPlugin.cs" />
     <Compile Include="AndroidPlugin.cs" />
     <Compile Include="ApplePlugin.cs" />
+    <Compile Include="PSMovePlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="FreePieIOPlugin.cs" />
     <Compile Include="Globals\GlobalIndexer.cs" />
