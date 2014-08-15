@@ -329,7 +329,7 @@ namespace FreePIE.Core.Plugins
         public bool isDocked
         {
             get { return plugin.Controller[index].is_docked == 1; }
-            set { plugin.EmulatedData[index].Enabled = value ? 1 : 0; }
+            set { plugin.EmulatedData[index].IsDocked = (byte)(value ? 1 : 0); }
         }
     }
 }
