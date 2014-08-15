@@ -325,5 +325,11 @@ namespace FreePIE.Core.Plugins
             get { return plugin.Controller[index].enabled == 1; }
             set { plugin.EmulatedData[index].Enabled = value ? 1 : 0; }
         }
+
+        public bool isDocked
+        {
+            get { return plugin.Controller[index].is_docked == 1; }
+            set { plugin.EmulatedData[index].Enabled = value ? 1 : 0; }
+        }
     }
 }
