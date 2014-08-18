@@ -15,10 +15,12 @@ namespace FreePIE.GUI.Bootstrap
     public class Bootstrapper : BootstrapperBase
     {
         private IKernel kernel;
+        private Exception lastUnhandledException;
 
         public Bootstrapper()
         {
             Initialize();
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
         }
 
         protected override void Configure()
@@ -52,6 +54,11 @@ namespace FreePIE.GUI.Bootstrap
             Log(e.Exception, 0);
         }
 
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log(e.ExceptionObject as Exception, 0);
+        }
+
         private string PrependTabsToLinebreaks(string input, int numberOfTabs)
         {
             var tabs = new string('\t', numberOfTabs);
@@ -61,6 +68,12 @@ namespace FreePIE.GUI.Bootstrap
 
         private void Log(Exception e, int indentation)
         {
+            if (indentation == 0)
+            {
+                if (e == lastUnhandledException) return;
+                lastUnhandledException = e;
+            }
+
             if (e == null)
                 return;
 
