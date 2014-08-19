@@ -15,7 +15,6 @@ namespace FreePIE.GUI.Bootstrap
     public class Bootstrapper : BootstrapperBase
     {
         private IKernel kernel;
-        private Exception lastUnhandledException;
 
         public Bootstrapper()
         {
@@ -49,11 +48,6 @@ namespace FreePIE.GUI.Bootstrap
             return kernel.GetAll(service);
         }
 
-        protected override void OnUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            Log(e.Exception, 0);
-        }
-
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Log(e.ExceptionObject as Exception, 0);
@@ -68,12 +62,6 @@ namespace FreePIE.GUI.Bootstrap
 
         private void Log(Exception e, int indentation)
         {
-            if (indentation == 0)
-            {
-                if (e == lastUnhandledException) return;
-                lastUnhandledException = e;
-            }
-
             if (e == null)
                 return;
 
