@@ -6,65 +6,48 @@ extern "C"
 
 using namespace OVR;
 
-Ptr<DeviceManager> pManager = 0;
-Ptr<HMDDevice>     pHMD = 0;
-Ptr<SensorDevice>  pSensor = 0;
-SensorFusion*       pFusionResult;
-bool enableSensorPrediction = false;
-float sensorPrediction = 0;
+ovrHmd	HMD;
 
-int ovr_freepie_init(float dt)
+int ovr_freepie_init()
 {
-	OVR::System::Init();
-	     
-	pFusionResult = new SensorFusion();
-
-	pManager = *DeviceManager::Create();
-	pHMD     = *pManager->EnumerateDevices<HMDDevice>().CreateDevice();
-	
-	if (!pHMD)
+	ovr_Initialize();
+	HMD = ovrHmd_Create(0);
+	if (!HMD) {
 		return 1;
-	
-	sensorPrediction = dt;
-	enableSensorPrediction = sensorPrediction > 0;
-	
+	}
 
-	pSensor  = *pHMD->GetSensor();
+	ovrHmd_SetEnabledCaps(HMD, ovrHmdCap_DynamicPrediction);
 
-	HMDInfo hmdInfo;
-	pHMD->GetDeviceInfo(&hmdInfo);
-    
-	if (pSensor)
-		pFusionResult->AttachToSensor(pSensor);
-	if(enableSensorPrediction)
-	pFusionResult->SetPrediction(sensorPrediction);
+	ovrHmd_ConfigureTracking(HMD, ovrTrackingCap_Orientation |
+		ovrTrackingCap_MagYawCorrection |
+		ovrTrackingCap_Position, 0);
 
 	return 0;
 }
 
 int ovr_freepie_reset_orientation()
 {
-	pFusionResult->Reset();
+	ovrHmd_RecenterPose(HMD);
 	return 0;
 }
 
-int ovr_freepie_read(ovr_freepie_3dof *output)
+int ovr_freepie_read(ovr_freepie_6dof *output)
 {
-	Quatf q = enableSensorPrediction ? pFusionResult->GetPredictedOrientation() : pFusionResult->GetOrientation();
-
-	Matrix4f bodyFrameMatrix(q); 
-
-	q.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&output->yaw, &output->pitch, &output->roll);
+	ovrTrackingState ts = ovrHmd_GetTrackingState(HMD, ovr_GetTimeInSeconds());
+	Posef pose = ts.HeadPose.ThePose;
+	
+	pose.Rotation.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&output->yaw, &output->pitch, &output->roll);
+	output->x = pose.Translation.x;
+	output->y = pose.Translation.y;
+	output->z = pose.Translation.z;
 
 	return 0;
 }
 
 int ovr_freepie_destroy()
 {
-	pSensor.Clear();
-	pHMD.Clear();
-	pManager.Clear();
-  
-	OVR::System::Destroy();
+	ovrHmd_Destroy(HMD); 
+	ovr_Shutdown();
+
 	return 0;
 }

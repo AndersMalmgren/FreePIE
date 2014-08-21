@@ -10,8 +10,6 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(OculusGlobal))]
     public class OculusPlugin : Plugin
     {
-        private float sensorPrediction;
-
         public override object CreateGlobal()
         {
             return new OculusGlobal(this);
@@ -24,26 +22,17 @@ namespace FreePIE.Core.Plugins
 
         public override bool GetProperty(int index, IPluginProperty property)
         {
-            if (index > 0) return false;
-
-            property.Name = "SensorPrediction";
-            property.Caption = "Sensor prediction";
-            property.HelpText = "Sensor prediction in seconds, 0.04 is a good start to test with";
-            property.DefaultValue =  0f;
-
-            return true;
+            return false;
         }
 
         public override bool SetProperties(Dictionary<string, object> properties)
         {
-            sensorPrediction = (float) properties["SensorPrediction"];
-
             return true;
         }
 
         public override Action Start()
         {
-            if (!Api.Init(sensorPrediction))
+            if (!Api.Init())
                 throw new Exception("Oculus VR SDK failed to init");
 
             return null;
@@ -65,7 +54,7 @@ namespace FreePIE.Core.Plugins
             Api.Center();
         }
 
-        public OculusVr3Dof Data
+        public OculusVr6Dof Data
         {
             get; private set;
         }
@@ -79,6 +68,10 @@ namespace FreePIE.Core.Plugins
         public float yaw { get { return plugin.Data.Yaw; } }
         public float pitch { get { return plugin.Data.Pitch; } }
         public float roll { get { return plugin.Data.Roll; } }
+
+        public float x { get { return plugin.Data.X; } }
+        public float y { get { return plugin.Data.Y; } }
+        public float z { get { return plugin.Data.Z; } }
 
         public void center()
         {

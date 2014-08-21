@@ -9,22 +9,22 @@ namespace FreePIE.Core.Plugins.OculusVR
     public static class Api
     {
         [DllImport("OVRFreePIE.dll", CallingConvention = CallingConvention.Cdecl)]
-        private extern static int ovr_freepie_init(float sensorPrediction);
+        private extern static int ovr_freepie_init();
         [DllImport("OVRFreePIE.dll", CallingConvention = CallingConvention.Cdecl)]
-        private extern static int ovr_freepie_read(out OculusVr3Dof output);
+        private extern static int ovr_freepie_read(out OculusVr6Dof output);
         [DllImport("OVRFreePIE.dll")]
         private extern static int ovr_freepie_destroy();
         [DllImport("OVRFreePIE.dll")]
         private extern static int ovr_freepie_reset_orientation();
 
-        public static bool Init(float sensorPrediction)
+        public static bool Init()
         {
-            return ovr_freepie_init(sensorPrediction) == 0;
+            return ovr_freepie_init() == 0;
         }
 
-        public static OculusVr3Dof Read()
+        public static OculusVr6Dof Read()
         {
-            OculusVr3Dof output;
+            OculusVr6Dof output;
             ovr_freepie_read(out output);
             return output;
         }
