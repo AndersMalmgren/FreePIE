@@ -57,6 +57,7 @@ namespace FreePIE.Core.Plugins
             return false;
         }
 
+
         public override bool SetProperties(Dictionary<string, object> properties)
         {
             networkMove = (bool)properties["NetWorkMove"];
@@ -69,7 +70,6 @@ namespace FreePIE.Core.Plugins
             return false;
         }
 
-
         public override void DoBeforeNextExecute() {
         }
 
@@ -78,6 +78,7 @@ namespace FreePIE.Core.Plugins
     [Global(Name = "psmove")]
     public class PSMoveGlobal : UpdateblePluginGlobal<PSMovePlugin>
     {
-         public PSMoveGlobal(PSMovePlugin plugin) : base(plugin) { }
+        public PSMoveGlobal(PSMovePlugin plugin) : base(plugin) { }
+
     }
 }

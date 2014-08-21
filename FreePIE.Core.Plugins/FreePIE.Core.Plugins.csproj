@@ -79,6 +79,7 @@
     <Compile Include="SpeechPlugin.cs" />
     <Compile Include="VJoyPlugin.cs" />
     <Compile Include="Wiimote\CircularBuffer.cs" />
+    <Compile Include="PSMove\PSMoveController.cs" />
     <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
     <Compile Include="Wiimote\IMotionPlusFuser.cs" />
     <Compile Include="Wiimote\Integrator.cs" />
