@@ -19,6 +19,7 @@ namespace FreePIE.GUI.Bootstrap
         public Bootstrapper()
         {
             Initialize();
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
         }
 
         protected override void Configure()
@@ -47,9 +48,9 @@ namespace FreePIE.GUI.Bootstrap
             return kernel.GetAll(service);
         }
 
-        protected override void OnUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Log(e.Exception, 0);
+            Log(e.ExceptionObject as Exception, 0);
         }
 
         private string PrependTabsToLinebreaks(string input, int numberOfTabs)
