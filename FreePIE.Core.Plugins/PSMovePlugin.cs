@@ -37,7 +37,7 @@ namespace FreePIE.Core.Plugins
             {
                 case 0:
                     property.Name = "NetWorkMove";
-                    property.Caption = "NetWork Connection";
+                    property.Caption = "NetWork Move";
                     property.DefaultValue = false;
                     property.HelpText = "Is the move data streamed from another computer?";
                     return true;
