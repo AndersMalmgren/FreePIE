@@ -6,6 +6,7 @@ namespace FreePIE.Core.Plugins.PSMove
 
     #region Enums&Structs: Basic PSMove
 
+
     public enum PSMoveConnectionType
     {
         Bluetooth,
