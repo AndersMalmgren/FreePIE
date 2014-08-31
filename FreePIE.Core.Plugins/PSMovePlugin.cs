@@ -103,13 +103,21 @@ namespace FreePIE.Core.Plugins
     public class PSMoveGlobalHolder : IUpdatable
     {
         IntPtr move;
+        private PSMove.Vector3 gyro, accel;
+        private float x, y, z;
         private readonly Quaternion quaternion;
-        public float q0, q1, q2, q3;
+        private float q0, q1, q2, q3;
+        private PSMove.RGB_Color led;
+        private uint buttons, buttonsPressed, buttonsReleased;
 
         public PSMoveGlobalHolder(int index)
         {
             Index = index;
             quaternion = new Quaternion();
+            gyro = new PSMove.Vector3();
+            accel = new PSMove.Vector3();
+            led = new PSMove.RGB_Color();
+            buttons = buttonsPressed = buttonsReleased = 0;
             connect();
             Global = new PSMoveGlobal(this);
         }
@@ -133,28 +141,34 @@ namespace FreePIE.Core.Plugins
             PSMove.PSMoveAPI.psmove_disconnect(move);
         }
 
-        public void resetOrientation()
-        {
-            PSMove.PSMoveAPI.psmove_reset_orientation(move);
-        }
-
         public void Update()
         {
             while (PSMove.PSMoveAPI.psmove_poll(move) != 0)
             {
-                // TODO Buttons Update
-                // PSMove.PSMoveAPI.psmove_get_buttons();
+                // Button Events
+                buttons = PSMove.PSMoveAPI.psmove_get_buttons(move);
+                PSMove.PSMoveAPI.psmove_get_button_events(move, ref buttonsPressed, ref buttonsReleased);
 
                 // Orientation Update
                 PSMove.PSMoveAPI.psmove_get_orientation(move, ref q0, ref q1, ref q2, ref q3);
                 quaternion.Update(q0, q1, q2, q3);
-                
+
+                PSMove.PSMoveAPI.psmove_get_gyroscope_frame(move, 
+                    PSMove.PSMove_Frame.Frame_SecondHalf,
+                    ref x, ref y, ref z);
+                gyro.Update(x, y, z);
+
+                PSMove.PSMoveAPI.psmove_get_accelerometer_frame(move,
+                    PSMove.PSMove_Frame.Frame_SecondHalf,
+                    ref x, ref y, ref z);
+                accel.Update(x, y, z);
 
                 // TODO Position Update
                 
                 // Set led and rumble updates back to the controller
+                PSMove.PSMoveAPI.psmove_set_leds(move, led.r, led.g, led.b);
                 PSMove.PSMoveAPI.psmove_set_rumble(move, Rumble);
-                PSMove.PSMoveAPI.psmove_update_leds(move);   
+                PSMove.PSMoveAPI.psmove_update_leds(move);
             }
         }
 
@@ -166,8 +180,35 @@ namespace FreePIE.Core.Plugins
         public double Yaw { get { return quaternion.Yaw; } }
         public double Pitch { get { return quaternion.Pitch; } }
         public double Roll { get { return quaternion.Roll; } }
+
+        public void resetOrientation()
+        {
+            PSMove.PSMoveAPI.psmove_reset_orientation(move);
+        }
+
+        public PSMove.Vector3 Gyroscope { get { return gyro; } }
+        public PSMove.Vector3 Accelerometer { get { return accel; } }
         public char Rumble { get; set; }
+        public PSMove.RGB_Color LED { get { return led; } }
+
+        public bool getButtonDown(PSMove.PSMoveButton button) 
+        {
+            return ( ((int)button & buttons) != 0);
+        }
+        public bool getButtonUp(PSMove.PSMoveButton button) 
+        {
+            return !getButtonDown(button);
+        }
+        public bool getButtonPressed(PSMove.PSMoveButton button) 
+        {
+            return ( ((int)button & buttonsPressed) != 0);
+        }
+        public bool getButtonReleased(PSMove.PSMoveButton button) 
+        {
+            return ( ((int)button & buttonsReleased) != 0);
+        }
     }
+
 
 
     [Global(Name = "psmove")]
@@ -179,15 +220,22 @@ namespace FreePIE.Core.Plugins
         public double pitch { get { return plugin.Pitch; } }
         public double roll { get { return plugin.Roll; } }
 
-        public float q0 { get { return plugin.q0; } }
-        public float q1 { get { return plugin.q1; } }
-        public float q2 { get { return plugin.q2; } }
-        public float q3 { get { return plugin.q3; } }
+        public PSMove.Vector3 gyro { get { return plugin.Gyroscope; } }
+        public PSMove.Vector3 accel { get { return plugin.Accelerometer; } }
 
         public void resetOrientation()
         {
             plugin.resetOrientation();
         }
 
+        public void setLed(int r, int g, int b)
+        {
+            plugin.LED.Update(r, g, b);
+        }
+
+        public bool getButtonDown(PSMove.PSMoveButton button) { return plugin.getButtonDown(button); }
+        public bool getButtonUp(PSMove.PSMoveButton button) { return plugin.getButtonUp(button); } 
+        public bool getButtonPressed(PSMove.PSMoveButton button) { return plugin.getButtonPressed(button); }
+        public bool getButtonReleased(PSMove.PSMoveButton button) { return plugin.getButtonReleased(button); }
     }
 }

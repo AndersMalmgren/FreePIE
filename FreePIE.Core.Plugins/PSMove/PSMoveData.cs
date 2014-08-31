@@ -1,11 +1,11 @@
 ﻿using System;
+using FreePIE.Core.Contracts;
 using System.Runtime.InteropServices;
 
 namespace FreePIE.Core.Plugins.PSMove
 {
 
     #region Enums&Structs: Basic PSMove
-
 
     public enum PSMoveConnectionType
     {
@@ -14,6 +14,7 @@ namespace FreePIE.Core.Plugins.PSMove
         Unknown,
     };
 
+    [GlobalEnum]
     public enum PSMoveButton
     {
         L2 = 1 << 0x00,
@@ -25,7 +26,7 @@ namespace FreePIE.Core.Plugins.PSMove
         Cross = 1 << 0x06,
         Square = 1 << 0x07,
         Select = 1 << 0x08,
-        L3 = 1 << 0x09,
+        L3 = 1 << 0x09, // 512
         R3 = 1 << 0x0A,
         Start = 1 << 0x0B,
         Up = 1 << 0x0C,
@@ -57,7 +58,6 @@ namespace FreePIE.Core.Plugins.PSMove
 
     #endregion
 
-
     #region Enums&Structs: Tracker
 
     public struct PSMoveTrackerRGBImage
@@ -85,4 +85,71 @@ namespace FreePIE.Core.Plugins.PSMove
 
     #endregion
 
+    #region Custom Added Types for FreePIE
+
+    public class Vector3
+    {
+        public double x { get; set; }
+        public double y { get; set; }
+        public double z { get; set; }
+
+        public Vector3()
+        {
+            this.x = this.y = this.z = 0;
+        }
+
+        public Vector3(double x, double y, double z)
+        {
+            Update(x, y, z);
+        }
+
+        internal void Update(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
+    
+    public class RGB_Color
+    {
+        public char r { get; private set; }
+        public char g { get; private set; }
+        public char b { get; private set; }
+
+        public RGB_Color()
+        {
+            Update(0, 0, 0);
+        }
+
+        public RGB_Color(int r, int g, int b)
+        {
+            Update(r, g, b);
+        }
+
+        public void Update(RGB_Color c)
+        {
+            Update(c.r, c.g, c.b);
+        }
+
+        public void Update(int r, int g, int b)
+        {
+            this.r = ClamptoChar(r);
+            this.g = ClamptoChar(g);
+            this.b = ClamptoChar(b);
+        }
+
+        private char ClamptoChar(int x)
+        {
+            if (x < 0) {
+                x = 0;
+            } else if (x > 255) {
+                x = 255;
+            }
+            return (char)x;
+        }
+    }
+
+    #endregion
 }
