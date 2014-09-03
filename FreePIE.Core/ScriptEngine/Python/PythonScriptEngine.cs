@@ -109,6 +109,8 @@ namespace FreePIE.Core.ScriptEngine.Python
         {
             thread = new Thread(obj1 => ExecuteSafe(() =>
             {
+                threadTimingFactory.SetDefault();
+
                 var pluginStarted = new CountdownEvent(0);
 
                 pluginStopped = new CountdownEvent(0);
@@ -122,7 +124,7 @@ namespace FreePIE.Core.ScriptEngine.Python
                 Engine.Runtime.AddReferences(usedPlugins.Select(x => x.GetType().Assembly).Concat(usedGlobalEnums.Select(t => t.Assembly)).Distinct().ToArray());
 
                 var scope = CreateScope(globals);
-                
+
                 foreach (var plugin in usedPlugins)
                     StartPlugin(plugin, pluginStarted, pluginStopped);
 
@@ -131,8 +133,6 @@ namespace FreePIE.Core.ScriptEngine.Python
                 Engine.SetSearchPaths(GetPythonPaths());
                 
                 script = PreProcessScript(script, usedGlobalEnums, globals);
-
-                threadTimingFactory.SetDefault();
 
                 RunLoop(Engine.CreateScriptSourceFromString(script).Compile(), scope);
             })) {Name = "PythonEngine Worker"};
