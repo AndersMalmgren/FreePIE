@@ -132,6 +132,19 @@ namespace FreePIE.Core.Plugins.PSMove
 
         #endregion
 
+        #region Data fusion
+
+        [DllImport("libpsmoveapi_tracker")]
+        private static extern IntPtr psmove_fusion_new(IntPtr tracker, float z_near, float z_far);
+
+        [DllImport("libpsmoveapi_tracker")]
+        private static extern void psmove_fusion_free(IntPtr fusion);
+
+        [DllImport("libpsmoveapi_tracker")]
+        private static extern void psmove_fusion_get_position(IntPtr fusion, IntPtr move, ref float x, ref float y, ref float z);
+
+        #endregion
+
     }
 
 }
