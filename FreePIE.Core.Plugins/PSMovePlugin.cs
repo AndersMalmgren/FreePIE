@@ -113,6 +113,8 @@ namespace FreePIE.Core.Plugins
 
         public IntPtr TrackerHandle { get { return tracker; } }
 
+        public IntPtr FusionHandle { get { return fusion; } }
+
     }
 
     public class PSMoveGlobalHolder : IUpdatable
@@ -131,6 +133,7 @@ namespace FreePIE.Core.Plugins
         {
             Index = index;
             trackerPlugin = plugin;
+            position = new PSMove.Vector3();
             quaternion = new Quaternion();
             gyro = new PSMove.Vector3();
             accel = new PSMove.Vector3();
@@ -166,7 +169,9 @@ namespace FreePIE.Core.Plugins
             PSMove.PSMoveAPI.psmove_tracker_update(trackerPlugin.TrackerHandle, move);
 
             // TODO Retrieve positional tracking data
-
+            PSMove.PSMoveAPI.psmove_fusion_get_position(trackerPlugin.FusionHandle, move,
+                ref x, ref y, ref z);
+            position.Update(x, y, z);
             
             // Poll data (IMU and buttons)
             while (PSMove.PSMoveAPI.psmove_poll(move) != 0);
@@ -206,6 +211,10 @@ namespace FreePIE.Core.Plugins
         public int Index { get; private set; }
         public Action OnUpdate { get; set; }
         public bool GlobalHasUpdateListener { get; set; }
+
+        public double X { get { return position.x; } }
+        public double Y { get { return position.y; } }
+        public double Z { get { return position.z; } }
 
         public double Yaw { get { return quaternion.Yaw; } }
         public double Pitch { get { return quaternion.Pitch; } }
@@ -268,6 +277,10 @@ namespace FreePIE.Core.Plugins
     public class PSMoveGlobal : UpdateblePluginGlobal<PSMoveGlobalHolder>
     {
         public PSMoveGlobal(PSMoveGlobalHolder plugin) : base(plugin) { }
+
+        public double x { get { return plugin.X; } }
+        public double y { get { return plugin.Y; } }
+        public double z { get { return plugin.Z; } }
 
         public double yaw { get { return plugin.Yaw; } }
         public double pitch { get { return plugin.Pitch; } }
