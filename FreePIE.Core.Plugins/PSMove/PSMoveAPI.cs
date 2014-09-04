@@ -129,31 +129,31 @@ namespace FreePIE.Core.Plugins.PSMove
         #region Camera Tracker
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr psmove_tracker_new();
+        public static extern IntPtr psmove_tracker_new();
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void psmove_tracker_free(IntPtr tracker);
+        public static extern void psmove_tracker_free(IntPtr tracker);
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void psmove_tracker_set_mirror(IntPtr tracker, int enabled);
+        public static extern void psmove_tracker_set_mirror(IntPtr tracker, int enabled);
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern PSMoveTracker_Status psmove_tracker_enable(IntPtr tracker, IntPtr move);
+        public static extern PSMoveTracker_Status psmove_tracker_enable(IntPtr tracker, IntPtr move);
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void psmove_tracker_update_image(IntPtr tracker);
+        public static extern void psmove_tracker_update_image(IntPtr tracker);
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int psmove_tracker_update(IntPtr tracker, IntPtr move);
+        public static extern int psmove_tracker_update(IntPtr tracker, IntPtr move);
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int psmove_tracker_get_auto_update_leds(IntPtr tracker, IntPtr move);
+        public static extern int psmove_tracker_get_auto_update_leds(IntPtr tracker, IntPtr move);
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void psmove_tracker_set_auto_update_leds(IntPtr tracker, IntPtr move, int update);
+        public static extern void psmove_tracker_set_auto_update_leds(IntPtr tracker, IntPtr move, int update);
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int psmove_tracker_get_color(IntPtr tracker, IntPtr move, ref char r, ref char g, ref char b);
+        public static extern int psmove_tracker_get_color(IntPtr tracker, IntPtr move, ref char r, ref char g, ref char b);
 
         /* 
          * Optional code and not required by default (see auto_update_leds above)
@@ -171,13 +171,13 @@ namespace FreePIE.Core.Plugins.PSMove
         #region Data fusion
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr psmove_fusion_new(IntPtr tracker, float z_near, float z_far);
+        public static extern IntPtr psmove_fusion_new(IntPtr tracker, float z_near, float z_far);
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void psmove_fusion_free(IntPtr fusion);
+        public static extern void psmove_fusion_free(IntPtr fusion);
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void psmove_fusion_get_position(IntPtr fusion, IntPtr move, ref float x, ref float y, ref float z);
+        public static extern void psmove_fusion_get_position(IntPtr fusion, IntPtr move, ref float x, ref float y, ref float z);
 
         #endregion
 
