@@ -143,33 +143,36 @@ namespace FreePIE.Core.Plugins
 
         public void Update()
         {
-            while (PSMove.PSMoveAPI.psmove_poll(move) != 0)
+            uint response = 1;
+            while (response != 0)
             {
-                // Button Events
-                buttons = PSMove.PSMoveAPI.psmove_get_buttons(move);
-                PSMove.PSMoveAPI.psmove_get_button_events(move, ref buttonsPressed, ref buttonsReleased);
-
-                // Orientation Update
-                PSMove.PSMoveAPI.psmove_get_orientation(move, ref q0, ref q1, ref q2, ref q3);
-                quaternion.Update(q0, q1, q2, q3);
-
-                PSMove.PSMoveAPI.psmove_get_gyroscope_frame(move, 
-                    PSMove.PSMove_Frame.Frame_SecondHalf,
-                    ref x, ref y, ref z);
-                gyro.Update(x, y, z);
-
-                PSMove.PSMoveAPI.psmove_get_accelerometer_frame(move,
-                    PSMove.PSMove_Frame.Frame_SecondHalf,
-                    ref x, ref y, ref z);
-                accel.Update(x, y, z);
-
-                // TODO Position Update
-                
-                // Set led and rumble updates back to the controller
-                PSMove.PSMoveAPI.psmove_set_leds(move, led.r, led.g, led.b);
-                PSMove.PSMoveAPI.psmove_set_rumble(move, Rumble);
-                PSMove.PSMoveAPI.psmove_update_leds(move);
+                response = PSMove.PSMoveAPI.psmove_poll(move);
             }
+
+            // Button Events
+            buttons = PSMove.PSMoveAPI.psmove_get_buttons(move);
+            PSMove.PSMoveAPI.psmove_get_button_events(move, ref buttonsPressed, ref buttonsReleased);
+
+            // Orientation Update
+            PSMove.PSMoveAPI.psmove_get_orientation(move, ref q0, ref q1, ref q2, ref q3);
+            quaternion.Update(q0, q1, q2, q3);
+
+            PSMove.PSMoveAPI.psmove_get_gyroscope_frame(move, 
+                PSMove.PSMove_Frame.Frame_SecondHalf,
+                ref x, ref y, ref z);
+            gyro.Update(x, y, z);
+
+            PSMove.PSMoveAPI.psmove_get_accelerometer_frame(move,
+                PSMove.PSMove_Frame.Frame_SecondHalf,
+                ref x, ref y, ref z);
+            accel.Update(x, y, z);
+
+            // TODO Position Update
+                
+            // Set led and rumble updates back to the controller
+            PSMove.PSMoveAPI.psmove_set_leds(move, led.r, led.g, led.b);
+            PSMove.PSMoveAPI.psmove_set_rumble(move, Rumble);
+            PSMove.PSMoveAPI.psmove_update_leds(move);
         }
 
         public PSMoveGlobal Global { get; private set; }

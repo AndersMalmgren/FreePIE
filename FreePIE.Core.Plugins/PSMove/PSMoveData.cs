@@ -92,6 +92,7 @@ namespace FreePIE.Core.Plugins.PSMove
         public double x { get; set; }
         public double y { get; set; }
         public double z { get; set; }
+        public double magnitude { get { return Math.Sqrt((x*x)+(y*y)+(z*z)); } }
 
         public Vector3()
         {
@@ -102,7 +103,7 @@ namespace FreePIE.Core.Plugins.PSMove
         {
             Update(x, y, z);
         }
-
+        
         internal void Update(double x, double y, double z)
         {
             this.x = x;
