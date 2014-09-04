@@ -143,11 +143,8 @@ namespace FreePIE.Core.Plugins
 
         public void Update()
         {
-            uint response = 1;
-            while (response != 0)
-            {
-                response = PSMove.PSMoveAPI.psmove_poll(move);
-            }
+            // Poll data
+            while (PSMove.PSMoveAPI.psmove_poll(move) != 0);
 
             // Button Events
             buttons = PSMove.PSMoveAPI.psmove_get_buttons(move);
