@@ -137,6 +137,16 @@ namespace FreePIE.Core.Plugins
             get { return State.Z;  }
         }
 
+        public int xRotation
+        {
+            get { return State.RotationX; }
+        }
+
+        public int yRotation
+        {
+            get { return State.RotationY; }
+        }
+
         public int zRotation
         {
             get { return State.RotationZ; }
