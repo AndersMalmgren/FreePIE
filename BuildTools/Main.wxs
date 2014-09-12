@@ -58,6 +58,10 @@
       <Merge Id="VCRedist11" SourceFile="Microsoft_VC110_CRT_x86.msm" DiskId="1" Language="0"/>
     </DirectoryRef>
 
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Merge Id="VCRedist12" SourceFile="Microsoft_VC120_CRT_x86.msm" DiskId="1" Language="0"/>
+    </DirectoryRef>
+
     <Icon Id="icon.ico" SourceFile="free-pie.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
@@ -72,6 +76,10 @@
 
     <Feature Id="VCRedist11" Title="Visual C++ 11.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
       <MergeRef Id="VCRedist11"/>
-    </Feature>    
+    </Feature>
+
+    <Feature Id="VCRedist12" Title="Visual C++ 12.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+      <MergeRef Id="VCRedist12"/>
+    </Feature>
   </Product>
 </Wix>
