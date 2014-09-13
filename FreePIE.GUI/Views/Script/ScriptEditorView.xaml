@@ -34,6 +34,11 @@
                             <Image Source="{StaticResource IconPaste}"/>
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="Find" Command="Find">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource IconFind}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>                    
                 </ContextMenu>
             </AvalonEdit:BindableScriptEditor.ContextMenu>
         </AvalonEdit:BindableScriptEditor>

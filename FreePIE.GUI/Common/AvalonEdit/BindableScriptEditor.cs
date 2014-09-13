@@ -5,6 +5,7 @@ using FreePIE.GUI.Shells;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using ICSharpCode.AvalonEdit.Search;
 
 namespace FreePIE.GUI.Common.AvalonEdit
 {
@@ -35,6 +36,7 @@ namespace FreePIE.GUI.Common.AvalonEdit
         public BindableScriptEditor()
         {
             TextArea.Caret.PositionChanged += CaretPositionChanged;
+            TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(TextArea));
         }
         
         private void CaretPositionChanged(object sender, EventArgs e)

@@ -28,6 +28,7 @@
     <BitmapImage x:Key="IconPaste" UriSource="../Resources/paste-16.png" />
     <BitmapImage x:Key="IconCut" UriSource="../Resources/cut-16.png" />
     <BitmapImage x:Key="IconNew" UriSource="../Resources/new-16.png" />
+    <BitmapImage x:Key="IconFind" UriSource="../Resources/find-16.png" />
 
     <!-- Main Colors -->
 
