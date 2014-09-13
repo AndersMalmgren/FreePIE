@@ -39,8 +39,9 @@ namespace FreePIE.Core.Plugins
         {
             // Create the camera tracker
             tracker = PSMove.PSMoveAPI.psmove_tracker_new();
+            // Disable light bulb auto dimming effect
+            PSMove.PSMoveAPI.psmove_tracker_set_dimming(tracker, 1);
             fusion = PSMove.PSMoveAPI.psmove_fusion_new(tracker, 1, 1000);
-            //PSMove.PSMoveAPI.psmove_tracker_set_mirror(tracker, 1);
             return null;
         }
 
@@ -48,10 +49,7 @@ namespace FreePIE.Core.Plugins
             // Disconnect moves
             foreach (var holder in holders.Values)
             {
-                if (holder.isConnected())
-                {
-                    holder.disconnect();
-                }
+                holder.disconnect();
             }
             // Free the tracker
             PSMove.PSMoveAPI.psmove_fusion_free(fusion);
@@ -60,46 +58,18 @@ namespace FreePIE.Core.Plugins
 
         public override bool GetProperty(int index, IPluginProperty property)
         {
-            /*switch (index)
-            {
-                case 0:
-                    property.Name = "NetWorkMove";
-                    property.Caption = "NetWork Move";
-                    property.DefaultValue = false;
-                    property.HelpText = "Is the move data streamed from another computer?";
-                    return true;
-                case 1:
-                    property.Name = "IP";
-                    property.Caption = "IP Adress";
-                    property.DefaultValue = "127.0.0.1";
-                    property.HelpText = "IP address that the remote move is connected to (default 127.0.0.1)";
-                    return true;
-                case 2:
-                    property.Name = "Port";
-                    property.Caption = "Port";
-                    property.DefaultValue = 5555;
-                    property.HelpText = "Port number that the remote move is connected to (default 5555)";
-                    return true;
-            }*/
             return false;
         }
 
         public override bool SetProperties(Dictionary<string, object> properties)
         {
-            /*networkMove = (bool)properties["NetWorkMove"];
-
-            if (networkMove)
-            {
-                ipAddress = (String)properties["IP"];
-                port = (int)properties["port"];
-            }
-            */
             return false;
         }
 
         public override void DoBeforeNextExecute() {
             // Update Camera Image
-            PSMove.PSMoveAPI.psmove_tracker_update_image(tracker);
+            if (holders.Count != 0)
+                PSMove.PSMoveAPI.psmove_tracker_update_image(tracker);
 
             // Update every move controller data
             foreach (var holder in holders.Values)
@@ -109,6 +79,8 @@ namespace FreePIE.Core.Plugins
                 // Trigger the python event
                 holder.OnUpdate();
             }
+
+            holders.Clear();
         }
 
         public IntPtr TrackerHandle { get { return tracker; } }
@@ -212,9 +184,11 @@ namespace FreePIE.Core.Plugins
         public Action OnUpdate { get; set; }
         public bool GlobalHasUpdateListener { get; set; }
 
-        public double X { get { return position.x; } }
-        public double Y { get { return position.y; } }
-        public double Z { get { return position.z; } }
+        // Position Data
+
+        public PSMove.Vector3 Position { get { return position; } }
+
+        // Orientation data
 
         public double Yaw { get { return quaternion.Yaw; } }
         public double Pitch { get { return quaternion.Pitch; } }
@@ -237,6 +211,8 @@ namespace FreePIE.Core.Plugins
             } 
         }
 
+        // LED and Rumble
+
         public char Rumble { get; set; }
         public PSMove.RGB_Color LED { 
             get { 
@@ -250,6 +226,8 @@ namespace FreePIE.Core.Plugins
             PSMove.PSMoveAPI.psmove_set_leds(move, led.r, led.g, led.b);
             PSMove.PSMoveAPI.psmove_update_leds(move);
         }
+
+        // Buttons getters
 
         public bool getButtonDown(PSMove.PSMoveButton button) 
         {
@@ -278,9 +256,7 @@ namespace FreePIE.Core.Plugins
     {
         public PSMoveGlobal(PSMoveGlobalHolder plugin) : base(plugin) { }
 
-        public double x { get { return plugin.X; } }
-        public double y { get { return plugin.Y; } }
-        public double z { get { return plugin.Z; } }
+        public PSMove.Vector3 position { get { return plugin.Position; } }
 
         public double yaw { get { return plugin.Yaw; } }
         public double pitch { get { return plugin.Pitch; } }

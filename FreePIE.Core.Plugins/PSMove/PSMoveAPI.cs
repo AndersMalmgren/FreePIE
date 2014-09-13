@@ -1,8 +1,135 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using FreePIE.Core.Plugins.SensorFusion;
 
 namespace FreePIE.Core.Plugins.PSMove
 {
+
+    public class PSMoveTracker
+    {
+        private IntPtr tracker;
+        private IntPtr fusion;
+
+        public PSMoveTracker() {
+            // Initialize to "null"
+            tracker = fusion = IntPtr.Zero;
+        }
+
+        public void Start() {
+            // Create the tracker object
+            tracker = PSMoveAPI.psmove_tracker_new();
+            fusion = PSMoveAPI.psmove_fusion_new(tracker, 1, 1000);
+        }
+
+        public void Stop() {
+            PSMoveAPI.psmove_fusion_free(fusion);
+            PSMoveAPI.psmove_tracker_free(tracker);
+        }
+
+        public void UpdateImage()
+        {
+            if (tracker != IntPtr.Zero)
+                PSMoveAPI.psmove_tracker_update_image(tracker);
+        }
+
+        public IntPtr TrackerHandle { get { return this.tracker; } }
+        public IntPtr FusionHandle { get { return this.fusion; } }
+    }
+
+    public class PSMoveController
+    {
+        public int Index {get; set;}
+        private PSMoveTracker tracker;
+        private IntPtr move;
+
+        private Vector3 position, gyroscope, accelerometer;
+        private Quaternion rotation;
+        private RGB_Color led;
+        private char rumble;
+        private uint buttons, buttonsPressed, buttonsReleased;
+
+        // Transitional data
+        private float x, y, z; // for Vector3 components
+        private float q0, q1, q2, q3; // for Quaternion components
+        private char r, g, b; // for RGB_Color components
+
+        public PSMoveController(int index, PSMoveTracker tracker)
+        {
+            this.Index = index;
+            this.tracker = tracker;
+            this.Connect();
+
+            this.position = new Vector3();
+            this.rotation = new Quaternion();
+            this.gyroscope = new Vector3();
+            this.accelerometer = new Vector3();
+            this.led = new RGB_Color();
+            this.rumble = (char)0;
+            this.buttons = 0;
+            this.buttonsPressed = 0;
+            this.buttonsReleased = 0;
+        }
+
+        public bool Connect()
+        {
+            move = PSMoveAPI.psmove_connect_by_id(Index);
+            return isConnected();            
+        }
+
+        public bool isConnected()
+        {
+            return (move != IntPtr.Zero);
+        }
+
+        public void Disconnect()
+        {
+            PSMoveAPI.psmove_disconnect(move);
+        }
+
+        public void Update()
+        {
+            UpdatePosition();
+            UpdateOrientationAndButtons();
+            UpdateLEDs();
+        }
+
+        private void UpdatePosition()
+        {
+            // Update positional tracking info for this move
+            PSMove.PSMoveAPI.psmove_tracker_update(tracker.TrackerHandle, move);
+
+            // Retrieve positional tracking data
+            PSMove.PSMoveAPI.psmove_fusion_get_position(tracker.FusionHandle, move,
+                ref x, ref y, ref z);
+            position.Update(x, y, z);
+        }
+
+        private void UpdateOrientationAndButtons()
+        {
+            // Poll data (IMU and buttons)
+            while (PSMove.PSMoveAPI.psmove_poll(move) != 0) ;
+
+            // Orientation data
+            PSMove.PSMoveAPI.psmove_get_orientation(move, ref q0, ref q1, ref q2, ref q3);
+            this.rotation.Update(q0, q1, q2, q3);
+
+            PSMove.PSMoveAPI.psmove_get_gyroscope_frame(move,
+                PSMove.PSMove_Frame.Frame_SecondHalf,
+                ref x, ref y, ref z);
+            gyroscope.Update(x, y, z);
+
+            PSMove.PSMoveAPI.psmove_get_accelerometer_frame(move,
+                PSMove.PSMove_Frame.Frame_SecondHalf,
+                ref x, ref y, ref z);
+            accelerometer.Update(x, y, z);
+        }
+
+        private void UpdateLEDs()
+        {
+
+        }
+
+    }
 
     public class PSMoveAPI
     {
@@ -154,6 +281,10 @@ namespace FreePIE.Core.Plugins.PSMove
 
         [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
         public static extern int psmove_tracker_get_color(IntPtr tracker, IntPtr move, ref char r, ref char g, ref char b);
+
+        [DllImport("libpsmoveapi_tracker", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void psmove_tracker_set_dimming(IntPtr tracker, float dimming);
+
 
         /* 
          * Optional code and not required by default (see auto_update_leds above)
