@@ -5,7 +5,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;re 
+using System.Threading;
 using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins
