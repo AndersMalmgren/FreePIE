@@ -16,7 +16,8 @@
                 Script="{ Binding Path=Script, Mode=TwoWay}"    
                 Replacer="{ Binding Path=Replacer, Mode=TwoWay}"    
                 IsEnabled="{ Binding Enabled}"
-                Caret="{ Binding Path=CaretPosition, Mode=TwoWay }">
+                Caret="{ Binding Path=CaretPosition, Mode=TwoWay }"
+                ShowLineNumbers="True">
             <AvalonEdit:BindableScriptEditor.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Cut" Command="Cut">
