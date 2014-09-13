@@ -112,36 +112,32 @@ namespace FreePIE.Core.Plugins.PSMove
         }
     }
 
-    
     public class RGB_Color
     {
-        public char r { get; private set; }
-        public char g { get; private set; }
-        public char b { get; private set; }
+        internal char r, g, b;
 
         public RGB_Color()
         {
-            Update(0, 0, 0);
+            SetColor(0, 0, 0);
         }
 
         public RGB_Color(int r, int g, int b)
         {
-            Update(r, g, b);
+            SetColor(r, g, b);
         }
 
-        public void Update(RGB_Color c)
+        public void SetColor(int r, int g, int b)
         {
-            Update(c.r, c.g, c.b);
+            R = r;
+            G = g;
+            B = b;
         }
 
-        public void Update(int r, int g, int b)
-        {
-            this.r = ClamptoChar(r);
-            this.g = ClamptoChar(g);
-            this.b = ClamptoChar(b);
-        }
-
-        private char ClamptoChar(int x)
+        public int R { get { return (int)r; } set { this.r = ClamptoChar(value); } }
+        public int G { get { return (int)g; } set { this.g = ClamptoChar(value); } }
+        public int B { get { return (int)b; } set { this.b = ClamptoChar(value); } }
+        
+        static internal char ClamptoChar(int x)
         {
             if (x < 0) {
                 x = 0;

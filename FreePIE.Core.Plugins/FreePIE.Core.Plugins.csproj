@@ -75,6 +75,8 @@
     <Compile Include="MemoryMapping\SharedMemoryWorker.cs" />
     <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
+    <Compile Include="PSMove\PSMoveTracker.cs" />
+    <Compile Include="PSMove\PSMoveController.cs" />
     <Compile Include="PSMove\PSMoveData.cs" />
     <Compile Include="PSMove\PSMoveAPI.cs" />
     <Compile Include="Wiimote\Calibratable.cs" />
