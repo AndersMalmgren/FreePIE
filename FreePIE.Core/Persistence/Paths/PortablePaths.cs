@@ -8,6 +8,8 @@ namespace FreePIE.Core.Persistence.Paths
         {
             Application = AppDomain.CurrentDomain.BaseDirectory;
             Data = Application;
+
+            EnureWorkingDirectory();
         }
     }
 }
