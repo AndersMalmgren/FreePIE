@@ -3,6 +3,7 @@ using System.Linq;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Events;
 using FreePIE.Core.Persistence;
+using FreePIE.Core.Persistence.Paths;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
@@ -47,6 +48,9 @@ namespace FreePIE.Core.Services
             kernel.Bind<ISettingsManager>().To<SettingsManager>().InSingletonScope();
             kernel.Bind<IPersistanceManager>().To<PersistanceManager>();
             kernel.Bind<IPluginInvoker>().To<PluginInvoker>().InSingletonScope();
+
+            kernel.Bind<IPortable>().To<Portable>();
+            kernel.Bind<IPaths>().ToProvider<PathsProvider>().InSingletonScope();
         }
 
         private static void BindScriptEngine(StandardKernel kernel)
@@ -115,7 +119,7 @@ namespace FreePIE.Core.Services
                    && !service.ContainsGenericParameters;
         }
 
-        public class GenericFunctionFactory<T>
+        private class GenericFunctionFactory<T>
         {
             private readonly IKernel kernel;
 
@@ -130,7 +134,7 @@ namespace FreePIE.Core.Services
             }
         }
 
-        public class FunctionFactory<T, TCast> where T : Type where TCast : class
+        private class FunctionFactory<T, TCast> where T : Type where TCast : class
         {
             private readonly IKernel kernel;
 
@@ -143,6 +147,27 @@ namespace FreePIE.Core.Services
             {
                 return t => this.kernel.Get(t) as TCast;
             }
+        }
+
+        private sealed class PathsProvider : IProvider<IPaths>
+        {
+            private readonly IPortable portable;
+            private readonly Func<PortablePaths> portablePaths;
+            private readonly Func<UacCompliantPaths> uacPaths;
+
+            public PathsProvider(IPortable portable, Func<PortablePaths> portablePaths, Func<UacCompliantPaths>  uacPaths)
+            {
+                this.portable = portable;
+                this.portablePaths = portablePaths;
+                this.uacPaths = uacPaths;
+            }
+
+            public object Create(IContext context)
+            {
+                return portable.IsPortable ? portablePaths() : uacPaths() as IPaths;
+            }
+
+            public Type Type { get; private set; }
         }
     }
 }

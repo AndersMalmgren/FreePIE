@@ -12,6 +12,7 @@ using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.Persistence;
+using FreePIE.Core.Persistence.Paths;
 using FreePIE.Core.ScriptEngine.Globals;
 using FreePIE.Core.ScriptEngine.ThreadTiming;
 using IronPython;

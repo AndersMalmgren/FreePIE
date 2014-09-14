@@ -1,4 +1,4 @@
-﻿namespace FreePIE.Core.Persistence
+﻿namespace FreePIE.Core.Persistence.Paths
 {
     public interface IPaths
     {

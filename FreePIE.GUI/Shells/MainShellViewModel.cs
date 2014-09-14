@@ -4,6 +4,7 @@ using System.Windows;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
+using FreePIE.Core.Persistence.Paths;
 using FreePIE.GUI.Common.AvalonDock;
 using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
@@ -40,7 +41,8 @@ namespace FreePIE.GUI.Shells
                                   WatchesViewModel watchesViewModel,
                                   IFileSystem fileSystem,
                                   ScriptDialogStrategy scriptDialogStrategy,
-                                  IPaths paths
+                                  IPaths paths,
+                                  IPortable portable
             )
             : base(resultFactory)
         {
@@ -61,7 +63,7 @@ namespace FreePIE.GUI.Shells
                 settingsManager.ListPluginSettingsWithHelpFile().Select(ps => new PluginHelpFileViewModel(ps)).ToList();
             Menu.Views = Tools;
 
-            DisplayName = "FreePIE - Programmable Input Emulator";
+            DisplayName = string.Format("FreePIE - Programmable Input Emulator{0}", portable.IsPortable ? " (Portable mode)" : null);
         }
 
         protected override void OnViewLoaded(object view)

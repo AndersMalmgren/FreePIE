@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model;
+using FreePIE.Core.Persistence.Paths;
 
 namespace FreePIE.Core.Persistence
 {

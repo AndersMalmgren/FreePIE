@@ -4,6 +4,7 @@ using System.Windows;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
+using FreePIE.Core.Persistence.Paths;
 using FreePIE.Core.Services;
 using FreePIE.GUI.Common.AvalonDock;
 using FreePIE.GUI.Result;
@@ -28,7 +29,6 @@ namespace FreePIE.GUI.Bootstrap
             kernel = ServiceBootstrapper.Create();
             kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             kernel.Bind<IResultFactory>().To<ResultFactory>();
-            kernel.Bind<IPaths>().To<UacCompliantPaths>().InSingletonScope();
 
             SetupCustomMessageBindings();
         }
