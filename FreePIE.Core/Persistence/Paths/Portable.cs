@@ -18,6 +18,8 @@ namespace FreePIE.Core.Persistence.Paths
 
         private static string NormalizePath(string path)
         {
+            if (path == null) return string.Empty;
+
             return Path.GetFullPath(new Uri(path).LocalPath)
                            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
                            .ToLowerInvariant();
