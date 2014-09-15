@@ -158,6 +158,11 @@ namespace FreePIE.Core.Plugins.PSMove
             return (((int)button & buttonsReleased) != 0);
         }
 
+        public int Trigger
+        {
+            get { return (int)PSMoveAPI.psmove_get_trigger(move); }
+        }
+
         // Update Functions
 
         public void Update()

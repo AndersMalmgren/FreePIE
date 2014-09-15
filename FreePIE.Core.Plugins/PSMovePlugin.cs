@@ -13,6 +13,11 @@ namespace FreePIE.Core.Plugins
         private Dictionary<int, PSMove.PSMoveController> holders;
         private PSMove.PSMoveTracker tracker;
 
+        private bool useDimming;
+        private float customDimming;
+
+
+
         public override object CreateGlobal()
         {
             tracker = new PSMove.PSMoveTracker();
@@ -36,6 +41,11 @@ namespace FreePIE.Core.Plugins
         {
             // Start the camera tracking
             tracker.Start();
+            // Set custom tracker properties
+            if (useDimming)
+            {
+                tracker.SetDimming(customDimming);
+            }
             return null;
         }
 
@@ -53,11 +63,28 @@ namespace FreePIE.Core.Plugins
 
         public override bool GetProperty(int index, IPluginProperty property)
         {
+            switch (index)
+            {
+                case 0:
+                    property.Name = "usedimming";
+                    property.Caption = "Manual dimming";
+                    property.DefaultValue = true;
+                    property.HelpText = "Light bulb properties are adjusted automatically";
+                    return true;
+                case 1:
+                    property.Name = "dimming";
+                    property.Caption = "Dimming value";
+                    property.DefaultValue = (float)1.0;
+                    property.HelpText = "Custom Light bulb dimming effect";
+                    return true;
+            }
             return false;
         }
 
         public override bool SetProperties(Dictionary<string, object> properties)
         {
+            this.useDimming = (bool)properties["usedimming"];
+            this.customDimming = (float)properties["dimming"];
             return false;
         }
 
@@ -103,5 +130,7 @@ namespace FreePIE.Core.Plugins
         public bool getButtonUp(PSMove.PSMoveButton button) { return plugin.GetButtonUp(button); } 
         public bool getButtonPressed(PSMove.PSMoveButton button) { return plugin.GetButtonPressed(button); }
         public bool getButtonReleased(PSMove.PSMoveButton button) { return plugin.GetButtonReleased(button); }
+
+        public int trigger { get { return plugin.Trigger; } }
     }
 }

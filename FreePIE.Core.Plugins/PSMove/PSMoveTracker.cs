@@ -19,9 +19,6 @@ namespace FreePIE.Core.Plugins.PSMove
             // Create the tracker object
             tracker = PSMoveAPI.psmove_tracker_new();
             fusion = PSMoveAPI.psmove_fusion_new(tracker, 1, 1000);
-
-            // Disable light bulb auto dimming effect
-            // PSMoveAPI.psmove_tracker_set_dimming(tracker, 1);
         }
 
         public void Stop() {
@@ -33,6 +30,12 @@ namespace FreePIE.Core.Plugins.PSMove
         {
             if (tracker != IntPtr.Zero)
                 PSMoveAPI.psmove_tracker_update_image(tracker);
+        }
+
+        public void SetDimming(float dimming)
+        {
+            // Disable light bulb auto dimming effect
+            PSMoveAPI.psmove_tracker_set_dimming(tracker, 1);
         }
 
         public IntPtr TrackerHandle { get { return this.tracker; } }
