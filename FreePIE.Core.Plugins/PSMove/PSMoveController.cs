@@ -12,7 +12,8 @@ namespace FreePIE.Core.Plugins.PSMove
         private PSMoveTracker tracker;
         private IntPtr move;
 
-        private Vector3 position, gyroscope, accelerometer;
+        private Vector3 position, rawPosition, centerPosition;
+        private Vector3 gyroscope, accelerometer;
         private Quaternion rotation;
         private RGB_Color led;
         private char rumble;
@@ -24,8 +25,7 @@ namespace FreePIE.Core.Plugins.PSMove
         public bool GlobalHasUpdateListener { get; set; }
 
         // Transitional data
-        private float x, y, z; // for Vector3 components
-        private float q0, q1, q2, q3; // for Quaternion components
+        private float w, x, y, z; // for Vector3 and Quaternion components
         private char r, g, b; // for RGB_Color components
 
         public PSMoveController(int index, PSMoveTracker tracker)
@@ -35,6 +35,8 @@ namespace FreePIE.Core.Plugins.PSMove
             this.Connect();
 
             this.position = new Vector3();
+            this.rawPosition = new Vector3();
+            this.centerPosition = new Vector3();
             this.rotation = new Quaternion();
             this.gyroscope = new Vector3();
             this.accelerometer = new Vector3();
@@ -75,7 +77,18 @@ namespace FreePIE.Core.Plugins.PSMove
         // Position
         // **************
 
-        public Vector3 Position { get { return position; } }
+        public Vector3 Position { 
+            get {
+                position = rawPosition - centerPosition;
+                return position; 
+            } 
+        }
+
+        public void resetPosition() { 
+            centerPosition.x = rawPosition.x;
+            centerPosition.y = rawPosition.y;
+            centerPosition.z = rawPosition.z;
+        }
 
         // **************
         // Orientation
@@ -164,7 +177,7 @@ namespace FreePIE.Core.Plugins.PSMove
             // Retrieve positional tracking data
             PSMoveAPI.psmove_fusion_get_position(tracker.FusionHandle, move,
                 ref x, ref y, ref z);
-            position.Update(x, y, z);
+            rawPosition.Update(x, y, z);
         }
 
         private void PollInternalData()
@@ -176,8 +189,8 @@ namespace FreePIE.Core.Plugins.PSMove
         private void UpdateOrientation()
         {
             // Orientation data
-            PSMoveAPI.psmove_get_orientation(move, ref q0, ref q1, ref q2, ref q3);
-            rotation.Update(q0, q1, q2, q3);
+            PSMoveAPI.psmove_get_orientation(move, ref w, ref x, ref y, ref z);
+            rotation.Update(w, x, y, z);
 
             // Gyroscope data
             PSMoveAPI.psmove_get_gyroscope_frame(move,

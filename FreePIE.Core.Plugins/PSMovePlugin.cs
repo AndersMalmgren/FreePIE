@@ -84,6 +84,8 @@ namespace FreePIE.Core.Plugins
 
         public PSMove.Vector3 position { get { return plugin.Position; } }
 
+        public void resetPosition() { plugin.resetPosition(); }
+
         public double yaw { get { return plugin.Yaw; } }
         public double pitch { get { return plugin.Pitch; } }
         public double roll { get { return plugin.Roll; } }
