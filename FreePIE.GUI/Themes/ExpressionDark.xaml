@@ -11,7 +11,8 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:Caliburn="clr-namespace:FreePIE.GUI.Common.Caliburn" xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock">
+  xmlns:Caliburn="clr-namespace:FreePIE.GUI.Common.Caliburn" xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+    xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit">
 
     <BitmapImage x:Key="IconOpen" UriSource="../Resources/open-16.png" />
     <BitmapImage x:Key="IconSave" UriSource="../Resources/save-16.png" />
@@ -29,6 +30,8 @@
     <BitmapImage x:Key="IconCut" UriSource="../Resources/cut-16.png" />
     <BitmapImage x:Key="IconNew" UriSource="../Resources/new-16.png" />
     <BitmapImage x:Key="IconFind" UriSource="../Resources/find-16.png" />
+    <BitmapImage x:Key="IconPrev" UriSource="../Resources/prev-16.png" />
+    <BitmapImage x:Key="IconNext" UriSource="../Resources/next-16.png" />
 
     <!-- Main Colors -->
 
@@ -94,6 +97,52 @@
     <SolidColorBrush x:Key="DefaultedBorderBrush" Color="{StaticResource DefaultColor}" />
     <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
 
+    <Style x:Key="AvalonEditSearchClose" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="avalonedit:SearchPanel">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type avalonedit:SearchPanel}">
+                    <Border Background="{DynamicResource NormalBrush}" BorderBrush="{DynamicResource NormalBorderBrush}" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Top" Cursor="Arrow">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Name="PART_searchTextBox" Focusable="True" Width="150" Height="24" Margin="3,3,3,0">
+                                <TextBox.Text>
+                                    <Binding Path="SearchPattern" RelativeSource="{RelativeSource TemplatedParent}" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <ExceptionValidationRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <Button Margin="3" Height="24" Width="24" Command="avalonedit:SearchCommands.FindPrevious" ToolTip="{Binding Localization.FindPreviousText, RelativeSource={RelativeSource TemplatedParent}}">
+                                <Image Width="16" Height="16" Stretch="Fill" Source="{DynamicResource IconPrev}" />
+                            </Button>
+                            <Button Margin="3" Height="24" Width="24" Command="avalonedit:SearchCommands.FindNext" ToolTip="{Binding Localization.FindNextText, RelativeSource={RelativeSource TemplatedParent}}">
+                                <Image Width="16" Height="16" Stretch="Fill" Source="{DynamicResource IconNext}" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style x:Key="NuclearButtonFocusVisual">
         <Setter Property="Control.Template">

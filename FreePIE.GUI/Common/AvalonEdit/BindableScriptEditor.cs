@@ -36,7 +36,7 @@ namespace FreePIE.GUI.Common.AvalonEdit
         public BindableScriptEditor()
         {
             TextArea.Caret.PositionChanged += CaretPositionChanged;
-            TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(TextArea));
+            SearchPanel.Install(TextArea);
         }
         
         private void CaretPositionChanged(object sender, EventArgs e)

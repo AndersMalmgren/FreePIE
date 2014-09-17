@@ -378,6 +378,12 @@
   <ItemGroup>
     <Resource Include="Resources\find-16.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\next-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\prev-16.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>md "$(TargetDir)plugins"
