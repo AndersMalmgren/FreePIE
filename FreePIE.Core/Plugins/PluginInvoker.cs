@@ -6,6 +6,7 @@ using FreePIE.Core.Common;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model;
 using FreePIE.Core.Persistence;
+using FreePIE.Core.Persistence.Paths;
 
 namespace FreePIE.Core.Plugins
 {
