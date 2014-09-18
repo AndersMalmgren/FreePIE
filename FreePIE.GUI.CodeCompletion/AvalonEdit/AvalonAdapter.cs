@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Search;
 
 namespace FreePIE.GUI.CodeCompletion.AvalonEdit
 {
     public class AvalonEditorAdapter : EditorAdapterBase
     {
         private readonly TextArea textArea;
+        private SearchPanel searchPanel;
 
         public AvalonEditorAdapter(TextArea textArea)
         {
@@ -17,6 +20,15 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
             textArea.KeyDown += OnKeyDown;
             textArea.KeyUp += OnKeyUp;
             textArea.PreviewTextInput += OnPreviewTextInput;
+
+            var search = textArea.DefaultInputHandler.NestedInputHandlers.OfType<SearchInputHandler>().FirstOrDefault();
+            if (search != null)
+                search.SearchOptionsChanged += search_SearchOptionsChanged;
+        }
+
+        void search_SearchOptionsChanged(object sender, SearchOptionsChangedEventArgs e)
+        {
+            searchPanel = sender as SearchPanel;
         }
 
         void OnPreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -25,15 +37,20 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
                 PreviewTextInput(sender, e);
         }
 
+        private bool SearchPanelHidden()
+        {
+            return searchPanel == null || searchPanel.IsClosed;
+        }
+
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (KeyDown != null)
+            if (KeyDown != null && SearchPanelHidden())
                 KeyDown(sender, e);
         }
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (KeyUp != null)
+            if (KeyUp != null && SearchPanelHidden())
                 KeyUp(sender, e);
         }
 
@@ -44,18 +61,18 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
 
         protected virtual void OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (PreviewKeyDown != null)
+            if (PreviewKeyDown != null && SearchPanelHidden())
                 PreviewKeyDown(sender, e);
         }
 
         private void OnCaretPositionChanged(object sender, EventArgs e)
         {
-            OnSelectionChanged(sender, e);
+                OnSelectionChanged(sender, e);
         }
 
         protected virtual void OnSelectionChanged(object sender, EventArgs e)
         {
-            if (SelectionChanged != null)
+            if (SelectionChanged != null & SearchPanelHidden())
                 SelectionChanged(sender, e);
         }
 
