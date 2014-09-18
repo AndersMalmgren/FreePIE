@@ -10,7 +10,7 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
     public class AvalonEditorAdapter : EditorAdapterBase
     {
         private readonly TextArea textArea;
-        private SearchPanel searhPanel;
+        private SearchPanel searchPanel;
 
         public AvalonEditorAdapter(TextArea textArea)
         {
@@ -28,7 +28,7 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
 
         void search_SearchOptionsChanged(object sender, SearchOptionsChangedEventArgs e)
         {
-            searhPanel = sender as SearchPanel;
+            searchPanel = sender as SearchPanel;
         }
 
         void OnPreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -39,7 +39,7 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
 
         private bool SearchPanelHidden()
         {
-            return searhPanel == null || searhPanel.IsClosed;
+            return searchPanel == null || searchPanel.IsClosed;
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
