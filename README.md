@@ -13,6 +13,15 @@ FreePIE is very similar to the popular utility GlovePIE, but encourages open dev
 
 FreePIE is licensed under GPLv2  
 
+Changelog 1.6.512.0
+* Portable mode added, app files will be saved in program folder
+* Autorun file from cmd using <file.py> /r
+* Improved editor, ctrl+F among others
+* Oculus VR DK2 support (SDK 4.2)
+* Various stability and logging fixes 
+* Added new filters (scaled deadband, ensureMapRange, stopWatch)
+* Added xRotation and yRotation to JoystickPlugin
+
 Changelog 1.5.475.0
 * Spelling filters.continousRotation > filters.continuousRotation
 * Added possibility to load scripts from command line
