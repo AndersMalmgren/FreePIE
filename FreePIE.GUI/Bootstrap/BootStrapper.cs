@@ -6,6 +6,7 @@ using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
 using FreePIE.Core.Services;
 using FreePIE.GUI.Common.AvalonDock;
+using FreePIE.GUI.Common.CommandLine;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
 using Ninject;
@@ -29,6 +30,7 @@ namespace FreePIE.GUI.Bootstrap
             kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             kernel.Bind<IResultFactory>().To<ResultFactory>();
             kernel.Bind<IPaths>().To<UacCompliantPaths>().InSingletonScope();
+            kernel.Bind<IParser>().To<Common.CommandLine.Parser>();
 
             SetupCustomMessageBindings();
         }

@@ -5,6 +5,7 @@ using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
 using FreePIE.GUI.Common.AvalonDock;
+using FreePIE.GUI.Common.CommandLine;
 using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
@@ -29,6 +30,7 @@ namespace FreePIE.GUI.Shells
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
         private readonly IPaths paths;
+        private readonly IParser parser;
 
         public MainShellViewModel(IResultFactory resultFactory,
                                   IEventAggregator eventAggregator,
@@ -40,7 +42,8 @@ namespace FreePIE.GUI.Shells
                                   WatchesViewModel watchesViewModel,
                                   IFileSystem fileSystem,
                                   ScriptDialogStrategy scriptDialogStrategy,
-                                  IPaths paths
+                                  IPaths paths,
+                                  IParser parser
             )
             : base(resultFactory)
         {
@@ -50,6 +53,7 @@ namespace FreePIE.GUI.Shells
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
             this.paths = paths;
+            this.parser = parser;
 
             Scripts = new BindableCollection<ScriptEditorViewModel>();
             Tools = new BindableCollection<PanelViewModel> {consoleViewModel, errorsViewModel, watchesViewModel};
@@ -70,6 +74,7 @@ namespace FreePIE.GUI.Shells
             InitDocking();
 
             eventAggregator.Publish(new StartedEvent());
+            parser.ParseAndExecute();
         }
 
         private void InitDocking()
