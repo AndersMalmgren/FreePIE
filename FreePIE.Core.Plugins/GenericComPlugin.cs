@@ -50,8 +50,8 @@ namespace FreePIE.Core.Plugins
                 byte[] result;
                 if (buffers.TryDequeue(out result))
                     yield return result;
-
-                Thread.Yield();
+                else
+                    Thread.Yield();
             }
         }
 
