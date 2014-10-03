@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Caliburn.Micro;
 using FreePIE.Core.Persistence;
@@ -7,7 +8,7 @@ using FreePIE.GUI.Result;
 using FreePIE.GUI.Views.Curves;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
-namespace FreePIE.GUI.Shells
+namespace FreePIE.GUI.Shells.Curves
 {
     public class CurveSettingsViewModel : ShellPresentationModel, Core.Common.Events.IHandle<DeleteCurveEvent>
     {
@@ -34,10 +35,16 @@ namespace FreePIE.GUI.Shells
             Curves = new BindableCollection<CurveViewModel>(settingsManager.Settings.Curves.Select(c => curveModelFactory().Configure(c)));
         }
 
-        public void AddCurve()
+        public IEnumerable<IResult> AddCurve()
         {
-            settingsManager.Settings.AddNewCurve();
-            CreateCurvesModel();
+            var result = Result.ShowDialog<NewCurveViewModel>();
+            yield return result;
+
+            if (result.Model.NewCurve != null)
+            {
+                settingsManager.Settings.AddNewCurve(result.Model.NewCurve);
+                CreateCurvesModel();                
+            }
         }
 
         private BindableCollection<CurveViewModel> curves;

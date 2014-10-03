@@ -6,8 +6,11 @@ namespace FreePIE.Core.Model
 {
     public class Curve
     {
-        public Curve(List<Point> points)
+        public Curve(List<Point> points) : this(null, points) {}
+
+        public Curve(string name, List<Point> points)
         {
+            Name = name;
             Points = points;
         }
 
@@ -20,23 +23,22 @@ namespace FreePIE.Core.Model
             return Points.FindIndex(p => p == point);
         }
 
-        public void Reset(double y)
+        public void Reset(Curve newCurve)
         {
-            Points = CalculateDefault(y);
+            Points = newCurve.Points;
         }
 
-        public static Curve Create()
+        public static Curve Create(string name, double yAxisMinValue, double yAxisMaxValue, int pointCount)
         {
-            return new Curve(CalculateDefault(180));
+            return new Curve(name, CalculateDefault(yAxisMinValue, yAxisMaxValue, pointCount));
         }
 
-        private static List<Point> CalculateDefault(double yAxisMaxValue)
+        private static List<Point> CalculateDefault(double yAxisMinValue, double yAxisMaxValue, int pointCount)
         {
-            const int pointCount = 6;
-
-            var deltaBetweenPoints = yAxisMaxValue/(pointCount - 1);
+            var deltaBetweenPoints = (yAxisMaxValue - yAxisMinValue) /(pointCount - 1);
             return Enumerable.Range(0, pointCount)
-                      .Select(index => new Point(index*deltaBetweenPoints, index*deltaBetweenPoints))
+                       .Select(index => yAxisMinValue + (index * deltaBetweenPoints))
+                      .Select(value => new Point(value, value))
                       .ToList();
         }
     }

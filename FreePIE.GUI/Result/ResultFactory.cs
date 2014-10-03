@@ -16,7 +16,7 @@ namespace FreePIE.GUI.Result
             this.kernel = kernel;
         }
 
-        public ShowDialogResult<TModel> ShowDialogResult<TModel>() where TModel : ShellPresentationModel
+        public ShowDialogResult<TModel> ShowDialog<TModel>() where TModel : ShellPresentationModel
         {
             return kernel.Get<ShowDialogResult<TModel>>();
         }

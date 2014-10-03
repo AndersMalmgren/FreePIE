@@ -11,14 +11,11 @@
             <StackPanel Orientation="Horizontal">
                 <Label Margin="0,0,5,0" VerticalAlignment="Center">Name</Label>
                 <TextBox x:Name="Name" Width="300" />
+              
+                <Button x:Name="Reset">Reset</Button>
                 <Button x:Name="Delete">Delete</Button>
             </StackPanel>            
             <Charts:Chart Background="White" Width="600" Height="400" Margin="0,2,0,0">
-                <Charts:Chart.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem>Tuckel</MenuItem>
-                    </ContextMenu>
-                </Charts:Chart.ContextMenu>
                 <Charts:Chart.Behaviour>
                     <Charts:BehaviourManager AllowMultipleEnabled="True">
                         <Visiblox:MovePointBehaviour OnPointMove="OnPointDragged" OnPointSelected="OnPointSelected" />  
@@ -52,7 +49,6 @@
             <GroupBox Header="Selected point" IsEnabled="{ Binding HasSelectedPoint }">
                 <Border Padding="5">
                     <StackPanel Orientation="Vertical">
-                        <CheckBox x:Name="SetDefault" IsEnabled="{ Binding CanSetDefault }">Set points to default</CheckBox>
                         <StackPanel Orientation="Horizontal">
                             <Label Margin="0,0,5,0" VerticalAlignment="Center" Width="30">In</Label>
                             <TextBox x:Name="SelectedPointX" IsEnabled="{ Binding CanSetSelectedPointX }" Width="80" />
