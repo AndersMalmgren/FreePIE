@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
@@ -58,6 +59,16 @@ namespace FreePIE.GUI.Views.Curves
             }
         }
 
+        public bool ValidateCurve
+        {
+            get { return Curve.ValidateCurve.Value; }
+            set
+            {
+                Curve.ValidateCurve = value; 
+                NotifyOfPropertyChange(() => ValidateCurve);
+            }
+        }
+
         public IEnumerable<IResult> Delete()
         {
             var message = resultFactory.ShowMessageBox(string.Format("Delete {0}?", Curve.Name), "Curve will be deleted, continue?", MessageBoxButton.OKCancel);
@@ -83,6 +94,7 @@ namespace FreePIE.GUI.Views.Curves
                     Curve.Reset(newCurve);
                     InitCurve();
                     Name = newCurve.Name;
+                    ValidateCurve = true;
                 }
             }
         }
@@ -170,8 +182,36 @@ namespace FreePIE.GUI.Views.Curves
 
         public void OnPointDragged(MovePointBehaviour.PointMoveEventArgs e)
         {
+            var oldPoint = e.OldPoint;
+            var newPoint = e.NewPoint;
+            
             var index = Curve.IndexOf(e.OldPoint);
+            
+            var newCurve = Curve.Points.GetRange(0, Curve.Points.Count);
+            newCurve[index] = newPoint;
+
+            var firstPoint = newCurve[0];
+            var lastPoint = newCurve[newCurve.Count - 1];
+
+            var biggestValueForY = double.MinValue;
+
+            if(ValidateCurve)
+                for (double x = firstPoint.X + 0.01; x < lastPoint.X - 0.01; x++)
+                {
+                    var y = CurveMath.SolveCubicSpline(newCurve, x);
+                    if (y < biggestValueForY || newPoint.X >= lastPoint.X || newPoint.X <= firstPoint.X)
+                    {
+                        newPoint = oldPoint;
+                        break;
+                    }
+                    
+                    if (y > biggestValueForY)
+                        biggestValueForY = y;
+                }
+
+            e.NewPoint = newPoint;
             Curve.Points[index] = e.NewPoint;
+
             Points = CalculateNewPoints();
             UpdateSelectedPoint();
         }

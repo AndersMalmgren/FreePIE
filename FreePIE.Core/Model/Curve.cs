@@ -12,12 +12,14 @@ namespace FreePIE.Core.Model
         {
             Name = name;
             Points = points;
+            ValidateCurve = true;
         }
 
         public Curve() {}
 
         public List<Point> Points { get; set; }
         public string Name { get; set; }
+        public bool? ValidateCurve { get; set; }
         public int IndexOf(Point point)
         {
             return Points.FindIndex(p => p == point);

@@ -11,7 +11,8 @@
             <StackPanel Orientation="Horizontal">
                 <Label Margin="0,0,5,0" VerticalAlignment="Center">Name</Label>
                 <TextBox x:Name="Name" Width="300" />
-              
+
+                <CheckBox x:Name="ValidateCurve" Margin="5,3,5,0">Validate Curve</CheckBox>
                 <Button x:Name="Reset">Reset</Button>
                 <Button x:Name="Delete">Delete</Button>
             </StackPanel>            
