@@ -97,17 +97,17 @@ namespace FreePIE.Core.Plugins
         {
         }
 
-        public IEnumerable<byte[]> ReadExisting()
+        public IEnumerable<byte[]> readExisting()
         {
             return plugin.ReadExisting();
         }
 
-        public IEnumerable<string> ReadExistingString()
+        public IEnumerable<string> readExistingString()
         {
             return plugin.ReadExistingString();
         }
 
-        public string ReadLine()
+        public string readLine()
         {
             return plugin.ReadLine();
         }
