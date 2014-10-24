@@ -5,9 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:Charts="clr-namespace:Visiblox.Charts;assembly=Visiblox.Charts"
              xmlns:Visiblox="clr-namespace:FreePIE.GUI.Common.Visiblox"
-             xmlns:Curves="clr-namespace:FreePIE.GUI.Views.Curves"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:cal="http://www.caliburnproject.org">
+             xmlns:Curves="clr-namespace:FreePIE.GUI.Views.Curves">
     <Grid Margin="5">
         <StackPanel Orientation="Vertical">
             <StackPanel Orientation="Horizontal">
@@ -21,17 +19,7 @@
             <Charts:Chart Background="White" Width="600" Height="400" Margin="0,2,0,0">
                 <Charts:Chart.Behaviour>
                     <Charts:BehaviourManager AllowMultipleEnabled="True">
-                        <Visiblox:MovePointBehaviour >
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="OnPointDragged">
-                                    <cal:ActionMessage MethodName="OnPointDragged" />
-
-                                </i:EventTrigger>
-                                <i:EventTrigger EventName="OnPointSelected">
-                                    <cal:ActionMessage MethodName="OnPointSelected" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </Visiblox:MovePointBehaviour> 
+                        <Visiblox:MovePointBehaviour OnPointMove="OnPointDragged" OnPointSelected="OnPointSelected" />  
                         <Charts:ZoomBehaviour />
                     </Charts:BehaviourManager>
                 </Charts:Chart.Behaviour>
