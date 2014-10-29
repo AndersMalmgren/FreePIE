@@ -195,7 +195,7 @@ namespace FreePIE.Core.Plugins.PSMove
         {
             // Orientation data
             PSMoveAPI.psmove_get_orientation(move, ref w, ref x, ref y, ref z);
-            rotation.Update(w, z, x, y, false); // this update (w, y, x, z) without conjugation solves the yaw problem
+            rotation.Update(w, z, x, y, false); // This update without conjugation solves the yaw problem
 
             // Gyroscope data
             PSMoveAPI.psmove_get_gyroscope_frame(move,
