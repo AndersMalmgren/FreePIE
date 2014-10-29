@@ -80,8 +80,8 @@ namespace FreePIE.Core.Plugins.PSMove
         public Vector3 Position { 
             get {
                 position = rawPosition - centerPosition;
-                return position; 
-            } 
+                return position;
+            }
         }
 
         public void resetPosition() { 
@@ -195,7 +195,7 @@ namespace FreePIE.Core.Plugins.PSMove
         {
             // Orientation data
             PSMoveAPI.psmove_get_orientation(move, ref w, ref x, ref y, ref z);
-            rotation.Update(w, x, y, z);
+            rotation.Update(w, y, x, z, false); // this update (w, y, x, z) without conjugation solves the yaw problem
 
             // Gyroscope data
             PSMoveAPI.psmove_get_gyroscope_frame(move,
