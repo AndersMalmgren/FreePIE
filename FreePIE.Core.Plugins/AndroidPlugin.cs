@@ -136,13 +136,7 @@ namespace FreePIE.Core.Plugins
 
         public void Update(byte[] bytes)
         {
-                var flag = (Flags)bytes[1];
-                bool sendRaw;
-                bool sendOrientation;
-
-                SetFlags(flag, out sendRaw, out sendOrientation);
-
-                var dataInPackage = (Flags) bytes[2];
+                var dataInPackage = (Flags) bytes[1];
                 bool raw;
                 bool orientation;
 
@@ -166,7 +160,7 @@ namespace FreePIE.Core.Plugins
                         return;
                 }
 
-                var index = 3;
+                var index = 2;
                 
                 if (raw)
                 {

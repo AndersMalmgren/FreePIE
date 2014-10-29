@@ -37,9 +37,7 @@ public class UdpSenderTask implements SensorEventListener {
 	private IDebugListener debugListener;
 	private SensorManager sensorManager;
 	private IErrorHandler errorHandler;
-	
-	byte sendFlag;
-	
+		
 	ByteBuffer buffer;
 	CyclicBarrier sync;
 	
@@ -58,9 +56,7 @@ public class UdpSenderTask implements SensorEventListener {
 		debug = target.getDebug();
 		debugListener = target.getDebugListener();
 		errorHandler = target.getErrorHandler();			
-		
-		sendFlag = getFlagByte(sendRaw, sendOrientation);
-		
+				
 		sync = new CyclicBarrier(2);		
 
 		buffer = ByteBuffer.allocate(51);
@@ -173,10 +169,7 @@ public class UdpSenderTask implements SensorEventListener {
 		
 		buffer.clear();			
 		
-		buffer.put(deviceIndex);
-		buffer.put(sendFlag);
-	
-		
+		buffer.put(deviceIndex);		
 		buffer.put(getFlagByte(raw, orientation));
 		
 		if(raw) {
@@ -212,7 +205,7 @@ public class UdpSenderTask implements SensorEventListener {
 		if(endPoint == null)
 			return;
 					
-	    DatagramPacket p = new DatagramPacket(arr, arr.length, endPoint, port);   
+	    DatagramPacket p = new DatagramPacket(arr, buffer.position(), endPoint, port);   
 	    
 	    try {
 	    	socket.send(p);
