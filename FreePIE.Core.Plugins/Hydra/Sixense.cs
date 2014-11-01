@@ -80,5 +80,9 @@ namespace FreePIE.Core.Plugins.Hydra
         [DllImport("sixense.dll", SetLastError = false, EntryPoint = "sixenseGetNewestData",
             CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetNewestData(int which, out ControllerData data);
+
+        [DllImport("sixense.dll", SetLastError = false, EntryPoint = "sixenseAutoEnableHemisphereTracking",
+            CallingConvention = CallingConvention.Cdecl)]
+        public static extern int AutoEnableHemisphereTracking(int which_controller);
     }
 }

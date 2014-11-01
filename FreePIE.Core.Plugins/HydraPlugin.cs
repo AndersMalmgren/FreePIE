@@ -331,5 +331,10 @@ namespace FreePIE.Core.Plugins
             get { return plugin.Controller[index].is_docked == 1; }
             set { plugin.EmulatedData[index].IsDocked = (byte)(value ? 1 : 0); }
         }
+
+        public void enableHemisphereTracking()
+        {
+            Sixense.AutoEnableHemisphereTracking(index);
+        }
     }
 }
