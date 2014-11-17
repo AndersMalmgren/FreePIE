@@ -31,16 +31,17 @@ namespace FreePIE.Core.Plugins
             serialPort.Write("#oe0"); // Disable error message output
             serialPort.Write("#s00"); //Request sync signal
 
+            const string sync = "#SYNCH00\r";
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            while (serialPort.BytesToRead < "#SYNCH00\r\n".Length)
+            while (serialPort.BytesToRead < sync.Length && !serialPort.ReadLine().Contains(sync))
             {
                 if (stopwatch.ElapsedMilliseconds > 100)
                     throw new Exception(string.Format("No hardware connected to port {0} with AHRS IMU protocol", port));
             }
             stopwatch.Stop();
-
-            serialPort.ReadLine();
+            serialPort.ReadExisting(); //Sometimes there are garbage after the syncsignal
             buffer = new byte[4];
         }
 
