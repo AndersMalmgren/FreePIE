@@ -52,35 +52,7 @@ namespace FreePIE.GUI.Bootstrap
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Log(e.ExceptionObject as Exception, 0);
-        }
-
-        private string PrependTabsToLinebreaks(string input, int numberOfTabs)
-        {
-            var tabs = new string('\t', numberOfTabs);
-
-            return tabs + input.Replace(Environment.NewLine, Environment.NewLine + tabs);
-        }
-
-        private void Log(Exception e, int indentation)
-        {
-            if (e == null)
-                return;
-
-            var fileSystem = kernel.Get<IFileSystem>();
-            var paths = kernel.Get<IPaths>();
-
-            var path = paths.GetDataPath("FreePIE.log");
-
-            var delimiter = indentation == 0 ? DateTime.Now.ToString() + " - " : string.Empty;
-
-            var log = string.Format("{0}{1}{2} - {3}: {5}{4}{5}", new string('\t', indentation), delimiter, e.GetType().FullName, e.Message, PrependTabsToLinebreaks(e.StackTrace, indentation), Environment.NewLine);
-            fileSystem.AppendAllText(path, log);
-
-            Log(e.InnerException, indentation + 1);
-
-            if (indentation == 0)
-                fileSystem.AppendAllText(path, Environment.NewLine);
+            kernel.Get<Core.Common.ILog>().Error(e.ExceptionObject as Exception);
         }
 
         private void SetupCustomMessageBindings()

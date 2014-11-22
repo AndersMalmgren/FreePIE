@@ -78,6 +78,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         private readonly IEventAggregator eventAggregator;
         private readonly IThreadTimingFactory threadTimingFactory;
         private readonly IPaths paths;
+        private readonly ILog log;
         private static Microsoft.Scripting.Hosting.ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
         private InterlockableBool stopRequested;
@@ -97,54 +98,74 @@ namespace FreePIE.Core.ScriptEngine.Python
             get { return engine ?? (engine = IronPython.Hosting.Python.CreateEngine()); }
         }
 
-        public PythonScriptEngine(IScriptParser parser, IEnumerable<IGlobalProvider> globalProviders, IEventAggregator eventAggregator, IThreadTimingFactory threadTimingFactory, IPaths paths)
+        public PythonScriptEngine(
+            IScriptParser parser, 
+            IEnumerable<IGlobalProvider> globalProviders, 
+            IEventAggregator eventAggregator, 
+            IThreadTimingFactory threadTimingFactory, 
+            IPaths paths, 
+            ILog log)
         {
             this.parser = parser;
             this.globalProviders = globalProviders;
             this.eventAggregator = eventAggregator;
             this.threadTimingFactory = threadTimingFactory;
             this.paths = paths;
+            this.log = log;
         }
 
         public void Start(string script)
         {
-            thread = new Thread(obj1 => ExecuteSafe(() =>
+            thread = new Thread(obj1 => 
             {
-                threadTimingFactory.SetDefault();
+                ScriptScope scope = null;
 
-                var pluginStarted = new CountdownEvent(0);
+                var ready = ExecuteSafe(() =>
+                {
+                    threadTimingFactory.SetDefault();
 
-                pluginStopped = new CountdownEvent(0);
+                    var pluginStarted = new CountdownEvent(0);
 
-                usedPlugins = parser.InvokeAndConfigureAllScriptDependantPlugins(script).ToList();
+                    pluginStopped = new CountdownEvent(0);
 
-                var usedGlobalEnums = parser.GetAllUsedGlobalEnums(script);
+                    usedPlugins = parser.InvokeAndConfigureAllScriptDependantPlugins(script).ToList();
 
-                var globals = CreateGlobals(usedPlugins, globalProviders);
+                    var usedGlobalEnums = parser.GetAllUsedGlobalEnums(script);
 
-                Engine.Runtime.AddReferences(usedPlugins.Select(x => x.GetType().Assembly).Concat(usedGlobalEnums.Select(t => t.Assembly)).Distinct().ToArray());
+                    var globals = CreateGlobals(usedPlugins, globalProviders);
 
-                var scope = CreateScope(globals);
+                    Engine.Runtime.AddReferences(
+                        usedPlugins.Select(x => x.GetType().Assembly)
+                            .Concat(usedGlobalEnums.Select(t => t.Assembly))
+                            .Distinct()
+                            .ToArray());
 
-                foreach (var plugin in usedPlugins)
-                    StartPlugin(plugin, pluginStarted, pluginStopped);
+                    scope = CreateScope(globals);
 
-                pluginStarted.Wait();
+                    foreach (var plugin in usedPlugins)
+                        StartPlugin(plugin, pluginStarted, pluginStopped);
 
-                Engine.SetSearchPaths(GetPythonPaths());
-                
-                script = PreProcessScript(script, usedGlobalEnums, globals);
+                    pluginStarted.Wait();
 
-                RunLoop(Engine.CreateScriptSourceFromString(script).Compile(), scope);
-            })) {Name = "PythonEngine Worker"};
+                    Engine.SetSearchPaths(GetPythonPaths());
+
+                    script = PreProcessScript(script, usedGlobalEnums, globals);
+                }, logToFile: true);
+
+                if(ready)
+                    RunLoop(script, scope);
+
+            }) {Name = "PythonEngine Worker"};
 
             thread.Start();
         }
 
-        void RunLoop(CompiledCode compiled, ScriptScope scope)
+        void RunLoop(string script, ScriptScope scope)
         {
             ExecuteSafe(() =>
             {
+                var compiled = Engine.CreateScriptSourceFromString(script).Compile();
+
                 while (!stopRequested)
                 {
                     usedPlugins.ForEach(p => p.DoBeforeNextExecute());
@@ -185,9 +206,9 @@ namespace FreePIE.Core.ScriptEngine.Python
             return types;
         }
 
-        private void StopPlugin(IPlugin obj, CountdownEvent @event)
+        private void StopPlugin(IPlugin plugin, CountdownEvent @event)
         {
-            ExecuteSafe(obj.Stop);
+            ExecuteSafe(plugin.Stop);
             if(@event.CurrentCount > 0)
                 @event.Signal();
         }
@@ -200,15 +221,20 @@ namespace FreePIE.Core.ScriptEngine.Python
             return script.ImportTypes(globalEnums, out startingLine);
         }
 
-        void ExecuteSafe(Action action)
+        bool ExecuteSafe(Action action, bool logToFile = false)
         {
             try
             {
                 action();
+                return true;
             }
             catch (Exception e)
             {
+                if(logToFile)
+                    log.Error(e);
+
                 TriggerErrorEventNotOnPythonThread(e);
+                return false;
             }
         }
 

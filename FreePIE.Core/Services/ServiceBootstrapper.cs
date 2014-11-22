@@ -35,6 +35,7 @@ namespace FreePIE.Core.Services
         {
             kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
             kernel.Bind<IFileSystem>().To<FileSystem>();
+            kernel.Bind<ILog>().To<Log>();
         }
 
         private static void BindGlobalsProviders(StandardKernel kernel)
