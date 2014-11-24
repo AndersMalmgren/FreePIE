@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model;
 using FreePIE.Core.Persistence.Paths;
@@ -35,6 +36,13 @@ namespace FreePIE.Core.Persistence
                     Settings = serializer.ReadObject(stream) as Settings;
                 }
             }
+
+            FixBackwardCompatibility();
+        }
+
+        private void FixBackwardCompatibility()
+        {
+            Settings.Curves.Where(c => !c.ValidateCurve.HasValue).ForEach(c => c.ValidateCurve = true);
         }
 
         public void Save()

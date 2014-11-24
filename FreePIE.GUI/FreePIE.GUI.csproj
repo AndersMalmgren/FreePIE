@@ -140,11 +140,15 @@
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Shells\AboutViewModel.cs" />
-    <Compile Include="Shells\CurveSettingsView.xaml.cs">
+    <Compile Include="Shells\Curves\CurveSettingsView.xaml.cs">
       <DependentUpon>CurveSettingsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shells\CurveSettingsViewModel.cs" />
+    <Compile Include="Shells\Curves\CurveSettingsViewModel.cs" />
     <Compile Include="Common\AvalonDock\IDockingManagerSource.cs" />
+    <Compile Include="Shells\Curves\NewCurveView.xaml.cs">
+      <DependentUpon>NewCurveView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shells\Curves\NewCurveViewModel.cs" />
     <Compile Include="Shells\MainShellViewModel.cs" />
     <Compile Include="Shells\PluginHelpView.xaml.cs">
       <DependentUpon>PluginHelpView.xaml</DependentUpon>
@@ -205,7 +209,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Shells\CurveSettingsView.xaml">
+    <Page Include="Shells\Curves\CurveSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Shells\Curves\NewCurveView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

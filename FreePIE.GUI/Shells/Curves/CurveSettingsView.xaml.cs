@@ -1,4 +1,4 @@
-﻿namespace FreePIE.GUI.Shells
+﻿namespace FreePIE.GUI.Shells.Curves
 {
     /// <summary>
     /// Interaction logic for CurveSettingsView.xaml

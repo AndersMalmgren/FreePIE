@@ -19,9 +19,9 @@ namespace FreePIE.Core.Model
             PluginSettings.Add(pluginSetting);
         }
 
-        public void AddNewCurve()
+        public void AddNewCurve(Curve curve)
         {
-            Curves.Add(Curve.Create());
+            Curves.Add(curve);
             Curves = new List<Curve>(Curves.OrderBy(c => c.Name));
         }
 

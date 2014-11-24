@@ -1,0 +1,43 @@
+﻿<Window x:Class="FreePIE.GUI.Shells.Curves.NewCurveView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Background="{DynamicResource WindowBackgroundBrush}" 
+        SizeToContent="Height"
+        Width="400"
+        Icon="{StaticResource IconCurve}">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
+      </Grid.RowDefinitions>
+      <StackPanel Orientation="Vertical" Margin="0,0,0,20">
+        <Border Padding="5" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ControlBackgroundBrush}">
+          <StackPanel Orientation="Horizontal">
+            <Label Width="100">Name</Label>
+            <TextBox x:Name="Name" Width="60"></TextBox>
+          </StackPanel>
+        </Border>
+        <Border Padding="5" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ControlBackgroundBrush}">
+          <StackPanel Orientation="Horizontal">
+            <Label Width="100">Min</Label>
+            <TextBox x:Name="Min" Width="60"></TextBox>
+          </StackPanel>
+        </Border>
+        <Border Padding="5" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ControlBackgroundBrush}">
+          <StackPanel Orientation="Horizontal">
+            <Label Width="100">Max</Label>
+            <TextBox x:Name="Max" Width="60"></TextBox>
+          </StackPanel>
+        </Border>
+        <Border Padding="5" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ControlBackgroundBrush}">
+          <StackPanel Orientation="Horizontal">
+            <Label Width="100">Nr of Points</Label>
+            <TextBox x:Name="PointCount" Width="60"></TextBox>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+      <Button x:Name="Ok" Grid.Row="1">Ok</Button>
+    </Grid>
+</Window>
+
+

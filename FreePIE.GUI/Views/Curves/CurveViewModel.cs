@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
+using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Model;
 using FreePIE.Core.Model.Events;
 using FreePIE.GUI.Common.Visiblox;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
+using FreePIE.GUI.Shells.Curves;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 using Point = FreePIE.Core.Model.Point;
 
@@ -42,7 +45,7 @@ namespace FreePIE.GUI.Views.Curves
 
         private void SetSelectablePoints()
         {
-            SelectablePoints = Curve.Points.Skip(1);
+            SelectablePoints = Curve.Points.Skip(1).TakeAllButLast();
         }
 
         public string Name
@@ -56,6 +59,16 @@ namespace FreePIE.GUI.Views.Curves
             }
         }
 
+        public bool ValidateCurve
+        {
+            get { return Curve.ValidateCurve.Value; }
+            set
+            {
+                Curve.ValidateCurve = value; 
+                NotifyOfPropertyChange(() => ValidateCurve);
+            }
+        }
+
         public IEnumerable<IResult> Delete()
         {
             var message = resultFactory.ShowMessageBox(string.Format("Delete {0}?", Curve.Name), "Curve will be deleted, continue?", MessageBoxButton.OKCancel);
@@ -65,21 +78,30 @@ namespace FreePIE.GUI.Views.Curves
                 eventAggregator.Publish(new DeleteCurveEvent(this));
         }
 
+        public IEnumerable<IResult> Reset()
+        {
+            var dialog = resultFactory.ShowDialog<NewCurveViewModel>().Configure(m => m.Init(Curve));
+            yield return dialog;
+
+            var newCurve = dialog.Model.NewCurve;
+            if (newCurve != null)
+            {
+                var message = resultFactory.ShowMessageBox(string.Format("Reset {0}?", Curve.Name), "Curve will be reset, continue?", MessageBoxButton.OKCancel);
+                yield return message;
+
+                if (message.Result == System.Windows.MessageBoxResult.OK)
+                {
+                    Curve.Reset(newCurve);
+                    InitCurve();
+                    Name = newCurve.Name;
+                    ValidateCurve = true;
+                }
+            }
+        }
+
         public bool HasSelectedPoint
         {
             get { return selectedPointIndex.HasValue; }
-        }
-
-        private bool setDefault;
-        public bool SetDefault
-        {
-            get { return setDefault; }
-            set
-            {
-                setDefault = value;
-                NotifyOfPropertyChange(() => SetDefault);
-                NotifyOfPropertyChange(() => CanSetSelectedPointX);
-            }
         }
 
         private bool canSetDefault;
@@ -93,8 +115,6 @@ namespace FreePIE.GUI.Views.Curves
             }
         }
 
-        public bool CanSetSelectedPointX { get { return !SetDefault; } }
-
         public void ApplyNewValuesToSelectedPoint()
         {
             ApplyNewSelectedPoint(new Point(SelectedPointX, SelectedPointY));
@@ -104,8 +124,6 @@ namespace FreePIE.GUI.Views.Curves
         public void OnPointSelected(MovePointBehaviour.PointSelectedEventArgs e)
         {
             var index = Curve.IndexOf(e.Point);
-            if(index != selectedPointIndex)
-                SetDefault = false;
 
             selectedPointIndex = index;
 
@@ -145,13 +163,6 @@ namespace FreePIE.GUI.Views.Curves
 
         private void ApplyNewSelectedPoint(Point newPoint)
         {
-            if(SetDefault)
-            {
-                Curve.Reset(newPoint.Y);
-                InitCurve();
-                return;
-            }
-
             var args = new MovePointBehaviour.PointMoveEventArgs
             {
                 OldPoint = GetSelectedPoint(),
@@ -173,26 +184,30 @@ namespace FreePIE.GUI.Views.Curves
         {
             var oldPoint = e.OldPoint;
             var newPoint = e.NewPoint;
-
+            
             var index = Curve.IndexOf(e.OldPoint);
-            var biggestValueForY = double.MinValue;
-
+            
             var newCurve = Curve.Points.GetRange(0, Curve.Points.Count);
             newCurve[index] = newPoint;
+
+            var firstPoint = newCurve[0];
             var lastPoint = newCurve[newCurve.Count - 1];
 
-            for (double x = 0; x < lastPoint.X; x++)
-            {
-                var y = CurveMath.SolveCubicSpline(newCurve, x);
-                if (biggestValueForY > y)
-                {
-                    newPoint = oldPoint;
-                    break;
-                }
+            var biggestValueForY = double.MinValue;
 
-                if (y > biggestValueForY)
-                    biggestValueForY = y;
-            }
+            if(ValidateCurve)
+                for (double x = firstPoint.X + 0.01; x < lastPoint.X - 0.01; x++)
+                {
+                    var y = CurveMath.SolveCubicSpline(newCurve, x);
+                    if (y < biggestValueForY || newPoint.X >= lastPoint.X || newPoint.X <= firstPoint.X)
+                    {
+                        newPoint = oldPoint;
+                        break;
+                    }
+                    
+                    if (y > biggestValueForY)
+                        biggestValueForY = y;
+                }
 
             e.NewPoint = newPoint;
             Curve.Points[index] = e.NewPoint;

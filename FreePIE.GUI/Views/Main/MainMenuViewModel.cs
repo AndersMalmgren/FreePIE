@@ -11,6 +11,7 @@ using FreePIE.GUI.Events;
 using FreePIE.GUI.Events.Command;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
+using FreePIE.GUI.Shells.Curves;
 using FreePIE.GUI.Views.Plugin;
 using FreePIE.GUI.Views.Script;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
@@ -150,7 +151,7 @@ namespace FreePIE.GUI.Views.Main
 
         public IEnumerable<IResult> ShowAbout()
         {
-            yield return resultFactory.ShowDialogResult<AboutViewModel>();
+            yield return resultFactory.ShowDialog<AboutViewModel>();
         }
 
         private void PublishScriptStateChange()
@@ -213,18 +214,18 @@ namespace FreePIE.GUI.Views.Main
 
         public IEnumerable<IResult> ShowCurveSettingsMenu()
         {
-            yield return resultFactory.ShowDialogResult<CurveSettingsViewModel>();
+            yield return resultFactory.ShowDialog<CurveSettingsViewModel>();
         }
 
         public IEnumerable<IResult> ShowPluginSettings(PluginSettingsMenuViewModel pluginMenu)
         {
-            yield return resultFactory.ShowDialogResult<PluginSettingsViewModel>()
+            yield return resultFactory.ShowDialog<PluginSettingsViewModel>()
                 .Configure(p => p.Init(pluginMenu.PluginSetting));
         }
 
         public IEnumerable<IResult> ShowPluginHelp(PluginHelpFileViewModel pluginMenu)
         {
-            yield return resultFactory.ShowDialogResult<PluginHelpViewModel>()
+            yield return resultFactory.ShowDialog<PluginHelpViewModel>()
                 .Configure(p => p.Init(pluginMenu.PluginSetting));
         }
 

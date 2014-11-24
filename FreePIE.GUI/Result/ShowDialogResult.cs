@@ -15,7 +15,7 @@ namespace FreePIE.GUI.Result
             this.model = model;
         }
 
-        public IResult Configure(Action<TModel> configure)
+        public ShowDialogResult<TModel> Configure(Action<TModel> configure)
         {
            this.configure = configure;
            return this;
@@ -30,5 +30,7 @@ namespace FreePIE.GUI.Result
             
             base.Execute(context);
         }
+
+        public TModel Model { get { return model; } }
     }
 }
