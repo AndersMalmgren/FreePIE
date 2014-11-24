@@ -128,10 +128,12 @@ namespace FreePIE.Core.Plugins
             Global  = new AndroidGlobal(this);
 
             quaternion = new Quaternion();
+            Raw = new RawGlobal();
 
             freeqSampled = false;
             samples = 0;
             started = DateTime.Now;
+
         }
 
         public void Update(byte[] bytes)
@@ -153,7 +155,6 @@ namespace FreePIE.Core.Plugins
                     {
                         var freq = samples / (float)delta;
                         freeqSampled = true;
-
                         ahrs = new MahonyAHRS(1f / freq, 0.1f);
                     }
                     else
@@ -164,19 +165,19 @@ namespace FreePIE.Core.Plugins
                 
                 if (raw)
                 {
-                    var ax = GetFloat(bytes, index, 0);
-                    var ay = GetFloat(bytes, index, 4);
-                    var az = GetFloat(bytes, index, 8);
+                    var ax = Raw.ax = GetFloat(bytes, index, 0);
+                    var ay = Raw.ay = GetFloat(bytes, index, 4);
+                    var az = Raw.az = GetFloat(bytes, index, 8);
 
-                    var gx = GetFloat(bytes, index, 12);
-                    var gy = GetFloat(bytes, index, 16);
-                    var gz = GetFloat(bytes, index, 20);
+                    var gx = Raw.gx = GetFloat(bytes, index, 12);
+                    var gy = Raw.gy = GetFloat(bytes, index, 16);
+                    var gz = Raw.gz = GetFloat(bytes, index, 20);
 
-                    var mx = GetFloat(bytes, index, 24);
-                    var my = GetFloat(bytes, index, 28);
-                    var mz = GetFloat(bytes, index, 32);
+                    var mx = Raw.mx = GetFloat(bytes, index, 24);
+                    var my = Raw.my = GetFloat(bytes, index, 28);
+                    var mz = Raw.mz = GetFloat(bytes, index, 32);
 
-                    ahrs.Update(gx, gy, gz, ax, ay, az, mx, my, mz);
+                    ahrs.Update((float)gx, (float)gy, (float)gz, (float)ax, (float)ay, (float)az, (float)mx, (float)my, (float)mz);
                     quaternion.Update(ahrs.Quaternion[0], ahrs.Quaternion[1], ahrs.Quaternion[2], ahrs.Quaternion[3]);
 
                     index += 36;
@@ -217,6 +218,9 @@ namespace FreePIE.Core.Plugins
         public double GoogleYaw { get; private set; }
         public double GooglePitch { get; private set; }
         public double GoogleRoll { get; private set; }
+
+        public RawGlobal Raw { get; private set; }
+        
     }
 
     [Global(Name = "android")]
@@ -231,5 +235,21 @@ namespace FreePIE.Core.Plugins
         public double googleYaw { get { return plugin.GoogleYaw; } }
         public double googlePitch { get { return plugin.GooglePitch; } }
         public double googleRoll { get { return plugin.GoogleRoll; } }
+        public RawGlobal raw { get { return plugin.Raw; }}
+    }
+
+    public class RawGlobal
+    {
+        public double ax { get; internal set; }
+        public double ay { get; internal set; }
+        public double az { get; internal set; }
+
+        public double gx { get; internal set; }
+        public double gy { get; internal set; }
+        public double gz { get; internal set; }
+
+        public double mx { get; internal set; }
+        public double my { get; internal set; }
+        public double mz { get; internal set; }
     }
 }
