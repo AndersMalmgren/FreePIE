@@ -13,6 +13,16 @@ FreePIE is very similar to the popular utility GlovePIE, but encourages open dev
 
 FreePIE is licensed under GPLv2  
 
+Changelog 1.7.528.0
+* Android protocol optimized (Install new APK required)
+* Android raw data accessible to scripts
+* Razor hydra hemisphere tracking
+* Improvements to AHRS protocol, retart of script no longer required
+* Better logging while starting up script engine
+* Updated YEI API
+* Updated Oculus VR (SDK 0.4.3)
+* Improved curve editor
+
 Changelog 1.6.512.0
 * Portable mode added, app files will be saved in program folder
 * Autorun file from cmd using <file.py> /r
