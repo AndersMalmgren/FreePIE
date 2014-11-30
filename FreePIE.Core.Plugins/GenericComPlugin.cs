@@ -50,7 +50,7 @@ namespace FreePIE.Core.Plugins
                 byte[] result;
                 if (buffers.TryDequeue(out result))
                     yield return result;
-
+                else
                 Thread.Yield();
             }
         }
@@ -77,6 +77,13 @@ namespace FreePIE.Core.Plugins
             }
 
             return string.Empty;
+        }
+
+//my addition 2014-12-01 
+        public override void DoBeforeNextExecute()
+        {
+            // flush the port
+            PurgeComm(serialPort, PURGE_RXCLEAR | PURGE_TXCLEAR);
         }
 
         protected override string BaudRateHelpText
