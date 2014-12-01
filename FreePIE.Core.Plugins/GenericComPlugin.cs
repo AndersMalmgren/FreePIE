@@ -29,6 +29,8 @@ namespace FreePIE.Core.Plugins
 
         protected override void Init(SerialPort serialPort)
         {
+            //compiles but crashes 
+            serialPort.DiscardInBuffer();
         }
 
         protected override void Read(SerialPort serialPort)
@@ -79,12 +81,14 @@ namespace FreePIE.Core.Plugins
             return string.Empty;
         }
 
-//my addition 2014-12-01 
+/*
+//my addition 2014-12-01 - does not compile
         public override void DoBeforeNextExecute()
         {
             // flush the port
             PurgeComm(serialPort, PURGE_RXCLEAR | PURGE_TXCLEAR);
         }
+*/
 
         protected override string BaudRateHelpText
         {
