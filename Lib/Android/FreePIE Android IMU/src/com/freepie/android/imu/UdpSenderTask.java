@@ -11,6 +11,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.wifi.WifiManager;
+import android.os.PowerManager;
 
 public class UdpSenderTask implements SensorEventListener {
 
@@ -40,11 +42,17 @@ public class UdpSenderTask implements SensorEventListener {
 		
 	ByteBuffer buffer;
 	CyclicBarrier sync;
-	
-	Thread worker;
-	boolean running;
 
-	public void start(TargetSettings target) {
+	Thread worker;
+	volatile boolean running;
+    private boolean hasGyro;
+    private WifiManager.WifiLock wifiLock;
+    private PowerManager.WakeLock wakeLock;
+
+    public void start(TargetSettings target, PowerManager.WakeLock wl, WifiManager.WifiLock nl) {
+        wakeLock = wl;
+        wifiLock = nl;
+
 		deviceIndex = target.getDeviceIndex();
 		sensorManager = target.getSensorManager();
 		port = target.getPort();
@@ -106,6 +114,9 @@ public class UdpSenderTask implements SensorEventListener {
 					sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
 					sampleRate);
 		
+
+        wifiLock.acquire();
+        wakeLock.acquire();
 	}
 	
 	private byte getFlagByte(boolean raw, boolean orientation) {
@@ -156,6 +167,8 @@ public class UdpSenderTask implements SensorEventListener {
 	}
 	
 	public void stop() {
+        wakeLock.release();
+        wifiLock.release();
 		running = false;
 		sensorManager.unregisterListener(this);		
 		releaseSendThread();
