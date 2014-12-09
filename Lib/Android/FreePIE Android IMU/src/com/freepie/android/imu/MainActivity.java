@@ -232,6 +232,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
     @Override
     protected void onStop(){
     	super.onStop();    	
+        unbindService();
         save();
     }    
     
