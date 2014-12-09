@@ -95,25 +95,36 @@ public class UdpSenderTask implements SensorEventListener {
         	}
 		});	
 		worker.start();
+
+        hasGyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
 		
 		if(sendRaw) {
 			sensorManager.registerListener(this,
 					sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
 					sampleRate);
-			
-			sensorManager.registerListener(this,
-					sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-					sampleRate);		
+			if (hasGyro)
+                sensorManager.registerListener(this,
+                        sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+                        sampleRate);
 			
 			sensorManager.registerListener(this,
 					sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
 					sampleRate);
 		}
-		if(sendOrientation)
-			sensorManager.registerListener(this,
-					sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
-					sampleRate);
-		
+		if(sendOrientation) {
+            if (hasGyro)
+                sensorManager.registerListener(this,
+                        sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
+                        sampleRate);
+            else {
+                sensorManager.registerListener(this,
+                        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                        sampleRate);
+                sensorManager.registerListener(this,
+                        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                        sampleRate);
+            }
+        }
 
         wifiLock.acquire();
         wakeLock.acquire();
@@ -125,36 +136,54 @@ public class UdpSenderTask implements SensorEventListener {
 	}
 	
 	public void onSensorChanged(SensorEvent sensorEvent) {
-	    switch (sensorEvent.sensor.getType()) {  
-	        case Sensor.TYPE_ACCELEROMETER:
-	            acc = sensorEvent.values.clone();
-	            break;
-	        case Sensor.TYPE_MAGNETIC_FIELD:
-	            mag = sensorEvent.values.clone();
-	            break;
-	            
-	        case Sensor.TYPE_GYROSCOPE:
-	            gyr = sensorEvent.values.clone();
-	            break;
-	        case Sensor.TYPE_ROTATION_VECTOR:
-	        	rotationVector = sensorEvent.values.clone();
-	        	break;
-	    }	
-	    
-       if(sendOrientation && rotationVector != null) {
-            SensorManager.getRotationMatrixFromVector(rotationMatrix , rotationVector);
-            SensorManager.getOrientation(rotationMatrix, rotationVector);
-            imu = rotationVector;
-            rotationVector = null;
-       }
-	    	    
-	    if(debug && acc != null && gyr != null && mag != null)
-	    	debugListener.debugRaw(acc, gyr, mag);
-	    
-	    if(debug && imu != null)
-	    	debugListener.debugImu(imu);	
-	    
-	    releaseSendThread();
+        synchronized (this) {
+            switch (sensorEvent.sensor.getType()) {
+                case Sensor.TYPE_ACCELEROMETER:
+                    acc = sensorEvent.values.clone();
+                    break;
+                case Sensor.TYPE_MAGNETIC_FIELD:
+                    mag = sensorEvent.values.clone();
+                    break;
+                case Sensor.TYPE_GYROSCOPE:
+                    gyr = sensorEvent.values.clone();
+                    break;
+                case Sensor.TYPE_ROTATION_VECTOR:
+                    rotationVector = sensorEvent.values.clone();
+                    break;
+            }
+
+            if (!hasGyro && gyr == null)
+                gyr = new float[]{0, 0, 0};
+
+            if (sendOrientation) {
+                if (!hasGyro && mag != null && acc != null) {
+                    float R[] = new float[9];
+                    float I[] = new float[9];
+                    boolean ret = SensorManager.getRotationMatrix(R, I, acc, mag);
+                    if (ret) {
+                        float[] ypr = new float[3];
+                        SensorManager.getOrientation(R, ypr);
+                        imu = ypr;
+                    }
+                } else {
+                    if (rotationVector != null) {
+                        SensorManager.getRotationMatrixFromVector(rotationMatrix, rotationVector);
+                        SensorManager.getOrientation(rotationMatrix, rotationVector);
+                        imu = rotationVector;
+                        rotationVector = null;
+                    }
+                }
+            }
+
+            if (debug && acc != null && gyr != null && mag != null)
+                debugListener.debugRaw(acc, gyr, mag);
+
+            if (debug && imu != null)
+                debugListener.debugImu(imu);
+
+            if (sendRaw && gyr != null && acc != null && mag != null || sendOrientation && imu != null)
+                releaseSendThread();
+        }
 	}
 	
 
@@ -175,50 +204,54 @@ public class UdpSenderTask implements SensorEventListener {
 	}
 
 	private void Send() {
-		boolean raw = sendRaw && acc != null && gyr != null && mag != null;
-		boolean orientation = sendOrientation && imu != null;
-		
-		if(!raw && !orientation) return;
-		
-		buffer.clear();			
-		
-		buffer.put(deviceIndex);		
-		buffer.put(getFlagByte(raw, orientation));
-		
-		if(raw) {
-			//Acc
-			buffer.putFloat(acc[0]);
-			buffer.putFloat(acc[1]);
-			buffer.putFloat(acc[2]);
-			
-			//Gyro
-			buffer.putFloat(gyr[0]);
-			buffer.putFloat(gyr[1]);
-			buffer.putFloat(gyr[2]);	
-			
-			//Mag
-			buffer.putFloat(mag[0]);
-			buffer.putFloat(mag[1]);
-			buffer.putFloat(mag[2]);
-			
-			acc = null;
-			mag = null;
-			gyr = null;
-		}
-		
-		if(orientation) {			
-			buffer.putFloat(imu[0]);
-			buffer.putFloat(imu[1]);
-			buffer.putFloat(imu[2]);
-			imu = null;
-		}
-		
-      				
-		byte[] arr = buffer.array();
-		if(endPoint == null)
-			return;
-					
-	    DatagramPacket p = new DatagramPacket(arr, buffer.position(), endPoint, port);   
+        DatagramPacket p;
+
+        synchronized (this) {
+            boolean raw = sendRaw && acc != null && gyr != null && mag != null;
+            boolean orientation = sendOrientation && imu != null;
+
+            if (!raw && !orientation) return;
+
+            buffer.clear();
+
+            buffer.put(deviceIndex);
+            buffer.put(getFlagByte(raw, orientation));
+
+            if (raw) {
+                //Acc
+                buffer.putFloat(acc[0]);
+                buffer.putFloat(acc[1]);
+                buffer.putFloat(acc[2]);
+
+                //Gyro
+                buffer.putFloat(gyr[0]);
+                buffer.putFloat(gyr[1]);
+                buffer.putFloat(gyr[2]);
+
+                //Mag
+                buffer.putFloat(mag[0]);
+                buffer.putFloat(mag[1]);
+                buffer.putFloat(mag[2]);
+
+                acc = null;
+                mag = null;
+                gyr = null;
+            }
+
+            if (orientation) {
+                buffer.putFloat(imu[0]);
+                buffer.putFloat(imu[1]);
+                buffer.putFloat(imu[2]);
+                imu = null;
+            }
+
+
+            byte[] arr = buffer.array();
+            if (endPoint == null)
+                return;
+
+            p = new DatagramPacket(arr, buffer.position(), endPoint, port);
+        }
 	    
 	    try {
 	    	socket.send(p);
