@@ -157,9 +157,9 @@ public class UdpSenderTask implements SensorEventListener {
 	    releaseSendThread();
 	}
 	
+
 	private void releaseSendThread() {
-		if(sync.getNumberWaiting() > 0)
-			sync.reset();	
+        sync.reset();
 	}
 	
 	@Override
