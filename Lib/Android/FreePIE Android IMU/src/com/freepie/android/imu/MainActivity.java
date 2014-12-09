@@ -6,9 +6,14 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,7 +29,31 @@ import android.widget.ToggleButton;
 
 public class MainActivity extends Activity implements IDebugListener, IErrorHandler {
 
-	private UdpSenderTask udpSender;
+    private UdpSenderService udpSenderService;
+
+    private ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            udpSenderService = ((UdpSenderService.MyBinder)iBinder).getService();
+            start.setChecked(udpSenderService.isRunning());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            udpSenderService = null;
+        }
+    };
+
+    private void bindService() {
+        bindService(new Intent(this, UdpSenderService.class), conn, Context.BIND_AUTO_CREATE);
+    }
+
+    private void unbindService() {
+        if (udpSenderService != null) {
+            unbindService(conn);
+        }
+    }
+
 	private static final String IP = "ip";
 	private static final String PORT = "port";
 	private static final String INDEX = "index";
@@ -84,13 +113,11 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         
-        chkDebug.setOnCheckedChangeListener(new OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-            {
-            	setDebugVisability(isChecked);
-            	if(udpSender != null)
-            		udpSender.setDebug(isChecked);
+        chkDebug.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                setDebugVisability(isChecked);
+                if (udpSenderService != null)
+                    udpSenderService.setDebug(isChecked);
             }
         });
         
@@ -98,30 +125,29 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
         final IErrorHandler error = this;
         start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-            	boolean on = ((ToggleButton) view).isChecked();
-            	
-            	if(on) {
-	                String ip = txtIp.getText().toString();
-	                int port = Integer.parseInt(txtPort.getText().toString());
-	                boolean sendOrientation = chkSendOrientation.isChecked();
-	                boolean sendRaw = chkSendRaw.isChecked();
-	                boolean debug = chkDebug.isChecked();
-	            	
-		        	udpSender = new UdpSenderTask();
-		        	udpSender.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId(), debug, debugListener, error));
-            	} else {
-            		stop();
-            	}
+                if (udpSenderService != null)
+                {
+                    save();
+                    boolean flag = !udpSenderService.isRunning();
+                    if (flag) {
+                        String ip = txtIp.getText().toString();
+                        int port = Integer.parseInt(txtPort.getText().toString());
+                        boolean sendOrientation = chkSendOrientation.isChecked();
+                        boolean sendRaw = chkSendRaw.isChecked();
+                        boolean debug = chkDebug.isChecked();
+
+                        udpSenderService.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId(), debug, debugListener, error));
+                    } else {
+                        udpSenderService.stop();
+                    }
+                    start.setChecked(udpSenderService.isRunning());
+                }
             }
         });
+
+        bindService();
     }
-    
-    private void stop() {
-    	start.setChecked(false);
-		udpSender.stop();
-		udpSender = null;
-    }
-    
+
     private void setDebugVisability(boolean show) {
     	debugView.setVisibility(show ? LinearLayout.VISIBLE : LinearLayout.INVISIBLE);
     }
@@ -189,20 +215,24 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 		this.imu.setText(String.format(DEBUG_FORMAT, imu[0], imu[1], imu[2]));		
 	}
 
+    private void save() {
+        final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+
+        preferences.edit()
+                .putString(IP, txtIp.getText().toString())
+                .putString(PORT, txtPort.getText().toString())
+                .putInt(INDEX,  getSelectedDeviceIndex())
+                .putBoolean(SEND_ORIENTATION, chkSendOrientation.isChecked())
+                .putBoolean(SEND_RAW, chkSendRaw.isChecked())
+                .putInt(SAMPLE_RATE,  getSelectedSampleRateId())
+                .putBoolean(DEBUG, chkDebug.isChecked())
+                .commit();
+    }
+
     @Override
     protected void onStop(){
     	super.onStop();    	
-    	final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-    	
-    	preferences.edit()
-			.putString(IP, txtIp.getText().toString())
-			.putString(PORT, txtPort.getText().toString())
-			.putInt(INDEX,  getSelectedDeviceIndex())
-			.putBoolean(SEND_ORIENTATION, chkSendOrientation.isChecked())
-			.putBoolean(SEND_RAW, chkSendRaw.isChecked())
-			.putInt(SAMPLE_RATE,  getSelectedSampleRateId())
-			.putBoolean(DEBUG, chkDebug.isChecked())
-			.commit();
+        save();
     }    
     
     @Override
@@ -217,8 +247,9 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
 		
 		this.runOnUiThread(new Runnable() { 
             public void run(){
-            	new AlertDialog.Builder(activity).setTitle(title).setMessage(text).setNeutralButton("OK", null).show();         
-        		stop();
+            	new AlertDialog.Builder(activity).setTitle(title).setMessage(text).setNeutralButton("OK", null).show();
+                if (udpSenderService != null)
+        		    udpSenderService.stop();
             }
 		});
 	} 
