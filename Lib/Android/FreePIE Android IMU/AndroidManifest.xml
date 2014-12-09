@@ -6,7 +6,8 @@
     <uses-sdk
         android:minSdkVersion="9"
         android:targetSdkVersion="15" />
-	<uses-permission android:name="android.permission.INTERNET" /> 
+	<uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -21,7 +22,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> 
+        </activity>
+        <service android:name=".UdpSenderService" />
     </application>
 
 </manifest>
