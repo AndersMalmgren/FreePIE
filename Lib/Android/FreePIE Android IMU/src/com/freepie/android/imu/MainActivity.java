@@ -45,6 +45,7 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
     };
 
     private void bindService() {
+        startService(new Intent(getBaseContext(), UdpSenderService.class));
         bindService(new Intent(this, UdpSenderService.class), conn, Context.BIND_AUTO_CREATE);
     }
 
