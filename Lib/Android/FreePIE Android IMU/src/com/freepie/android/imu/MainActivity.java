@@ -235,8 +235,10 @@ public class MainActivity extends Activity implements IDebugListener, IErrorHand
     	super.onStop();    	
         unbindService();
         save();
-    }    
-    
+        if (udpSenderService != null && !udpSenderService.isRunning())
+            stopService(new Intent(getBaseContext(), UdpSenderService.class));
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
