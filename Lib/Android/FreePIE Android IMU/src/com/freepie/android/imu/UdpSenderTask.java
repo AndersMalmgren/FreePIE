@@ -34,12 +34,9 @@ public class UdpSenderTask implements SensorEventListener {
 	byte deviceIndex;
 	boolean sendOrientation;
 	boolean sendRaw;
-	boolean debug;
 	private int sampleRate;
-	private IDebugListener debugListener;
 	private SensorManager sensorManager;
-	private IErrorHandler errorHandler;
-		
+
 	ByteBuffer buffer;
 
 	Thread worker;
@@ -48,6 +45,20 @@ public class UdpSenderTask implements SensorEventListener {
     private WifiManager.WifiLock wifiLock;
     private PowerManager.WakeLock wakeLock;
     private DatagramPacket p = new DatagramPacket(new byte[] {}, 0);
+
+    private String lastError;
+
+    public String getLastError() {
+        synchronized (this) {
+            return lastError;
+        }
+    }
+
+    private void setLastError(String e) {
+        synchronized (this) {
+            lastError = e;
+        }
+    }
 
     public void debug(float[] acc_, float[] mag_, float[] gyr_, float[] imu_)
     {
@@ -182,12 +193,6 @@ public class UdpSenderTask implements SensorEventListener {
                 }
             }
 
-            if (debug && acc != null && gyr != null && mag != null)
-                debugListener.debugRaw(acc, gyr, mag);
-
-            if (debug && imu != null)
-                debugListener.debugImu(imu);
-
             if (next)
                 notifyAll();
         }
@@ -245,9 +250,5 @@ public class UdpSenderTask implements SensorEventListener {
 	    }
 	    catch(IOException w) {	    	
 	    }
-	}
-
-	public void setDebug(boolean debug) {
-		this.debug = debug;		
 	}
 }

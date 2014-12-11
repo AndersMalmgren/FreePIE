@@ -74,12 +74,15 @@ public class UdpSenderService extends Service {
         t.start(settings, wl, nl);
     }
 
-    public void setDebug(boolean flag) {
-        if (t != null)
-            t.setDebug(flag);
-    }
-
     public boolean isRunning() {
         return t != null;
+    }
+
+    public String debug(float[] acc_, float[] mag_, float[] gyr_, float[] imu_) {
+        if (t != null) {
+            t.debug(acc_, mag_, gyr_, imu_);
+            return t.getLastError();
+        }
+        return null;
     }
 }
