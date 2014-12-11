@@ -129,12 +129,14 @@ public class UdpSenderTask implements SensorEventListener {
                         sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
                         sampleRate);
             else {
-                sensorManager.registerListener(this,
-                        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-                        sampleRate);
-                sensorManager.registerListener(this,
-                        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                        sampleRate);
+                if (!sendRaw) {
+                    sensorManager.registerListener(this,
+                            sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                            sampleRate);
+                    sensorManager.registerListener(this,
+                            sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                            sampleRate);
+                }
             }
         }
 
