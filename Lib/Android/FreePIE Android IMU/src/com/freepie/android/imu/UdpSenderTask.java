@@ -41,7 +41,6 @@ public class UdpSenderTask implements SensorEventListener {
 	private IErrorHandler errorHandler;
 		
 	ByteBuffer buffer;
-	CyclicBarrier sync;
 
 	Thread worker;
 	volatile boolean running;
@@ -93,11 +92,13 @@ public class UdpSenderTask implements SensorEventListener {
         		}
             	
         		while(running) {
-        			try {
-        			sync.await();
-        			} catch(Exception e) {}
-        			
-        			Send();
+                    try {
+                        synchronized (this_) {
+                            this_.wait();
+                            Send();
+                        }
+                    } catch (InterruptedException e) {
+                    }
         		}
         		try  {
         			socket.disconnect();
@@ -185,16 +186,11 @@ public class UdpSenderTask implements SensorEventListener {
             if (debug && imu != null)
                 debugListener.debugImu(imu);
 
-            if (sendRaw && gyr != null && acc != null && mag != null || sendOrientation && imu != null)
-                releaseSendThread();
+            if (next)
+                notifyAll();
         }
 	}
-	
 
-	private void releaseSendThread() {
-        sync.reset();
-	}
-	
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {	
 	}
@@ -203,12 +199,13 @@ public class UdpSenderTask implements SensorEventListener {
         wakeLock.release();
         wifiLock.release();
 		running = false;
-		sensorManager.unregisterListener(this);		
-		releaseSendThread();
+		sensorManager.unregisterListener(this);
+        synchronized (this) {
+            notifyAll();
+        }
 	}
 
 	private void Send() {
-        synchronized (this) {
         buffer.clear();
 
         buffer.put(deviceIndex);
@@ -241,7 +238,6 @@ public class UdpSenderTask implements SensorEventListener {
 
         p.setData(arr, 0, buffer.position());
 
-        }
 	    try {
 	    	socket.send(p);
 	    }
