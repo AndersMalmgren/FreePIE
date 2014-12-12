@@ -273,7 +273,9 @@ public class MainActivity extends Activity {
         final Activity activity = this;
 
         new AlertDialog.Builder(activity).setTitle("Error").setMessage(text).setNeutralButton("OK", null).show();
-        if (udpSenderService != null)
+        if (udpSenderService != null) {
             udpSenderService.stop();
+            start.setChecked(false);
+        }
     }
 }
