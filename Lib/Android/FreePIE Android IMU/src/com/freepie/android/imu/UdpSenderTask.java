@@ -211,7 +211,11 @@ public class UdpSenderTask implements SensorEventListener {
         synchronized (this) {
             notifyAll();
         }
-	}
+        try {
+            worker.join();
+        } catch (InterruptedException e) {
+        }
+    }
 
 	private void Send() {
         buffer.clear();
