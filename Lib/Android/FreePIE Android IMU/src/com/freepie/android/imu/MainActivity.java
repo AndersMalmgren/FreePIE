@@ -251,10 +251,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        unbindService(conn);
         if (udpSenderService != null && !udpSenderService.isRunning())
             stopService(new Intent(this, UdpSenderService.class));
         save();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (udpSenderService != null)
+            unbindService(conn);
     }
 
     @Override
