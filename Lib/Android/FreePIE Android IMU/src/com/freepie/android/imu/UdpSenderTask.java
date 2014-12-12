@@ -86,8 +86,6 @@ public class UdpSenderTask implements SensorEventListener {
 
 		buffer = ByteBuffer.allocate(50);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
-					
-		running = true;
 
         final UdpSenderTask this_ = this;
 
@@ -99,8 +97,11 @@ public class UdpSenderTask implements SensorEventListener {
                     p.setPort(port);
         		}
         		catch(Exception e) {
-        			setLastError("Can't create endpoint" + e.getMessage());
+        			setLastError("Can't create endpoint " + e.getMessage());
+                    return;
         		}
+
+                running = true;
             	
         		while(running) {
                     try {
