@@ -9,6 +9,14 @@
 	<RelativeLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:id="@+id/empty_layout"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
 	
 	    <TextView
 	        android:id="@+id/lblIp"
@@ -28,9 +36,7 @@
 	        android:layout_alignParentRight="true"
 	        android:layout_below="@+id/lblIp"
 	        android:ems="10"
-	        android:inputType="text" >
-	
-	        <requestFocus />
+	        android:inputType="text">
 	    </EditText>
 	
 	    <TextView
@@ -51,7 +57,7 @@
 	        android:layout_alignParentRight="true"
 	        android:layout_below="@+id/lblPort"
 	        android:ems="10"
-	        android:inputType="number" />
+	        android:inputType="number"/>
 	    
 	    <Spinner
 	        android:id="@+id/index"
@@ -94,7 +100,8 @@
 	        android:layout_alignParentLeft="true"
 	        android:layout_alignParentRight="true"
 	        android:layout_below="@+id/sampleRate"
-	        android:text="@string/start" />
+	        android:text="@string/start">
+        </ToggleButton>
 	
 	    <CheckBox
 	        android:id="@+id/debug"

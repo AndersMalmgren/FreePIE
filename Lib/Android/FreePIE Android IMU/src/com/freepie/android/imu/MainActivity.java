@@ -68,6 +68,7 @@ public class MainActivity extends Activity {
     private static final String DEBUG_FORMAT = "%.2f;%.2f;%.2f";
 
     private ToggleButton start;
+    private TextView lblIP;
     private EditText txtIp;
     private EditText txtPort;
     private Spinner spnIndex;
@@ -80,6 +81,7 @@ public class MainActivity extends Activity {
     private TextView gyr;
     private TextView mag;
     private TextView imu;
+    private LinearLayout emptyLayout;
 
     private TimerTask debugHandler = new TimerTask() {
         @Override
@@ -108,6 +110,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+
+        emptyLayout = (LinearLayout) findViewById(R.id.empty_layout);
 
         txtIp = (EditText) findViewById(R.id.ip);
         txtPort = (EditText) findViewById(R.id.port);
@@ -143,7 +147,7 @@ public class MainActivity extends Activity {
         final SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -159,10 +163,16 @@ public class MainActivity extends Activity {
                     } else {
                         udpSenderService.stop();
                     }
-                    start.setChecked(udpSenderService.isRunning());
+                    boolean running = udpSenderService.isRunning();
+                    start.setChecked(running);
+                    txtIp.setEnabled(!running);
+                    txtPort.setEnabled(!running);
+                    emptyLayout.requestFocus();
                 }
             }
         });
+
+        emptyLayout.requestFocus();
 
         t.schedule(debugHandler, 1000L, 1000L);
 
