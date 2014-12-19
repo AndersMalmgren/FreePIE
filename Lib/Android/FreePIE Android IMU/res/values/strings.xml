@@ -11,7 +11,7 @@
     <string name="acc">Accelerometer</string>
     <string name="debug">Debug</string>
     <string name="gyr">Gyro</string>
-    <string name="mag">Magnometer</string>
+    <string name="mag">Magnetometer</string>
     <string name="imu">Orientation</string>
     <string name="index">Index</string>
 
