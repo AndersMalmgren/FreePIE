@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (udpSenderService != null && udpSenderService.isRunning()) {
+                    if (chkDebug.isChecked() && udpSenderService != null && udpSenderService.isRunning()) {
                         float[] imu = new float[3], acc = new float[3], mag = new float[3], gyr = new float[3];
                         String lastError = udpSenderService.debug(acc, mag, gyr, imu);
                         if (lastError != null)
@@ -174,7 +174,7 @@ public class MainActivity extends Activity {
 
         emptyLayout.requestFocus();
 
-        t.schedule(debugHandler, 1000L, 1000L);
+        t.schedule(debugHandler, 100L, 100L);
 
         bindService();
     }
