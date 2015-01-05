@@ -1190,6 +1190,13 @@
             Determines delegate type for the Python function
             </summary>
         </member>
+        <member name="T:IronPython.Compiler.Ast.FunctionDefinition.ArbitraryGlobalsVisitor">
+            <summary>
+            Rewrites the tree for performing lookups against globals instead of being bound
+            against the optimized scope. This is used if the user creates a function using public
+            PythonFunction ctor.
+            </summary>
+        </member>
         <member name="T:IronPython.Compiler.Ast.ComprehensionScope">
             <summary>
             Scope for the comprehension.  Because scopes are usually statements and comprehensions are expressions
@@ -5065,7 +5072,7 @@
             The code is then executed in a specific CodeContext by calling the .Call method.
             
             If the code is being used for compile (vs. exec/eval/execfile) then it needs to be
-            registered incase our tracing mode changes.
+            registered in case our tracing mode changes.
             </summary>
         </member>
         <member name="M:IronPython.Runtime.FunctionCode.LazyCompileFirstTarget(IronPython.Runtime.PythonFunction)">
@@ -5304,6 +5311,11 @@
             Converts the XML as stored in the config file into a human readable string.
             </summary>
         </member>
+        <member name="M:IronPython.Runtime.Exceptions.TraceBack.Extract">
+            <summary>
+            returns string containing human readable representation of traceback
+            </summary>
+        </member>
         <member name="F:IronPython.Runtime.PythonGenerator._active">
             <summary>
             True iff the thread is currently inside the generator (ie, invoking the _next delegate).
@@ -5340,7 +5352,7 @@
             Use multiple overloads to resolve the default parameters.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.PythonGenerator.throw(System.Object,System.Object,System.Object)">
+        <member name="M:IronPython.Runtime.PythonGenerator.throw(System.Object,System.Object,System.Object,System.Boolean)">
             <summary>
             Throw(...) is like Raise(...) being called from the yield point within the generator.
             Note it must come from inside the generator so that the traceback matches, and so that it can 
@@ -5355,7 +5367,7 @@
             the result of yield when used as an expression.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.PythonGenerator.close">
+        <member name="M:IronPython.Runtime.PythonGenerator.close(System.Boolean)">
             <summary>
             Close introduced in Pep 342.
             </summary>
@@ -6012,6 +6024,14 @@
             <summary>
             helper function for re-raised exceptions.
             </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Operations.PythonOps.MakeRethrowExceptionWorker(System.Exception)">
+            <summary>
+            helper function for re-raised exception.
+            This entry point is used by 'raise' inside 'with' statement
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
         </member>
         <member name="M:IronPython.Runtime.Operations.PythonOps.MakeException(IronPython.Runtime.CodeContext,System.Object,System.Object,System.Object)">
             <summary>
@@ -7010,7 +7030,7 @@
             Gets the index into the object array to be used for the slot storage.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo">
             <summary>
             Helpers for interacting w/ .NET types.  This includes:
             
@@ -7022,62 +7042,62 @@
                     not constantly looking up via reflection.
             </summary>
         </member>
-        <member name="F:IronPython.Runtime.Types.TypeInfo._resolvers">
+        <member name="F:IronPython.Runtime.Types.PythonTypeInfo._resolvers">
             <summary> list of resolvers which we run to resolve items </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.GetMemberAll(IronPython.Runtime.Binding.PythonBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type,System.String)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.GetMemberAll(IronPython.Runtime.Binding.PythonBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type,System.String)">
             <summary>
             Gets the statically known member from the type with the specific name.  Searches the entire type hierarchy to find the specified member.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.GetMembersAll(IronPython.Runtime.Binding.PythonBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.GetMembersAll(IronPython.Runtime.Binding.PythonBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
             <summary>
             Gets all the statically known members from the specified type.  Searches the entire type hierarchy to get all possible members.
             
             The result may include multiple resolution.  It is the callers responsibility to only treat the 1st one by name as existing.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.GetMember(IronPython.Runtime.Binding.PythonBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type,System.String)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.GetMember(IronPython.Runtime.Binding.PythonBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type,System.String)">
             <summary>
             Gets the statically known member from the type with the specific name.  Searches only the specified type to find the member.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.GetMembers(IronPython.Runtime.Binding.PythonBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.GetMembers(IronPython.Runtime.Binding.PythonBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
             <summary>
             Gets all the statically known members from the specified type.  Searches only the specified type to find the members.
             
             The result may include multiple resolution.  It is the callers responsibility to only treat the 1st one by name as existing.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.MakeResolverTable">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.MakeResolverTable">
             <summary>
             Creates the resolver table which includes all the possible resolutions.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.StringResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.StringResolver(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type)">
             <summary>
             Provides a resolution for __str__.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.ReprResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.ReprResolver(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type)">
             <summary>
             Provides a resolution for __repr__
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.TypeOverridesMethod(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type,System.String)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.TypeOverridesMethod(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type,System.String)">
             <summary>
             Helper to see if the type explicitly overrides the method.  This ignores members
             defined on object.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.HashResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.HashResolver(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type)">
             <summary>
             Provides a resolution for __hash__, first looking for IStructuralEquatable.GetHashCode,
             then IValueEquality.GetValueHashCode.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.NewResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.NewResolver(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type)">
             <summary>
             Provides a resolution for __new__.  For standard .NET types __new__ resolves to their
             constructor.  For Python types they inherit __new__ from their base class.
@@ -7085,28 +7105,28 @@
             TODO: Can we just always fallback to object.__new__?  If not why not?
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.NextResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.NextResolver(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type)">
             <summary>
             Provides a resolution for next
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.LengthResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.LengthResolver(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type)">
             <summary>
             Provides a resolution for __len__
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.IterResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.IterResolver(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type)">
             <summary>
             Provides a resolution for __iter__
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.FallbackInequalityResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.FallbackInequalityResolver(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type)">
             <summary>
             Looks for an Equals overload defined on the type and if one is present binds __ne__ to an
             InstanceOps helper.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.ContainsResolver(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.ContainsResolver(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type)">
             <summary>
             Provides an implementation of __contains__.  We can pull contains from:
                 ICollection of T which defines Contains directly
@@ -7123,29 +7143,29 @@
             The lookup is well ordered and not dependent upon the order of values returned by reflection.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.GetEnumeratorContains(System.Type,System.Collections.Generic.IList{System.Type},System.Collections.Generic.List{Microsoft.Scripting.Actions.MemberTracker}@,System.Boolean@,System.Type,System.Type,System.String)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.GetEnumeratorContains(System.Type,System.Collections.Generic.IList{System.Type},System.Collections.Generic.List{Microsoft.Scripting.Actions.MemberTracker}@,System.Boolean@,System.Type,System.Type,System.String)">
             <summary>
             Helper for IEnumerable/IEnumerator __contains__ 
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.GetMemberGroup(IronPython.Runtime.Types.TypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type,System.String)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.GetMemberGroup(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type,System.String)">
             <summary>
             Primary worker for getting the member(s) associated with a single name.  Can be called with different MemberBinder's to alter the
             scope of the search.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.GetResolvedMembers(IronPython.Runtime.Types.TypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.GetResolvedMembers(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
             <summary>
             Primary worker for returning a list of all members in a type.  Can be called with different MemberBinder's to alter the scope
             of the search.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.GetInstanceOpsMethod(System.Type,System.String[])">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.GetInstanceOpsMethod(System.Type,System.String[])">
             <summary>
             Helper to get a MemberGroup for methods declared on InstanceOps
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.FindCastMethod(IronPython.Runtime.Types.TypeInfo.MemberBinder,System.Type,System.Collections.Generic.List{System.Type})">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.FindCastMethod(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,System.Type,System.Collections.Generic.List{System.Type})">
             <summary>
             Helper to get the proper typecasting method, according to the following precedence rules:
             
@@ -7157,23 +7177,23 @@
             4. Return type (order specified in toTypes)
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.MakeConversionResolver(System.Collections.Generic.List{System.Type})">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.MakeConversionResolver(System.Collections.Generic.List{System.Type})">
             <summary>
             Helper for creating a typecast resolver
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.MakeIndexerResolver(System.Boolean)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.MakeIndexerResolver(System.Boolean)">
             <summary>
             Helper for creating __getitem__/__setitem__ resolvers
             </summary>
             <param name="set">false for a getter, true for a setter</param>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.IncludeOperatorMethod(System.Type,IronPython.Runtime.Binding.PythonOperationKind)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.IncludeOperatorMethod(System.Type,IronPython.Runtime.Binding.PythonOperationKind)">
             <summary>
             Filters out methods which are present on standard .NET types but shouldn't be there in Python
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.FilterFieldAndEvent(Microsoft.Scripting.Actions.MemberGroup)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.FilterFieldAndEvent(Microsoft.Scripting.Actions.MemberGroup)">
             <summary>
             When private binding is enabled we can have a collision between the private Event
             and private field backing the event.  We filter this out and favor the event.
@@ -7181,12 +7201,12 @@
             This matches the v1.0 behavior of private binding.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.ProtectedOnly(System.Reflection.MemberInfo)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.ProtectedOnly(System.Reflection.MemberInfo)">
             <summary>
             Filters down to include only protected methods
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.FilterForwardReverseMethods(System.String,Microsoft.Scripting.Actions.MemberGroup,System.Type,IronPython.Runtime.Binding.PythonOperationKind)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.FilterForwardReverseMethods(System.String,Microsoft.Scripting.Actions.MemberGroup,System.Type,IronPython.Runtime.Binding.PythonOperationKind)">
             <summary>
             If an operator is a reverisble operator (e.g. addition) then we need to filter down to just the forward/reverse
             versions of the .NET method.  For example consider:
@@ -7211,50 +7231,50 @@
             ASCII strings in both forms.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.AreTypesCompatible(System.Type,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.AreTypesCompatible(System.Type,System.Type)">
             <summary>
             Checks to see if the parameter type and the declaring type are compatible to determine
             if an operator is forward or reverse.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.IsPythonRecognizedOperator(System.String)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.IsPythonRecognizedOperator(System.String)">
             <summary>
             Checks to see if this is an operator method which Python recognizes.  For example
             op_Comma is not recognized by Python and therefore should exposed to the user as
             a method that is callable by name.
             </summary>
         </member>
-        <member name="P:IronPython.Runtime.Types.TypeInfo.ComplexResolver">
+        <member name="P:IronPython.Runtime.Types.PythonTypeInfo.ComplexResolver">
             <summary>
             Provides a resolution for __complex__
             </summary>
         </member>
-        <member name="P:IronPython.Runtime.Types.TypeInfo.FloatResolver">
+        <member name="P:IronPython.Runtime.Types.PythonTypeInfo.FloatResolver">
             <summary>
             Provides a resolution for __float__
             </summary>
         </member>
-        <member name="P:IronPython.Runtime.Types.TypeInfo.IntResolver">
+        <member name="P:IronPython.Runtime.Types.PythonTypeInfo.IntResolver">
             <summary>
             Provides a resolution for __int__
             </summary>
         </member>
-        <member name="P:IronPython.Runtime.Types.TypeInfo.BigIntegerResolver">
+        <member name="P:IronPython.Runtime.Types.PythonTypeInfo.BigIntegerResolver">
             <summary>
             Provides a resolution for __long__
             </summary>
         </member>
-        <member name="P:IronPython.Runtime.Types.TypeInfo.GetItemResolver">
+        <member name="P:IronPython.Runtime.Types.PythonTypeInfo.GetItemResolver">
             <summary>
             Provides a resolution for __getitem__
             </summary>
         </member>
-        <member name="P:IronPython.Runtime.Types.TypeInfo.SetItemResolver">
+        <member name="P:IronPython.Runtime.Types.PythonTypeInfo.SetItemResolver">
             <summary>
             Provides a resolution for __setitem__
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.MemberResolver">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.MemberResolver">
             <summary>
             Abstract class used for resolving members.  This provides two methods of member look.  The first is looking
             up a single member by name.  The other is getting all of the members.
@@ -7266,42 +7286,42 @@
             filter duplicates.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.MemberResolver.ResolveMember(IronPython.Runtime.Types.TypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type,System.String)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.MemberResolver.ResolveMember(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type,System.String)">
             <summary>
             Looks up an individual member and returns a MemberGroup with the given members.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.MemberResolver.ResolveMembers(IronPython.Runtime.Types.TypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.MemberResolver.ResolveMembers(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
             <summary>
             Returns a list of members that exist on the type.  The ResolvedMember structure indicates both
             the name and provides the MemberGroup.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.MemberResolver.GetCandidateNames(IronPython.Runtime.Types.TypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.MemberResolver.GetCandidateNames(IronPython.Runtime.Types.PythonTypeInfo.MemberBinder,Microsoft.Scripting.Actions.MemberRequestKind,System.Type)">
             <summary>
             Returns a list of possible members which could exist.  ResolveMember needs to be called to verify their existance. Duplicate
             names can also be returned.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.OneOffResolver">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.OneOffResolver">
             <summary>
             One off resolver for various special methods which are known by name.  A delegate is provided to provide the actual member which
             will be resolved.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.StandardResolver">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.StandardResolver">
             <summary>
             Standard resolver for looking up .NET members.  Uses reflection to get the members by name.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.EqualityResolver">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.EqualityResolver">
             <summary>
             Resolves methods mapped to __eq__ and __ne__ from:
                 1. IStructuralEquatable.Equals
                 2. IValueEquality.Equals (CLR2 only)
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.ComparisonResolver">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.ComparisonResolver">
             <summary>
             Resolves methods mapped to __gt__, __lt__, __ge__, __le__, as well as providing an alternate resolution
             for __eq__ and __ne__, from the comparable type's CompareTo method.
@@ -7309,39 +7329,39 @@
             This should be run after the EqualityResolver.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.OperatorResolver">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.OperatorResolver">
             <summary>
             Resolves methods mapped to __*__ methods automatically from the .NET operator.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.OperatorResolver.FilterAlternateMethods(IronPython.Runtime.Types.OperatorMapping,Microsoft.Scripting.Actions.MemberGroup)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.OperatorResolver.FilterAlternateMethods(IronPython.Runtime.Types.OperatorMapping,Microsoft.Scripting.Actions.MemberGroup)">
             <summary>
             Filters alternative methods out that don't match the expected signature and therefore
             are just sharing a common method name.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.OperatorResolver.FilterObjectEquality(Microsoft.Scripting.Actions.MemberGroup)">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.OperatorResolver.FilterObjectEquality(Microsoft.Scripting.Actions.MemberGroup)">
             <summary>
             Removes Object.Equals methods as we never return these for PythonOperationKind.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.PrivateBindingResolver">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.PrivateBindingResolver">
             <summary>
             Provides bindings to private members when that global option is enabled.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.ProtectedMemberResolver">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.ProtectedMemberResolver">
             <summary>
             Provides resolutions for protected members that haven't yet been
             subclassed by NewTypeMaker.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.MemberBinder">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.MemberBinder">
             <summary>
             Base class used for resolving a name into a member on the type.
             </summary>
         </member>
-        <member name="M:IronPython.Runtime.Types.TypeInfo.MemberBinder.GetBaseInstanceMethod(System.Type,System.String[])">
+        <member name="M:IronPython.Runtime.Types.PythonTypeInfo.MemberBinder.GetBaseInstanceMethod(System.Type,System.String[])">
             <summary>
             Gets an instance op method for the given type and name.
             
@@ -7353,12 +7373,12 @@
             Therefore the different binders expose this at the appropriate times.  
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.ResolveBinder">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.ResolveBinder">
             <summary>
             MemberBinder which searches the entire type hierarchy and their extension types to find a member.
             </summary>
         </member>
-        <member name="T:IronPython.Runtime.Types.TypeInfo.LookupBinder">
+        <member name="T:IronPython.Runtime.Types.PythonTypeInfo.LookupBinder">
             <summary>
             MemberBinder which searches only the current type and it's extension types to find a member.
             </summary>
