@@ -34,6 +34,18 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CannedBytes">
+      <HintPath>..\Lib\Midi\CannedBytes.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CannedBytes.IO">
+      <HintPath>..\Lib\Midi\CannedBytes.IO.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CannedBytes.Midi">
+      <HintPath>..\Lib\Midi\CannedBytes.Midi.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="PPJoyWrapper">
       <HintPath>..\Lib\PPJoyWrapper\PPJoyWrapper.dll</HintPath>
     </Reference>
@@ -75,6 +87,8 @@
     <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
     <Compile Include="MidiPlugin.cs" />
+    <Compile Include="Midi\MidiStatus.cs" />
+    <Compile Include="Midi\DataGlobal.cs" />
     <Compile Include="Wiimote\Calibratable.cs" />
     <Compile Include="SpeechPlugin.cs" />
     <Compile Include="VJoyPlugin.cs" />
