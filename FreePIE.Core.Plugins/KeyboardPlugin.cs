@@ -469,20 +469,17 @@ namespace FreePIE.Core.Plugins
         private SetPressedStrategy setKeyPressedStrategy;
         private GetPressedStrategy<int> getKeyPressedStrategy;
 
-        //-----------------------------------------------------------------------
         public override object CreateGlobal()
         {
             return new KeyboardGlobal(this);
         }
 
-        //-----------------------------------------------------------------------
         public override string FriendlyName
         {
             get { return "Keyboard"; }
         }
 
-        //-----------------------------------------------------------------------
-        public override System.Action Start()
+        public override Action Start()
         {
 
             IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
@@ -503,10 +500,8 @@ namespace FreePIE.Core.Plugins
             return null;
         }
 
-        //-----------------------------------------------------------------------
         public override void Stop()
         {
-
             // Don't leave any keys pressed
             for (int i = 0; i < MyKeyDown.Length; i++)
             {
@@ -528,30 +523,22 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        //-----------------------------------------------------------------------
         public override bool GetProperty(int index, IPluginProperty property)
         {
             return false;
         }
 
-        //-----------------------------------------------------------------------
         public override bool SetProperties(Dictionary<string, object> properties)
         {
             return false;
         }
 
-        //-----------------------------------------------------------------------
         public override void DoBeforeNextExecute()
         {
-            // TODO: This polling loop will run at the frequency of the parser.  I should
-            // either run a separate thread poller at a higher frequency or use a buffered
-            // input model to handle out-of-sync key presses
             KeyboardDevice.GetCurrentState(ref KeyState);
-
             setKeyPressedStrategy.Do();
         }
 
-        //-----------------------------------------------------------------------
         public bool IsKeyDown(int keycode)
         {
             // Returns true if the key is currently being pressed
@@ -560,7 +547,6 @@ namespace FreePIE.Core.Plugins
             return down;
         }
 
-        //-----------------------------------------------------------------------
         public bool IsKeyUp(int keycode)
         {
             // Returns true if the key is currently being pressed
@@ -569,13 +555,11 @@ namespace FreePIE.Core.Plugins
             return up;
         }
 
-        //-----------------------------------------------------------------------
         public bool WasKeyPressed(int key)
         {
             return getKeyPressedStrategy.IsPressed(key);
         }
 
-        //--------------------------------------------------------------------------
         private MouseKeyIO.KEYBDINPUT KeyInput(ushort code, uint flag)
         {
             var i = new MouseKeyIO.KEYBDINPUT();
@@ -587,7 +571,6 @@ namespace FreePIE.Core.Plugins
             return i;
         }
 
-        //--------------------------------------------------------------------------
         public void KeyDown(int code)
         {
 
@@ -609,7 +592,6 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        //--------------------------------------------------------------------------
         public void KeyUp(int code)
         {
 
@@ -632,46 +614,42 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        //-----------------------------------------------------------------------
         public void PressAndRelease(int keycode)
         {
             setKeyPressedStrategy.Add(keycode);
         }
     }
 
-    //==========================================================================
     [Global(Name = "keyboard")]
-    public class KeyboardGlobal : UpdateblePluginGlobal<KeyboardPlugin>
+    public class KeyboardGlobal 
     {
+        private readonly KeyboardPlugin plugin;
 
-        //-----------------------------------------------------------------------
-        public KeyboardGlobal(KeyboardPlugin plugin) : base(plugin) { }
+        public KeyboardGlobal(KeyboardPlugin plugin)
+        {
+            this.plugin = plugin;
+        }
 
-        //-----------------------------------------------------------------------
         public bool getKeyDown(Key key)
         {
             return plugin.IsKeyDown((int) key);
         }
 
-        //-----------------------------------------------------------------------
         public void setKeyDown(Key key)
         {
             plugin.KeyDown((int) key);
         }
 
-        //-----------------------------------------------------------------------
         public bool getKeyUp(Key key)
         {
             return plugin.IsKeyUp((int) key);
         }
 
-        //-----------------------------------------------------------------------
         public void setKeyUp(Key key)
         {
             plugin.KeyUp((int) key);
         }
 
-        //-----------------------------------------------------------------------
         public void setKey(Key key, bool down)
         {
             if (down)
@@ -680,13 +658,11 @@ namespace FreePIE.Core.Plugins
                 plugin.KeyUp((int) key);
         }
 
-        //-----------------------------------------------------------------------
         public bool getPressed(Key key)
         {
             return plugin.WasKeyPressed((int) key);
         }
 
-        //-----------------------------------------------------------------------
         public void setPressed(Key key)
         {
             plugin.PressAndRelease((int) key);
