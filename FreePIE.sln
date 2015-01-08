@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Console", "FreePIE.Console\FreePIE.Console.csproj", "{D0368562-09D1-4E6E-8BD3-C1138764971E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Core.Contracts", "FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj", "{58285BD6-810D-4BBD-8249-230C3B0AC76F}"
@@ -50,9 +52,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{40AC54
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = FreePIE.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -161,5 +160,8 @@ Global
 		{5D76B736-D402-4141-95BA-C9F67D4A6856} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
 		{F8B146B6-E6D8-46A9-A9B8-C3EC9A2D8732} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
 		{DFBE147A-E57B-42AC-A560-B69C6FAC1C38} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = FreePIE.vsmdi
 	EndGlobalSection
 EndGlobal

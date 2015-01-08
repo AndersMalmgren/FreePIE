@@ -229,9 +229,14 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "mouse")]
-    public class MouseGlobal : UpdateblePluginGlobal<MousePlugin>
+    public class MouseGlobal
     {
-        public MouseGlobal(MousePlugin plugin) : base(plugin) { }
+        private readonly MousePlugin plugin;
+
+        public MouseGlobal(MousePlugin plugin)
+        {
+            this.plugin = plugin;
+        } 
 
         public int wheelMax
         {
