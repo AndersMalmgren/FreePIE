@@ -43,9 +43,9 @@ namespace FreePIE.Core.Plugins
 
     public class MidiGlobalHolder : IUpdatable, IMidiDataReceiver, IDisposable
     {
-        private readonly Queue<int> messages = new Queue<int>();
+        private readonly Queue<DataGlobal> messages = new Queue<DataGlobal>();
         private readonly MidiInPort port;
-
+        private DataGlobal lastData = new DataGlobal();
 
         public MidiGlobalHolder(int index)
         {
@@ -54,7 +54,7 @@ namespace FreePIE.Core.Plugins
             port.Successor = this;
 
             var count = new MidiInPortCapsCollection().Count;
-            if(index >= count) 
+            if (index >= count)
                 throw new Exception(string.Format("MIDI device with port index {0} not found", index));
 
             port.Open(index);
@@ -69,7 +69,7 @@ namespace FreePIE.Core.Plugins
                 {
                     while (messages.Count > 0)
                     {
-                        lastData = new DataGlobal(messages.Dequeue());
+                        lastData = messages.Dequeue();
                         OnUpdate();
                     }
                 }
@@ -79,9 +79,7 @@ namespace FreePIE.Core.Plugins
         public Action OnUpdate { get; set; }
         public bool GlobalHasUpdateListener { get; set; }
         public MidiGlobal Global { get; private set; }
-
-        private DataGlobal lastData;
-
+        
         public DataGlobal Data
         {
             get { return lastData; }
@@ -91,7 +89,7 @@ namespace FreePIE.Core.Plugins
         {
             lock (messages)
             {
-                messages.Enqueue(data);
+                messages.Enqueue(new DataGlobal(data, timestamp));
             }
         }
 
@@ -107,11 +105,7 @@ namespace FreePIE.Core.Plugins
     [Global(Name = "midi")]
     public class MidiGlobal : UpdateblePluginGlobal<MidiGlobalHolder>
     {
-        public MidiGlobal(MidiGlobalHolder plugin)
-            : base(plugin)
-        {
-
-        }
+        public MidiGlobal(MidiGlobalHolder plugin) : base(plugin) { }
 
         public DataGlobal data
         {
