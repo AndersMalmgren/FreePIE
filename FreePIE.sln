@@ -15,13 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{77C0351A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Tests.Core.Plugins", "FreePIE.Tests.Core.Plugins\FreePIE.Tests.Core.Plugins.csproj", "{AB8FED7B-DCC4-4985-A031-BB97351C24E6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5D76B736-D402-4141-95BA-C9F67D4A6856}"
-	ProjectSection(SolutionItems) = preProject
-		FreePIE.vsmdi = FreePIE.vsmdi
-		Local.testsettings = Local.testsettings
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Tests.Core", "FreePIE.Tests.Core\FreePIE.Tests.Core.csproj", "{F8B146B6-E6D8-46A9-A9B8-C3EC9A2D8732}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Tests.Test", "FreePIE.Tests.Test\FreePIE.Tests.Test.csproj", "{DFBE147A-E57B-42AC-A560-B69C6FAC1C38}"
@@ -157,7 +150,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AB8FED7B-DCC4-4985-A031-BB97351C24E6} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
-		{5D76B736-D402-4141-95BA-C9F67D4A6856} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
 		{F8B146B6-E6D8-46A9-A9B8-C3EC9A2D8732} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
 		{DFBE147A-E57B-42AC-A560-B69C6FAC1C38} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
 	EndGlobalSection
