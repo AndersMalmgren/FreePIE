@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading;
 using FreePIE.Core.Common;
-using FreePIE.Core.Common.Events;
-using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.Plugins;
@@ -27,6 +24,7 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         public IEnumerable<IPlugin> InvokeAndConfigureAllScriptDependantPlugins(string script)
         {
+            script = RemoveComments(script);
             var pluginTypes = pluginInvoker.ListAllPluginTypes()
                 .Select(pt =>
                         new
@@ -39,6 +37,24 @@ namespace FreePIE.Core.ScriptEngine.Python
                 .Select(info => info.PluginType).ToList();
 
             return pluginInvoker.InvokeAndConfigurePlugins(pluginTypes);
+        }
+
+        private string RemoveComments(string script)
+        {
+            var reader = new StringReader(script);
+            var result = new StringBuilder();
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                var commentStart = line.IndexOf("#", StringComparison.Ordinal);
+                if (commentStart != -1)
+                    line = line.Substring(0, commentStart);
+
+                if(line.Length != 0)
+                    result.AppendLine(line);
+            }
+
+            return result.ToString();
         }
 
         public IEnumerable<Type> GetAllUsedGlobalEnums(string script)
