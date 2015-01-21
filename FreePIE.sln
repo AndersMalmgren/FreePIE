@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Buildtools", "Buildtools", 
 		BuildTools\get_git_version.xml = BuildTools\get_git_version.xml
 		BuildTools\License.rtf = BuildTools\License.rtf
 		BuildTools\Main.wxs = BuildTools\Main.wxs
+		README.md = README.md
 		BuildTools\write_VersionInfo.xml = BuildTools\write_VersionInfo.xml
 	EndProjectSection
 EndProject

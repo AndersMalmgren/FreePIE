@@ -13,6 +13,12 @@ FreePIE is very similar to the popular utility GlovePIE, but encourages open dev
 
 FreePIE is licensed under GPLv2  
 
+Changelog 1.8.563.0
+* Added support for MIDI devices (Read only for now)
+* Python engine update
+* Android APK rewritten as a service for a more stable experience
+* Some small fixes like removing unused update event from mouse and keyboard plugin (They wont fire)
+
 Changelog 1.7.528.0
 * Android protocol optimized (Install new APK required)
 * Android raw data accessible to scripts
