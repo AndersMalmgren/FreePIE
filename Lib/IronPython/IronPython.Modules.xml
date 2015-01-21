@@ -2436,6 +2436,15 @@
              waiting for these length bytes.
              </summary>
         </member>
+        <member name="M:ComponentAce.Compression.Libs.ZLib.GzipHeader.CreateRemover(ComponentAce.Compression.Libs.ZLib.ZStream)">
+            <summary>
+            Creates header remover.
+            As long as header is not completed, call to Remover.MoveNext() returns true and
+            adjust state of z.
+            </summary>
+            <param name="z">Stream where gzip header will appear.</param>
+            <returns></returns>
+        </member>
         <member name="T:ComponentAce.Compression.Libs.ZLib.InfTreeUtil">
             <summary>
             Contains utility information for the InfTree class
@@ -3516,7 +3525,7 @@
         </member>
         <member name="M:IronPython.Modules.PythonLocale.LocaleInfo.CreateConventionsDict">
             <summary>
-            Popupates the given directory w/ the locale information from the given
+            Populates the given directory w/ the locale information from the given
             CultureInfo.
             </summary>
         </member>
