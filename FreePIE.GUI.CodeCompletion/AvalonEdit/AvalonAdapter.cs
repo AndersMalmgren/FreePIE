@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Search;
@@ -10,11 +11,13 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
     public class AvalonEditorAdapter : EditorAdapterBase
     {
         private readonly TextArea textArea;
+        private ScrollViewer scroll;
         private SearchPanel searchPanel;
 
         public AvalonEditorAdapter(TextArea textArea)
         {
             this.textArea = textArea;
+
             textArea.Caret.PositionChanged += OnCaretPositionChanged;
             textArea.PreviewKeyDown += OnTextAreaPreviewKeyDown;
             textArea.KeyDown += OnKeyDown;
@@ -81,6 +84,13 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
         public override event KeyEventHandler KeyDown;
         public override event KeyEventHandler KeyUp;
         public override event TextCompositionEventHandler PreviewTextInput;
+        public override Point GetOffset()
+        {
+            var s = scroll ?? (scroll = FindScrollAncestor(textArea));
+
+            var trans = textArea.TextView.TransformToAncestor(textArea);
+            return trans.Transform(new Point(-s.HorizontalOffset, -s.VerticalOffset));
+        }
 
         public override Rect GetVisualPosition()
         {
@@ -117,6 +127,18 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
         public override void Focus()
         {
             textArea.Focus();
+        }
+
+        private ScrollViewer FindScrollAncestor(UIElement element)
+        {
+            DependencyObject obj = element;
+            while ((obj = LogicalTreeHelper.GetParent(obj)) != null)
+            {
+                if (obj is ScrollViewer)
+                    return obj as ScrollViewer;
+            }
+
+            return null;
         }
     }
 }

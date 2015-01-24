@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Caliburn.Micro;
 
 namespace FreePIE.GUI.CodeCompletion.Event.Actions
 {
@@ -24,30 +25,13 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
                 return;
 
             Rect rect = view.Target.GetVisualPosition();
-
-            view.PlacementRectangle = rect.IsEmpty ? default(Rect) : new Rect(CalculatePoint(rect, view.Target.UIElement), new Size(rect.Width, rect.Height));
+            view.PlacementRectangle = rect.IsEmpty ? default(Rect) : new Rect(CalculatePoint(rect, view), new Size(rect.Width, rect.Height));
         }
 
-        private ScrollViewer FindScrollAncestor(UIElement element)
+        Point CalculatePoint(Rect rect, CompletionPopupView view)
         {
-            DependencyObject obj = element;
-            while((obj = LogicalTreeHelper.GetParent(obj)) != null)
-            {
-                if (obj is ScrollViewer)
-                    return obj as ScrollViewer;
-            }
-
-            return null;
-        }
-
-        Point CalculatePoint(Rect rect, UIElement textArea)
-        {
-            var scroll = FindScrollAncestor(textArea);
-
-            if(scroll == null)
-                return new Point(rect.X, rect.Y + 1);
-
-            return new Point(rect.X - scroll.HorizontalOffset, rect.Y - scroll.VerticalOffset + 1);
+            var offset = view.Target.GetOffset();
+            return new Point(rect.X + offset.X, rect.Y + offset.Y + 1);
         }
     }
 }
