@@ -6,9 +6,9 @@
       Schedule="afterInstallInitialize"
       DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 
-    <PropertyRef Id='NETFRAMEWORK40CLIENT'/>
-    <Condition Message='This setup requires the .NET Framework 4.0 Client Profile installed.'>
-      <![CDATA[Installed OR NETFRAMEWORK40CLIENT]]>
+    <PropertyRef Id="NETFRAMEWORK45"/>
+    <Condition Message="This application requires .NET Framework 4.5. Please install the .NET Framework then run this installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK45]]>
     </Condition>
 
     <Media Id="1" Cabinet="$(var.ProductName).cab" EmbedCab="yes" />
