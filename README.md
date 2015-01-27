@@ -13,6 +13,9 @@ FreePIE is very similar to the popular utility GlovePIE, but encourages open dev
 
 FreePIE is licensed under GPLv2  
 
+Changelog 1.8.569.0
+* Latest version did not contain the fix for vjoy because of a commit miss
+
 Changelog 1.8.567.0
 * Fixed support for latest version of vjoy driver
 * Cosmetic fix for code completion and Windows 8
