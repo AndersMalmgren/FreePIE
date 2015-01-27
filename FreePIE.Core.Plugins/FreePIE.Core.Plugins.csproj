@@ -60,7 +60,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Speech" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="vJoyInterfaceWrap, Version=2.0.1.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="vJoyInterfaceWrap">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\vJoy\vJoyInterfaceWrap.dll</HintPath>
     </Reference>
