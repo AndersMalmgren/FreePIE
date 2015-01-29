@@ -66,7 +66,7 @@ namespace FreePIE.Core.Plugins
         private readonly int maxDirPov;
         private readonly int maxContinuousPov;
         public const int ContinuousPovMax = 35900;
-
+        
         private readonly SetPressedStrategy setPressedStrategy;
 
         public VJoyGlobalHolder(uint index)
@@ -81,6 +81,14 @@ namespace FreePIE.Core.Plugins
 
             if (!joystick.vJoyEnabled())
                 throw new Exception("vJoy driver not enabled: Failed Getting vJoy attributes");
+
+            uint apiVersion = 0;
+            uint driverVersion = 0;
+            bool match = joystick.DriverMatch(ref apiVersion, ref driverVersion);
+            if (!match)
+                Console.WriteLine("vJoy version of Driver ({0:X}) does NOT match DLL Version ({1:X})", driverVersion, apiVersion);
+
+            Version = new VjoyVersionGlobal(apiVersion, driverVersion);
 
             var status = joystick.GetVJDStatus(index);
             
@@ -173,10 +181,24 @@ namespace FreePIE.Core.Plugins
         public VJoyGlobal Global { get; private set; }
         public uint Index { get; private set; }
         public int AxisMax { get; private set; }
-  
+
+        public VjoyVersionGlobal Version { get; private set; }
+
         public void Dispose()
         {
             joystick.RelinquishVJD(Index);   
+        }
+    }
+
+    public class VjoyVersionGlobal
+    {
+        public uint driver { get; private set; }
+        public uint api { get; private set; }
+
+        public VjoyVersionGlobal(uint driver, uint api)
+        {
+            this.driver = driver;
+            this.api = api;
         }
     }
 
@@ -260,5 +282,7 @@ namespace FreePIE.Core.Plugins
         {
             holder.SetContinuousPov(pov, value);
         }
+
+        public VjoyVersionGlobal version { get { return holder.Version; } }
     }
 }
