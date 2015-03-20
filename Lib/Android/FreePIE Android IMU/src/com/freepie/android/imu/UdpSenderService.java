@@ -227,6 +227,8 @@ public class UdpSenderService extends Service implements SensorEventListener {
 
         final UdpSenderService this_ = this;
 
+        running = true;
+
         worker = new Thread(new Runnable() {
             public void run(){
                 try {
@@ -236,10 +238,9 @@ public class UdpSenderService extends Service implements SensorEventListener {
                 }
                 catch(Exception e) {
                     setLastError("Can't create endpoint " + e.getMessage());
+                    running = false;
                     return;
                 }
-
-                running = true;
 
                 while(running) {
                     try {
@@ -256,6 +257,7 @@ public class UdpSenderService extends Service implements SensorEventListener {
                 catch(Exception e)  {}
             }
         });
+        
         worker.start();
 
         hasGyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
