@@ -122,35 +122,16 @@ public class UdpSenderTask implements SensorEventListener {
 
         hasGyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
 		
-		if(sendRaw) {
-			sensorManager.registerListener(this,
-					sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-					sampleRate);
-			if (hasGyro)
-                sensorManager.registerListener(this,
-                        sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-                        sampleRate);
-			
-			sensorManager.registerListener(this,
-					sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-					sampleRate);
-		}
-		if(sendOrientation) {
-            if (hasGyro)
-                sensorManager.registerListener(this,
-                        sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
-                        sampleRate);
-            else {
-                if (!sendRaw) {
-                    sensorManager.registerListener(this,
-                            sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-                            sampleRate);
-                    sensorManager.registerListener(this,
-                            sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                            sampleRate);
-                }
-            }
-        }
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                sampleRate);
+        if (hasGyro)
+            sensorManager.registerListener(this,
+                    sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+                    sampleRate);
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                sampleRate);
 
         wifiLock.acquire();
         wakeLock.acquire();
