@@ -89,13 +89,15 @@ public class MainActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (chkDebug.isChecked() && udpSenderService != null && udpSenderService.isRunning()) {
+                    if (udpSenderService != null) {
                         float[] imu = new float[3], acc = new float[3], mag = new float[3], gyr = new float[3];
                         String lastError = udpSenderService.debug(acc, mag, gyr, imu);
                         if (lastError != null)
                             error(lastError);
-                        debugImu(imu);
-                        debugRaw(acc, gyr, mag);
+                        if (chkDebug.isChecked()) {
+                            debugImu(imu);
+                            debugRaw(acc, gyr, mag);
+                        }
                     }
                 }
             });
@@ -144,8 +146,6 @@ public class MainActivity extends Activity {
 
         setDebugVisibility(chkDebug.isChecked());
 
-        final SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -159,14 +159,14 @@ public class MainActivity extends Activity {
                         int port = Integer.parseInt(txtPort.getText().toString());
                         boolean sendOrientation = chkSendOrientation.isChecked();
                         boolean sendRaw = chkSendRaw.isChecked();
-                        udpSenderService.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sensorManager, sendOrientation, sendRaw, getSelectedSampleRateId()));
+                        udpSenderService.start(new TargetSettings(ip, port, getSelectedDeviceIndex(), sendOrientation, sendRaw, getSelectedSampleRateId()));
                     } else {
                         udpSenderService.stop();
                     }
-                    boolean running = udpSenderService.isRunning();
-                    start.setChecked(running);
-                    txtIp.setEnabled(!running);
-                    txtPort.setEnabled(!running);
+                    boolean state = udpSenderService.isRunning();
+                    start.setChecked(state);
+                    txtIp.setEnabled(!state);
+                    txtPort.setEnabled(!state);
                     emptyLayout.requestFocus();
                 }
             }
