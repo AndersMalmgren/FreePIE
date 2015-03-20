@@ -144,8 +144,6 @@ public class UdpSenderTask implements SensorEventListener {
 	
 	public void onSensorChanged(SensorEvent sensorEvent) {
         synchronized (this) {
-            boolean next = false;
-
             switch (sensorEvent.sensor.getType()) {
                 case Sensor.TYPE_ACCELEROMETER:
                     System.arraycopy(sensorEvent.values, 0, acc, 0, 3);
@@ -162,21 +160,16 @@ public class UdpSenderTask implements SensorEventListener {
             }
 
             if (sendOrientation) {
-                if (!hasGyro && mag != null && acc != null) {
-                    boolean ret = SensorManager.getRotationMatrix(R, I, acc, mag);
-                    if (ret) {
-                        SensorManager.getOrientation(R, imu);
-                        next = true;
-                    }
+                if (!hasGyro) {
+                    boolean ignored = SensorManager.getRotationMatrix(R, I, acc, mag);
+                    SensorManager.getOrientation(R, imu);
                 } else {
                     SensorManager.getRotationMatrixFromVector(rotationMatrix, rotationVector);
                     SensorManager.getOrientation(rotationMatrix, imu);
-                    next = true;
                 }
             }
 
-            if (next)
-                notifyAll();
+            notifyAll();
         }
 	}
 
