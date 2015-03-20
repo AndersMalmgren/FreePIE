@@ -167,6 +167,8 @@ public class MainActivity extends Activity {
                     start.setChecked(state);
                     txtIp.setEnabled(!state);
                     txtPort.setEnabled(!state);
+                    chkSendOrientation.setEnabled(!state);
+                    chkSendRaw.setEnabled(!state);
                     emptyLayout.requestFocus();
                 }
             }
@@ -286,6 +288,10 @@ public class MainActivity extends Activity {
         if (udpSenderService != null) {
             udpSenderService.stop();
             start.setChecked(false);
+            txtIp.setEnabled(true);
+            txtPort.setEnabled(true);
+            chkSendOrientation.setEnabled(true);
+            chkSendRaw.setEnabled(true);
         }
     }
 }
