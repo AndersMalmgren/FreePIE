@@ -76,16 +76,35 @@ public class UdpSenderService extends Service implements SensorEventListener {
 
     public void register_sensors() {
         sensorManager.unregisterListener(this);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                sampleRate);
-        if (hasGyro)
+        if (sendRaw) {
             sensorManager.registerListener(this,
-                    sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+                    sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                     sampleRate);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-                sampleRate);
+            if (hasGyro)
+                sensorManager.registerListener(this,
+                        sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+                        sampleRate);
+
+            sensorManager.registerListener(this,
+                    sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                    sampleRate);
+        }
+        if (sendOrientation) {
+            if (hasGyro)
+                sensorManager.registerListener(this,
+                        sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
+                        sampleRate);
+            else {
+                if (!sendRaw) {
+                    sensorManager.registerListener(this,
+                            sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                            sampleRate);
+                    sensorManager.registerListener(this,
+                            sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                            sampleRate);
+                }
+            }
+        }
     }
 
     public String getLastError() {
