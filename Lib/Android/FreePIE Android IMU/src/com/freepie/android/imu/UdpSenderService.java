@@ -71,7 +71,7 @@ public class UdpSenderService extends Service {
         t = new UdpSenderTask();
         PowerManager.WakeLock wl = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "freepie send lock");
         WifiManager.WifiLock nl = mWifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, "freepie network lock");
-        t.start(settings, wl, nl);
+        t.start(settings, wl, nl, this);
     }
 
     public boolean isRunning() {

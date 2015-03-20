@@ -7,6 +7,11 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.CyclicBarrier;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -48,6 +53,16 @@ public class UdpSenderTask implements SensorEventListener {
 
     private String lastError;
 
+    private BroadcastReceiver screen_off_receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                register_sensors();
+            }
+        }
+    };
+    private Context service_context;
+
     public String getLastError() {
         synchronized (this) {
             return lastError;
@@ -71,7 +86,24 @@ public class UdpSenderTask implements SensorEventListener {
         }
     }
 
-    public void start(TargetSettings target, PowerManager.WakeLock wl, WifiManager.WifiLock nl) {
+    public void register_sensors() {
+        sensorManager.unregisterListener(this);
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                sampleRate);
+        if (hasGyro)
+            sensorManager.registerListener(this,
+                    sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
+                    sampleRate);
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                sampleRate);
+    }
+
+    public void start(TargetSettings target, PowerManager.WakeLock wl, WifiManager.WifiLock nl, Context ctx) {
+        service_context = ctx;
+        ctx.registerReceiver(screen_off_receiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+
         wakeLock = wl;
         wifiLock = nl;
 
@@ -120,18 +152,11 @@ public class UdpSenderTask implements SensorEventListener {
 		});	
 		worker.start();
 
+
+
         hasGyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
-		
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                sampleRate);
-        if (hasGyro)
-            sensorManager.registerListener(this,
-                    sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-                    sampleRate);
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-                sampleRate);
+
+        register_sensors();
 
         wifiLock.acquire();
         wakeLock.acquire();
@@ -178,6 +203,11 @@ public class UdpSenderTask implements SensorEventListener {
 	}
 	
 	public void stop() {
+        if (service_context != null)
+        {
+            service_context.unregisterReceiver(screen_off_receiver);
+            service_context = null;
+        }
         wakeLock.release();
         wifiLock.release();
 		running = false;
