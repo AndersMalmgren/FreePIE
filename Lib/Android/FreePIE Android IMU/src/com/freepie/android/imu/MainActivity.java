@@ -203,11 +203,12 @@ public class MainActivity extends Activity {
     }
 
     private void populateSampleRates(int defaultSampleRate) {
+        // delay information from http://developer.android.com/guide/topics/sensors/sensors_overview.html#sensors-monitor
         List<SampleRate> sampleRates = Arrays.asList(new SampleRate[]{
-                new SampleRate(SensorManager.SENSOR_DELAY_UI, "UI"),
-                new SampleRate(SensorManager.SENSOR_DELAY_NORMAL, "Normal"),
-                new SampleRate(SensorManager.SENSOR_DELAY_GAME, "Game"),
-                new SampleRate(SensorManager.SENSOR_DELAY_FASTEST, "Fastest")
+                new SampleRate(SensorManager.SENSOR_DELAY_NORMAL, "Slowest - 5 FPS"),
+                new SampleRate(SensorManager.SENSOR_DELAY_UI, "Average - 16 FPS"),
+                new SampleRate(SensorManager.SENSOR_DELAY_GAME, "Fast - 50 FPS"),
+                new SampleRate(SensorManager.SENSOR_DELAY_FASTEST, "Fastest - no delay")
         });
 
         SampleRate selectedSampleRate = null;
