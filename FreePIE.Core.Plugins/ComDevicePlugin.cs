@@ -30,6 +30,7 @@ namespace FreePIE.Core.Plugins
             OnStarted(this, new EventArgs());
 
             serialPort = new SerialPort(port, baudRate);
+            serialPort.DtrEnable = true;
             serialPort.Open();
             Init(serialPort);
 
