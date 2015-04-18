@@ -11,7 +11,7 @@ public class TargetSettings {
 	private boolean sendRaw;
 	private int sampleRate;
 
-	public TargetSettings(String toIp, int port, byte deviceIndex, SensorManager sensorManager, boolean sendOrientation, boolean sendRaw, int sampleRate) {
+	public TargetSettings(String toIp, int port, byte deviceIndex, boolean sendOrientation, boolean sendRaw, int sampleRate) {
 		this.toIp = toIp;
 		this.port = port;
 		this.deviceIndex = deviceIndex;
@@ -34,12 +34,7 @@ public class TargetSettings {
 	public byte getDeviceIndex() {
 		return deviceIndex;
 	}
-	
-	public SensorManager getSensorManager()
-	{
-		return sensorManager;
-	}	
-	
+
 	public boolean getSendOrientation()
 	{
 		return sendOrientation;
