@@ -29,7 +29,7 @@ namespace FreePIE.GUI.Views.Main
 
         public virtual string Filename { get { return null; } }
         public virtual string FilePath { get; set; }
-        public virtual string FileContent { get; set; }
+        public virtual string FileContent { get { return string.Empty; } }
         
         public virtual string ContentId
         {

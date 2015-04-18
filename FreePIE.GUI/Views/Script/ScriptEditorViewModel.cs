@@ -69,7 +69,6 @@ namespace FreePIE.GUI.Views.Script
             set
             {
                 script = value;
-                IsDirty = true;
                 eventAggregator.Publish(new ScriptUpdatedEvent(value));
                 NotifyOfPropertyChange(() => Script);
             }
@@ -152,24 +151,29 @@ namespace FreePIE.GUI.Views.Script
             get { return FilePath ?? Filename; }
         }
 
-        public bool IsDirty { get; set; }
+
+	    private int scriptHash;
+		public bool IsDirty { get { return script == string.Empty || (!string.IsNullOrEmpty(script) && script.GetHashCode() != scriptHash); } }
+
         public override void Saved()
         {
-            IsDirty = false;
+			ResetDirtyFlag();
         }
 
         public void LoadFileContent(string content)
         {
             script = content;
+			ResetDirtyFlag();
         }
+
+	    private void ResetDirtyFlag()
+	    {
+			scriptHash = script.GetHashCode();
+	    }
 
         public override string FileContent
         {
             get { return Script; }
-            set
-            {
-                Script = value;
-            }
         }
 
         public override string FilePath
