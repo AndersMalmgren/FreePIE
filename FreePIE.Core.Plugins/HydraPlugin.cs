@@ -149,21 +149,30 @@ namespace FreePIE.Core.Plugins
                     if (lastSequence == Controller[i].sequence_number)
                         continue;
 
-                    // Convert quaternions to clock-wise Euler angles
-                    float q0 = Controller[i].rot_quat0;
-                    float q1 = Controller[i].rot_quat1;
-                    float q2 = Controller[i].rot_quat2;
-                    float q3 = Controller[i].rot_quat3;
+                    //getEulerAngles() from sixense_math.cpp
+                    float h, p, r;
+                    float A, B;
 
-                    Angles[i].yaw = -(float) Math.Atan2(2*q1*q3 - 2*q0*q2, 1 - 2*q1*q1 - 2*q2*q2);
-                    Angles[i].pitch = (float) Math.Atan2(2*q0*q3 - 2*q1*q2, 1 - 2*q0*q0 - 2*q2*q2);
-                    Angles[i].roll = -(float) Math.Asin(2*q0*q1 + 2*q2*q3);
+                    B =  Controller[i].rot_mat_12;
+                    p = (float) Math.Asin(B);
+                    A = (float) Math.Cos(p);
+
+                    if (Math.Abs(A) > 0.005f)
+                    {
+                        h = (float) Math.Atan2(- Controller[i].rot_mat_02 / A,  Controller[i].rot_mat_22 / A); // atan2( D, C )
+                        r = (float) Math.Atan2(- Controller[i].rot_mat_10 / A,  Controller[i].rot_mat_11 / A); // atan2( F, E )
+                    }
+                    else
+                    {
+                        h = 0;
+                        r = (float) Math.Atan2( Controller[i].rot_mat_21,  Controller[i].rot_mat_20); // atan2( F, E ) when B=0, D=1
+                    }
+
+                    Angles[i].yaw = -h;
+                    Angles[i].pitch = p;
+                    Angles[i].roll = -r;
 
                     OnUpdate();
-
-                    // !!! Roll seems messed up.  At +-90 degree roll it starts to roll back down to 0 and
-                    // pitch simultaneously !!!  I don't know if this is a bug with the Hydra or with the 
-                    // calculations of my Euler angles
                 }
             }
         }
