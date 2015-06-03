@@ -133,7 +133,7 @@ namespace FreePIE.Core.Plugins
         public void SetButton(int button, bool pressed)
         {
             if(button >= maxButtons)
-                throw new Exception(string.Format("Maximum buttons are {0}. You need to incrase number of buttons in vJoy config", maxButtons));
+                throw new Exception(string.Format("Maximum buttons are {0}. You need to increase number of buttons in vJoy config", maxButtons));
 
             joystick.SetBtn(pressed, Index, (uint)button + 1);
         }
