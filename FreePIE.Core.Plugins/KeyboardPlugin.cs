@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -176,7 +176,7 @@ namespace FreePIE.Core.Plugins
             0x08, //D7 = 7,
             0x09, //D8 = 8,
             0x0A, //D9 = 9,
-            0x1E, //A = 10,
+            0x1E, //A = 10
             0x30, //B = 11,
             0x2E, //C = 12,
             0x20, //D = 13,
@@ -192,7 +192,7 @@ namespace FreePIE.Core.Plugins
             0x31, //N = 23,
             0x18, //O = 24,
             0x19, //P = 25,
-            0x10, //Q = 26,
+            0x10, //Q = 26
             0x13, //R = 27,
             0x1F, //S = 28,
             0x14, //T = 29,
@@ -468,6 +468,7 @@ namespace FreePIE.Core.Plugins
         private bool[] MyKeyDown = new bool[150];
         private SetPressedStrategy setKeyPressedStrategy;
         private GetPressedStrategy<int> getKeyPressedStrategy;
+        private GetReleasedStrategy<int> getKeyReleasedStrategy;
 
         public override object CreateGlobal()
         {
@@ -492,9 +493,10 @@ namespace FreePIE.Core.Plugins
             KeyboardDevice.Acquire();
 
             KeyboardDevice.GetCurrentState(ref KeyState);
-
+  
             setKeyPressedStrategy = new SetPressedStrategy(KeyDown, KeyUp);
             getKeyPressedStrategy = new GetPressedStrategy<int>(IsKeyDown);
+            getKeyReleasedStrategy = new GetReleasedStrategy<int>(IsKeyDown);
 
             OnStarted(this, new EventArgs());
             return null;
@@ -549,7 +551,7 @@ namespace FreePIE.Core.Plugins
 
         public bool IsKeyUp(int keycode)
         {
-            // Returns true if the key is currently being pressed
+            // Returns true if the key is currently being released
             var key = (SlimDX.DirectInput.Key) keycode;
             bool up = KeyState.IsReleased(key) && !MyKeyDown[keycode];
             return up;
@@ -558,6 +560,11 @@ namespace FreePIE.Core.Plugins
         public bool WasKeyPressed(int key)
         {
             return getKeyPressedStrategy.IsPressed(key);
+        }
+
+        public bool WasKeyReleased(int key)
+        {
+            return getKeyReleasedStrategy.IsReleased(key);
         }
 
         private MouseKeyIO.KEYBDINPUT KeyInput(ushort code, uint flag)
@@ -661,6 +668,11 @@ namespace FreePIE.Core.Plugins
         public bool getPressed(Key key)
         {
             return plugin.WasKeyPressed((int) key);
+        }
+
+        public bool getReleased(Key key)
+        {
+            return plugin.WasKeyReleased((int)key);
         }
 
         public void setPressed(Key key)
