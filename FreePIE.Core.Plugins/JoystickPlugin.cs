@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -52,12 +52,14 @@ namespace FreePIE.Core.Plugins
         private readonly Joystick joystick;
         private JoystickState state;
         private readonly GetPressedStrategy<int> getPressedStrategy;
+        private readonly GetReleasedStrategy<int> getReleasedStrategy;
 
         public Device(Joystick joystick)
         {
             this.joystick = joystick;
             SetRange(-1000, 1000);
             getPressedStrategy = new GetPressedStrategy<int>(GetDown);
+            getReleasedStrategy = new GetReleasedStrategy<int>(GetDown);
         }
 
         public void Dispose()
@@ -89,6 +91,11 @@ namespace FreePIE.Core.Plugins
             return getPressedStrategy.IsPressed(button);
         }
 
+        public bool GetReleased(int button)
+        {
+            return getReleasedStrategy.IsReleased(button);
+        }
+
         public bool GetDown(int button)
         {
             return State.IsPressed(button);
@@ -115,6 +122,11 @@ namespace FreePIE.Core.Plugins
         public bool getPressed(int button)
         {
             return device.GetPressed(button);
+        }
+
+        public bool getReleased(int button)
+        {
+            return device.GetReleased(button);
         }
 
         public bool getDown(int button)
