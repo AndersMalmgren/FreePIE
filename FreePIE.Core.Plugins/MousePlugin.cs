@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -26,6 +26,7 @@ namespace FreePIE.Core.Plugins
         private bool rightPressed;
         private bool middlePressed;
         private GetPressedStrategy<int> getButtonPressedStrategy;
+        private GetReleasedStrategy<int> getButtonReleasedStrategy;
         private SetPressedStrategy setButtonPressedStrategy;
 
         public override object CreateGlobal()
@@ -45,6 +46,7 @@ namespace FreePIE.Core.Plugins
             mouseDevice.Properties.AxisMode = DeviceAxisMode.Relative;   // Get delta values
             mouseDevice.Acquire();
 
+            getButtonReleasedStrategy = new GetReleasedStrategy<int>(IsButtonDown);
             getButtonPressedStrategy = new GetPressedStrategy<int>(IsButtonDown);
             setButtonPressedStrategy = new SetPressedStrategy(SetButtonDown, SetButtonUp);
           
@@ -155,6 +157,11 @@ namespace FreePIE.Core.Plugins
         public bool IsButtonPressed(int button)
         {
             return getButtonPressedStrategy.IsPressed(button);
+        }
+
+        public bool IsButtonReleased(int button)
+        {
+            return getButtonReleasedStrategy.IsReleased(button);
         }
 
         private void SetButtonDown(int button)
@@ -304,6 +311,11 @@ namespace FreePIE.Core.Plugins
         public bool getPressed(int button)
         {
             return plugin.IsButtonPressed(button);
+        }
+
+        public bool getReleased(int button)
+        {
+            return plugin.IsButtonReleased(button);
         }
 
         public void setPressed(int button)
