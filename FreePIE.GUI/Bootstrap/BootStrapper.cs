@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
 using FreePIE.Core.Persistence;
@@ -10,7 +11,7 @@ using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
 using FreePIE.GUI.Views.Main;
 using FreePIE.GUI.Views.Script.Output;
-using Ninject;
+using StructureMap;
 using ILog = FreePIE.Core.Common.ILog;
 using Parser = FreePIE.GUI.Common.CommandLine.Parser;
 
@@ -18,7 +19,7 @@ namespace FreePIE.GUI.Bootstrap
 {
     public class Bootstrapper : BootstrapperBase
     {
-        private IKernel kernel;
+        private IContainer container;
 
         public Bootstrapper()
         {
@@ -28,42 +29,47 @@ namespace FreePIE.GUI.Bootstrap
 
         protected override void Configure()
         {
-            kernel = ServiceBootstrapper.Create();
-            kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
-            kernel.Bind<IResultFactory>().To<ResultFactory>();
-            kernel.Bind<IParser>().To<Parser>();
+			container = ServiceBootstrapper.Create();
+			container.Configure(config =>
+			{
+				config.For<IWindowManager>().Singleton().Use<WindowManager>();
+				config.For<IResultFactory>().Use<ResultFactory>();
+				config.For<IParser>().Use<Parser>();
 
-			ConfigurePanels();
+				ConfigurePanels(config);
+			});
+
+
 
             SetupCustomMessageBindings();
         }
 
-	    private void ConfigurePanels()
+	    private void ConfigurePanels(ConfigurationExpression config)
 	    {
-		    kernel.Bind<PanelViewModel>().To<ConsoleViewModel>();
-			kernel.Bind<PanelViewModel>().To<ErrorsViewModel>();
-			kernel.Bind<PanelViewModel>().To<WatchesViewModel>();
+			config.For<PanelViewModel>().Use<ConsoleViewModel>();
+			config.For<PanelViewModel>().Use<ErrorsViewModel>();
+			config.For<PanelViewModel>().Use<WatchesViewModel>();
 	    }
 
 	    protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            kernel.Get<IPersistanceManager>().Load();
+            container.GetInstance<IPersistanceManager>().Load();
             DisplayRootViewFor<MainShellViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
         {
-            return kernel.Get(service);
+			return container.GetInstance(service);
         }
         
         protected override IEnumerable<object> GetAllInstances(Type service)
         {
-            return kernel.GetAll(service);
+            return container.GetAllInstances(service).Cast<object>();
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            kernel.Get<ILog>().Error(e.ExceptionObject as Exception);
+            container.GetInstance<ILog>().Error(e.ExceptionObject as Exception);
         }
 
         private void SetupCustomMessageBindings()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FreePIE.Core.Common;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.GUI.Common.CommandLine.Commands;
 
@@ -9,11 +10,11 @@ namespace FreePIE.GUI.Common.CommandLine
 {
     public class Parser : IParser
     {
-        private readonly Func<Type, Command> facotory;
+		private readonly IFactory<Command> factory;
 
-        public Parser(Func<Type, Command> facotory)
+		public Parser(IFactory<Command> factory)
         {
-            this.facotory = facotory;
+            this.factory = factory;
         }
 
         public void ParseAndExecute()
@@ -22,7 +23,7 @@ namespace FreePIE.GUI.Common.CommandLine
                 .GetCommandLineArgs()
                 .Skip(1);
 
-            var commands = typeof (Command).GetTypes().Select(t => facotory(t));
+            var commands = typeof (Command).GetTypes().Select(factory.Create).ToList();
 
             foreach (var arg in args)
             {

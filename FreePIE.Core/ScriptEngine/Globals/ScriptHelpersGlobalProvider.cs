@@ -8,9 +8,9 @@ namespace FreePIE.Core.ScriptEngine.Globals
 {
     public class ScriptHelpersGlobalProvider : IGlobalProvider
     {
-        private readonly Func<Type, IScriptHelper> scriptHelperFactory;
+		private readonly IFactory<IScriptHelper> scriptHelperFactory;
 
-        public ScriptHelpersGlobalProvider(Func<Type, IScriptHelper> scriptHelperFactory)
+		public ScriptHelpersGlobalProvider(IFactory<IScriptHelper> scriptHelperFactory)
         {
             this.scriptHelperFactory = scriptHelperFactory;
         }
@@ -18,7 +18,7 @@ namespace FreePIE.Core.ScriptEngine.Globals
         public IEnumerable<object> ListGlobals()
         {
             return Utils.GetTypes<IScriptHelper>()
-                .Select(t => scriptHelperFactory(t));
+                .Select(scriptHelperFactory.Create);
         }
     }
 }

@@ -53,9 +53,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\IronPython\Microsoft.Scripting.dll</HintPath>
     </Reference>
-    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
+    <Reference Include="StructureMap">
+      <HintPath>..\packages\structuremap.3.1.5.154\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap.Net4">
+      <HintPath>..\packages\structuremap.3.1.5.154\lib\net40\StructureMap.Net4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -80,6 +82,8 @@
     <Compile Include="Common\InterlockableBool.cs" />
     <Compile Include="Common\Log.cs" />
     <Compile Include="Common\Range.cs" />
+    <Compile Include="Common\IFactory.cs" />
+    <Compile Include="Common\StructureMap\StructuremapFactory.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Model\Choice.cs" />
     <Compile Include="Model\Choices.cs" />
@@ -149,6 +153,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>cd "$(SolutionDir)BuildTools"

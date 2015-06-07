@@ -3,22 +3,22 @@ using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
 using FreePIE.GUI.Shells;
-using Ninject;
+using StructureMap;
 
 namespace FreePIE.GUI.Result
 {
     public class ResultFactory : IResultFactory
     {
-        private readonly IKernel kernel;
+        private readonly IContainer container;
 
-        public ResultFactory(IKernel kernel)
+		public ResultFactory(IContainer container)
         {
-            this.kernel = kernel;
+			this.container = container;
         }
 
         public ShowDialogResult<TModel> ShowDialog<TModel>() where TModel : ShellPresentationModel
         {
-            return kernel.Get<ShowDialogResult<TModel>>();
+			return container.GetInstance<ShowDialogResult<TModel>>();
         }
 
         public FileDialogResult ShowFileDialog(string title, string filter, FileDialogMode mode)
@@ -43,7 +43,7 @@ namespace FreePIE.GUI.Result
 
         public IResult Close()
         {
-            return kernel.Get<CloseResult>();
+			return new CloseResult();
         }
 
         public IEnumerable<IResult> Coroutinify(IEnumerable<IResult> results, System.Action cancelCallback)

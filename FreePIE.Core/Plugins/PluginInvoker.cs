@@ -13,7 +13,7 @@ namespace FreePIE.Core.Plugins
     public class PluginInvoker : IPluginInvoker
     {
         private readonly ISettingsManager settingsManager;
-        private readonly Func<Type, IPlugin> pluginFactory;
+		private readonly IFactory<IPlugin> pluginFactory;
         private readonly IFileSystem fileSystem;
         private readonly IPaths paths;
         private const string pluginFolder = "plugins";
@@ -22,7 +22,7 @@ namespace FreePIE.Core.Plugins
         private IEnumerable<Type> pluginTypes;
         private IEnumerable<Type> globalEnumTypes; 
 
-        public PluginInvoker(ISettingsManager settingsManager, Func<Type, IPlugin> pluginFactory, IFileSystem fileSystem, IPaths paths)
+        public PluginInvoker(ISettingsManager settingsManager, IFactory<IPlugin> pluginFactory, IFileSystem fileSystem, IPaths paths)
         {
             this.settingsManager = settingsManager;
             this.pluginFactory = pluginFactory;
@@ -47,7 +47,7 @@ namespace FreePIE.Core.Plugins
 
         public IEnumerable<IPlugin> InvokeAndConfigurePlugins(IEnumerable<Type> pluginTypes)
         {
-            var plugins = pluginTypes.Select(t => pluginFactory(t)).ToList();
+			var plugins = pluginTypes.Select(pluginFactory.Create).ToList();
             plugins.ForEach(SetPluginProperties);
             return plugins;
         }
@@ -65,7 +65,7 @@ namespace FreePIE.Core.Plugins
             
             foreach(var pluginType in pluginTypes)
             {
-                var plugin = pluginFactory(pluginType);
+                var plugin = pluginFactory.Create(pluginType);
                 var pluginSettings = settings.PluginSettings.First(ps => ps.PluginType == pluginType.FullName);
 
                 pluginSettings.FriendlyName = plugin.FriendlyName;

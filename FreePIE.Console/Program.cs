@@ -1,7 +1,6 @@
 ﻿using FreePIE.Core.Persistence;
 using FreePIE.Core.Persistence.Paths;
 using FreePIE.Core.Services;
-using Ninject;
 
 namespace FreePIE.Console
 {
@@ -9,8 +8,8 @@ namespace FreePIE.Console
     {
         public static void Main(string[] args)
         {
-            var kernel = ServiceBootstrapper.Create();
-            kernel.Get<ConsoleHost>().Start(args);
+            var container = ServiceBootstrapper.Create();
+			container.GetInstance<ConsoleHost>().Start(args);
         }
     }
 }

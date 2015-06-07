@@ -1,24 +1,23 @@
 ﻿using System;
 using FreePIE.Core.Services;
-using Ninject;
 using Rhino.Mocks;
 using Rhino.Mocks.Interfaces;
+using StructureMap;
 
 namespace FreePIE.Tests.Test
 {
     public abstract class TestBase
     {
-        private readonly StandardKernel kernel;
+        private readonly IContainer container;
 
-        public TestBase()
+        protected TestBase()
         {
-            kernel = new StandardKernel();
-            ServiceBootstrapper.AddCustomBindings(kernel);
+			container = new Container();
         }
 
         protected T Get<T>()
         {
-            return kernel.TryGet<T>();
+			return container.TryGetInstance<T>();
         }
 
         protected IMethodOptions<object> WhenCalling<T>(Action<T> action) where T : class
@@ -43,13 +42,13 @@ namespace FreePIE.Tests.Test
         protected T Stub<T>()  where T : class
         {
             var instance = MockRepository.GenerateMock<T>();
-            kernel.Bind<T>().ToConstant(instance);
+	        Register(instance);
             return instance;
         }
 
-        protected void Register<T>(T instance)
+		protected void Register<T>(T instance) where T : class
         {
-            kernel.Bind<T>().ToConstant(instance);
+            container.Configure(config =>  config.For<T>().Use(instance));
         }
 
 
