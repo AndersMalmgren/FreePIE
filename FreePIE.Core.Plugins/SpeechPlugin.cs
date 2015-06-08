@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Threading;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Speech.Recognition;
 using System.Speech.Synthesis;
@@ -121,6 +123,37 @@ namespace FreePIE.Core.Plugins
                 Confidence = confidence;
             }
         }
+
+        // Beginning définition for Beep thread
+        public void Bip(uint freq, uint lapse)
+        {
+            BeepThreadHandle threadHandle = new BeepThreadHandle(freq, lapse);
+            Thread t = new Thread(new ThreadStart(threadHandle.ThreadLoop));
+            t.Start();
+        }
+
+        public class BeepThreadHandle
+        {
+            [DllImport("kernel32.dll", SetLastError = true)]
+            static extern bool Beep(uint dwFreq, uint dwDuration);
+            
+            uint freq;
+            uint lapse;
+
+            public BeepThreadHandle(uint freq, uint lapse)
+            {
+                this.freq = freq;
+                this.lapse = lapse;
+            }
+
+            public void ThreadLoop()
+            {
+                Beep(freq, lapse);
+            }
+        }
+
+
+
     }
 
     [Global(Name = "speech")]
@@ -152,5 +185,11 @@ namespace FreePIE.Core.Plugins
         {
             plugin.SelectVoice(name);
         }
+
+        public void beep(uint frequency, uint duration)
+        {
+            plugin.Bip(frequency, duration);
+        }
+
     }
 }
