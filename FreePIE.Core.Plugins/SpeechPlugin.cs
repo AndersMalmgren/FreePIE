@@ -151,9 +151,6 @@ namespace FreePIE.Core.Plugins
                 Beep(freq, lapse);
             }
         }
-
-
-
     }
 
     [Global(Name = "speech")]
@@ -190,6 +187,5 @@ namespace FreePIE.Core.Plugins
         {
             plugin.Bip(frequency, duration);
         }
-
     }
 }
