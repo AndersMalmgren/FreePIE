@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Strategies;
 
 namespace FreePIE.Core.Plugins.Wiimote
@@ -11,10 +12,11 @@ namespace FreePIE.Core.Plugins.Wiimote
         private IWiimoteData data;
         private GetPressedStrategy<WiimoteButtons> buttonPressed;
 
-        public WiimoteButtonState(IWiimoteData data, out Action trigger) : base(out trigger)
+
+        public WiimoteButtonState(IWiimoteData data, out Action trigger, IScriptContext scriptContext) : base(out trigger)
         {
             this.data = data;
-            buttonPressed = new GetPressedStrategy<WiimoteButtons>(button_down);
+			buttonPressed = new GetPressedStrategy<WiimoteButtons>(scriptContext).Init(button_down);
         }
 
         public bool button_down(WiimoteButtons b)

@@ -25,10 +25,15 @@ namespace FreePIE.Core.Plugins
         private bool leftPressed;
         private bool rightPressed;
         private bool middlePressed;
-        private GetPressedStrategy<int> getButtonPressedStrategy;
+        private readonly GetPressedStrategy<int> getButtonPressedStrategy;
         private SetPressedStrategy setButtonPressedStrategy;
 
-        public override object CreateGlobal()
+	    public MousePlugin(GetPressedStrategy<int> getButtonPressedStrategy)
+	    {
+		    this.getButtonPressedStrategy = getButtonPressedStrategy.Init(IsButtonDown);
+	    }
+
+	    public override object CreateGlobal()
         {
             return new MouseGlobal(this);
         }
@@ -45,7 +50,6 @@ namespace FreePIE.Core.Plugins
             mouseDevice.Properties.AxisMode = DeviceAxisMode.Relative;   // Get delta values
             mouseDevice.Acquire();
 
-            getButtonPressedStrategy = new GetPressedStrategy<int>(IsButtonDown);
             setButtonPressedStrategy = new SetPressedStrategy(SetButtonDown, SetButtonUp);
           
             OnStarted(this, new EventArgs());

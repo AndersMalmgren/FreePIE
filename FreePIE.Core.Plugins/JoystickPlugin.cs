@@ -11,9 +11,15 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
     public class JoystickPlugin : Plugin
     {
-        private List<Device> devices;
+	    private readonly Func<Device> factory;
+	    private List<Device> devices;
 
-        public override object CreateGlobal()
+	    public JoystickPlugin(Func<Device> factory)
+	    {
+		    this.factory = factory;
+	    }
+
+	    public override object CreateGlobal()
         {
             var directInput = new DirectInput();
             var handle = Process.GetCurrentProcess().MainWindowHandle;
@@ -25,7 +31,7 @@ namespace FreePIE.Core.Plugins
                 controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
                 controller.Acquire();
 
-                devices.Add(new Device(controller));
+                devices.Add(factory().Init(controller));
             }
 
             return devices.Select(d => new JoystickGlobal(d)).ToArray();
@@ -49,15 +55,20 @@ namespace FreePIE.Core.Plugins
 
     public class Device : IDisposable
     {
-        private readonly Joystick joystick;
+        private Joystick joystick;
         private JoystickState state;
         private readonly GetPressedStrategy<int> getPressedStrategy;
 
-        public Device(Joystick joystick)
+	    public Device(GetPressedStrategy<int> getPressedStrategy)
+	    {
+			this.getPressedStrategy = getPressedStrategy.Init(GetDown);
+	    }
+
+        public Device Init(Joystick joystick)
         {
             this.joystick = joystick;
             SetRange(-1000, 1000);
-            getPressedStrategy = new GetPressedStrategy<int>(GetDown);
+	        return this;
         }
 
         public void Dispose()

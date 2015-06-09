@@ -64,14 +64,20 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(WiimoteGlobal), IsIndexed = true)]
     public class WiimotePlugin : Plugin
     {
-        private LogLevel logLevel;
+	    private readonly Func<WiimoteGlobal> factory;
+	    private LogLevel logLevel;
         private FusionType fuserType;
         private bool doLog;
         private IWiimoteBridge wiimoteBridge;
         private Dictionary<uint, Action> globalUpdators;
         private IList<uint> updatedWiimotes;
 
-        private Dictionary<FusionType, Func<IMotionPlusFuser>> fuserFactories = new Dictionary <FusionType, Func<IMotionPlusFuser>>()
+	    public WiimotePlugin(Func<WiimoteGlobal> factory)
+	    {
+		    this.factory = factory;
+	    }
+
+	    private Dictionary<FusionType, Func<IMotionPlusFuser>> fuserFactories = new Dictionary <FusionType, Func<IMotionPlusFuser>>()
             {
                 {FusionType.SimpleIntegration, () => new SimpleIntegrationMotionPlusFuser()},
                 {FusionType.Mahony, () => new MahonyMotionPlusFuser()}
@@ -82,7 +88,7 @@ namespace FreePIE.Core.Plugins
             wiimoteBridge = new DolphiimoteBridge(logLevel, doLog ? "dolphiimote.log" : null, CreateMotionplusFuser);
             globalUpdators = new Dictionary<uint, Action>();
             updatedWiimotes = new List<uint>();
-            return Enumerable.Range(0, 4).Select(i => new WiimoteGlobal(this, wiimoteBridge.GetData((uint)i), globalUpdators)).ToArray();
+            return Enumerable.Range(0, 4).Select(i => factory().Init(this, wiimoteBridge.GetData((uint)i), globalUpdators)).ToArray();
         }
 
         public override bool GetProperty(int index, IPluginProperty property)
@@ -178,28 +184,36 @@ namespace FreePIE.Core.Plugins
     [Global(Name = "wiimote")]
     public class WiimoteGlobal
     {
-        private readonly WiimotePlugin plugin;
-        private readonly IWiimoteData data;
+	    private readonly IScriptContext scriptContext;
+	    private WiimotePlugin plugin;
+        private IWiimoteData data;
 
-        private readonly Action accelerationTrigger;
-        private readonly Action buttonTrigger;
-        private readonly Action motionPlusTrigger;
-        private readonly Action nunchuckTrigger;
+        private Action accelerationTrigger;
+        private Action buttonTrigger;
+        private Action motionPlusTrigger;
+        private Action nunchuckTrigger;
 
-        private readonly Action accelerationCalibratedTrigger;
-        private readonly Action motionPlusCalibratedTrigger;
+        private Action accelerationCalibratedTrigger;
+        private Action motionPlusCalibratedTrigger;
 
-        public WiimoteGlobal(WiimotePlugin plugin, IWiimoteData data, Dictionary<uint, Action> updaters)
+	    public WiimoteGlobal(IScriptContext scriptContext)
+	    {
+		    this.scriptContext = scriptContext;
+	    }
+
+	    public WiimoteGlobal Init(WiimotePlugin plugin, IWiimoteData data, Dictionary<uint, Action> updaters)
         {
             this.plugin = plugin;
             this.data = data;
 
             acceleration = new AccelerationGlobal(data, out accelerationTrigger, out accelerationCalibratedTrigger);
-            buttons = new WiimoteButtonState(data, out buttonTrigger);
+			buttons = new WiimoteButtonState(data, out buttonTrigger, scriptContext);
             motionplus = new MotionPlusGlobal(data, out motionPlusTrigger, out motionPlusCalibratedTrigger);
             nunchuck = new NunchuckGlobal(data, out nunchuckTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
+
+		    return this;
         }
 
         public void enable(WiimoteCapabilities flags)
