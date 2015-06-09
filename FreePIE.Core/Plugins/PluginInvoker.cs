@@ -13,36 +13,20 @@ namespace FreePIE.Core.Plugins
     public class PluginInvoker : IPluginInvoker
     {
         private readonly ISettingsManager settingsManager;
-		private readonly IFactory<IPlugin> pluginFactory;
+	    private readonly IPluginDataSource dataSource;
+	    private readonly IFactory<IPlugin> pluginFactory;
         private readonly IFileSystem fileSystem;
         private readonly IPaths paths;
-        private const string pluginFolder = "plugins";
         private const string helpFolder = "help";
 
-        private IEnumerable<Type> pluginTypes;
-        private IEnumerable<Type> globalEnumTypes; 
 
-        public PluginInvoker(ISettingsManager settingsManager, IFactory<IPlugin> pluginFactory, IFileSystem fileSystem, IPaths paths)
+        public PluginInvoker(ISettingsManager settingsManager, IPluginDataSource dataSource, IFactory<IPlugin> pluginFactory, IFileSystem fileSystem, IPaths paths)
         {
             this.settingsManager = settingsManager;
-            this.pluginFactory = pluginFactory;
+	        this.dataSource = dataSource;
+	        this.pluginFactory = pluginFactory;
             this.fileSystem = fileSystem;
             this.paths = paths;
-        }
-
-        public IEnumerable<Type> ListAllPluginTypes()
-        {
-            if (pluginTypes != null)
-                return pluginTypes;
-
-            var path = paths.GetApplicationPath(pluginFolder);
-            var dlls = fileSystem.GetFiles(path, "*.dll");
-
-            pluginTypes = dlls
-                .Select(Assembly.LoadFile)
-                .SelectMany(a => a.GetTypes().Where(t => typeof (IPlugin).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)).ToList();
-
-            return pluginTypes;
         }
 
         public IEnumerable<IPlugin> InvokeAndConfigurePlugins(IEnumerable<Type> pluginTypes)
@@ -56,7 +40,7 @@ namespace FreePIE.Core.Plugins
         {
             var settings = settingsManager.Settings;
 
-            var pluginTypes = ListAllPluginTypes();
+			var pluginTypes = dataSource.ListAllPluginTypes();
             var removedPluginSettings = settings.PluginSettings.Where(ps => !pluginTypes.Any(pt => pt.FullName == ps.PluginType)).ToList();
             var addedPluginTypes = pluginTypes.Where(pt => !settings.PluginSettings.Any(ps => ps.PluginType == pt.FullName)).ToList();
 
@@ -78,20 +62,6 @@ namespace FreePIE.Core.Plugins
                     pluginSettings.HelpFile = helpFile;
                 }
             }
-        }
-
-        public IEnumerable<Type> ListAllGlobalEnumTypes()
-        {
-            if (globalEnumTypes != null)
-                return globalEnumTypes;
-
-            globalEnumTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.GetCustomAttributes(typeof(GlobalEnum), false).Any())
-                .Distinct()
-                .ToList();
-
-            return globalEnumTypes;
         }
 
         private void InitProperties(IPlugin plugin, List<PluginProperty> properties)

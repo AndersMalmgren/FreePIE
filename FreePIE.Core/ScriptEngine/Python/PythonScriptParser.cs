@@ -16,16 +16,18 @@ namespace FreePIE.Core.ScriptEngine.Python
     public class PythonScriptParser : IScriptParser
     {
         private readonly IPluginInvoker pluginInvoker;
+	    private readonly IPluginDataSource dataSource;
 
-        public PythonScriptParser(IPluginInvoker pluginInvoker)
-        {
-            this.pluginInvoker = pluginInvoker;
-        }
+	    public PythonScriptParser(IPluginInvoker pluginInvoker, IPluginDataSource dataSource)
+	    {
+		    this.pluginInvoker = pluginInvoker;
+		    this.dataSource = dataSource;
+	    }
 
-        public IEnumerable<IPlugin> InvokeAndConfigureAllScriptDependantPlugins(string script)
+	    public IEnumerable<IPlugin> InvokeAndConfigureAllScriptDependantPlugins(string script)
         {
             script = RemoveComments(script);
-            var pluginTypes = pluginInvoker.ListAllPluginTypes()
+			var pluginTypes = dataSource.ListAllPluginTypes()
                 .Select(pt =>
                         new
                         {
@@ -59,7 +61,7 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         public IEnumerable<Type> GetAllUsedGlobalEnums(string script)
         {
-            return pluginInvoker.ListAllGlobalEnumTypes()
+			return dataSource.ListAllGlobalEnumTypes()
                     .Where(t => script.Contains(t.Name))
                     .ToList();
         }

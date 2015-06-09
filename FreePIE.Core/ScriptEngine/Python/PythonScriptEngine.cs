@@ -9,6 +9,7 @@ using System.Threading;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Events;
 using FreePIE.Core.Common.Extensions;
+using FreePIE.Core.Common.Lifetime;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.Persistence;
@@ -73,7 +74,9 @@ namespace FreePIE.Core.ScriptEngine.Python
 
     public class PythonScriptEngine : IScriptEngine
     {
-        private readonly IScriptParser parser;
+	    private readonly IScopedContext engineScope;
+	    private readonly IScriptContextController contextController;
+	    private readonly IScriptParser parser;
         private readonly IEnumerable<IGlobalProvider> globalProviders;
         private readonly IEventAggregator eventAggregator;
         private readonly IThreadTimingFactory threadTimingFactory;
@@ -99,6 +102,8 @@ namespace FreePIE.Core.ScriptEngine.Python
         }
 
         public PythonScriptEngine(
+			IScopedContext engineScope,
+			IScriptContextController contextController,
             IScriptParser parser, 
             IEnumerable<IGlobalProvider> globalProviders, 
             IEventAggregator eventAggregator, 
@@ -106,7 +111,9 @@ namespace FreePIE.Core.ScriptEngine.Python
             IPaths paths, 
             ILog log)
         {
-            this.parser = parser;
+	        this.engineScope = engineScope;
+	        this.contextController = contextController;
+	        this.parser = parser;
             this.globalProviders = globalProviders;
             this.eventAggregator = eventAggregator;
             this.threadTimingFactory = threadTimingFactory;
@@ -169,6 +176,8 @@ namespace FreePIE.Core.ScriptEngine.Python
                 while (!stopRequested)
                 {
                     usedPlugins.ForEach(p => p.DoBeforeNextExecute());
+					contextController.OnBeforeScriptExecuting(this, new EventArgs());
+
                     CatchThreadAbortedException(() => compiled.Execute(scope));
                     scope.SetVariable("starting", false);
                     threadTimingFactory.Get().Wait();
@@ -319,6 +328,8 @@ namespace FreePIE.Core.ScriptEngine.Python
             threadTimingFactory.Get().Dispose();
             usedPlugins.ForEach(p => StopPlugin(p, pluginStopped));
             pluginStopped.Wait();
+
+			engineScope.Dispose();
         }
     }
 }

@@ -14,12 +14,12 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
     {
         private static readonly IEnumerable<MemberInfo> ObjectMembers = typeof(object).GetMembers();
 
-        public static Node<TokenInfo> ConstructExpressionInfoTree(IPluginInvoker invoker, IEnumerable<IGlobalProvider> providers)
+        public static Node<TokenInfo> ConstructExpressionInfoTree(IPluginDataSource dataSource, IEnumerable<IGlobalProvider> providers)
         {
             var root = new Node<TokenInfo>();
 
-            root.AddChildren(invoker.ListAllPluginTypes().Select(type => type.ToTokenInfo()));
-            root.AddChildren(invoker.ListAllGlobalEnumTypes().Select(type => type.ToTokenInfo()));
+            root.AddChildren(dataSource.ListAllPluginTypes().Select(type => type.ToTokenInfo()));
+            root.AddChildren(dataSource.ListAllGlobalEnumTypes().Select(type => type.ToTokenInfo()));
             root.AddChildren(providers.SelectMany(gp => gp.ListGlobals().Select(obj => obj.ToTokenInfo())));
 
             root.SortChildrenRecursive((a, b) => a.Identifier.Value.CompareTo(b.Identifier.Value));

@@ -11,21 +11,21 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
     public class RuntimeInfoProvider : IRuntimeInfoProvider, IHandle<CurveChangedNameEvent>
     {
         private readonly IEnumerable<IGlobalProvider> providers;
-        private readonly IPluginInvoker invoker;
+		private readonly IPluginDataSource dataSource;
         private Node<TokenInfo> runtimeInfo;
 
         private Node<TokenInfo> RuntimeInfo 
         { 
             get
             {
-                return runtimeInfo ?? (runtimeInfo = InfoTransformHelper.ConstructExpressionInfoTree(invoker, providers));
+				return runtimeInfo ?? (runtimeInfo = InfoTransformHelper.ConstructExpressionInfoTree(dataSource, providers));
             }
         }
 
-        public RuntimeInfoProvider(IPluginInvoker invoker, IEnumerable<IGlobalProvider> providers, IEventAggregator eventAggregator)
+		public RuntimeInfoProvider(IPluginDataSource dataSource, IEnumerable<IGlobalProvider> providers, IEventAggregator eventAggregator)
         {
             this.providers = providers;
-            this.invoker = invoker;
+			this.dataSource = dataSource;
             eventAggregator.Subscribe(this);
         }
 

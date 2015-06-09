@@ -4,6 +4,7 @@ using System.Linq;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Extensions;
+using FreePIE.Core.Common.Lifetime;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Common.Strategies;
@@ -28,16 +29,16 @@ namespace FreePIE.GUI.Views.Main
     {
         private readonly IResultFactory resultFactory;
         private readonly IEventAggregator eventAggregator;
-        private readonly Func<IScriptEngine> scriptEngineFactory;
+        private readonly Func<IScopedContext<IScriptEngine>> scriptEngineScopeFactory;
         private readonly Func<ScriptEditorViewModel> scriptEditorFactory;
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
-        private IScriptEngine currentScriptEngine;
+		private IScopedContext<IScriptEngine> currentScriptEngineScope;
         private bool scriptRunning;
 
         public MainMenuViewModel(IResultFactory resultFactory, 
             IEventAggregator eventAggregator,
-            Func<IScriptEngine> scriptEngineFactory,
+			Func<IScopedContext<IScriptEngine>> scriptEngineScopeFactory,
             Func<ScriptEditorViewModel> scriptEditorFactory,
             IFileSystem fileSystem,
             ScriptDialogStrategy scriptDialogStrategy)
@@ -46,7 +47,7 @@ namespace FreePIE.GUI.Views.Main
            
             this.resultFactory = resultFactory;
             this.eventAggregator = eventAggregator;
-            this.scriptEngineFactory = scriptEngineFactory;
+            this.scriptEngineScopeFactory = scriptEngineScopeFactory;
             this.scriptEditorFactory = scriptEditorFactory;
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
@@ -138,14 +139,14 @@ namespace FreePIE.GUI.Views.Main
             scriptRunning = true;
             PublishScriptStateChange();
 
-            currentScriptEngine = scriptEngineFactory();
-            currentScriptEngine.Start(activeDocument.FileContent);
+            currentScriptEngineScope = scriptEngineScopeFactory();
+            currentScriptEngineScope.EntryPoint.Start(activeDocument.FileContent);
         }
 
         public void StopScript()
         {
             scriptRunning = false;
-            currentScriptEngine.Stop();
+            currentScriptEngineScope.EntryPoint.Stop();
             PublishScriptStateChange();
         }
 
