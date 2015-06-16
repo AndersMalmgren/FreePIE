@@ -58,9 +58,9 @@ namespace FreePIE.Tests.Core
         {
             StubDllAndSettings();
             var pluginInvoker = Get<PluginInvoker>();
-			var dataSource = Get<PluginDataSource>();
+            var dataSource = Get<PluginDataSource>();
 
-			plugins = pluginInvoker.InvokeAndConfigurePlugins(dataSource.ListAllPluginTypes());
+            plugins = pluginInvoker.InvokeAndConfigurePlugins(dataSource.ListAllPluginTypes());
         }
 
         [TestMethod]

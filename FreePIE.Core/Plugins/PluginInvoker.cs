@@ -13,8 +13,8 @@ namespace FreePIE.Core.Plugins
     public class PluginInvoker : IPluginInvoker
     {
         private readonly ISettingsManager settingsManager;
-	    private readonly IPluginDataSource dataSource;
-	    private readonly IFactory<IPlugin> pluginFactory;
+        private readonly IPluginDataSource dataSource;
+        private readonly IFactory<IPlugin> pluginFactory;
         private readonly IFileSystem fileSystem;
         private readonly IPaths paths;
         private const string helpFolder = "help";
@@ -23,15 +23,15 @@ namespace FreePIE.Core.Plugins
         public PluginInvoker(ISettingsManager settingsManager, IPluginDataSource dataSource, IFactory<IPlugin> pluginFactory, IFileSystem fileSystem, IPaths paths)
         {
             this.settingsManager = settingsManager;
-	        this.dataSource = dataSource;
-	        this.pluginFactory = pluginFactory;
+            this.dataSource = dataSource;
+            this.pluginFactory = pluginFactory;
             this.fileSystem = fileSystem;
             this.paths = paths;
         }
 
         public IEnumerable<IPlugin> InvokeAndConfigurePlugins(IEnumerable<Type> pluginTypes)
         {
-			var plugins = pluginTypes.Select(pluginFactory.Create).ToList();
+            var plugins = pluginTypes.Select(pluginFactory.Create).ToList();
             plugins.ForEach(SetPluginProperties);
             return plugins;
         }
@@ -40,7 +40,7 @@ namespace FreePIE.Core.Plugins
         {
             var settings = settingsManager.Settings;
 
-			var pluginTypes = dataSource.ListAllPluginTypes();
+            var pluginTypes = dataSource.ListAllPluginTypes();
             var removedPluginSettings = settings.PluginSettings.Where(ps => !pluginTypes.Any(pt => pt.FullName == ps.PluginType)).ToList();
             var addedPluginTypes = pluginTypes.Where(pt => !settings.PluginSettings.Any(ps => ps.PluginType == pt.FullName)).ToList();
 

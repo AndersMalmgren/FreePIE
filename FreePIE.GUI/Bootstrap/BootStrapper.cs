@@ -29,29 +29,29 @@ namespace FreePIE.GUI.Bootstrap
 
         protected override void Configure()
         {
-			container = ServiceBootstrapper.Create();
-			container.Configure(config =>
-			{
-				config.For<IWindowManager>().Singleton().Use<WindowManager>();
-				config.For<IResultFactory>().Use<ResultFactory>();
-				config.For<IParser>().Use<Parser>();
+            container = ServiceBootstrapper.Create();
+            container.Configure(config =>
+            {
+                config.For<IWindowManager>().Singleton().Use<WindowManager>();
+                config.For<IResultFactory>().Use<ResultFactory>();
+                config.For<IParser>().Use<Parser>();
 
-				ConfigurePanels(config);
-			});
+                ConfigurePanels(config);
+            });
 
 
 
             SetupCustomMessageBindings();
         }
 
-	    private void ConfigurePanels(ConfigurationExpression config)
-	    {
-			config.For<PanelViewModel>().Use<ConsoleViewModel>();
-			config.For<PanelViewModel>().Use<ErrorsViewModel>();
-			config.For<PanelViewModel>().Use<WatchesViewModel>();
-	    }
+        private void ConfigurePanels(ConfigurationExpression config)
+        {
+            config.For<PanelViewModel>().Use<ConsoleViewModel>();
+            config.For<PanelViewModel>().Use<ErrorsViewModel>();
+            config.For<PanelViewModel>().Use<WatchesViewModel>();
+        }
 
-	    protected override void OnStartup(object sender, StartupEventArgs e)
+        protected override void OnStartup(object sender, StartupEventArgs e)
         {
             container.GetInstance<IPersistanceManager>().Load();
             DisplayRootViewFor<MainShellViewModel>();
@@ -59,7 +59,7 @@ namespace FreePIE.GUI.Bootstrap
 
         protected override object GetInstance(Type service, string key)
         {
-			return container.GetInstance(service);
+            return container.GetInstance(service);
         }
         
         protected override IEnumerable<object> GetAllInstances(Type service)

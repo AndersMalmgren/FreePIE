@@ -11,15 +11,15 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
     public class JoystickPlugin : Plugin
     {
-	    private readonly Func<Device> factory;
-	    private List<Device> devices;
+        private readonly Func<Device> factory;
+        private List<Device> devices;
 
-	    public JoystickPlugin(Func<Device> factory)
-	    {
-		    this.factory = factory;
-	    }
+        public JoystickPlugin(Func<Device> factory)
+        {
+            this.factory = factory;
+        }
 
-	    public override object CreateGlobal()
+        public override object CreateGlobal()
         {
             var directInput = new DirectInput();
             var handle = Process.GetCurrentProcess().MainWindowHandle;
@@ -59,16 +59,16 @@ namespace FreePIE.Core.Plugins
         private JoystickState state;
         private readonly GetPressedStrategy<int> getPressedStrategy;
 
-	    public Device(GetPressedStrategy<int> getPressedStrategy)
-	    {
-			this.getPressedStrategy = getPressedStrategy.Init(GetDown);
-	    }
+        public Device(GetPressedStrategy<int> getPressedStrategy)
+        {
+            this.getPressedStrategy = getPressedStrategy.Init(GetDown);
+        }
 
         public Device Init(Joystick joystick)
         {
             this.joystick = joystick;
             SetRange(-1000, 1000);
-	        return this;
+            return this;
         }
 
         public void Dispose()

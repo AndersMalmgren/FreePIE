@@ -28,12 +28,12 @@ namespace FreePIE.Core.Plugins
         private readonly GetPressedStrategy<int> getButtonPressedStrategy;
         private SetPressedStrategy setButtonPressedStrategy;
 
-	    public MousePlugin(GetPressedStrategy<int> getButtonPressedStrategy)
-	    {
-		    this.getButtonPressedStrategy = getButtonPressedStrategy.Init(IsButtonDown);
-	    }
+        public MousePlugin(GetPressedStrategy<int> getButtonPressedStrategy)
+        {
+            this.getButtonPressedStrategy = getButtonPressedStrategy.Init(IsButtonDown);
+        }
 
-	    public override object CreateGlobal()
+        public override object CreateGlobal()
         {
             return new MouseGlobal(this);
         }

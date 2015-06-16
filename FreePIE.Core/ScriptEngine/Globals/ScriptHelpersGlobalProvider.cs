@@ -8,9 +8,9 @@ namespace FreePIE.Core.ScriptEngine.Globals
 {
     public class ScriptHelpersGlobalProvider : IGlobalProvider
     {
-		private readonly IFactory<IScriptHelper> scriptHelperFactory;
+        private readonly IFactory<IScriptHelper> scriptHelperFactory;
 
-		public ScriptHelpersGlobalProvider(IFactory<IScriptHelper> scriptHelperFactory)
+        public ScriptHelpersGlobalProvider(IFactory<IScriptHelper> scriptHelperFactory)
         {
             this.scriptHelperFactory = scriptHelperFactory;
         }

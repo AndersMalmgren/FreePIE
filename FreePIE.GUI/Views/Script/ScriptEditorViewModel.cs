@@ -152,24 +152,24 @@ namespace FreePIE.GUI.Views.Script
         }
 
 
-	    private int scriptHash;
-		public bool IsDirty { get { return script == string.Empty || (!string.IsNullOrEmpty(script) && script.GetHashCode() != scriptHash); } }
+        private int scriptHash;
+        public bool IsDirty { get { return script == string.Empty || (!string.IsNullOrEmpty(script) && script.GetHashCode() != scriptHash); } }
 
         public override void Saved()
         {
-			ResetDirtyFlag();
+            ResetDirtyFlag();
         }
 
         public void LoadFileContent(string content)
         {
             script = content;
-			ResetDirtyFlag();
+            ResetDirtyFlag();
         }
 
-	    private void ResetDirtyFlag()
-	    {
-			scriptHash = script.GetHashCode();
-	    }
+        private void ResetDirtyFlag()
+        {
+            scriptHash = script.GetHashCode();
+        }
 
         public override string FileContent
         {

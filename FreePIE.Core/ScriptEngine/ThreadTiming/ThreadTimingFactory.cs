@@ -8,11 +8,11 @@ namespace FreePIE.Core.ScriptEngine.ThreadTiming
 {
     class ThreadTimingFactory : IThreadTimingFactory
     {
-		private readonly IFactory<Timing> timingFactory;
+        private readonly IFactory<Timing> timingFactory;
         private Timing timing;
         private readonly IDictionary<TimingAttribute, Type> timingStrategyTypes;
 
-		public ThreadTimingFactory(IFactory<Timing> timingFactory)
+        public ThreadTimingFactory(IFactory<Timing> timingFactory)
         {
             this.timingFactory = timingFactory;
             timingStrategyTypes = Utils.GetAttributeImplementations<TimingAttribute>();

@@ -5,8 +5,8 @@ using System.Text;
 
 namespace FreePIE.Core.Contracts
 {
-	public interface IScriptContext
-	{
-		event EventHandler BeforeScriptExecuting;
-	}
+    public interface IScriptContext
+    {
+        event EventHandler BeforeScriptExecuting;
+    }
 }

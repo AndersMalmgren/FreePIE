@@ -12,12 +12,12 @@ namespace FreePIE.Tests.Test
 
         protected TestBase()
         {
-			container = new Container();
+            container = new Container();
         }
 
         protected T Get<T>()
         {
-			return container.TryGetInstance<T>();
+            return container.TryGetInstance<T>();
         }
 
         protected IMethodOptions<object> WhenCalling<T>(Action<T> action) where T : class
@@ -42,11 +42,11 @@ namespace FreePIE.Tests.Test
         protected T Stub<T>()  where T : class
         {
             var instance = MockRepository.GenerateMock<T>();
-	        Register(instance);
+            Register(instance);
             return instance;
         }
 
-		protected void Register<T>(T instance) where T : class
+        protected void Register<T>(T instance) where T : class
         {
             container.Configure(config =>  config.For<T>().Use(instance));
         }

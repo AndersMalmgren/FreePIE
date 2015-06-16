@@ -33,12 +33,12 @@ namespace FreePIE.GUI.Views.Main
         private readonly Func<ScriptEditorViewModel> scriptEditorFactory;
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
-		private IScopedContext<IScriptEngine> currentScriptEngineScope;
+        private IScopedContext<IScriptEngine> currentScriptEngineScope;
         private bool scriptRunning;
 
         public MainMenuViewModel(IResultFactory resultFactory, 
             IEventAggregator eventAggregator,
-			Func<IScopedContext<IScriptEngine>> scriptEngineScopeFactory,
+            Func<IScopedContext<IScriptEngine>> scriptEngineScopeFactory,
             Func<ScriptEditorViewModel> scriptEditorFactory,
             IFileSystem fileSystem,
             ScriptDialogStrategy scriptDialogStrategy)

@@ -469,12 +469,12 @@ namespace FreePIE.Core.Plugins
         private SetPressedStrategy setKeyPressedStrategy;
         private readonly GetPressedStrategy<int> getKeyPressedStrategy;
 
-	    public KeyboardPlugin(GetPressedStrategy<int> getKeyPressedStrategy)
-	    {
-			this.getKeyPressedStrategy = getKeyPressedStrategy.Init(IsKeyDown);
-	    }
+        public KeyboardPlugin(GetPressedStrategy<int> getKeyPressedStrategy)
+        {
+            this.getKeyPressedStrategy = getKeyPressedStrategy.Init(IsKeyDown);
+        }
 
-	    public override object CreateGlobal()
+        public override object CreateGlobal()
         {
             return new KeyboardGlobal(this);
         }

@@ -64,20 +64,20 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(WiimoteGlobal), IsIndexed = true)]
     public class WiimotePlugin : Plugin
     {
-	    private readonly Func<WiimoteGlobal> factory;
-	    private LogLevel logLevel;
+        private readonly Func<WiimoteGlobal> factory;
+        private LogLevel logLevel;
         private FusionType fuserType;
         private bool doLog;
         private IWiimoteBridge wiimoteBridge;
         private Dictionary<uint, Action> globalUpdators;
         private IList<uint> updatedWiimotes;
 
-	    public WiimotePlugin(Func<WiimoteGlobal> factory)
-	    {
-		    this.factory = factory;
-	    }
+        public WiimotePlugin(Func<WiimoteGlobal> factory)
+        {
+            this.factory = factory;
+        }
 
-	    private Dictionary<FusionType, Func<IMotionPlusFuser>> fuserFactories = new Dictionary <FusionType, Func<IMotionPlusFuser>>()
+        private Dictionary<FusionType, Func<IMotionPlusFuser>> fuserFactories = new Dictionary <FusionType, Func<IMotionPlusFuser>>()
             {
                 {FusionType.SimpleIntegration, () => new SimpleIntegrationMotionPlusFuser()},
                 {FusionType.Mahony, () => new MahonyMotionPlusFuser()}
@@ -184,8 +184,8 @@ namespace FreePIE.Core.Plugins
     [Global(Name = "wiimote")]
     public class WiimoteGlobal
     {
-	    private readonly IScriptContext scriptContext;
-	    private WiimotePlugin plugin;
+        private readonly IScriptContext scriptContext;
+        private WiimotePlugin plugin;
         private IWiimoteData data;
 
         private Action accelerationTrigger;
@@ -196,24 +196,24 @@ namespace FreePIE.Core.Plugins
         private Action accelerationCalibratedTrigger;
         private Action motionPlusCalibratedTrigger;
 
-	    public WiimoteGlobal(IScriptContext scriptContext)
-	    {
-		    this.scriptContext = scriptContext;
-	    }
+        public WiimoteGlobal(IScriptContext scriptContext)
+        {
+            this.scriptContext = scriptContext;
+        }
 
-	    public WiimoteGlobal Init(WiimotePlugin plugin, IWiimoteData data, Dictionary<uint, Action> updaters)
+        public WiimoteGlobal Init(WiimotePlugin plugin, IWiimoteData data, Dictionary<uint, Action> updaters)
         {
             this.plugin = plugin;
             this.data = data;
 
             acceleration = new AccelerationGlobal(data, out accelerationTrigger, out accelerationCalibratedTrigger);
-			buttons = new WiimoteButtonState(data, out buttonTrigger, scriptContext);
+            buttons = new WiimoteButtonState(data, out buttonTrigger, scriptContext);
             motionplus = new MotionPlusGlobal(data, out motionPlusTrigger, out motionPlusCalibratedTrigger);
             nunchuck = new NunchuckGlobal(data, out nunchuckTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
 
-		    return this;
+            return this;
         }
 
         public void enable(WiimoteCapabilities flags)

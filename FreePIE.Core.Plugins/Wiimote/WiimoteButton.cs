@@ -16,7 +16,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public WiimoteButtonState(IWiimoteData data, out Action trigger, IScriptContext scriptContext) : base(out trigger)
         {
             this.data = data;
-			buttonPressed = new GetPressedStrategy<WiimoteButtons>(scriptContext).Init(button_down);
+            buttonPressed = new GetPressedStrategy<WiimoteButtons>(scriptContext).Init(button_down);
         }
 
         public bool button_down(WiimoteButtons b)

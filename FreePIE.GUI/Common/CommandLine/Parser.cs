@@ -10,9 +10,9 @@ namespace FreePIE.GUI.Common.CommandLine
 {
     public class Parser : IParser
     {
-		private readonly IFactory<Command> factory;
+        private readonly IFactory<Command> factory;
 
-		public Parser(IFactory<Command> factory)
+        public Parser(IFactory<Command> factory)
         {
             this.factory = factory;
         }

@@ -11,14 +11,14 @@ namespace FreePIE.GUI.Result
     {
         private readonly IContainer container;
 
-		public ResultFactory(IContainer container)
+        public ResultFactory(IContainer container)
         {
-			this.container = container;
+            this.container = container;
         }
 
         public ShowDialogResult<TModel> ShowDialog<TModel>() where TModel : ShellPresentationModel
         {
-			return container.GetInstance<ShowDialogResult<TModel>>();
+            return container.GetInstance<ShowDialogResult<TModel>>();
         }
 
         public FileDialogResult ShowFileDialog(string title, string filter, FileDialogMode mode)
@@ -43,7 +43,7 @@ namespace FreePIE.GUI.Result
 
         public IResult Close()
         {
-			return new CloseResult();
+            return new CloseResult();
         }
 
         public IEnumerable<IResult> Coroutinify(IEnumerable<IResult> results, System.Action cancelCallback)

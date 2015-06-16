@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FreePIE.Core.Plugins
 {
-	public interface IPluginDataSource
-	{
-		IEnumerable<Type> ListAllPluginTypes();
-		IEnumerable<Type> ListAllGlobalEnumTypes();
-	}
+    public interface IPluginDataSource
+    {
+        IEnumerable<Type> ListAllPluginTypes();
+        IEnumerable<Type> ListAllGlobalEnumTypes();
+    }
 }

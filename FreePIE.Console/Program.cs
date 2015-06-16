@@ -9,7 +9,7 @@ namespace FreePIE.Console
         public static void Main(string[] args)
         {
             var container = ServiceBootstrapper.Create();
-			container.GetInstance<ConsoleHost>().Start(args);
+            container.GetInstance<ConsoleHost>().Start(args);
         }
     }
 }
