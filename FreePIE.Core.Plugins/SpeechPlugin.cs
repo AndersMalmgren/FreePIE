@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Speech.Recognition;
