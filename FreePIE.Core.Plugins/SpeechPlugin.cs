@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Threading;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Speech.Recognition;
 using System.Speech.Synthesis;
@@ -6,7 +8,7 @@ using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins
 {
-    [GlobalType(Type = typeof (SpeechGlobal))]
+    [GlobalType(Type = typeof(SpeechGlobal))]
     public class SpeechPlugin : Plugin
     {
         private SpeechSynthesizer synth;
@@ -14,8 +16,8 @@ namespace FreePIE.Core.Plugins
 
         private SpeechRecognitionEngine recognitionEngine;
         private Dictionary<string, RecognitionInfo> recognizerResults;
-
-
+        private string commandOnOff ="";
+        private bool saidStop = false;
         public override object CreateGlobal()
         {
             return new SpeechGlobal(this);
@@ -52,7 +54,7 @@ namespace FreePIE.Core.Plugins
 
         public bool Said(string text, float confidence)
         {
-            if(confidence < 0.0 || confidence > 1.0) throw new ArgumentException("Confidence has to be between 0.0 and 1.0");
+            if (confidence < 0.0 || confidence > 1.0) throw new ArgumentException("Confidence has to be between 0.0 and 1.0");
 
             var init = EnsureRecognizer();
 
@@ -75,6 +77,24 @@ namespace FreePIE.Core.Plugins
             return result;
         }
 
+        public void SaidOnMsg(string Ontext, float confidence)
+        {
+            if (confidence < 0.0 || confidence > 1.0) throw new ArgumentException("Confidence has to be between 0.0 and 1.0");
+
+            if (Ontext.Length != 0)
+                     commandOnOff = Ontext;
+        }
+
+        public void saidOn()
+        {
+            saidStop = false;
+        }
+
+        public void saidOff()
+        {
+            saidStop = true;
+        }
+
         private bool EnsureRecognizer()
         {
             var result = recognitionEngine == null;
@@ -87,9 +107,11 @@ namespace FreePIE.Core.Plugins
                 recognitionEngine.SpeechRecognized += (s, e) =>
                 {
                     var info = recognizerResults[e.Result.Text];
-
                     if (e.Result.Confidence >= info.Confidence)
+                    {
                         info.Result = true;
+                        if (saidStop && !(commandOnOff == e.Result.Text)) info.Result = false;
+                    }
                 };
 
             }
@@ -146,6 +168,21 @@ namespace FreePIE.Core.Plugins
         public bool said(string text, float confidence)
         {
             return plugin.Said(text, confidence);
+        }
+
+        public void saidInitOnMsg(string Ontext)
+        {
+            plugin.SaidOnMsg(Ontext, 0.9f);
+        }
+
+        public void saidOn()
+        {
+            plugin.saidOn();
+        }
+
+        public void saidOff()
+        {
+            plugin.saidOff();
         }
 
         public void selectVoice(string name)
