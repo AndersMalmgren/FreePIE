@@ -83,6 +83,11 @@ public class MainActivity extends Activity {
     private TextView imu;
     private LinearLayout emptyLayout;
 
+    private float[] debug_imu = new float[3];
+    private float[] debug_acc = new float[3];
+    private float[] debug_mag = new float[3];
+    private float[] debug_gyr = new float[3];
+
     private TimerTask debugHandler = new TimerTask() {
         @Override
         public void run() {
@@ -90,13 +95,12 @@ public class MainActivity extends Activity {
                 @Override
                 public void run() {
                     if (udpSenderService != null) {
-                        float[] imu = new float[3], acc = new float[3], mag = new float[3], gyr = new float[3];
-                        String lastError = udpSenderService.debug(acc, mag, gyr, imu);
+                        String lastError = udpSenderService.debug(debug_acc, debug_mag, debug_gyr, debug_imu);
                         if (lastError != null)
                             error(lastError);
                         if (chkDebug.isChecked()) {
-                            debugImu(imu);
-                            debugRaw(acc, gyr, mag);
+                            debugImu(debug_imu);
+                            debugRaw(debug_acc, debug_gyr, debug_mag);
                         }
                     }
                 }
