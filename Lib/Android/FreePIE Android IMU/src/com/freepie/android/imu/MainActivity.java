@@ -88,23 +88,25 @@ public class MainActivity extends Activity {
     private float[] debug_mag = new float[3];
     private float[] debug_gyr = new float[3];
 
+    private Runnable timer_task = new Runnable() {
+        @Override
+        public void run() {
+            if (udpSenderService != null) {
+                String lastError = udpSenderService.debug(debug_acc, debug_mag, debug_gyr, debug_imu);
+                if (lastError != null)
+                    error(lastError);
+                if (chkDebug.isChecked()) {
+                    debugImu(debug_imu);
+                    debugRaw(debug_acc, debug_gyr, debug_mag);
+                }
+            }
+        }
+    };
+
     private TimerTask debugHandler = new TimerTask() {
         @Override
         public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (udpSenderService != null) {
-                        String lastError = udpSenderService.debug(debug_acc, debug_mag, debug_gyr, debug_imu);
-                        if (lastError != null)
-                            error(lastError);
-                        if (chkDebug.isChecked()) {
-                            debugImu(debug_imu);
-                            debugRaw(debug_acc, debug_gyr, debug_mag);
-                        }
-                    }
-                }
-            });
+            runOnUiThread(timer_task);
         }
     };
 
