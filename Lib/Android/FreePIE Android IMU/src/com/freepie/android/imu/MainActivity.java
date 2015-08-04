@@ -182,7 +182,7 @@ public class MainActivity extends Activity {
 
         emptyLayout.requestFocus();
 
-        t.schedule(debugHandler, 100L, 100L);
+        t.schedule(debugHandler, 500L, 500L);
 
         bindService();
     }
