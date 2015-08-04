@@ -14,5 +14,6 @@ namespace FreePIE.GUI.Result
         MessageBoxResult ShowMessageBox(string caption, string text, MessageBoxButton buttons);
         IResult Cancel();
         IEnumerable<IResult> Coroutinify(IEnumerable<IResult> results, System.Action cancelCallback);
+        IResult CloseApp();
     }
 }

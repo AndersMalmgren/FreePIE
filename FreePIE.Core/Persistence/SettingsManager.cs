@@ -19,25 +19,34 @@ namespace FreePIE.Core.Persistence
             this.paths = paths;
         }
 
-        public void Load()
+        public bool Load()
         {
             var path = paths.GetDataPath(filename);
 
-            if (!File.Exists(path))
+            if(!File.Exists(path))
             {
                 Settings = new Settings();
             }
             else
             {
-                var serializer = new DataContractSerializer(typeof (Settings));
-                using (var stream = new FileStream(path, FileMode.Open))
+                var serializer = new DataContractSerializer(typeof(Settings));
+                using(var stream = new FileStream(path, FileMode.Open))
                 {
+                    try
+                    {
 
-                    Settings = serializer.ReadObject(stream) as Settings;
+                        Settings = serializer.ReadObject(stream) as Settings;
+                    }
+                    catch
+                    {
+                        Settings = new Settings();
+                        return false;
+                    }
                 }
             }
 
             FixBackwardCompatibility();
+            return true;
         }
 
         private void FixBackwardCompatibility()

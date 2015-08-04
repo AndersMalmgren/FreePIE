@@ -13,10 +13,12 @@ namespace FreePIE.Core.Persistence
             this.pluginInvoker = pluginInvoker;
         }
 
-        public void Load()
+        public bool Load()
         {
-            settingsManager.Load();
+            var result = settingsManager.Load();
             pluginInvoker.PopulatePluginSettings();
+
+            return result;
         }
 
         public void Save()

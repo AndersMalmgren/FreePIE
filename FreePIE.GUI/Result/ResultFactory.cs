@@ -46,6 +46,11 @@ namespace FreePIE.GUI.Result
             return kernel.Get<CloseResult>();
         }
 
+        public IResult CloseApp()
+        {
+            return kernel.Get<CloseAppResult>();
+        }
+
         public IEnumerable<IResult> Coroutinify(IEnumerable<IResult> results, System.Action cancelCallback)
         {
             return results.Select(r =>

@@ -6,7 +6,7 @@ namespace FreePIE.Core.Persistence
 {
     public interface ISettingsManager
     {
-        void Load();
+        bool Load();
         void Save();
         Settings Settings { get; }
         PluginSetting GetPluginSettings(IPlugin plugin);

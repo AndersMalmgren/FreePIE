@@ -46,9 +46,11 @@ namespace FreePIE.GUI.Bootstrap
 	    }
 
 	    protected override void OnStartup(object sender, StartupEventArgs e)
-        {
-            kernel.Get<IPersistanceManager>().Load();
-            DisplayRootViewFor<MainShellViewModel>();
+	    {
+	        Coroutine.BeginExecute(kernel
+                .Get<SettingsLoaderViewModel>()
+                .Load(() => DisplayRootViewFor<MainShellViewModel>())
+                .GetEnumerator());
         }
 
         protected override object GetInstance(Type service, string key)
