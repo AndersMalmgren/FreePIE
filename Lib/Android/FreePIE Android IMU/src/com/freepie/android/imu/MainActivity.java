@@ -266,8 +266,17 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        chkDebug.setChecked(false);
+        setDebugVisibility(false);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
+        chkDebug.setChecked(false);
+        setDebugVisibility(false);
         if (udpSenderService != null && !udpSenderService.isRunning())
             stopService(new Intent(this, UdpSenderService.class));
         save();
