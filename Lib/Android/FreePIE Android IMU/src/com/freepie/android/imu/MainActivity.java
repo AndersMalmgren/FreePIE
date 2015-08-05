@@ -63,7 +63,6 @@ public class MainActivity extends Activity {
     private static final String SEND_ORIENTATION = "send_orientation";
     private static final String SEND_RAW = "send_raw";
     private static final String SAMPLE_RATE = "sample_rate";
-    private static final String DEBUG = "debug";
 
     private static final String DEBUG_FORMAT = "%.2f;%.2f;%.2f";
 
@@ -139,7 +138,7 @@ public class MainActivity extends Activity {
         txtPort.setText(preferences.getString(PORT, "5555"));
         chkSendOrientation.setChecked(preferences.getBoolean(SEND_ORIENTATION, true));
         chkSendRaw.setChecked(preferences.getBoolean(SEND_RAW, true));
-        chkDebug.setChecked(preferences.getBoolean(DEBUG, false));
+        chkDebug.setChecked(false);
         populateSampleRates(preferences.getInt(SAMPLE_RATE, 0));
         populateIndex(preferences.getInt(INDEX, 0));
 
@@ -263,7 +262,6 @@ public class MainActivity extends Activity {
                 .putBoolean(SEND_ORIENTATION, chkSendOrientation.isChecked())
                 .putBoolean(SEND_RAW, chkSendRaw.isChecked())
                 .putInt(SAMPLE_RATE, getSelectedSampleRateId())
-                .putBoolean(DEBUG, chkDebug.isChecked())
                 .commit();
     }
 
