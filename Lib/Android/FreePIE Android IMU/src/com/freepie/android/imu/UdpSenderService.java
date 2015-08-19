@@ -239,20 +239,24 @@ public class UdpSenderService extends Service implements SensorEventListener {
 
                 while(running) {
                     try {
-                        synchronized (this_) {
-                            this_.wait();
-                            Send();
+                        while (running) {
+                            synchronized (this_) {
+                                this_.wait();
+                                Send();
+                            }
                         }
-                    } catch (InterruptedException e) {
                     }
+                    catch (InterruptedException ignored) {}
+                    catch (IOException ignored) {}
                 }
                 try  {
                     socket.disconnect();
                 }
-                catch(Exception e)  {}
+                catch(Exception ignored)  {}
+                socket = null;
             }
         });
-        
+
         worker.start();
 
         hasGyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
@@ -283,7 +287,7 @@ public class UdpSenderService extends Service implements SensorEventListener {
         return pos;
     }
 
-    private void Send() {
+    private void Send() throws IOException {
         int pos = 0;
 
         buf[pos++] = deviceIndex;
@@ -314,10 +318,7 @@ public class UdpSenderService extends Service implements SensorEventListener {
 
         p.setData(buf, 0, pos);
 
-        try {
-            socket.send(p);
-        }
-        catch(IOException ignored) {}
+        socket.send(p);
     }
 
     public boolean isRunning() {
