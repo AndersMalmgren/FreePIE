@@ -54,8 +54,6 @@ public class UdpSenderService extends Service implements SensorEventListener {
     private int sampleRate;
     private SensorManager sensorManager;
 
-    ByteBuffer buffer;
-
     Thread worker;
     volatile boolean running;
     private boolean hasGyro;
@@ -222,9 +220,6 @@ public class UdpSenderService extends Service implements SensorEventListener {
         sendOrientation = target.getSendOrientation();
         sampleRate = target.getSampleRate();
 
-        buffer = ByteBuffer.allocate(50);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-
         final UdpSenderService this_ = this;
 
         running = true;
@@ -276,44 +271,53 @@ public class UdpSenderService extends Service implements SensorEventListener {
                 (orientation ? SEND_ORIENTATION : SEND_NONE));
     }
 
-    private void Send() {
-        buffer.clear();
+    private byte[] buf = new byte[50];
 
-        buffer.put(deviceIndex);
-        buffer.put(getFlagByte(sendRaw, sendOrientation));
+    private int put_float(float f, int pos, byte[] buf)
+    {
+        int tmp = Float.floatToIntBits(f);
+        buf[pos++] = (byte)(tmp >> 0);
+        buf[pos++] = (byte)(tmp >> 8);
+        buf[pos++] = (byte)(tmp >> 16);
+        buf[pos++] = (byte)(tmp >> 24);
+        return pos;
+    }
+
+    private void Send() {
+        int pos = 0;
+
+        buf[pos++] = deviceIndex;
+        buf[pos++] = getFlagByte(sendRaw, sendOrientation);
 
         if (sendRaw) {
             //Acc
-            buffer.putFloat(acc[0]);
-            buffer.putFloat(acc[1]);
-            buffer.putFloat(acc[2]);
+            pos = put_float(acc[0], pos, buf);
+            pos = put_float(acc[1], pos, buf);
+            pos = put_float(acc[2], pos, buf);
 
             //Gyro
-            buffer.putFloat(gyr[0]);
-            buffer.putFloat(gyr[1]);
-            buffer.putFloat(gyr[2]);
+            pos = put_float(gyr[0], pos, buf);
+            pos = put_float(gyr[1], pos, buf);
+            pos = put_float(gyr[2], pos, buf);
 
             //Mag
-            buffer.putFloat(mag[0]);
-            buffer.putFloat(mag[1]);
-            buffer.putFloat(mag[2]);
+            pos = put_float(mag[0], pos, buf);
+            pos = put_float(mag[1], pos, buf);
+            pos = put_float(mag[2], pos, buf);
         }
 
         if (sendOrientation) {
-            buffer.putFloat(imu[0]);
-            buffer.putFloat(imu[1]);
-            buffer.putFloat(imu[2]);
+            pos = put_float(imu[0], pos, buf);
+            pos = put_float(imu[1], pos, buf);
+            pos = put_float(imu[2], pos, buf);
         }
 
-        byte[] arr = buffer.array();
-
-        p.setData(arr, 0, buffer.position());
+        p.setData(buf, 0, pos);
 
         try {
             socket.send(p);
         }
-        catch(IOException w) {
-        }
+        catch(IOException ignored) {}
     }
 
     public boolean isRunning() {

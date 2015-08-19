@@ -63,7 +63,6 @@ public class MainActivity extends Activity {
     private static final String SEND_ORIENTATION = "send_orientation";
     private static final String SEND_RAW = "send_raw";
     private static final String SAMPLE_RATE = "sample_rate";
-    private static final String DEBUG = "debug";
 
     private static final String DEBUG_FORMAT = "%.2f;%.2f;%.2f";
 
@@ -83,24 +82,30 @@ public class MainActivity extends Activity {
     private TextView imu;
     private LinearLayout emptyLayout;
 
+    private float[] debug_imu = new float[3];
+    private float[] debug_acc = new float[3];
+    private float[] debug_mag = new float[3];
+    private float[] debug_gyr = new float[3];
+
+    private Runnable timer_task = new Runnable() {
+        @Override
+        public void run() {
+            if (udpSenderService != null) {
+                String lastError = udpSenderService.debug(debug_acc, debug_mag, debug_gyr, debug_imu);
+                if (lastError != null)
+                    error(lastError);
+                if (chkDebug.isChecked()) {
+                    debugImu(debug_imu);
+                    debugRaw(debug_acc, debug_gyr, debug_mag);
+                }
+            }
+        }
+    };
+
     private TimerTask debugHandler = new TimerTask() {
         @Override
         public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (udpSenderService != null) {
-                        float[] imu = new float[3], acc = new float[3], mag = new float[3], gyr = new float[3];
-                        String lastError = udpSenderService.debug(acc, mag, gyr, imu);
-                        if (lastError != null)
-                            error(lastError);
-                        if (chkDebug.isChecked()) {
-                            debugImu(imu);
-                            debugRaw(acc, gyr, mag);
-                        }
-                    }
-                }
-            });
+            runOnUiThread(timer_task);
         }
     };
 
@@ -133,7 +138,7 @@ public class MainActivity extends Activity {
         txtPort.setText(preferences.getString(PORT, "5555"));
         chkSendOrientation.setChecked(preferences.getBoolean(SEND_ORIENTATION, true));
         chkSendRaw.setChecked(preferences.getBoolean(SEND_RAW, true));
-        chkDebug.setChecked(preferences.getBoolean(DEBUG, false));
+        chkDebug.setChecked(false);
         populateSampleRates(preferences.getInt(SAMPLE_RATE, 0));
         populateIndex(preferences.getInt(INDEX, 0));
 
@@ -176,7 +181,7 @@ public class MainActivity extends Activity {
 
         emptyLayout.requestFocus();
 
-        t.schedule(debugHandler, 100L, 100L);
+        t.schedule(debugHandler, 500L, 500L);
 
         bindService();
     }
@@ -257,13 +262,21 @@ public class MainActivity extends Activity {
                 .putBoolean(SEND_ORIENTATION, chkSendOrientation.isChecked())
                 .putBoolean(SEND_RAW, chkSendRaw.isChecked())
                 .putInt(SAMPLE_RATE, getSelectedSampleRateId())
-                .putBoolean(DEBUG, chkDebug.isChecked())
                 .commit();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        chkDebug.setChecked(false);
+        setDebugVisibility(false);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        chkDebug.setChecked(false);
+        setDebugVisibility(false);
         if (udpSenderService != null && !udpSenderService.isRunning())
             stopService(new Intent(this, UdpSenderService.class));
         save();
