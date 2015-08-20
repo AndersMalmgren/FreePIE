@@ -8,6 +8,6 @@ namespace FreePIE.Core.ScriptEngine.ThreadTiming.Strategies
         SystemTimer = 1,
         ThreadYield = 2,
         HighresSystemTimer = 3,
-        MicroTimer = 4
+        ThreadYieldMicroSeconds = 4
     }
 }

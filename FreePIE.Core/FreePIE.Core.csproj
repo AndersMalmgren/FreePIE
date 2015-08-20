@@ -79,7 +79,6 @@
     <Compile Include="Common\ILog.cs" />
     <Compile Include="Common\InterlockableBool.cs" />
     <Compile Include="Common\Log.cs" />
-    <Compile Include="Common\MicroLibrary\MicroLibrary.cs" />
     <Compile Include="Common\Range.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Model\Choice.cs" />
@@ -130,7 +129,7 @@
     <Compile Include="ScriptEngine\Python\PythonScriptParser.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\IThreadTimingFactory.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\Strategies\BeginPeriodSystemTimerStrategy.cs" />
-    <Compile Include="ScriptEngine\ThreadTiming\Strategies\MicroTimerStrategy.cs" />
+    <Compile Include="ScriptEngine\ThreadTiming\Strategies\ThreadYieldMicroSecondsStrategy.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\Strategies\TimingTypes.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\Strategies\SystemTimerStrategy.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\Strategies\Timing.cs" />
