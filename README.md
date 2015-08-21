@@ -13,6 +13,12 @@ FreePIE is very similar to the popular utility GlovePIE, but encourages open dev
 
 FreePIE is licensed under GPLv2  
 
+Changelog 1.9.611.0
+* Added support for Tobii EyeX
+* Stability and performance fixes for the Android APK
+* Added ThreadYieldMicroSeconds to be able to run FreePIE in intervals below 1ms
+* Various stability fixes
+
 Changelog 1.8.569.0
 * Latest version did not contain the fix for vjoy because of a commit miss
 
