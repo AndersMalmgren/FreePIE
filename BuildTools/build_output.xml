@@ -92,7 +92,8 @@
                       $(Lib)\OculusVR\Binaries\*.dll;
                       $(Lib)\VJoy\*.dll;
                       $(Lib)\Sixense\Emulation\Binary\*.dll;
-                      $(Lib)\Midi\*.dll">
+                      $(Lib)\Midi\*.dll;
+											$(Lib)\Tobii\*.dll">
       </DependecieFiles>
     </ItemGroup>
     <Copy SourceFiles="@(DependecieFiles)" DestinationFiles="@(DependecieFiles -> '$(BuildDir)\%(Filename)%(Extension)')"/>

@@ -49,6 +49,10 @@
       <HintPath>..\Lib\Midi\CannedBytes.Midi.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="EyeXFramework">
+      <HintPath>..\Lib\Tobii\EyeXFramework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="PPJoyWrapper">
       <HintPath>..\Lib\PPJoyWrapper\PPJoyWrapper.dll</HintPath>
     </Reference>
@@ -60,6 +64,10 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Speech" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="Tobii.EyeX.Client.Net20">
+      <HintPath>..\Lib\Tobii\Tobii.EyeX.Client.Net20.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="vJoyInterfaceWrap">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\vJoy\vJoyInterfaceWrap.dll</HintPath>
@@ -92,6 +100,7 @@
     <Compile Include="MidiPlugin.cs" />
     <Compile Include="Midi\MidiStatus.cs" />
     <Compile Include="Midi\DataGlobal.cs" />
+    <Compile Include="TobiiEyeXPlugin.cs" />
     <Compile Include="Wiimote\Calibratable.cs" />
     <Compile Include="SpeechPlugin.cs" />
     <Compile Include="VJoyPlugin.cs" />
