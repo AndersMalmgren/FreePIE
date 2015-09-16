@@ -43,26 +43,50 @@ namespace FreePIE.Core.Plugins
 
     public class MidiGlobalHolder : IUpdatable, IMidiDataReceiver, IDisposable
     {
+        private readonly int index;
         private readonly Queue<DataGlobal> messages = new Queue<DataGlobal>();
-        private readonly MidiInPort port;
-        private DataGlobal lastData = new DataGlobal();
+        private MidiInPort inPort;
+        private MidiOutPort outPort;
+        private DataGlobal lastData;
+        private bool isWriting;
+        private bool newDataToWrite;
 
         public MidiGlobalHolder(int index)
         {
+            this.index = index;
+            lastData = new DataGlobal(this);
             Global = new MidiGlobal(this);
-            port = new MidiInPort();
-            port.Successor = this;
+        }
+
+        private void InitRead()
+        {
+            inPort = new MidiInPort {Successor = this};
 
             var count = new MidiInPortCapsCollection().Count;
             if (index >= count)
                 throw new Exception(string.Format("MIDI device with port index {0} not found", index));
 
-            port.Open(index);
-            port.Start();
+            inPort.Open(index);
+            inPort.Start();
+        }
+
+        public void IsWriting()
+        {
+            isWriting = true;
+            newDataToWrite = true;
         }
 
         public void Update()
         {
+            Write();
+            Read();
+        }
+
+        private void Read()
+        {
+            if(GlobalHasUpdateListener && inPort == null)
+                InitRead();
+
             if (messages.Count != 0)
             {
                 lock (messages)
@@ -74,6 +98,21 @@ namespace FreePIE.Core.Plugins
                     }
                 }
             }
+        }
+
+        private void Write()
+        {
+            if (!isWriting || !newDataToWrite) return;
+
+
+            if (outPort == null)
+            {
+                outPort = new MidiOutPort();
+                outPort.Open(index);
+            }
+
+            outPort.ShortData(lastData.GetOutput());
+            newDataToWrite = false;
         }
 
         public Action OnUpdate { get; set; }
@@ -89,14 +128,24 @@ namespace FreePIE.Core.Plugins
         {
             lock (messages)
             {
-                messages.Enqueue(new DataGlobal(data, timestamp));
+                messages.Enqueue(new DataGlobal(data, timestamp, this));
             }
         }
 
         public void Dispose()
         {
-            port.Stop();
-            port.Close();
+            if (inPort != null)
+            {
+                inPort.Stop();
+                inPort.Close();
+                inPort.Dispose();
+            }
+
+            if (outPort != null)
+            {
+                outPort.Close();
+                outPort.Dispose();
+            }
         }
 
         public void LongData(MidiBufferStream buffer, long timestamp){ }
