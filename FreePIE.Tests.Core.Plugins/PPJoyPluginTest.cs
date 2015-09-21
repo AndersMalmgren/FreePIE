@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using FreePIE.Core.Plugins;
+using FreePIE.Tests.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SlimDX.DirectInput;
 
@@ -72,14 +73,14 @@ namespace FreePIE.Tests.Core.Plugins
         }
     }
 
-    public abstract class PPJoyPluginTest
+    public abstract class PPJoyPluginTest : TestBase
     {
         protected JoystickState state;
         protected abstract void DoTest(PPJoyGlobal global);
 
         protected PPJoyPluginTest()
         {
-            var plugin = new PPJoyPlugin();
+            var plugin = Get<PPJoyPlugin>();
             var global = (plugin.CreateGlobal() as PPJoyGlobal[])[0];
 
             plugin.Start();

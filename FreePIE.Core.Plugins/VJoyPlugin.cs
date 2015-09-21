@@ -23,7 +23,13 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type= typeof(VJoyGlobal), IsIndexed = true)]
     public class VJoyPlugin : Plugin
     {
+        private readonly Func<VJoyGlobalHolder> factory;
         private List<VJoyGlobalHolder> holders;
+
+        public VJoyPlugin(Func<VJoyGlobalHolder> factory)
+        {
+            this.factory = factory;
+        }
 
         public override object CreateGlobal()
         {
@@ -39,15 +45,10 @@ namespace FreePIE.Core.Plugins
 
         private VJoyGlobal Create(uint index)
         {
-            var holder = new VJoyGlobalHolder(index + 1);
+            var holder = factory().Init(index + 1);
             holders.Add(holder);
 
             return holder.Global;
-        }
-
-        public override void DoBeforeNextExecute()
-        {
-            holders.ForEach(h => h.SendPressed());
         }
 
         public override string FriendlyName
@@ -58,22 +59,29 @@ namespace FreePIE.Core.Plugins
 
     public class VJoyGlobalHolder : IDisposable
     {
-        private readonly vJoy joystick;
+        private vJoy joystick;
         private readonly Dictionary<HID_USAGES, bool> enabledAxis;
         private readonly Dictionary<HID_USAGES, int> currentAxisValue; 
 
-        private readonly int maxButtons;
-        private readonly int maxDirPov;
-        private readonly int maxContinuousPov;
+        private int maxButtons;
+        private int maxDirPov;
+        private int maxContinuousPov;
         public const int ContinuousPovMax = 35900;
         
         private readonly SetPressedStrategy setPressedStrategy;
 
-        public VJoyGlobalHolder(uint index)
+        public VJoyGlobalHolder(SetPressedStrategy setPressedStrategy)
         {
+            this.setPressedStrategy = setPressedStrategy.Init(b => SetButton(b, true), b => SetButton(b, false));
+            enabledAxis = new Dictionary<HID_USAGES, bool>();
+            currentAxisValue = new Dictionary<HID_USAGES, int>();
+        }
+
+        public VJoyGlobalHolder Init(uint index)  
+        {
+
             Index = index;
             Global = new VJoyGlobal(this);
-            setPressedStrategy = new SetPressedStrategy(b => SetButton(b, true), b => SetButton(b, false));
 
             joystick = new vJoy();
             if (index < 1 || index > 16)
@@ -116,8 +124,7 @@ namespace FreePIE.Core.Plugins
             long max = 0;
             joystick.GetVJDAxisMax(index, HID_USAGES.HID_USAGE_X, ref max);
             AxisMax = (int)max / 2 - 1;
-
-            enabledAxis = new Dictionary<HID_USAGES, bool>();
+            
             foreach (HID_USAGES axis in Enum.GetValues(typeof (HID_USAGES)))
                 enabledAxis[axis] = joystick.GetVJDAxisExist(index, axis);
 
@@ -125,9 +132,9 @@ namespace FreePIE.Core.Plugins
             maxDirPov = joystick.GetVJDDiscPovNumber(index);
             maxContinuousPov = joystick.GetVJDContPovNumber(index);
 
-            currentAxisValue = new Dictionary<HID_USAGES, int>();
-
             joystick.ResetVJD(index);
+
+            return this;
         }
 
         public void SetButton(int button, bool pressed)
@@ -141,11 +148,6 @@ namespace FreePIE.Core.Plugins
         public void SetPressed(int button)
         {
             setPressedStrategy.Add(button);
-        }
-
-        public void SendPressed()
-        {
-            setPressedStrategy.Do();
         }
 
         public void SetAxis(int x, HID_USAGES usage)

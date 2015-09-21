@@ -22,27 +22,23 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(PPJoyGlobal), IsIndexed = true)]
     public class PPJoyPlugin : Plugin
     {
+        private readonly Func<Device> factory;
         private Device[] devices;
+
+        public PPJoyPlugin(Func<Device> factory)
+        {
+            this.factory = factory;
+        }
 
         public override object CreateGlobal()
         {
             devices = new DeviceManager().GetAllDevices()
                 .Where(d => d.DeviceType == JoystickTypes.Virtual_Joystick)
-                .Select((d, index) => new Device(this, new VirtualJoystick(index + 1)))
+                .Select((d, index) => factory().Init(this, new VirtualJoystick(index + 1)))
                 .ToArray();
             
             return devices.Select(d => new PPJoyGlobal(d.Joystick.VirtualStickNumber, this))
                .ToArray();
-        }
-
-        public override void DoBeforeNextExecute()
-        {
-            foreach(var device in devices)
-            {
-                device.SendPressed();
-
-                device.Joystick.SendUpdates();
-            }
         }
 
         public override Action Start()
@@ -56,10 +52,9 @@ namespace FreePIE.Core.Plugins
         {
             foreach (var device in devices)
             {
-                device.Joystick.Dispose();
+                device.Dispose();
             }
         }
-
 
         public override string FriendlyName
         {
@@ -128,22 +123,29 @@ namespace FreePIE.Core.Plugins
             return GetDevice(index).Joystick;
         }
 
-        private class Device
+        public class Device : IDisposable
         {
-            private readonly PPJoyPlugin plugin;
+            private PPJoyPlugin plugin;
             private SetPressedStrategy setPressedStrategy;
             public int LowerRange { get; private set; }
             public int UpperRange { get; private set; }
             public VirtualJoystick Joystick { get; private set;  }
 
-            public Device(PPJoyPlugin plugin,  VirtualJoystick joystick)
+            public Device(SetPressedStrategy setPressedStrategy, IScriptContext context)
+            {
+                this.setPressedStrategy = setPressedStrategy.Init(OnPress, OnRelease);
+                context.BeforeScriptExecuting += (s, e) => Joystick.SendUpdates();
+            }
+
+            public Device Init(PPJoyPlugin plugin, VirtualJoystick joystick)
             {
                 LowerRange = -1000;
                 UpperRange = 1000;
 
                 this.plugin = plugin;
                 Joystick = joystick;
-                setPressedStrategy = new SetPressedStrategy(OnPress, OnRelease);
+
+                return this;
             }
 
             public void SetRange(int lowerRange, int upperRange)
@@ -167,9 +169,9 @@ namespace FreePIE.Core.Plugins
                 plugin.SetButton(Joystick.VirtualStickNumber, button, false);
             }
 
-            public void SendPressed()
+            public void Dispose()
             {
-                setPressedStrategy.Do();
+                Joystick.Dispose();
             }
         }
     }

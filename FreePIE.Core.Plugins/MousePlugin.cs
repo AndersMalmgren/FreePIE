@@ -26,10 +26,11 @@ namespace FreePIE.Core.Plugins
         private bool rightPressed;
         private bool middlePressed;
         private readonly GetPressedStrategy<int> getButtonPressedStrategy;
-        private SetPressedStrategy setButtonPressedStrategy;
+        private readonly SetPressedStrategy setButtonPressedStrategy;
 
-        public MousePlugin(GetPressedStrategy<int> getButtonPressedStrategy)
+        public MousePlugin(GetPressedStrategy<int> getButtonPressedStrategy, SetPressedStrategy setButtonPressedStrategy)
         {
+            this.setButtonPressedStrategy = setButtonPressedStrategy.Init(SetButtonDown, SetButtonUp);
             this.getButtonPressedStrategy = getButtonPressedStrategy.Init(IsButtonDown);
         }
 
@@ -49,8 +50,6 @@ namespace FreePIE.Core.Plugins
             mouseDevice.SetCooperativeLevel(handle, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
             mouseDevice.Properties.AxisMode = DeviceAxisMode.Relative;   // Get delta values
             mouseDevice.Acquire();
-
-            setButtonPressedStrategy = new SetPressedStrategy(SetButtonDown, SetButtonUp);
           
             OnStarted(this, new EventArgs());
             return null;
@@ -109,8 +108,6 @@ namespace FreePIE.Core.Plugins
             }
 
             currentMouseState = null;  // flush the mouse state
-
-            setButtonPressedStrategy.Do();
         }
 
         public double DeltaX

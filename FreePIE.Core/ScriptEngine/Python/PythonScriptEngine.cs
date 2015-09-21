@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -330,6 +331,11 @@ namespace FreePIE.Core.ScriptEngine.Python
             pluginStopped.Wait();
 
             engineScope.Dispose();
+        }
+
+        ~PythonScriptEngine()
+        {
+            Debug.WriteLine("GC script Engine");
         }
     }
 }
