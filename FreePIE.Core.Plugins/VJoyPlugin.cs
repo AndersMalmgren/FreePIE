@@ -143,6 +143,11 @@ namespace FreePIE.Core.Plugins
             setPressedStrategy.Add(button);
         }
 
+        public void SetPressed(int button, bool state)
+        {
+            setPressedStrategy.Add(button, state);
+        }
+
         public void SendPressed()
         {
             setPressedStrategy.Do();
@@ -271,6 +276,11 @@ namespace FreePIE.Core.Plugins
         public void setPressed(int button)
         {
             holder.SetPressed(button);
+        }
+
+        public void setPressed(int button, bool state)
+        {
+            holder.SetPressed(button, state);
         }
 
         public void setDigitalPov(int pov, VJoyPov direction)

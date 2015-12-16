@@ -107,6 +107,11 @@ namespace FreePIE.Core.Plugins
             GetDevice(index).AddPressed(button);
         }
 
+        public void SetPressed(int index, int button, bool state)
+        {
+            GetDevice(index).AddPressed(button, state);
+        }
+
         private void CenterAxis()
         {
             foreach (var device in devices)
@@ -157,6 +162,11 @@ namespace FreePIE.Core.Plugins
                 setPressedStrategy.Add(button);
             }
 
+            public void AddPressed(int button, bool state)
+            {
+                setPressedStrategy.Add(button, state);
+            }
+
             private void OnPress(int button)
             {
                 plugin.SetButton(Joystick.VirtualStickNumber, button, true);
@@ -199,6 +209,11 @@ namespace FreePIE.Core.Plugins
         public void setPressed(int button)
         {
             plugin.SetPressed(index, button);
+        }
+
+        public void setPressed(int button, bool state)
+        {
+            plugin.SetPressed(index, button, state);
         }
 
         public void setButton(int button, bool pressed)
