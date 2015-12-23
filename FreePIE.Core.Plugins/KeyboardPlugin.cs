@@ -618,6 +618,11 @@ namespace FreePIE.Core.Plugins
         {
             setKeyPressedStrategy.Add(keycode);
         }
+
+        public void PressAndRelease(int keycode, bool state)
+        {
+            setKeyPressedStrategy.Add(keycode, state);
+        }
     }
 
     [Global(Name = "keyboard")]
@@ -666,6 +671,11 @@ namespace FreePIE.Core.Plugins
         public void setPressed(Key key)
         {
             plugin.PressAndRelease((int) key);
+        }
+
+        public void setPressed(Key key, bool state)
+        {
+            plugin.PressAndRelease((int)key, state);
         }
     }
 }
