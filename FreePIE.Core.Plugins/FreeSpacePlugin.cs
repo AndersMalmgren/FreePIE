@@ -67,8 +67,8 @@ namespace FreePIE.Core.Plugins {
       /** No data was received */
       public const int FREESPACE_ERROR_MALFORMED_MESSAGE = -26;
 
-	   /** Invalid HID protocol version */
-	   public const int FREESPACE_ERROR_INVALID_HID_PROTOCOL_VERSION = -27;
+       /** Invalid HID protocol version */
+       public const int FREESPACE_ERROR_INVALID_HID_PROTOCOL_VERSION = -27;
 
       /** Any uncategorized or unplanned error */
       public const int FREESPACE_ERROR_UNEXPECTED = -98;

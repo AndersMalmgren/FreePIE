@@ -18,35 +18,35 @@ namespace FreePIE.Core.Plugins
         {
             var directInput = new DirectInput();
             var handle = Process.GetCurrentProcess().MainWindowHandle;
-			devices = new List<Device>();
+            devices = new List<Device>();
 
-			var diDevices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
-			var creator = new Func<DeviceInstance, JoystickGlobal>(d =>
-			{
-				var controller = new Joystick(directInput, d.InstanceGuid);
-				controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
-				controller.Acquire();
+            var diDevices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
+            var creator = new Func<DeviceInstance, JoystickGlobal>(d =>
+            {
+                var controller = new Joystick(directInput, d.InstanceGuid);
+                controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
+                controller.Acquire();
 
-				var device = new Device(controller);
-				devices.Add(device);
-				return new JoystickGlobal(device);
-			});
-			
-			return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)));
+                var device = new Device(controller);
+                devices.Add(device);
+                return new JoystickGlobal(device);
+            });
+            
+            return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)));
         }
 
-	    private JoystickGlobal CreateJoystickGlobal(IntPtr handle, DirectInput input, DeviceInstance deviceInstance)
-	    {
-			var controller = new Joystick(input, deviceInstance.InstanceGuid);
-			controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
-			controller.Acquire();
+        private JoystickGlobal CreateJoystickGlobal(IntPtr handle, DirectInput input, DeviceInstance deviceInstance)
+        {
+            var controller = new Joystick(input, deviceInstance.InstanceGuid);
+            controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
+            controller.Acquire();
 
-		    var device = new Device(controller);
-			devices.Add(device);
-			return new JoystickGlobal(device);
-	    }
+            var device = new Device(controller);
+            devices.Add(device);
+            return new JoystickGlobal(device);
+        }
 
-		public override void Stop()
+        public override void Stop()
         {
             devices.ForEach(d => d.Dispose());
         }

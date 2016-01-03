@@ -35,18 +35,18 @@ namespace FreePIE.Core.Plugins.Globals
         } 
     }
 
-	public class GlobalIndexer<T, TIndexOne, TIndexTwo> : GlobalIndexer<T, TIndexOne>
-	{
-		private readonly GlobalIndexer<T, TIndexTwo> indexerTwo; 
+    public class GlobalIndexer<T, TIndexOne, TIndexTwo> : GlobalIndexer<T, TIndexOne>
+    {
+        private readonly GlobalIndexer<T, TIndexTwo> indexerTwo; 
 
-		public GlobalIndexer(Func<TIndexOne, T> initilizerOne, Func<TIndexTwo, T> initilizerTwo) : base(initilizerOne)
-		{
-			this.indexerTwo = new GlobalIndexer<T, TIndexTwo>(initilizerTwo);
-		}
+        public GlobalIndexer(Func<TIndexOne, T> initilizerOne, Func<TIndexTwo, T> initilizerTwo) : base(initilizerOne)
+        {
+            this.indexerTwo = new GlobalIndexer<T, TIndexTwo>(initilizerTwo);
+        }
 
-		public T this[TIndexTwo index]
-		{
-			get { return indexerTwo[index]; }
-		}
-	}
+        public T this[TIndexTwo index]
+        {
+            get { return indexerTwo[index]; }
+        }
+    }
 }
