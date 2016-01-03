@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
 
@@ -17,21 +18,35 @@ namespace FreePIE.Core.Plugins
         {
             var directInput = new DirectInput();
             var handle = Process.GetCurrentProcess().MainWindowHandle;
-            devices = new List<Device>();
+			devices = new List<Device>();
 
-            foreach (var device in directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly))
-            {
-                var controller = new Joystick(directInput, device.InstanceGuid);
-                controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
-                controller.Acquire();
+			var diDevices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
+			var creator = new Func<DeviceInstance, JoystickGlobal>(d =>
+			{
+				var controller = new Joystick(directInput, d.InstanceGuid);
+				controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
+				controller.Acquire();
 
-                devices.Add(new Device(controller));
-            }
-
-            return devices.Select(d => new JoystickGlobal(d)).ToArray();
+				var device = new Device(controller);
+				devices.Add(device);
+				return new JoystickGlobal(device);
+			});
+			
+			return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)));
         }
 
-        public override void Stop()
+	    private JoystickGlobal CreateJoystickGlobal(IntPtr handle, DirectInput input, DeviceInstance deviceInstance)
+	    {
+			var controller = new Joystick(input, deviceInstance.InstanceGuid);
+			controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
+			controller.Acquire();
+
+		    var device = new Device(controller);
+			devices.Add(device);
+			return new JoystickGlobal(device);
+	    }
+
+		public override void Stop()
         {
             devices.ForEach(d => d.Dispose());
         }
