@@ -77,7 +77,7 @@ namespace FreePIE.Core.Plugins
 
         public void SetRange(int lowerRange, int upperRange)
         {
-            foreach (DeviceObjectInstance deviceObject in joystick.GetObjects()) 
+            foreach (DeviceObjectInstance deviceObject in joystick.GetObjects())
             {
                 if ((deviceObject.ObjectType & ObjectDeviceType.Axis) != 0)
                     joystick.GetObjectPropertiesById((int)deviceObject.ObjectType).SetRange(lowerRange, upperRange);
@@ -92,6 +92,11 @@ namespace FreePIE.Core.Plugins
         public bool GetDown(int button)
         {
             return State.IsPressed(button);
+        }
+
+        internal Joystick Joystick
+        {
+            get { return joystick; }
         }
     }
 
@@ -134,7 +139,7 @@ namespace FreePIE.Core.Plugins
 
         public int z
         {
-            get { return State.Z;  }
+            get { return State.Z; }
         }
 
         public int xRotation
@@ -160,6 +165,11 @@ namespace FreePIE.Core.Plugins
         public int[] pov
         {
             get { return State.GetPointOfViewControllers(); }
+        }
+
+        public string name
+        {
+            get { return device.Joystick.Information.InstanceName; }
         }
     }
 }
