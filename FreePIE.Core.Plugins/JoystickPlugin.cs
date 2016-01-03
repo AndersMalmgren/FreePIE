@@ -35,17 +35,6 @@ namespace FreePIE.Core.Plugins
             return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)));
         }
 
-        private JoystickGlobal CreateJoystickGlobal(IntPtr handle, DirectInput input, DeviceInstance deviceInstance)
-        {
-            var controller = new Joystick(input, deviceInstance.InstanceGuid);
-            controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
-            controller.Acquire();
-
-            var device = new Device(controller);
-            devices.Add(device);
-            return new JoystickGlobal(device);
-        }
-
         public override void Stop()
         {
             devices.ForEach(d => d.Dispose());
