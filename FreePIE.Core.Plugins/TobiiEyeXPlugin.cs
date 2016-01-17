@@ -254,7 +254,7 @@ namespace FreePIE.Core.Plugins
         public float normalizedCenterDeltaY { get { return plugin.NormalizedCenterDelta.Y; } }
 
         public float gazePointNormalizedX { get { return plugin.NormalizedGazePoint.X; } }
-        public float gazePointNormalizedY { get { return plugin.NormalizedGazePoint.X; } }
+        public float gazePointNormalizedY { get { return plugin.NormalizedGazePoint.Y; } }
 
         public float gazePointInPixelsX { get { return (float)plugin.LastGazePointEventArgs.X; } }
         public float gazePointInPixelsY { get { return (float)plugin.LastGazePointEventArgs.Y; } }
