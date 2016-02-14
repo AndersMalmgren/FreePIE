@@ -146,8 +146,8 @@ namespace FreePIE.Core.Plugins
         {
             var local = Data;
             local.DataID++;
-			local.CamWidth = 1920;
-			local.CamHeight = 1080; 
+            local.CamWidth = 1920;
+            local.CamHeight = 1080; 
 
             Data = local;
             accessor.Write(0, ref local);

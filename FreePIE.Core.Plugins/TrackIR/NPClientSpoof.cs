@@ -125,23 +125,23 @@ namespace FreePIE.Core.Plugins.TrackIR
             if(!hasInjectedDll)
                 SetupFakeTrackIR();
 
-	        if(freePieTrackIRMutex.WaitOne(10))
-	        {
+            if(freePieTrackIRMutex.WaitOne(10))
+            {
                 var trackIr = freepieData.Read(f => f.TrackIRData);
 
-	            trackIr.FakeTrackIRData.FrameNumber++;
+                trackIr.FakeTrackIRData.FrameNumber++;
 
-	            trackIr.FakeTrackIRData.Yaw = yaw;
-	            trackIr.FakeTrackIRData.Pitch = pitch;
-	            trackIr.FakeTrackIRData.Roll = roll;
-	            trackIr.FakeTrackIRData.X = x;
-	            trackIr.FakeTrackIRData.Y = y;
-	            trackIr.FakeTrackIRData.Z = z;
+                trackIr.FakeTrackIRData.Yaw = yaw;
+                trackIr.FakeTrackIRData.Pitch = pitch;
+                trackIr.FakeTrackIRData.Roll = roll;
+                trackIr.FakeTrackIRData.X = x;
+                trackIr.FakeTrackIRData.Y = y;
+                trackIr.FakeTrackIRData.Z = z;
 
                 freepieData.Write(f => f.TrackIRData, trackIr);
 
                 freePieTrackIRMutex.ReleaseMutex();
-	        }
+            }
         }
 
         public void Dispose()
