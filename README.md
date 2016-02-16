@@ -13,6 +13,12 @@ FreePIE is very similar to the popular utility GlovePIE, but encourages open dev
 
 FreePIE is licensed under GPLv2  
 
+Changelog 1.9.629.0
+* Added possibility to index joysticks on device name
+* Updated Oculus VR (SDK 0.8)
+* Added setPressed(Key key, bool state) to keyboard, mouse etc plugins. 
+* Updated vJoy to latest SDK
+
 Changelog 1.9.611.0
 * Added support for Tobii EyeX
 * Stability and performance fixes for the Android APK
