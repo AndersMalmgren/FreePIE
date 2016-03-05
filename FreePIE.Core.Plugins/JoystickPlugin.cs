@@ -6,14 +6,16 @@ using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
+using EffectType = vJoyFFBWrapper.EffectType;
+using JoystickState = SlimDX.DirectInput.JoystickState;
+using vJoyFFBWrapper;
 
 namespace FreePIE.Core.Plugins
 {
     [GlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
     public class JoystickPlugin : Plugin
     {
-        private List<Device> devices;
-
+        private static List<Device> devices;
         public override object CreateGlobal()
         {
             var directInput = new DirectInput();
@@ -23,16 +25,21 @@ namespace FreePIE.Core.Plugins
             var diDevices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
             var creator = new Func<DeviceInstance, JoystickGlobal>(d =>
             {
+                //prevent a new device from being created (by the second indexer)
+                var device = devices.SingleOrDefault(dev => dev.InstanceGuid == d.InstanceGuid);
+                if (device != null)
+                    return device.global;
+
                 var controller = new Joystick(directInput, d.InstanceGuid);
                 controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
                 controller.Acquire();
 
-                var device = new Device(controller);
+                device = new Device(controller);
                 devices.Add(device);
                 return new JoystickGlobal(device);
             });
-            
-            return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)));
+
+            return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)), () => diDevices.Count);
         }
 
         public override void Stop()
@@ -51,7 +58,7 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    public class Device : IDisposable
+    public partial class Device : IDisposable
     {
         private readonly Joystick joystick;
         private JoystickState state;
@@ -62,11 +69,17 @@ namespace FreePIE.Core.Plugins
             this.joystick = joystick;
             SetRange(-1000, 1000);
             getPressedStrategy = new GetPressedStrategy<int>(GetDown);
+
+            if (SupportsFFB)
+                PrepareFFB();
         }
 
         public void Dispose()
         {
+            DisposeEffects();
+            //Console.WriteLine("Disposing joystick: " + Name);
             joystick.Dispose();
+            //Console.WriteLine("Finished disposing joystick");
         }
 
         public JoystickState State
@@ -81,7 +94,7 @@ namespace FreePIE.Core.Plugins
 
         public void SetRange(int lowerRange, int upperRange)
         {
-            foreach (DeviceObjectInstance deviceObject in joystick.GetObjects()) 
+            foreach (DeviceObjectInstance deviceObject in joystick.GetObjects())
             {
                 if ((deviceObject.ObjectType & ObjectDeviceType.Axis) != 0)
                     joystick.GetObjectPropertiesById((int)deviceObject.ObjectType).SetRange(lowerRange, upperRange);
@@ -97,16 +110,19 @@ namespace FreePIE.Core.Plugins
         {
             return State.IsPressed(button);
         }
+
+        internal JoystickGlobal global;
     }
 
     [Global(Name = "joystick")]
     public class JoystickGlobal
     {
-        private readonly Device device;
+        public readonly Device device;
 
         public JoystickGlobal(Device device)
         {
             this.device = device;
+            device.global = this;
         }
 
         private JoystickState State { get { return device.State; } }
@@ -138,7 +154,7 @@ namespace FreePIE.Core.Plugins
 
         public int z
         {
-            get { return State.Z;  }
+            get { return State.Z; }
         }
 
         public int xRotation
@@ -164,6 +180,27 @@ namespace FreePIE.Core.Plugins
         public int[] pov
         {
             get { return State.GetPointOfViewControllers(); }
+        }
+
+        /*	public bool AutoCenter
+			{
+				get { return device.AutoCenter; }
+				set { device.AutoCenter = value; }
+			}*/
+        public string Name { get { return device.Name; } }
+        public bool SupportsFFB { get { return device.SupportsFFB; } }
+        public void CreateEffect(int blockIndex, EffectType effectType, int duration, IronPython.Runtime.List dirs)
+        {
+            device.CreateEffect(blockIndex, effectType, duration, dirs.Cast<int>().ToArray());
+        }
+        public void SetConstantForce(int blockIndex, int magnitude)
+        {
+            device.SetConstantForce(blockIndex, magnitude);
+        }
+
+        public void OperateEffect(int blockIndex, EffectOperation effectOperation, int loopCount = 0)
+        {
+            device.OperateEffect(blockIndex, effectOperation, loopCount);
         }
     }
 }

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Forms;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.Strategies;
-using PPJoy;
 using vJoyInterfaceWrap;
 
 namespace FreePIE.Core.Plugins
@@ -20,10 +17,10 @@ namespace FreePIE.Core.Plugins
         Nil = -1
     }
 
-    [GlobalType(Type= typeof(VJoyGlobal), IsIndexed = true)]
+    [GlobalType(Type = typeof(VJoyGlobal), IsIndexed = true)]
     public class VJoyPlugin : Plugin
     {
-        private List<VJoyGlobalHolder> holders;
+        public static List<VJoyGlobalHolder> holders;
 
         public override object CreateGlobal()
         {
@@ -56,17 +53,17 @@ namespace FreePIE.Core.Plugins
         }
     }
 
-    public class VJoyGlobalHolder : IDisposable
+    public partial class VJoyGlobalHolder : IDisposable
     {
-        private readonly vJoy joystick;
+        public static vJoy joystick = new vJoy();
         private readonly Dictionary<HID_USAGES, bool> enabledAxis;
-        private readonly Dictionary<HID_USAGES, int> currentAxisValue; 
+        private readonly Dictionary<HID_USAGES, int> currentAxisValue;
 
         private readonly int maxButtons;
         private readonly int maxDirPov;
         private readonly int maxContinuousPov;
         public const int ContinuousPovMax = 35900;
-        
+
         private readonly SetPressedStrategy setPressedStrategy;
 
         public VJoyGlobalHolder(uint index)
@@ -75,7 +72,6 @@ namespace FreePIE.Core.Plugins
             Global = new VJoyGlobal(this);
             setPressedStrategy = new SetPressedStrategy(b => SetButton(b, true), b => SetButton(b, false));
 
-            joystick = new vJoy();
             if (index < 1 || index > 16)
                 throw new ArgumentException(string.Format("Illegal joystick device id: {0}", index));
 
@@ -91,8 +87,8 @@ namespace FreePIE.Core.Plugins
             Version = new VjoyVersionGlobal(apiVersion, driverVersion);
 
             var status = joystick.GetVJDStatus(index);
-            
-            
+
+
             string error = null;
             switch (status)
             {
@@ -118,7 +114,7 @@ namespace FreePIE.Core.Plugins
             AxisMax = (int)max / 2 - 1;
 
             enabledAxis = new Dictionary<HID_USAGES, bool>();
-            foreach (HID_USAGES axis in Enum.GetValues(typeof (HID_USAGES)))
+            foreach (HID_USAGES axis in Enum.GetValues(typeof(HID_USAGES)))
                 enabledAxis[axis] = joystick.GetVJDAxisExist(index, axis);
 
             maxButtons = joystick.GetVJDButtonNumber(index);
@@ -132,10 +128,10 @@ namespace FreePIE.Core.Plugins
 
         public void SetButton(int button, bool pressed)
         {
-            if(button >= maxButtons)
+            if (button >= maxButtons)
                 throw new Exception(string.Format("Maximum buttons are {0}. You need to increase number of buttons in vJoy config", maxButtons));
 
-            joystick.SetBtn(pressed, Index, (uint)button + 1);
+            joystick.SetBtn(pressed, Index, (byte)(button + 1));
         }
 
         public void SetPressed(int button)
@@ -155,7 +151,7 @@ namespace FreePIE.Core.Plugins
 
         public void SetAxis(int x, HID_USAGES usage)
         {
-            if(!enabledAxis[usage])
+            if (!enabledAxis[usage])
                 throw new Exception(string.Format("Axis {0} not enabled, enable it from VJoy config", usage));
 
             joystick.SetAxis(x + AxisMax, Index, usage);
@@ -169,18 +165,18 @@ namespace FreePIE.Core.Plugins
 
         public void SetDirectionalPov(int pov, VJoyPov direction)
         {
-            if (pov >=  maxDirPov)
+            if (pov >= maxDirPov)
                 throw new Exception(string.Format("Maximum digital POV hats are {0}. You need to increase number of digital POV hats in vJoy config", maxDirPov));
 
-            joystick.SetDiscPov((int) direction, Index, (uint)pov+1);
+            joystick.SetDiscPov((int)direction, Index, (uint)pov + 1);
         }
 
         public void SetContinuousPov(int pov, int value)
         {
-            if(pov >= maxContinuousPov)
+            if (pov >= maxContinuousPov)
                 throw new Exception(string.Format("Maximum analog POV sticks are {0}. You need to increase number of analog POV hats in vJoy config", maxContinuousPov));
 
-            joystick.SetContPov(value, Index, (uint)pov+1);
+            joystick.SetContPov(value, Index, (uint)pov + 1);
         }
 
         public VJoyGlobal Global { get; private set; }
@@ -191,7 +187,7 @@ namespace FreePIE.Core.Plugins
 
         public void Dispose()
         {
-            joystick.RelinquishVJD(Index);   
+            joystick.RelinquishVJD(Index);
         }
     }
 
@@ -217,7 +213,7 @@ namespace FreePIE.Core.Plugins
             this.holder = holder;
         }
 
-        public int axisMax { get { return holder.AxisMax; }}
+        public int axisMax { get { return holder.AxisMax; } }
         public int continuousPovMax { get { return VJoyGlobalHolder.ContinuousPovMax; } }
 
         public int x
@@ -294,5 +290,12 @@ namespace FreePIE.Core.Plugins
         }
 
         public VjoyVersionGlobal version { get { return holder.Version; } }
+
+        #region FFB
+        public void RegisterFFBDevice(JoystickGlobal dev)
+        {
+            holder.RegisterFFBDevice(dev.device);
+        }
+        #endregion
     }
 }
