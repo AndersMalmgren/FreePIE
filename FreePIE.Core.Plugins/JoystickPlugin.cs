@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -132,9 +133,9 @@ namespace FreePIE.Core.Plugins
             }*/
 
         public bool supportsFfb { get { return device.SupportsFfb; } }
-        public void createEffect(int blockIndex, EffectType effectType, int duration, int[] dirs)
+        public void createEffect(int blockIndex, EffectType effectType, int duration, IEnumerable dirs)
         {
-            device.CreateEffect(blockIndex, effectType, duration, dirs);
+            device.CreateEffect(blockIndex, effectType, duration, dirs.Cast<int>().ToArray());
         }
         public void setConstantForce(int blockIndex, int magnitude)
         {
