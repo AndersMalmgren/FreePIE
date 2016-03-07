@@ -154,7 +154,7 @@ namespace FreePIE.Core.Plugins
 
         public VjoyVersionGlobal version { get { return holder.Version; } }
 
-        public void RegisterFFBDevice(JoystickGlobal dev)
+        public void registerFfbDevice(JoystickGlobal dev)
         {
             holder.RegisterFfbDevice(dev.device);
         }
