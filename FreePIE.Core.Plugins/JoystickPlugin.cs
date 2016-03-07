@@ -41,12 +41,14 @@ namespace FreePIE.Core.Plugins
 
         public override void Stop()
         {
-            devices.Values.ToList().ForEach(d => d.Dispose());
+            foreach(var d in devices.Values)
+                d.Dispose();
         }
 
         public override void DoBeforeNextExecute()
         {
-            devices.Values.ToList().ForEach(d => d.Reset());
+            foreach(var d in devices.Values)
+                d.Reset();
         }
 
         public override string FriendlyName
