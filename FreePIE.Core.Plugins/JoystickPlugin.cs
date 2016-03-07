@@ -17,24 +17,25 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
     public class JoystickPlugin : Plugin
     {
-        private Dictionary<Guid, Device> devices;
+        private List<Device> devices;
 
         public override object CreateGlobal()
         {
             var directInput = new DirectInput();
             var handle = Process.GetCurrentProcess().MainWindowHandle;
-            devices = new Dictionary<Guid, Device>();
+            devices = new List<Device>();
+            var globalCache = new Dictionary<Guid, JoystickGlobal>();
 
             var diDevices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
             var creator = new Func<DeviceInstance, JoystickGlobal>(d =>
             {
-                if (devices.ContainsKey(d.InstanceGuid)) return devices[d.InstanceGuid].global;
+                if (globalCache.ContainsKey(d.InstanceGuid)) return globalCache[d.InstanceGuid];
 
                 var controller = new Joystick(directInput, d.InstanceGuid);
                 controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
                 controller.Acquire();
 
-                return new JoystickGlobal(devices[d.InstanceGuid] = new Device(controller));
+                return globalCache[d.InstanceGuid] = new JoystickGlobal(new Device(controller));
             });
 
             return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)));
@@ -42,14 +43,12 @@ namespace FreePIE.Core.Plugins
 
         public override void Stop()
         {
-            foreach(var d in devices.Values)
-                d.Dispose();
+            devices.ForEach(d => d.Dispose());
         }
 
         public override void DoBeforeNextExecute()
         {
-            foreach(var d in devices.Values)
-                d.Reset();
+            devices.ForEach(d => d.Reset());
         }
 
         public override string FriendlyName
@@ -61,15 +60,16 @@ namespace FreePIE.Core.Plugins
     [Global(Name = "joystick")]
     public class JoystickGlobal
     {
-        public readonly Device device;
+        private readonly Device device;
 
         public JoystickGlobal(Device device)
         {
             this.device = device;
-            device.global = this;
         }
 
         private JoystickState State { get { return device.State; } }
+
+        internal Device Device {  get { return device; } }
 
         public void setRange(int lowerRange, int upperRange)
         {

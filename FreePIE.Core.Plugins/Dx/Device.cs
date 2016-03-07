@@ -71,8 +71,6 @@ namespace FreePIE.Core.Plugins.Dx
             return State.IsPressed(button);
         }
 
-        internal JoystickGlobal global;
-
         public int Gain
         {
             get { return joystick.Properties.ForceFeedbackGain; }
