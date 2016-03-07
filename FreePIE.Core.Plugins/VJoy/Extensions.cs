@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace vJoyFFBWrapper
+namespace FreePIE.Core.Plugins.VJoy
 {
     public static class Extensions
     {
@@ -13,10 +13,10 @@ namespace vJoyFFBWrapper
         }
 
         /*
-		public static unsafe byte[] BytePtrToArray(byte* b, int length)
-		{
-			byte[] buffer = new byte[length];
-			return ;
-		}*/
+        public static unsafe byte[] BytePtrToArray(byte* b, int length)
+        {
+            byte[] buffer = new byte[length];
+            return ;
+        }*/
     }
 }

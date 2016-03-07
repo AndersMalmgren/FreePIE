@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace vJoyFFBWrapper
+namespace FreePIE.Core.Plugins.VJoy
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct EffectReport

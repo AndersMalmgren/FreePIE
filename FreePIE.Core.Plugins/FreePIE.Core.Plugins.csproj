@@ -90,6 +90,7 @@
     <Compile Include="Hydra\EmulatedData.cs" />
     <Compile Include="Hydra\HydraSpoof.cs" />
     <Compile Include="Hydra\Sixense.cs" />
+    <Compile Include="Dx\Device.cs" />
     <Compile Include="JoystickPlugin.cs" />
     <Compile Include="KeyboardPlugin.cs" />
     <Compile Include="MemoryMapping\ArgumentExtension.cs" />
@@ -101,6 +102,12 @@
     <Compile Include="Midi\MidiStatus.cs" />
     <Compile Include="Midi\DataGlobal.cs" />
     <Compile Include="TobiiEyeXPlugin.cs" />
+    <Compile Include="VJoy\VJoyGlobalHolder.cs" />
+    <Compile Include="VJoy\EffectReport.cs" />
+    <Compile Include="VJoy\Enums.cs" />
+    <Compile Include="VJoy\Extensions.cs" />
+    <Compile Include="VJoy\FFBData.cs" />
+    <Compile Include="VJoy\VJoyFFBWrap.cs" />
     <Compile Include="Wiimote\Calibratable.cs" />
     <Compile Include="SpeechPlugin.cs" />
     <Compile Include="VJoyPlugin.cs" />

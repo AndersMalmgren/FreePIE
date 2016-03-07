@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace vJoyFFBWrapper
+namespace FreePIE.Core.Plugins.VJoy
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FFBData
+    public struct FfbData
     {
         public int DataSize;
         public int Command;
@@ -14,7 +14,7 @@ namespace vJoyFFBWrapper
             get
             {
                 if (DataSize < 10)
-                    throw new Exception($"DataSize incorrect, {DataSize}");
+                    throw new Exception(string.Format("DataSize incorrect, {0}", DataSize));
                 byte[] outBuffer = new byte[DataSize];
                 Marshal.Copy(PtrToData, outBuffer, 0, DataSize - 8);//last 8 bytes are not interesting? (haven't seen them in use anywhere anyway)
                 return outBuffer;

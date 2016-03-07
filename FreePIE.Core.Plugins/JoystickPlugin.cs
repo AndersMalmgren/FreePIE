@@ -5,51 +5,48 @@ using System.Linq;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.Strategies;
+using FreePIE.Core.Plugins.VJoy;
 using SlimDX.DirectInput;
-using EffectType = vJoyFFBWrapper.EffectType;
+using EffectType = FreePIE.Core.Plugins.VJoy.EffectType;
 using JoystickState = SlimDX.DirectInput.JoystickState;
-using vJoyFFBWrapper;
+using Device = FreePIE.Core.Plugins.Dx.Device;
 
 namespace FreePIE.Core.Plugins
 {
     [GlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
     public class JoystickPlugin : Plugin
     {
-        private static List<Device> devices;
+        private Dictionary<Guid, Device> devices;
+
         public override object CreateGlobal()
         {
             var directInput = new DirectInput();
             var handle = Process.GetCurrentProcess().MainWindowHandle;
-            devices = new List<Device>();
+            devices = new Dictionary<Guid, Device>();
 
             var diDevices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
             var creator = new Func<DeviceInstance, JoystickGlobal>(d =>
             {
-                //prevent a new device from being created (by the second indexer)
-                var device = devices.SingleOrDefault(dev => dev.InstanceGuid == d.InstanceGuid);
-                if (device != null)
-                    return device.global;
+                if (devices.ContainsKey(d.InstanceGuid)) return devices[d.InstanceGuid].global;
 
                 var controller = new Joystick(directInput, d.InstanceGuid);
                 controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
                 controller.Acquire();
 
-                device = new Device(controller);
-                devices.Add(device);
-                return new JoystickGlobal(device);
+                return new JoystickGlobal(devices[d.InstanceGuid] = new Device(controller));
             });
 
-            return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)), () => diDevices.Count);
+            return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)));
         }
 
         public override void Stop()
         {
-            devices.ForEach(d => d.Dispose());
+            devices.Values.ToList().ForEach(d => d.Dispose());
         }
 
         public override void DoBeforeNextExecute()
         {
-            devices.ForEach(d => d.Reset());
+            devices.Values.ToList().ForEach(d => d.Reset());
         }
 
         public override string FriendlyName
@@ -57,63 +54,7 @@ namespace FreePIE.Core.Plugins
             get { return "Joystick"; }
         }
     }
-
-    public partial class Device : IDisposable
-    {
-        private readonly Joystick joystick;
-        private JoystickState state;
-        private readonly GetPressedStrategy<int> getPressedStrategy;
-
-        public Device(Joystick joystick)
-        {
-            this.joystick = joystick;
-            SetRange(-1000, 1000);
-            getPressedStrategy = new GetPressedStrategy<int>(GetDown);
-
-            if (SupportsFFB)
-                PrepareFFB();
-        }
-
-        public void Dispose()
-        {
-            DisposeEffects();
-            //Console.WriteLine("Disposing joystick: " + Name);
-            joystick.Dispose();
-            //Console.WriteLine("Finished disposing joystick");
-        }
-
-        public JoystickState State
-        {
-            get { return state ?? (state = joystick.GetCurrentState()); }
-        }
-
-        public void Reset()
-        {
-            state = null;
-        }
-
-        public void SetRange(int lowerRange, int upperRange)
-        {
-            foreach (DeviceObjectInstance deviceObject in joystick.GetObjects())
-            {
-                if ((deviceObject.ObjectType & ObjectDeviceType.Axis) != 0)
-                    joystick.GetObjectPropertiesById((int)deviceObject.ObjectType).SetRange(lowerRange, upperRange);
-            }
-        }
-
-        public bool GetPressed(int button)
-        {
-            return getPressedStrategy.IsPressed(button);
-        }
-
-        public bool GetDown(int button)
-        {
-            return State.IsPressed(button);
-        }
-
-        internal JoystickGlobal global;
-    }
-
+    
     [Global(Name = "joystick")]
     public class JoystickGlobal
     {
@@ -182,23 +123,23 @@ namespace FreePIE.Core.Plugins
             get { return State.GetPointOfViewControllers(); }
         }
 
-        /*	public bool AutoCenter
-			{
-				get { return device.AutoCenter; }
-				set { device.AutoCenter = value; }
-			}*/
-        public string Name { get { return device.Name; } }
-        public bool SupportsFFB { get { return device.SupportsFFB; } }
-        public void CreateEffect(int blockIndex, EffectType effectType, int duration, IronPython.Runtime.List dirs)
+        /*    public bool AutoCenter
+            {
+                get { return device.AutoCenter; }
+                set { device.AutoCenter = value; }
+            }*/
+
+        public bool supportsFfb { get { return device.SupportsFfb; } }
+        public void createEffect(int blockIndex, EffectType effectType, int duration, int[] dirs)
         {
-            device.CreateEffect(blockIndex, effectType, duration, dirs.Cast<int>().ToArray());
+            device.CreateEffect(blockIndex, effectType, duration, dirs);
         }
-        public void SetConstantForce(int blockIndex, int magnitude)
+        public void setConstantForce(int blockIndex, int magnitude)
         {
             device.SetConstantForce(blockIndex, magnitude);
         }
 
-        public void OperateEffect(int blockIndex, EffectOperation effectOperation, int loopCount = 0)
+        public void operateEffect(int blockIndex, EffectOperation effectOperation, int loopCount = 0)
         {
             device.OperateEffect(blockIndex, effectOperation, loopCount);
         }

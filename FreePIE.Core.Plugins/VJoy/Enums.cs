@@ -2,7 +2,7 @@
 
 //https://github.com/shauleiz/vJoy/blob/master/apps/common/vJoyInterfaceCS/vJoyInterfaceWrap/Wrapper.cs
 
-namespace vJoyFFBWrapper
+namespace FreePIE.Core.Plugins.VJoy
 {
     [GlobalEnum]
     public enum PacketType : byte
@@ -17,8 +17,8 @@ namespace vJoyFFBWrapper
         CustomForceData = 0x7,
         DownloadForceSample = 0x8,
         EffectOperation = 0xA,
-        PIDBlockFree = 0xB,
-        PIDDeviceControl = 0xC,
+        PidBlockFree = 0xB,
+        PidDeviceControl = 0xC,
         DeviceGain = 0xD,
         SetCustomForce = 0xE,
 
@@ -55,7 +55,7 @@ namespace vJoyFFBWrapper
     }
 
     [GlobalEnum]
-    public enum PIDDeviceControl : byte
+    public enum PidDeviceControl : byte
     {
         EnableActuators = 1,
         DisableActuators = 2,

@@ -1,21 +1,77 @@
-﻿using SlimDX.DirectInput;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using vJoyFFBWrapper;
-using EffectType = vJoyFFBWrapper.EffectType;
+using FreePIE.Core.Plugins.Strategies;
+using FreePIE.Core.Plugins.VJoy;
+using SlimDX.DirectInput;
+using EffectType = FreePIE.Core.Plugins.VJoy.EffectType;
 
-namespace FreePIE.Core.Plugins
+
+namespace FreePIE.Core.Plugins.Dx
 {
-    public partial class Device
+    public class Device : IDisposable
     {
         private const int BlockSize = 8;
         private Effect[] Effects = new Effect[BlockSize];
-        private EffectParameters[] EffectParams = new EffectParameters[BlockSize];
+        private readonly EffectParameters[] effectParams = new EffectParameters[BlockSize];
         private int[] Axes;
 
         public string Name { get { return joystick.Properties.ProductName; } }
         public Guid InstanceGuid { get { return joystick.Information.InstanceGuid; } }
-        public bool SupportsFFB { get { return joystick.Capabilities.Flags.HasFlag(DeviceFlags.ForceFeedback); } }
+        public bool SupportsFfb { get { return joystick.Capabilities.Flags.HasFlag(DeviceFlags.ForceFeedback); } }
+
+
+        private readonly Joystick joystick;
+        private JoystickState state;
+        private readonly GetPressedStrategy<int> getPressedStrategy;
+
+        public Device(Joystick joystick)
+        {
+            this.joystick = joystick;
+            SetRange(-1000, 1000);
+            getPressedStrategy = new GetPressedStrategy<int>(GetDown);
+
+            if(SupportsFfb)
+                PrepareFFB();
+        }
+
+        public void Dispose()
+        {
+            DisposeEffects();
+            //Console.WriteLine("Disposing joystick: " + Name);
+            joystick.Dispose();
+            //Console.WriteLine("Finished disposing joystick");
+        }
+
+        public JoystickState State
+        {
+            get { return state ?? (state = joystick.GetCurrentState()); }
+        }
+
+        public void Reset()
+        {
+            state = null;
+        }
+
+        public void SetRange(int lowerRange, int upperRange)
+        {
+            foreach(DeviceObjectInstance deviceObject in joystick.GetObjects())
+            {
+                if((deviceObject.ObjectType & ObjectDeviceType.Axis) != 0)
+                    joystick.GetObjectPropertiesById((int)deviceObject.ObjectType).SetRange(lowerRange, upperRange);
+            }
+        }
+
+        public bool GetPressed(int button)
+        {
+            return getPressedStrategy.IsPressed(button);
+        }
+
+        public bool GetDown(int button)
+        {
+            return State.IsPressed(button);
+        }
+
+        internal JoystickGlobal global;
 
         public int Gain
         {
@@ -29,7 +85,7 @@ namespace FreePIE.Core.Plugins
 
         private void CheckFFB(string message)
         {
-            if (!SupportsFFB)
+            if (!SupportsFfb)
                 throw new Exception(message + " - this device does not support FFB");
         }
 
@@ -50,7 +106,7 @@ namespace FreePIE.Core.Plugins
         {
             CheckFFB("Can't create effect");
 
-            EffectParams[blockIndex] = new EffectParameters()
+            effectParams[blockIndex] = new EffectParameters()
             {
                 Duration = duration,
                 Flags = EffectFlags.Cartesian | EffectFlags.ObjectIds,
@@ -61,17 +117,17 @@ namespace FreePIE.Core.Plugins
                 TriggerRepeatInterval = 0,
                 Envelope = null
             };
-            EffectParams[blockIndex].SetAxes(Axes, dirs);
+            effectParams[blockIndex].SetAxes(Axes, dirs);
             switch (effectType)
             {
                 case EffectType.ConstantForce:
-                    EffectParams[blockIndex].Parameters = new ConstantForce();
+                    effectParams[blockIndex].Parameters = new ConstantForce();
                     break;
             }
 
             try
             {
-                Effects[blockIndex] = new Effect(joystick, EffectTypeGuidMap(effectType), EffectParams[blockIndex]);
+                Effects[blockIndex] = new Effect(joystick, EffectTypeGuidMap(effectType), effectParams[blockIndex]);
             } catch (Exception e)
             {
                 throw new Exception("Unable to create effect: " + e.Message);
@@ -81,7 +137,7 @@ namespace FreePIE.Core.Plugins
         public void CreateEffect(EffectReport effectReport)
         {
             CheckFFB("Can't create effect");
-            EffectParams[effectReport.BlockIndex] = new EffectParameters()
+            effectParams[effectReport.BlockIndex] = new EffectParameters()
             {
                 Duration = effectReport.Duration,
                 Flags = EffectFlags.ObjectIds,
@@ -94,24 +150,24 @@ namespace FreePIE.Core.Plugins
             };
             if (effectReport.Polar)
             {
-                EffectParams[effectReport.BlockIndex].Flags |= EffectFlags.Polar;
-                EffectParams[effectReport.BlockIndex].SetAxes(Axes, new int[] { effectReport.AngleInDegrees, 0 });
+                effectParams[effectReport.BlockIndex].Flags |= EffectFlags.Polar;
+                effectParams[effectReport.BlockIndex].SetAxes(Axes, new int[] { effectReport.AngleInDegrees, 0 });
             } else
             {
-                EffectParams[effectReport.BlockIndex].Flags |= EffectFlags.Cartesian;
-                EffectParams[effectReport.BlockIndex].SetAxes(Axes, new int[] { effectReport.DirectionX, effectReport.DirectionY });
+                effectParams[effectReport.BlockIndex].Flags |= EffectFlags.Cartesian;
+                effectParams[effectReport.BlockIndex].SetAxes(Axes, new int[] { effectReport.DirectionX, effectReport.DirectionY });
             }
 
             switch (effectReport.EffectType)
             {
                 case EffectType.ConstantForce:
-                    EffectParams[effectReport.BlockIndex].Parameters = new ConstantForce();
+                    effectParams[effectReport.BlockIndex].Parameters = new ConstantForce();
                     break;
             }
 
             try
             {
-                Effects[effectReport.BlockIndex] = new Effect(joystick, EffectTypeGuidMap(effectReport.EffectType), EffectParams[effectReport.BlockIndex]);
+                Effects[effectReport.BlockIndex] = new Effect(joystick, EffectTypeGuidMap(effectReport.EffectType), effectParams[effectReport.BlockIndex]);
             } catch (Exception e)
             {
                 throw new Exception("Unable to create effect: " + e.Message);
@@ -128,10 +184,10 @@ namespace FreePIE.Core.Plugins
                 return;
                 //throw new Exception("No effect has been created in block " + blockIndex);
             }
-            if (EffectParams[blockIndex].Parameters == null)
-                EffectParams[blockIndex].Parameters = new ConstantForce();
-            EffectParams[blockIndex].Parameters.AsConstantForce().Magnitude = magnitude;
-            Effects[blockIndex].SetParameters(EffectParams[blockIndex], EffectParameterFlags.TypeSpecificParameters);
+            if (effectParams[blockIndex].Parameters == null)
+                effectParams[blockIndex].Parameters = new ConstantForce();
+            effectParams[blockIndex].Parameters.AsConstantForce().Magnitude = magnitude;
+            Effects[blockIndex].SetParameters(effectParams[blockIndex], EffectParameterFlags.TypeSpecificParameters);
         }
 
 
@@ -160,7 +216,7 @@ namespace FreePIE.Core.Plugins
         private void DisposeEffects()
         {
             Console.WriteLine("Joystick {0} has {1} active effects. Disposing...", Name, joystick.CreatedEffects.Count);
-            if (SupportsFFB)
+            if (SupportsFfb)
                 foreach (Effect e in joystick.CreatedEffects)
                     if (e != null && !e.Disposed)
                         e.Dispose();
@@ -178,7 +234,7 @@ namespace FreePIE.Core.Plugins
 
         private Guid EffectTypeGuidMap(EffectType et)
         {
-            switch (et)
+            switch(et)
             {
                 case EffectType.ConstantForce:
                     return EffectGuid.ConstantForce;
