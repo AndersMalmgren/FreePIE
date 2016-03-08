@@ -35,7 +35,9 @@ namespace FreePIE.Core.Plugins
                 controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
                 controller.Acquire();
 
-                return globalCache[d.InstanceGuid] = new JoystickGlobal(new Device(controller));
+                var device = new Device(controller);
+                devices.Add(device);
+                return globalCache[d.InstanceGuid] = new JoystickGlobal(device);
             });
 
             return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)));
