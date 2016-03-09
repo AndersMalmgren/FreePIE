@@ -17,12 +17,18 @@ namespace FreePIE.Core.Plugins
     [GlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
     public class JoystickPlugin : Plugin
     {
+        private readonly IHandleProvider handleProvider;
         private List<Device> devices;
+
+        public JoystickPlugin(IHandleProvider handleProvider)
+        {
+            this.handleProvider = handleProvider;
+        }
 
         public override object CreateGlobal()
         {
             var directInput = new DirectInput();
-            var handle = Process.GetCurrentProcess().MainWindowHandle;
+            var handle = handleProvider.Handle;
             devices = new List<Device>();
             var globalCache = new Dictionary<Guid, JoystickGlobal>();
 

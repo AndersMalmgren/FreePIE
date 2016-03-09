@@ -80,6 +80,7 @@
     <Compile Include="Common\InterlockableBool.cs" />
     <Compile Include="Common\Log.cs" />
     <Compile Include="Common\Range.cs" />
+    <Compile Include="Common\System\MainWindowHandleProvider.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Model\Choice.cs" />
     <Compile Include="Model\Choices.cs" />

@@ -58,16 +58,21 @@ namespace FreePIE.Core.Plugins.VJoy
 
         private static void WrappedCallback(IntPtr ffbDataPtr)
         {
+            Console.WriteLine("----------------------");
             //Very slow, according to http://www.codeproject.com/Articles/25896/Reading-Unmanaged-Data-Into-Structures. It's pretty old however, maybe PtrToStructure etc have been made faster nowadays? Besides, I haven't even checked if PtrToStructure causes an actual performance impact/bottleneck. But it'd be very easy to use an unsafe context here.
             FfbData ffbData = (FfbData)Marshal.PtrToStructure(ffbDataPtr, typeof(FfbData));
+            Console.WriteLine("DataSize: {0}, CMD: 0x{1:X8}", ffbData.DataSize, ffbData.Command);
             byte[] data = ffbData.Data;
+            Console.WriteLine(data.ToHexString());
 
             //Convert received data to appropriate values
             int deviceId = (data[0] & 0xF0) >> 4;
-            if (deviceId < 1)
+            if(deviceId < 1)
                 throw new Exception(string.Format("DeviceID out of range, {0}", deviceId));
+            Console.WriteLine("Device ID: {0}", deviceId);
 
             PacketType packetType = (PacketType)(data[0] & 0x0F + (ffbData.Command == IOCTL_HID_SET_FEATURE ? 0x10 : 0));
+            Console.WriteLine("Packet type: {0}", packetType);
 
             //be aware that this number might be incorrect - it isn't applicable (and thus not used) for every packet type
             /*

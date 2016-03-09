@@ -31,6 +31,12 @@ namespace FreePIE.Tests.Test
             return WhenCallingCheckForRegisterNew(action, true);
         }
 
+        protected IMethodOptions<TResult> WhenAccessing<T, TResult>(Function<T, TResult> action) where T : class
+        {
+            var stub = GetOrMock<T>();
+            return stub.Expect(action);
+        }
+
         private IMethodOptions<object> WhenCallingCheckForRegisterNew<T>(Action<T> action, bool registerNew) where T : class
         {
             var instance = Get<T>();
@@ -52,6 +58,10 @@ namespace FreePIE.Tests.Test
             kernel.Bind<T>().ToConstant(instance);
         }
 
-
+        protected T GetOrMock<T>() where T : class
+        {
+            var stub = Get<T>() ?? Stub<T>();
+            return stub;
+        }
     }
 }
