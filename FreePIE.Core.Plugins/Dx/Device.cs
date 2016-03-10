@@ -4,7 +4,7 @@ using FreePIE.Core.Plugins.Strategies;
 using FreePIE.Core.Plugins.VJoy;
 using SlimDX.DirectInput;
 using EffectType = FreePIE.Core.Plugins.VJoy.EffectType;
-
+using System.Linq;
 
 namespace FreePIE.Core.Plugins.Dx
 {
@@ -30,7 +30,7 @@ namespace FreePIE.Core.Plugins.Dx
             SetRange(-1000, 1000);
             getPressedStrategy = new GetPressedStrategy<int>(GetDown);
 
-            if(SupportsFfb)
+            if (SupportsFfb)
                 PrepareFFB();
         }
 
@@ -54,9 +54,9 @@ namespace FreePIE.Core.Plugins.Dx
 
         public void SetRange(int lowerRange, int upperRange)
         {
-            foreach(DeviceObjectInstance deviceObject in joystick.GetObjects())
+            foreach (DeviceObjectInstance deviceObject in joystick.GetObjects())
             {
-                if((deviceObject.ObjectType & ObjectDeviceType.Axis) != 0)
+                if ((deviceObject.ObjectType & ObjectDeviceType.Axis) != 0)
                     joystick.GetObjectPropertiesById((int)deviceObject.ObjectType).SetRange(lowerRange, upperRange);
             }
         }
@@ -100,6 +100,24 @@ namespace FreePIE.Core.Plugins.Dx
             Axes = ax.ToArray();
         }
 
+        /// <summary>
+        /// Creates an empty effect WITHOUT EffectParameters
+        /// </summary>
+        public void CreateNewEffect(int blockIndex, EffectType effectType)
+        {
+            CheckFFB("Can't create effect");
+            try
+            {
+                Effects[blockIndex] = new Effect(joystick, EffectTypeGuidMap(effectType));
+            } catch (Exception e)
+            {
+                throw new Exception("Unable to create effect: " + e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Creates a simple effect and instantly initializes it with EffectParameters
+        /// </summary>
         public void CreateEffect(int blockIndex, EffectType effectType, int duration, int[] dirs)
         {
             CheckFFB("Can't create effect");
@@ -132,16 +150,16 @@ namespace FreePIE.Core.Plugins.Dx
             }
         }
 
-        public void CreateEffect(EffectReport effectReport)
+        public void SetEffectParams(EffectReport effectReport)
         {
             CheckFFB("Can't create effect");
             effectParams[effectReport.BlockIndex] = new EffectParameters()
             {
                 Duration = effectReport.Duration,
                 Flags = EffectFlags.ObjectIds,
-                Gain = 10000,
-                SamplePeriod = 0,
-                StartDelay = 0,
+                Gain = effectReport.Gain * 39,
+                SamplePeriod = effectReport.SamplePeriod,
+                StartDelay = 0,//TODO use data from effectReport
                 TriggerButton = -1,
                 TriggerRepeatInterval = 0,
                 Envelope = null
@@ -149,7 +167,8 @@ namespace FreePIE.Core.Plugins.Dx
             if (effectReport.Polar)
             {
                 effectParams[effectReport.BlockIndex].Flags |= EffectFlags.Polar;
-                effectParams[effectReport.BlockIndex].SetAxes(Axes, new int[] { effectReport.AngleInDegrees, 0 });
+                //angle is in 100th degrees, so if you want to express 90 degrees (vector pointing to the right) you'll have to enter 9000
+                effectParams[effectReport.BlockIndex].SetAxes(Axes, new int[] { effectReport.AngleInDegrees * 100, 0 });
             } else
             {
                 effectParams[effectReport.BlockIndex].Flags |= EffectFlags.Cartesian;
@@ -165,7 +184,11 @@ namespace FreePIE.Core.Plugins.Dx
 
             try
             {
-                Effects[effectReport.BlockIndex] = new Effect(joystick, EffectTypeGuidMap(effectReport.EffectType), effectParams[effectReport.BlockIndex]);
+                if (Effects[effectReport.BlockIndex] != null && !Effects[effectReport.BlockIndex].Disposed)
+                    Effects[effectReport.BlockIndex].SetParameters(effectParams[effectReport.BlockIndex], EffectParameterFlags.All);
+                else
+                    CreateNewEffect(effectReport.BlockIndex, effectReport.EffectType);
+                //throw new Exception("No effect has been created in block " + effectReport.BlockIndex);
             } catch (Exception e)
             {
                 throw new Exception("Unable to create effect: " + e.Message);
@@ -179,8 +202,8 @@ namespace FreePIE.Core.Plugins.Dx
 
             if (Effects[blockIndex] == null)
             {
-                return;
-                //throw new Exception("No effect has been created in block " + blockIndex);
+                //return;
+                throw new Exception("No effect has been created in block " + blockIndex);
             }
             if (effectParams[blockIndex].Parameters == null)
                 effectParams[blockIndex].Parameters = new ConstantForce();
@@ -208,7 +231,7 @@ namespace FreePIE.Core.Plugins.Dx
                         Effects[blockIndex].Stop();
                         break;
                 }
-            }/* else throw new Exception("No effect has been created in block " + blockIndex);*/
+            } else throw new Exception("No effect has been created in block " + blockIndex);
         }
 
         private void DisposeEffects()
@@ -230,9 +253,16 @@ namespace FreePIE.Core.Plugins.Dx
             }
         }
 
+        private Guid GetEffectGuid(EffectType et)
+        {
+            Guid effectGuid = EffectTypeGuidMap(et);
+            joystick.GetEffects().Single(effectInfo => effectInfo.Guid == effectGuid);
+            return effectGuid;
+        }
+
         private Guid EffectTypeGuidMap(EffectType et)
         {
-            switch(et)
+            switch (et)
             {
                 case EffectType.ConstantForce:
                     return EffectGuid.ConstantForce;
