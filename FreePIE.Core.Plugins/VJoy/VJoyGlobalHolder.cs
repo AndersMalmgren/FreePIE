@@ -27,8 +27,8 @@ namespace FreePIE.Core.Plugins.VJoy
 
         public void RegisterFfbDevice(Device dev)
         {
-            if(!FfbEnabled) throw new NotSupportedException("This VJoy device does not have FFB enabled");
-            if(!isWrapperRegistered)
+            if (!FfbEnabled) throw new NotSupportedException("This VJoy device does not have FFB enabled");
+            if (!isWrapperRegistered)
             {
                 VJoyFfbWrap.OnFfbCallback += OnFfbCallback;
                 isWrapperRegistered = true;
@@ -42,16 +42,16 @@ namespace FreePIE.Core.Plugins.VJoy
             Global = new VJoyGlobal(this);
             setPressedStrategy = new SetPressedStrategy(b => SetButton(b, true), b => SetButton(b, false));
 
-            if(index < 1 || index > 16)
+            if (index < 1 || index > 16)
                 throw new ArgumentException(string.Format("Illegal joystick device id: {0}", index));
 
-            if(!Joystick.vJoyEnabled())
+            if (!Joystick.vJoyEnabled())
                 throw new Exception("vJoy driver not enabled: Failed Getting vJoy attributes");
 
             uint apiVersion = 0;
             uint driverVersion = 0;
             bool match = Joystick.DriverMatch(ref apiVersion, ref driverVersion);
-            if(!match)
+            if (!match)
                 Console.WriteLine("vJoy version of Driver ({0:X}) does NOT match DLL Version ({1:X})", driverVersion, apiVersion);
 
             Version = new VjoyVersionGlobal(apiVersion, driverVersion);
@@ -60,7 +60,7 @@ namespace FreePIE.Core.Plugins.VJoy
 
 
             string error = null;
-            switch(status)
+            switch (status)
             {
                 case VjdStat.VJD_STAT_BUSY:
                     error = "vJoy Device {0} is already owned by another feeder";
@@ -73,10 +73,10 @@ namespace FreePIE.Core.Plugins.VJoy
                     break;
             }
 
-            if(error == null && !Joystick.AcquireVJD(index))
+            if (error == null && !Joystick.AcquireVJD(index))
                 error = "Failed to acquire vJoy device number {0}";
 
-            if(error != null)
+            if (error != null)
                 throw new Exception(string.Format(error, index));
 
             long max = 0;
@@ -84,7 +84,7 @@ namespace FreePIE.Core.Plugins.VJoy
             AxisMax = (int)max / 2 - 1;
 
             enabledAxis = new Dictionary<HID_USAGES, bool>();
-            foreach(HID_USAGES axis in Enum.GetValues(typeof(HID_USAGES)))
+            foreach (HID_USAGES axis in Enum.GetValues(typeof(HID_USAGES)))
                 enabledAxis[axis] = Joystick.GetVJDAxisExist(index, axis);
 
             maxButtons = Joystick.GetVJDButtonNumber(index);
@@ -98,7 +98,7 @@ namespace FreePIE.Core.Plugins.VJoy
 
         public void SetButton(int button, bool pressed)
         {
-            if(button >= maxButtons)
+            if (button >= maxButtons)
                 throw new Exception(string.Format("Maximum buttons are {0}. You need to increase number of buttons in vJoy config", maxButtons));
 
             Joystick.SetBtn(pressed, Index, (byte)(button + 1));
@@ -121,7 +121,7 @@ namespace FreePIE.Core.Plugins.VJoy
 
         public void SetAxis(int x, HID_USAGES usage)
         {
-            if(!enabledAxis[usage])
+            if (!enabledAxis[usage])
                 throw new Exception(string.Format("Axis {0} not enabled, enable it from VJoy config", usage));
 
             Joystick.SetAxis(x + AxisMax, Index, usage);
@@ -135,7 +135,7 @@ namespace FreePIE.Core.Plugins.VJoy
 
         public void SetDirectionalPov(int pov, VJoyPov direction)
         {
-            if(pov >= maxDirPov)
+            if (pov >= maxDirPov)
                 throw new Exception(string.Format("Maximum digital POV hats are {0}. You need to increase number of digital POV hats in vJoy config", maxDirPov));
 
             Joystick.SetDiscPov((int)direction, Index, (uint)pov + 1);
@@ -143,7 +143,7 @@ namespace FreePIE.Core.Plugins.VJoy
 
         public void SetContinuousPov(int pov, int value)
         {
-            if(pov >= maxContinuousPov)
+            if (pov >= maxContinuousPov)
                 throw new Exception(string.Format("Maximum analog POV sticks are {0}. You need to increase number of analog POV hats in vJoy config", maxContinuousPov));
 
             Joystick.SetContPov(value, Index, (uint)pov + 1);
@@ -171,7 +171,7 @@ namespace FreePIE.Core.Plugins.VJoy
                 case PacketType.Effect:
                     EffectReport report = (EffectReport)Marshal.PtrToStructure(dataPtr, typeof(EffectReport));
                     Console.WriteLine(report);
-                    registeredFfbDevices.ForEach(dev => dev.CreateEffect(report));
+                    registeredFfbDevices.ForEach(dev => dev.SetEffectParams(report));
                     break;
                 /*case PacketType.Envelope:
                     break;
@@ -196,7 +196,7 @@ namespace FreePIE.Core.Plugins.VJoy
                     registeredFfbDevices.ForEach(dev => dev.OperateEffect(blockIndex, effOp, Marshal.ReadByte(dataPtr, 3)));
                     break;
                 case PacketType.PidBlockFree:
-                    Console.WriteLine("PID: Freeing block {0}", blockIndex);
+                    Console.WriteLine("PID: Freeing block");
                     registeredFfbDevices.ForEach(dev => dev.DisposeEffect(blockIndex));
                     break;
                 case PacketType.PidDeviceControl:
@@ -206,13 +206,16 @@ namespace FreePIE.Core.Plugins.VJoy
             case PacketType.DeviceGain:
                 break;
             case PacketType.SetCustomForce:
-                break;
-            case PacketType.CreateNewEffect:
-                break;
-            case PacketType.BlockLoad:
-                break;
-            case PacketType.PIDPool:
                 break;*/
+                case PacketType.CreateNewEffect:
+                    EffectType et = (EffectType)Marshal.ReadByte(dataPtr, 1);
+                    Console.WriteLine("Creating new effect {0}", et);
+                    registeredFfbDevices.ForEach(dev => dev.CreateNewEffect(blockIndex, et));
+                    break;
+                /*  case PacketType.BlockLoad:
+                      break;
+                  case PacketType.PIDPool:
+                      break;*/
                 default:
                     Console.WriteLine("WARNING!!!!!! PACKET NOT HANDLED: {0}", packetType);
                     break;
