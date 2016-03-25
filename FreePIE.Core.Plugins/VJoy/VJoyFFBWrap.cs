@@ -53,7 +53,8 @@ namespace FreePIE.Core.Plugins.VJoy
             //used to make sure that the blocking device calls are handled in a different thread
             if (lastTask == null)
                 lastTask = Task.Factory.StartNew(() => WrappedCallback(ffbDataPtr));
-            lastTask = lastTask.ContinueWith((tas) => WrappedCallback(ffbDataPtr));
+            else
+                lastTask = lastTask.ContinueWith((tas) => WrappedCallback(ffbDataPtr));
         }
 
         private static void WrappedCallback(IntPtr ffbDataPtr)

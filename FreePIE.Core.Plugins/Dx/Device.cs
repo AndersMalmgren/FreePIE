@@ -236,11 +236,12 @@ namespace FreePIE.Core.Plugins.Dx
 
         private void DisposeEffects()
         {
-            Console.WriteLine("Joystick {0} has {1} active effects. Disposing...", Name, joystick.CreatedEffects.Count);
             if (SupportsFfb)
-                foreach (Effect e in joystick.CreatedEffects)
-                    if (e != null && !e.Disposed)
-                        e.Dispose();
+            {
+                Console.WriteLine("Joystick {0} has {1} active effects. Disposing...", Name, joystick.CreatedEffects.Count);
+                foreach(var e in joystick.CreatedEffects)
+                    e.Dispose();
+            }
 
         }
 

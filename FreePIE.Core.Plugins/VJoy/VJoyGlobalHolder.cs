@@ -227,9 +227,8 @@ namespace FreePIE.Core.Plugins.VJoy
             catch (Exception e)
             {
                 Console.WriteLine("Excecption when trying to forward ffb packetType {0}{1}{1}{2}", packetType, Environment.NewLine, e.Message);
-                throw e;
+                throw;
             }
-            
         }
     }
 }
