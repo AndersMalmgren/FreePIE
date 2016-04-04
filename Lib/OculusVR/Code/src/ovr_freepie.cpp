@@ -2,11 +2,12 @@ extern "C"
 {
   #include "../include/ovr_freepie.h"
 }
-#include <OVR.h>
+#include <OVR_CAPI.h>
+#include <OVR_Math.h>
 
 using namespace OVR;
 
-ovrHmd	HMD;
+ovrSession HMD;
 double	HmdFrameTiming;
 
 int ovr_freepie_init()
@@ -23,16 +24,12 @@ int ovr_freepie_init()
 		return 1;
 	}
 
-	ovr_ConfigureTracking(HMD, ovrTrackingCap_Orientation |
-		ovrTrackingCap_MagYawCorrection |
-		ovrTrackingCap_Position, 0);
-
 	return 0;
 }
 
 int ovr_freepie_reset_orientation()
 {
-	ovr_RecenterPose(HMD);
+	ovr_RecenterTrackingOrigin(HMD);
 	return 0;
 }
 
