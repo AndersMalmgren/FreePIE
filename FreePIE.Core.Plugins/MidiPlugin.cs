@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CannedBytes.Midi;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Globals;
@@ -15,12 +16,17 @@ namespace FreePIE.Core.Plugins
         public override object CreateGlobal()
         {
             holders = new List<MidiGlobalHolder>();
-            return new GlobalIndexer<MidiGlobal>(Create);
+            var ports = new MidiInPortCapsCollection()
+                .Select((p, i) => new MidiPortInfo { Index = i, InPort = true, Name = p.Name})
+                .Concat(new MidiOutPortCapsCollection().Select((p, i) => new MidiPortInfo { Index = i, InPort = false, Name = p.Name }))
+                .ToList();
+
+            return new GlobalIndexer<MidiGlobal, int, string>(index => Create(ports.Where(p => p.Index == index)), name => Create(ports.Where(p => p.Name == name)));
         }
 
-        private MidiGlobal Create(int index)
+        private MidiGlobal Create(IEnumerable<MidiPortInfo> ports)
         {
-            var holder = new MidiGlobalHolder(index);
+            var holder = new MidiGlobalHolder(ports);
             holders.Add(holder);
             return holder.Global;
         }
@@ -41,9 +47,16 @@ namespace FreePIE.Core.Plugins
         }
     }
 
+    public class MidiPortInfo
+    {
+        public bool InPort { get; set; }
+        public int Index { get; set; }
+        public string Name { get; set; }
+    }
+
     public class MidiGlobalHolder : IUpdatable, IMidiDataReceiver, IDisposable
     {
-        private readonly int index;
+        private readonly IEnumerable<MidiPortInfo> ports;
         private readonly Queue<DataGlobal> messages = new Queue<DataGlobal>();
         private MidiInPort inPort;
         private MidiOutPort outPort;
@@ -51,9 +64,12 @@ namespace FreePIE.Core.Plugins
         private bool isWriting;
         private bool newDataToWrite;
 
-        public MidiGlobalHolder(int index)
+        public MidiGlobalHolder(IEnumerable<MidiPortInfo> ports)
         {
-            this.index = index;
+            if(!ports.Any())
+                throw new Exception("Requested MIDI device not found with given key");
+
+            this.ports = ports;
             lastData = new DataGlobal(this);
             Global = new MidiGlobal(this);
         }
@@ -62,11 +78,11 @@ namespace FreePIE.Core.Plugins
         {
             inPort = new MidiInPort {Successor = this};
 
-            var count = new MidiInPortCapsCollection().Count;
-            if (index >= count)
-                throw new Exception(string.Format("MIDI device with port index {0} not found", index));
+            var port = ports.SingleOrDefault(p => p.InPort);
+            if (port == null)
+                throw new Exception("Requested MIDI device with inport not found");
 
-            inPort.Open(index);
+            inPort.Open(port.Index);
             inPort.Start();
         }
 
@@ -104,15 +120,21 @@ namespace FreePIE.Core.Plugins
         {
             if (!isWriting || !newDataToWrite) return;
 
-
             if (outPort == null)
-            {
-                outPort = new MidiOutPort();
-                outPort.Open(index);
-            }
+                InitWrite();
 
             outPort.ShortData(lastData.GetOutput());
             newDataToWrite = false;
+        }
+
+        private void InitWrite()
+        {
+            var port = ports.SingleOrDefault(p => !p.InPort);
+            if (port == null)
+                throw new Exception("Requested MIDI device with outport not found");
+
+            outPort = new MidiOutPort();
+            outPort.Open(port.Index);
         }
 
         public Action OnUpdate { get; set; }
