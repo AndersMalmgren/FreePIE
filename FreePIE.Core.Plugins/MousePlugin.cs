@@ -226,6 +226,11 @@ namespace FreePIE.Core.Plugins
         {
             setButtonPressedStrategy.Add(button);
         }
+
+        public void PressAndRelease(int button, bool state)
+        {
+            setButtonPressedStrategy.Add(button, state);
+        }
     }
 
     [Global(Name = "mouse")]
@@ -309,6 +314,11 @@ namespace FreePIE.Core.Plugins
         public void setPressed(int button)
         {
             plugin.PressAndRelease(button);
+        }
+
+        public void setPressed(int button, bool state)
+        {
+            plugin.PressAndRelease(button, state);
         }
     }
 }

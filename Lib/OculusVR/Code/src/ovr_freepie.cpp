@@ -2,38 +2,41 @@ extern "C"
 {
   #include "../include/ovr_freepie.h"
 }
-#include <OVR.h>
+#include <OVR_CAPI.h>
+#include <OVR_Math.h>
 
 using namespace OVR;
 
-ovrHmd	HMD;
+ovrSession HMD;
+double	HmdFrameTiming;
 
 int ovr_freepie_init()
 {
-	ovr_Initialize();
-	HMD = ovrHmd_Create(0);
+	ovrResult result = ovr_Initialize(nullptr);
+	if (!OVR_SUCCESS(result)) return 1;
+
+	ovrGraphicsLuid luid;
+	result = ovr_Create(&HMD, &luid);
+
+	if (!OVR_SUCCESS(result)) return 1;
+
 	if (!HMD) {
 		return 1;
 	}
-
-	ovrHmd_SetEnabledCaps(HMD, ovrHmdCap_DynamicPrediction);
-
-	ovrHmd_ConfigureTracking(HMD, ovrTrackingCap_Orientation |
-		ovrTrackingCap_MagYawCorrection |
-		ovrTrackingCap_Position, 0);
 
 	return 0;
 }
 
 int ovr_freepie_reset_orientation()
 {
-	ovrHmd_RecenterPose(HMD);
+	ovr_RecenterTrackingOrigin(HMD);
 	return 0;
 }
 
 int ovr_freepie_read(ovr_freepie_6dof *output)
 {
-	ovrTrackingState ts = ovrHmd_GetTrackingState(HMD, ovr_GetTimeInSeconds());
+	HmdFrameTiming = ovr_GetPredictedDisplayTime(HMD, 0);
+	ovrTrackingState ts = ovr_GetTrackingState(HMD, ovr_GetTimeInSeconds(), HmdFrameTiming);
 	Posef pose = ts.HeadPose.ThePose;
 	
 	pose.Rotation.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&output->yaw, &output->pitch, &output->roll);
@@ -46,7 +49,7 @@ int ovr_freepie_read(ovr_freepie_6dof *output)
 
 int ovr_freepie_destroy()
 {
-	ovrHmd_Destroy(HMD); 
+	ovr_Destroy(HMD); 
 	ovr_Shutdown();
 
 	return 0;
