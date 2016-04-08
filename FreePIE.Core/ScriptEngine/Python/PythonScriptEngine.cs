@@ -240,7 +240,7 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         private void TriggerErrorEventNotOnPythonThread(Exception e)
         {
-            if (e.InnerException != null)
+            if(e.InnerException != null)
             {
                 TriggerErrorEventNotOnPythonThread(e.InnerException);
                 return;
@@ -249,19 +249,24 @@ namespace FreePIE.Core.ScriptEngine.Python
             var stack = PythonOps.GetDynamicStackFrames(e);
             var lineNumber = stack
                 .Select(s => (int?)s.GetFileLineNumber())
-                .FirstOrDefault() - startingLine;
+                .FirstOrDefault();
+
+            if(!lineNumber.HasValue && e is SyntaxErrorException)
+                lineNumber = (e as SyntaxErrorException).Line;
+
+            lineNumber -= startingLine;
 
             ThreadPool.QueueUserWorkItem(obj =>
+            {
+                try
                 {
-                    try
-                    {
-                        Stop();
-                    }
-                    finally
-                    {
-                        eventAggregator.Publish(new ScriptErrorEvent(ErrorLevel.Exception, e.Message, lineNumber));
-                    }
-                });
+                    Stop();
+                }
+                finally
+                {
+                    eventAggregator.Publish(new ScriptErrorEvent(ErrorLevel.Exception, e.Message, lineNumber));
+                }
+            });
         }
 
         private ScriptScope CreateScope(IDictionary<string, object> globals)
