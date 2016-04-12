@@ -429,7 +429,8 @@ copy "$(SolutionDir)\Lib\IO\Binaries\Release-DllMultiThreadRuntime\*.dll" "$(Tar
 copy "$(SolutionDir)\Lib\OculusVR\Binaries\*.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\VJoy\*.dll" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\Midi\*.dll" "$(TargetDir)"
-copy "$(SolutionDir)\Lib\Tobii\*.dll" "$(TargetDir)"</PostBuildEvent>
+copy "$(SolutionDir)\Lib\Tobii\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\PSMove\*.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

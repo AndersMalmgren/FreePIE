@@ -97,6 +97,11 @@
     <Compile Include="MemoryMapping\SharedMemoryWorker.cs" />
     <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
+    <Compile Include="PSMovePlugin.cs" />
+    <Compile Include="PSMove\PSMoveTracker.cs" />
+    <Compile Include="PSMove\PSMoveController.cs" />
+    <Compile Include="PSMove\PSMoveData.cs" />
+    <Compile Include="PSMove\PSMoveAPI.cs" />
     <Compile Include="MidiPlugin.cs" />
     <Compile Include="Midi\MidiStatus.cs" />
     <Compile Include="Midi\DataGlobal.cs" />
