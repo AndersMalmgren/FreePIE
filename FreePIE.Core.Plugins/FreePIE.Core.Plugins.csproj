@@ -80,7 +80,7 @@
     <Compile Include="AhrsImuPlugin.cs" />
     <Compile Include="AndroidPlugin.cs" />
     <Compile Include="ApplePlugin.cs" />
-    <Compile Include="Window.cs" />
+    <Compile Include="WindowPlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="FreePieIOPlugin.cs" />
     <Compile Include="Globals\GlobalIndexer.cs" />
