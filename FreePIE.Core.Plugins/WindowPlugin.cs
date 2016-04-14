@@ -11,45 +11,61 @@ namespace FreePIE.Core.Plugins
     public class WindowPlugin : Plugin
     {
         [DllImport("user32.dll")]
-        static extern IntPtr GetForegroundWindow();
+        private static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
         [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
 
         public override string FriendlyName
         {
-            get
-            {
-                return "Window";
-            }
+            get { return "Window"; }
+        }
+
+        private Stopwatch timer;
+        private string activeWindow;
+
+        public override Action Start()
+        {
+            timer = new Stopwatch();
+            timer.Start();
+
+            return null;
+        }
+
+        public override void Stop()
+        {
+            timer.Stop();
         }
 
         public override void DoBeforeNextExecute()
         {
-            activeWindow = null;
+            if (timer.ElapsedMilliseconds > 100)
+            {
+                timer.Restart();
+                var lastActiveWindow = activeWindow;
+                activeWindow = null;
+
+                if (GlobalHasUpdateListener && lastActiveWindow != GetActiveWindowProcessName())
+                    OnUpdate();
+            }
         }
-
-        private string activeWindow;
-
-        public string GetActiveWindow()
+        
+        public string GetActiveWindowProcessName()
         {
             if(activeWindow != null) return activeWindow;
-
+            
+            var handle = GetForegroundWindow();
             uint pid = 0;
-
-            IntPtr handle = GetForegroundWindow();
-
             GetWindowThreadProcessId(handle, out pid);
-            var processId = Convert.ToInt32(pid);
 
-            var process = Process.GetProcessById(Convert.ToInt32(processId));
-            return activeWindow = process.MainWindowTitle;
+            var process = Process.GetProcessById((int)pid);
+            return activeWindow = process.ProcessName;
         }
 
         public override object CreateGlobal()
@@ -57,49 +73,39 @@ namespace FreePIE.Core.Plugins
             return new WindowGlobal(this);
         }
 
-        public override Action Start()
+        public bool IsActive(string processName)
         {
-            return null;
+            return GetActiveWindowProcessName().Equals(processName, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public bool IsActive(string title)
+        public bool Activate(string processName)
         {
-            return GetActiveWindow().Equals(title, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        public bool Activate(string title)
-        {
-            Process[] p = Process.GetProcessesByName(title);
+            var p = Process.GetProcessesByName(processName);
             if (!p.Any()) return false;
 
-            SetForegroundWindow(p[0].MainWindowHandle);
+            SetForegroundWindow(p.First().MainWindowHandle);
             return true;
         }
     }
 
     [Global(Name = "window")]
-    public class WindowGlobal
+    public class WindowGlobal : UpdateblePluginGlobal<WindowPlugin>
     {
-        private readonly WindowPlugin plugin;
+        public WindowGlobal(WindowPlugin plugin) : base(plugin) { }
 
-        public WindowGlobal(WindowPlugin plugin)
+        public bool isActive(string processName)
         {
-            this.plugin = plugin;
+            return plugin.IsActive(processName);
         }
 
-        public bool isActive(string title)
+        public bool activate(string processName)
         {
-            return plugin.IsActive(title);
-        }
-
-        public bool activate(string title)
-        {
-            return plugin.Activate(title);
+            return plugin.Activate(processName);
         }
 
         public string active
         {
-            get { return plugin.GetActiveWindow(); }
+            get { return plugin.GetActiveWindowProcessName(); }
         }
     }
 
