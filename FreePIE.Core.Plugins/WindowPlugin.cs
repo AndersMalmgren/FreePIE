@@ -28,6 +28,7 @@ namespace FreePIE.Core.Plugins
         }
 
         private Stopwatch timer;
+        private string activeWindow;
 
         public override Action Start()
         {
@@ -47,12 +48,14 @@ namespace FreePIE.Core.Plugins
             if (timer.ElapsedMilliseconds > 100)
             {
                 timer.Restart();
+                var lastActiveWindow = activeWindow;
                 activeWindow = null;
+
+                if (GlobalHasUpdateListener && lastActiveWindow != GetActiveWindowProcessName())
+                    OnUpdate();
             }
         }
-
-        private string activeWindow;
-
+        
         public string GetActiveWindowProcessName()
         {
             if(activeWindow != null) return activeWindow;
@@ -86,14 +89,9 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "window")]
-    public class WindowGlobal
+    public class WindowGlobal : UpdateblePluginGlobal<WindowPlugin>
     {
-        private readonly WindowPlugin plugin;
-
-        public WindowGlobal(WindowPlugin plugin)
-        {
-            this.plugin = plugin;
-        }
+        public WindowGlobal(WindowPlugin plugin) : base(plugin) { }
 
         public bool isActive(string processName)
         {
