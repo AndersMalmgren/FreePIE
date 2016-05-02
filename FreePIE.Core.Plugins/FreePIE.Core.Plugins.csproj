@@ -100,6 +100,8 @@
     <Compile Include="MidiPlugin.cs" />
     <Compile Include="Midi\MidiStatus.cs" />
     <Compile Include="Midi\DataGlobal.cs" />
+    <Compile Include="PSMovePlugin.cs" />
+    <Compile Include="PSMove\Api.cs" />
     <Compile Include="TobiiEyeXPlugin.cs" />
     <Compile Include="Wiimote\Calibratable.cs" />
     <Compile Include="SpeechPlugin.cs" />
