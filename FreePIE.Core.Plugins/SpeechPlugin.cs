@@ -48,6 +48,7 @@ namespace FreePIE.Core.Plugins
                 synth.SpeakAsyncCancel(prompt);
 
             prompt = synth.SpeakAsync(text);
+            Speaking = true;
         }
 
         public bool Said(string text, float confidence)
@@ -97,12 +98,15 @@ namespace FreePIE.Core.Plugins
             return result;
         }
 
+        public bool Speaking { get; private set; }
+
         private void EnsureSynthesizer()
         {
             if (synth == null)
             {
                 synth = new SpeechSynthesizer();
                 synth.SetOutputToDefaultAudioDevice();
+                synth.SpeakCompleted += (s, e) => Speaking = false;
             }
         }
 
@@ -137,6 +141,8 @@ namespace FreePIE.Core.Plugins
         {
             plugin.Say(text);
         }
+
+        public bool speaking { get { return plugin.Speaking; } }
 
         public bool said(string text)
         {
