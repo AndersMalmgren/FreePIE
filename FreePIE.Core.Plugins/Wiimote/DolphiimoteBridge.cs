@@ -33,10 +33,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             data = new Dictionary<uint, DolphiimoteWiimoteData>();
 
             for (byte i = 0; i < 4; i++)
-            {
-                calibration = new WiimoteCalibration();
-                data[i] = new DolphiimoteWiimoteData(i, calibration, fuserFactory());
-            }
+                data[i] = new DolphiimoteWiimoteData(i, new WiimoteCalibration(), fuserFactory());
         }
 
         public void Init()
