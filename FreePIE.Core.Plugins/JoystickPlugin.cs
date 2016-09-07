@@ -36,8 +36,7 @@ namespace FreePIE.Core.Plugins
             {
                     var d = diDevices.Where(di => di.InstanceName == strIndex).ToArray();
                     return d.Length > 0 && d.Length > idx ? creator(d[idx]) : null;
-            }
-            );
+            });
         }
 
         public override void Stop()
