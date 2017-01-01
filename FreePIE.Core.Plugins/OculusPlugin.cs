@@ -56,147 +56,115 @@ namespace FreePIE.Core.Plugins
 
         private OculusVrData _data;
 
-        public OculusVr6Dof Head {get { return _data.Head; }}
+        public OculusVr6Dof HeadPose { get { return _data.HeadPose; } }
 
-        public OculusVr6Dof leftHand{get { return _data.LeftHand; }}
+        public OculusVr6Dof LeftTouchPose{ get { return _data.LeftTouchPose; } }
 
-        public OculusVr6Dof rightHand{get { return _data.RightHand; }}
+        public OculusVr6Dof RightTouchPose{ get { return _data.RightTouchPose; } }
 
-        public float LTrigger{get { return _data.LTrigger; }}
+        public float LeftTrigger{ get { return _data.LeftTrigger; } }
 
-        public float RTrigger{get { return _data.RTrigger; }}
+        public float RightTrigger{ get { return _data.RightTrigger; } }
 
-        public float LGrip{get { return _data.LGrip; }}
+        public float LeftGrip{ get { return _data.LeftGrip; } }
 
-        public float RGrip{get { return _data.RGrip; }}
+        public float RightGrip{ get { return _data.RightGrip; } }
 
-        public Pointf Lstick{get { return _data.Lstick; }}
+        public Pointf LeftStick{ get { return _data.LeftStick; } }
 
-        public Pointf Rstick{get { return _data.Rstick; }}
+        public Pointf RightStick{ get { return _data.RightStick; } }
 
-        public ovrControllerType ControllerType{get { return (ovrControllerType) _data.ControllerType; }}
+        public OvrControllerType ControllerType{ get { return (OvrControllerType) _data.ControllerType; } }
 
-        public ovrStatus StatusRightHand { get { return (ovrStatus) _data.StatusRightHand; } }
-        public ovrStatus StatusLeftHand { get { return (ovrStatus) _data.StatusLeftHand; } }
-        public ovrStatus StatusHead { get { return (ovrStatus) _data.StatusHead; } }
+        public OvrStatus RightTouchStatus { get { return (OvrStatus) _data.RightTouchStatus; } }
+        public OvrStatus LeftTouchStatus { get { return (OvrStatus) _data.LeftTouchStatus; } }
+        public OvrStatus HeadStatus { get { return (OvrStatus) _data.HeadStatus; } }
 
-        public bool isHmdMounted { get { return _data.HmdMounted > 0; } }
-        public ovrTouchButton Buttons{get { return (ovrTouchButton) _data.Buttons; }}
+        public bool IsHmdMounted { get { return _data.IsHmdMounted > 0; } }
+        public OvrTouchButton Buttons{ get { return (OvrTouchButton) _data.Buttons; } }
 
-        public ovrTouch Touches{get { return (ovrTouch) _data.Touches; }}
+        public OvrTouch Touches{ get { return (OvrTouch) _data.Touches; } }
     }
 
     [Global(Name = "oculusVR")]
     public class OculusGlobal : UpdateblePluginGlobal<OculusPlugin>
     {
         public OculusGlobal(OculusPlugin plugin) : base(plugin){}
+
+        public OvrTouchButton buttons { get { return plugin.Buttons; } }
+        public OvrTouch touches { get { return plugin.Touches; } }
+
+        public OculusVr6Dof headPose { get { return plugin.HeadPose; } }
+        public OculusVr6Dof leftTouchPose{ get { return plugin.LeftTouchPose; } }
+        public OculusVr6Dof rightTouchPose{ get { return plugin.RightTouchPose; } }
+
         
-        public OculusVr6Dof head { get { return plugin.Head; } }
-        public OculusVr6Dof leftHand{get { return plugin.leftHand; }}
-        public OculusVr6Dof rightHand{get { return plugin.rightHand; }}
+        public OvrStatus headStatus { get { return plugin.HeadStatus; } }
+        public OvrStatus leftTouchStatus { get { return plugin.LeftTouchStatus; } }
+        public OvrStatus rightTouchStatus { get { return plugin.RightTouchStatus; } }
 
-        public bool isHmdMounted { get { return plugin.isHmdMounted; } }
-        public ovrStatus headStatus{get { return plugin.StatusHead; }}
+        public bool isMounted { get { return plugin.IsHmdMounted; } }
+        public bool isHeadTracking { get { return plugin.HeadStatus == (OvrStatus.OrientationTracked | OvrStatus.PositionTracked);} }
+        public bool isLeftTouchTracking { get { return plugin.LeftTouchStatus == (OvrStatus.OrientationTracked | OvrStatus.PositionTracked); } }
 
-        public ovrStatus leftHandStatus{get { return plugin.StatusLeftHand; }}
-
-        public ovrStatus rightHandStatus{get { return plugin.StatusRightHand; }}
-
-        public bool headIsTracking { get { return plugin.StatusHead == (ovrStatus.OrientationTracked | ovrStatus.PositionTracked);} }
-        public bool leftHandIsTracking { get { return plugin.StatusLeftHand == (ovrStatus.OrientationTracked | ovrStatus.PositionTracked); } }
-
-        public bool rightHandIsTracking { get { return plugin.StatusRightHand == (ovrStatus.OrientationTracked | ovrStatus.PositionTracked); } }
+        public bool isRightTouchTracking { get { return plugin.RightTouchStatus == (OvrStatus.OrientationTracked | OvrStatus.PositionTracked); } }
 
         #region Buttons
-        public ovrTouchButton buttons{get { return plugin.Buttons; }}
-
-        #region Right Touch Controller
-        
-        public bool A { get { return (plugin.Buttons & ovrTouchButton.A) > 0; } }
-
-        public bool B { get { return (plugin.Buttons & ovrTouchButton.B) > 0; } }
-
-        public bool RThumb{get { return (plugin.Buttons & ovrTouchButton.RThumb) > 0; }}
-
-        public bool Home{get { return (plugin.Buttons & ovrTouchButton.Home) > 0; }}
-
-        public float RTrigger{get { return plugin.RTrigger; }}
-
-        public float RGrip{get { return plugin.RGrip; }}
-
-        public float RX{get { return plugin.Rstick.x; }}
-
-        public float RY{get { return -plugin.Rstick.y; }}
-
-        #endregion //Right Touch Controller
-
-        #region Left Touch Controller
         
 
-        public bool X{get { return (plugin.Buttons & ovrTouchButton.X) > 0; }}
+        public bool a { get { return (plugin.Buttons & OvrTouchButton.A) > 0; } }
+        public bool b { get { return (plugin.Buttons & OvrTouchButton.B) > 0; } }
+        public bool x { get { return (plugin.Buttons & OvrTouchButton.X) > 0; } }
+        public bool y { get { return (plugin.Buttons & OvrTouchButton.Y) > 0; } }
 
-        public bool Y{get { return (plugin.Buttons & ovrTouchButton.Y) > 0; }}
+        public bool leftThumb { get { return (plugin.Buttons & OvrTouchButton.LeftThumb) > 0; } }
 
-        public bool LThumb{get { return (plugin.Buttons & ovrTouchButton.LThumb) > 0; }}
+        public bool rightThumb { get { return (plugin.Buttons & OvrTouchButton.RightThumb) > 0; } }
+        
+        public float leftTrigger { get { return plugin.LeftTrigger; } }
+        public float rightTrigger { get { return plugin.RightTrigger; } }
 
-        public bool Enter{get { return (plugin.Buttons & ovrTouchButton.Enter) > 0; }}
+        public float leftGrip { get { return plugin.LeftGrip; } }
+        public float rightGrip { get { return plugin.RightGrip; } }
 
-        public float LTrigger{get { return plugin.LTrigger; }}
+        public float leftStickX { get { return plugin.LeftStick.x; } }
+        public float rightStickX { get { return plugin.RightStick.x; } }
 
-        public float LGrip{get { return plugin.LGrip; }}
+        public float leftStickY { get { return -plugin.LeftStick.y; } }
+        public float rightStickY{ get { return -plugin.RightStick.y; } }
 
-        public float LX{get { return plugin.Lstick.x; }}
 
-        public float LY{get { return -plugin.Lstick.y; }}
+        public bool enter { get { return (plugin.Buttons & OvrTouchButton.Enter) > 0; } }
 
-        #endregion //Left Touch Controller
+        public bool home { get { return (plugin.Buttons & OvrTouchButton.Home) > 0; } }
 
         #endregion //Buttons
 
         #region Touches
 
-        public ovrTouch touches{get { return plugin.Touches; }}
+        
 
-        #region Left Hand
-        public bool touchingX{get { return (plugin.Touches & ovrTouch.X) > 0; }}
+        public bool touchingA { get { return (plugin.Touches & OvrTouch.A) > 0; } }
+        public bool touchingB { get { return (plugin.Touches & OvrTouch.B) > 0; } }
+        public bool touchingX { get { return (plugin.Touches & OvrTouch.X) > 0; } }
+        public bool touchingY { get { return (plugin.Touches & OvrTouch.Y) > 0; } }
 
-        public bool touchingY{get { return (plugin.Touches & ovrTouch.Y) > 0; }}
+        public bool touchingLeftThumb { get { return (plugin.Touches & OvrTouch.LThumb) > 0; } }
+        public bool touchingRightThumb { get { return (plugin.Touches & OvrTouch.RThumb) > 0; } }
 
-        public bool touchingLThumb{get { return (plugin.Touches & ovrTouch.LThumb) > 0; }}
 
-        public bool touchingLThumbRest{get { return (plugin.Touches & ovrTouch.LThumbRest) > 0; }}
+        public bool touchingLeftThumbRest { get { return (plugin.Touches & OvrTouch.LThumbRest) > 0; } }
+        public bool touchingRightThumbRest { get { return (plugin.Touches & OvrTouch.RThumbRest) > 0; } }
 
-        public bool touchingLTrigger{get { return (plugin.Touches & ovrTouch.LTrigger) > 0; }}
-
+        public bool touchingLeftTrigger { get { return (plugin.Touches & OvrTouch.LTrigger) > 0; } }
+        public bool touchingRightTrigger { get { return (plugin.Touches & OvrTouch.RTrigger) > 0; } }
         //gestures
-        public bool LIndexPointing{get { return (plugin.Touches & ovrTouch.LIndexPointing) > 0; }}
+        public bool leftIndexPointing { get { return (plugin.Touches & OvrTouch.LIndexPointing) > 0; } }
+        public bool rightIndexPointing { get { return (plugin.Touches & OvrTouch.RIndexPointing) > 0; } }
+        public bool leftThumbUp{ get { return (plugin.Touches & OvrTouch.LThumbUp) > 0; } }
+        public bool rightThumbUp{ get { return (plugin.Touches & OvrTouch.RThumbUp) > 0; } }
 
-        public bool LThumbUp{get { return (plugin.Touches & ovrTouch.LThumbUp) > 0; }}
-
-        #endregion //Left Hand
-
-        #region Right Hand
-        public bool touchingA{get { return (plugin.Touches & ovrTouch.A) > 0; }}
-
-        public bool touchingB{get { return (plugin.Touches & ovrTouch.B) > 0; }}
-
-        public bool touchingRThumb{get { return (plugin.Touches & ovrTouch.RThumb) > 0; }}
-
-        public bool touchingRThumbRest{get { return (plugin.Touches & ovrTouch.RThumbRest) > 0; }}
-
-        public bool touchingRTrigger{get { return (plugin.Touches & ovrTouch.RTrigger) > 0; }}
-
-        //gestures
-        public bool RIndexPointing{get { return (plugin.Touches & ovrTouch.RIndexPointing) > 0; }}
-
-        public bool RThumbUp{get { return (plugin.Touches & ovrTouch.RThumbUp) > 0; }}
-
-        #endregion //Right Hand
-
-
-
-
-
+        
         #endregion // Touches
         public void center()
         {

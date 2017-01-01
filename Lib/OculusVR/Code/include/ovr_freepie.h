@@ -35,7 +35,7 @@ typedef struct ovr_freepie_data {
 	unsigned int statusRightHand;
 	unsigned int HmdMounted;
 
-}ovr_freepie_data;
+} ovr_freepie_data;
 
 int ovr_freepie_init();
 int ovr_freepie_read(ovr_freepie_data *output);

@@ -1,36 +1,38 @@
-diagnostics.watch(oculusVR.isHmdMounted)
+diagnostics.watch(oculusVR.isMounted)
 diagnostics.watch(oculusVR.buttons)
 diagnostics.watch(oculusVR.touches)
 
 diagnostics.watch(oculusVR.headStatus)
-diagnostics.watch(oculusVR.leftHandStatus)
-diagnostics.watch(oculusVR.rightHandStatus)
+diagnostics.watch(oculusVR.leftTouchStatus)
+diagnostics.watch(oculusVR.rightTouchStatus)
 
-diagnostics.watch(oculusVR.headIsTracking)
-diagnostics.watch(oculusVR.leftHandIsTracking)
-diagnostics.watch(oculusVR.rightHandIsTracking)
+diagnostics.watch(oculusVR.isHeadTracking)
+diagnostics.watch(oculusVR.isLeftTouchTracking)
+diagnostics.watch(oculusVR.isRightTouchTracking)
 
-diagnostics.watch(oculusVR.head.yawDegrees)
-diagnostics.watch(oculusVR.head.pitchDegrees)
-diagnostics.watch(oculusVR.head.rollDegrees)
+diagnostics.watch(oculusVR.headPose.yawDegrees)
+diagnostics.watch(oculusVR.headPose.pitchDegrees)
+diagnostics.watch(oculusVR.headPose.rollDegrees)
 
 if oculusVR.headIsTracking:
-	diagnostics.watch(oculusVR.head.x)
-	diagnostics.watch(oculusVR.head.y)
-	diagnostics.watch(oculusVR.head.z)
+	diagnostics.watch(oculusVR.headPose.x)
+	diagnostics.watch(oculusVR.headPose.y)
+	diagnostics.watch(oculusVR.headPose.z)
 
-diagnostics.watch(oculusVR.leftHand.yawDegrees)
-diagnostics.watch(oculusVR.leftHand.pitchDegrees)
-diagnostics.watch(oculusVR.leftHand.rollDegrees)
-if oculusVR.leftHandIsTracking:
-	diagnostics.watch(oculusVR.leftHand.x)
-	diagnostics.watch(oculusVR.leftHand.y)
-	diagnostics.watch(oculusVR.leftHand.z)
+diagnostics.watch(oculusVR.leftTouchPose.yawDegrees)
+diagnostics.watch(oculusVR.leftTouchPose.pitchDegrees)
+diagnostics.watch(oculusVR.leftTouchPose.rollDegrees)
 
-diagnostics.watch(oculusVR.rightHand.yawDegrees)
-diagnostics.watch(oculusVR.rightHand.pitchDegrees)
-diagnostics.watch(oculusVR.rightHand.rollDegrees)
-if oculusVR.rightHandIsTracking:
-	diagnostics.watch(oculusVR.rightHand.x)
-	diagnostics.watch(oculusVR.rightHand.y)
-	diagnostics.watch(oculusVR.rightHand.z)
+if oculusVR.leftTouchIsTracking:
+	diagnostics.watch(oculusVR.leftTouchPose.x)
+	diagnostics.watch(oculusVR.leftTouchPose.y)
+	diagnostics.watch(oculusVR.leftTouchPose.z)
+
+diagnostics.watch(oculusVR.rightTouchPose.yawDegrees)
+diagnostics.watch(oculusVR.rightTouchPose.pitchDegrees)
+diagnostics.watch(oculusVR.rightTouchPose.rollDegrees)
+
+if oculusVR.rightTouchIsTracking:
+	diagnostics.watch(oculusVR.rightTouchPose.x)
+	diagnostics.watch(oculusVR.rightTouchPose.y)
+	diagnostics.watch(oculusVR.rightTouchPose.z)
