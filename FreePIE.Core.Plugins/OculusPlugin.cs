@@ -103,7 +103,7 @@ namespace FreePIE.Core.Plugins
         public OvrStatus leftTouchStatus { get { return plugin.LeftTouchStatus; } }
         public OvrStatus rightTouchStatus { get { return plugin.RightTouchStatus; } }
 
-        public bool isMounted { get { return plugin.IsHmdMounted; } }
+        public bool isWorn { get { return plugin.IsHmdMounted; } }
         public bool isHeadTracking { get { return plugin.HeadStatus == (OvrStatus.OrientationTracked | OvrStatus.PositionTracked);} }
         public bool isLeftTouchTracking { get { return plugin.LeftTouchStatus == (OvrStatus.OrientationTracked | OvrStatus.PositionTracked); } }
 
