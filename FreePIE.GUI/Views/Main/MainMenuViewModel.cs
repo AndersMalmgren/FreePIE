@@ -19,9 +19,9 @@ using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Main
 {
-    public class MainMenuViewModel : PropertyChangedBase, 
-        Core.Common.Events.IHandle<ScriptUpdatedEvent>, 
-        Core.Common.Events.IHandle<ExitingEvent>, 
+    public class MainMenuViewModel : PropertyChangedBase,
+        Core.Common.Events.IHandle<ScriptUpdatedEvent>,
+        Core.Common.Events.IHandle<ExitingEvent>,
         Core.Common.Events.IHandle<ActiveScriptDocumentChangedEvent>,
         Core.Common.Events.IHandle<ScriptErrorEvent>,
         Core.Common.Events.IHandle<FileEvent>,
@@ -37,7 +37,7 @@ namespace FreePIE.GUI.Views.Main
         private IScriptEngine currentScriptEngine;
         private bool scriptRunning;
 
-        public MainMenuViewModel(IResultFactory resultFactory, 
+        public MainMenuViewModel(IResultFactory resultFactory,
             IEventAggregator eventAggregator,
             Func<IScriptEngine> scriptEngineFactory,
             Func<ScriptEditorViewModel> scriptEditorFactory,
@@ -46,7 +46,7 @@ namespace FreePIE.GUI.Views.Main
             ISettingsManager settings)
         {
             eventAggregator.Subscribe(this);
-           
+
             this.resultFactory = resultFactory;
             this.eventAggregator = eventAggregator;
             this.scriptEngineFactory = scriptEngineFactory;
@@ -62,8 +62,8 @@ namespace FreePIE.GUI.Views.Main
         private PanelViewModel ActiveDocument
         {
             get { return activeDocument; }
-            set { 
-                activeDocument = value; 
+            set {
+                activeDocument = value;
                 NotifyOfPropertyChange(() => CanQuickSaveScript);
                 NotifyOfPropertyChange(() => CanSaveScript);
                 NotifyOfPropertyChange(() => CanRunScript);
@@ -232,7 +232,11 @@ namespace FreePIE.GUI.Views.Main
 
         public IEnumerable<IResult> Close()
         {
-            yield return resultFactory.Close();
+            //this closes to tray
+            //yield return resultFactory.Close();
+
+            //this actually exits the app
+            yield return resultFactory.CloseApp();
         }
 
         public IEnumerable<IResult> ShowCurveSettingsMenu()

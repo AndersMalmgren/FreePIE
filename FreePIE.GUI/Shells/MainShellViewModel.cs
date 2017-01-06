@@ -6,7 +6,6 @@ using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
 using FreePIE.Core.Persistence.Paths;
 using FreePIE.GUI.Common.AvalonDock;
-using FreePIE.GUI.Common.CommandLine;
 using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
@@ -31,8 +30,7 @@ namespace FreePIE.GUI.Shells
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
         private readonly IPaths paths;
-        private readonly IParser parser;
-
+        private bool loaded;
         public MainShellViewModel(IResultFactory resultFactory,
                                   IEventAggregator eventAggregator,
                                   IPersistanceManager persistanceManager,
@@ -42,7 +40,6 @@ namespace FreePIE.GUI.Shells
                                   IFileSystem fileSystem,
                                   ScriptDialogStrategy scriptDialogStrategy,
                                   IPaths paths,
-                                  IParser parser,
                                   IPortable portable
             )
             : base(resultFactory)
@@ -53,7 +50,6 @@ namespace FreePIE.GUI.Shells
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
             this.paths = paths;
-            this.parser = parser;
 
             Scripts = new BindableCollection<ScriptEditorViewModel>();
             Tools = new BindableCollection<PanelViewModel> (panels);
@@ -68,13 +64,17 @@ namespace FreePIE.GUI.Shells
             DisplayName = string.Format("FreePIE - Programmable Input Emulator{0}", portable.IsPortable ? " (Portable mode)" : null);
         }
 
+        
         protected override void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            InitDocking();
+            if (!loaded)
+            {
+                loaded = true;
+                InitDocking();
 
-            eventAggregator.Publish(new StartedEvent());
-            parser.ParseAndExecute();
+                eventAggregator.Publish(new StartedEvent());
+            }
         }
 
         private void InitDocking()
@@ -174,6 +174,9 @@ namespace FreePIE.GUI.Shells
             }
 
             script.IsActive = true;
+
+            
+            ActiveDocument = message.Document;
         }
     }
 }

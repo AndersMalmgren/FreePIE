@@ -6,6 +6,7 @@ using FreePIE.Core.Persistence;
 using FreePIE.Core.Services;
 using FreePIE.GUI.Common.AvalonDock;
 using FreePIE.GUI.Common.CommandLine;
+using FreePIE.GUI.Common.TrayIcon;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
 using FreePIE.GUI.Views.Main;
@@ -32,8 +33,8 @@ namespace FreePIE.GUI.Bootstrap
             kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             kernel.Bind<IResultFactory>().To<ResultFactory>();
             kernel.Bind<IParser>().To<Parser>();
-
-			ConfigurePanels();
+            kernel.Bind<ITrayIcon>().To<TrayIconViewModel>().InSingletonScope();
+            ConfigurePanels();
 
             SetupCustomMessageBindings();
         }
@@ -49,7 +50,8 @@ namespace FreePIE.GUI.Bootstrap
 	    {
 	        Coroutine.BeginExecute(kernel
                 .Get<SettingsLoaderViewModel>()
-                .Load(() => DisplayRootViewFor<MainShellViewModel>())
+                //.Load(() => DisplayRootViewFor<MainShellViewModel>())
+                .Load(() => DisplayRootViewFor<ITrayIcon>())
                 .GetEnumerator());
         }
 
