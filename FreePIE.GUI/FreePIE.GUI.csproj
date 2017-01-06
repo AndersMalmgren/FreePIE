@@ -67,6 +67,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Caliburn.Micro.2.0.1\lib\net40\Caliburn.Micro.Platform.dll</HintPath>
     </Reference>
+    <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net45\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ICSharpCode.AvalonEdit, Version=5.0.1.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AvalonEdit.5.0.2\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
@@ -76,6 +80,7 @@
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.2.0.1\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -115,6 +120,7 @@
     <Compile Include="Common\CommandLine\Commands\Command.cs" />
     <Compile Include="Common\CommandLine\Commands\FileCommand.cs" />
     <Compile Include="Common\CommandLine\Commands\RunCommand.cs" />
+    <Compile Include="Common\CommandLine\Commands\TrayCommand.cs" />
     <Compile Include="Common\CommandLine\IParser.cs" />
     <Compile Include="Common\CommandLine\Parser.cs" />
     <Compile Include="Common\Resources\ResourceHelper.cs" />
@@ -125,6 +131,7 @@
     <Compile Include="Events\Command\CommandEvent.cs" />
     <Compile Include="Events\Command\FileEvent.cs" />
     <Compile Include="Events\Command\RunEvent.cs" />
+    <Compile Include="Events\Command\TrayEvent.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
     <Compile Include="Events\ScriptDocumentAddedEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
@@ -168,12 +175,17 @@
       <DependentUpon>CurveView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Curves\CurveViewModel.cs" />
+    <Compile Include="Common\TrayIcon\ITrayIcon.cs" />
     <Compile Include="Views\Main\MainMenuView.xaml.cs">
       <DependentUpon>MainMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Main\MainMenuViewModel.cs" />
     <Compile Include="Views\Main\PanelViewModel.cs" />
     <Compile Include="Views\Main\SettingsLoaderViewModel.cs" />
+    <Compile Include="Views\Main\TrayIconView.xaml.cs">
+      <DependentUpon>TrayIconView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\TrayIconViewModel.cs" />
     <Compile Include="Views\Plugin\PluginHelpFileViewModel.cs" />
     <Compile Include="Views\Plugin\PluginPropertyView.xaml.cs">
       <DependentUpon>PluginPropertyView.xaml</DependentUpon>
@@ -253,6 +265,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Main\MainMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Main\TrayIconView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -409,6 +425,7 @@
   <ItemGroup>
     <Resource Include="Resources\prev-16.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>md "$(TargetDir)plugins"
