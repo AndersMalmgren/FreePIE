@@ -12,21 +12,31 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        Visibility="Hidden">
+        Visibility="Hidden" ShowInTaskbar="False">
     <Window.Resources>
 
         <ResourceDictionary>
             <ContextMenu x:Shared="false" x:Key="MainSysTrayMenu">
-               <MenuItem Header="Show Window" cal:Message.Attach="ShowWindow" />
-                <MenuItem Header="Hide Window" cal:Message.Attach="HideWindow" />
+
+                <MenuItem Header="Run Script" cal:Message.Attach="RunScript" />
+                <MenuItem Header="Stop Script" cal:Message.Attach="StopScript" />
                 <Separator />
-                <MenuItem Header="Exit" cal:Message.Attach="ExitApplication" />
+                <MenuItem Header="Show Window" cal:Message.Attach="ShowWindow" />
+                <MenuItem>
+                    <MenuItem.Header>
+                        <CheckBox Content="Minimize to Tray" IsChecked="{Binding Path=MinimizeToTray,Mode=TwoWay}"></CheckBox>
+                    </MenuItem.Header>
+
+                </MenuItem>
+                <MenuItem Header="Exit Freepie" cal:Message.Attach="Close" />
+
             </ContextMenu>
 
             <!-- the application main system tray icon -->
             <tb:TaskbarIcon x:Key="MyTrayIcon"
                         IconSource="/free-pie.ico"
-                        ToolTipText="Double-click for window, right-click for menu"
+                        ToolTipText="{Binding Path=ToolTipText}"
+                            
                         cal:Message.Attach="[Event TrayMouseDoubleClick] = [Action ShowWindow]"
                         ContextMenu="{StaticResource MainSysTrayMenu}"  />
         </ResourceDictionary>
@@ -34,6 +44,6 @@
 
     <Grid>
         <TextBlock >View + ViewModel started from bootstrapper. This should not be visible.</TextBlock>
-        <ContentControl Content="{StaticResource MyTrayIcon}" cal:Message.Attach="[Event Loaded] = [Action OnTrayIconLoaded($source)]"/>
+        <ContentControl x:Name="TrayiconControl" Content="{StaticResource MyTrayIcon}" cal:Message.Attach="[Event Loaded] = [Action OnTrayIconLoaded($source)]" />
     </Grid>
 </Window>
