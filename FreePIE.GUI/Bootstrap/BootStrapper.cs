@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Windows;
 using Caliburn.Micro;
-using FreePIE.Core.Persistence;
 using FreePIE.Core.Services;
 using FreePIE.GUI.Common.AvalonDock;
 using FreePIE.GUI.Common.CommandLine;
-using FreePIE.GUI.Common.TrayIcon;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
 using FreePIE.GUI.Views.Main;
@@ -33,7 +31,8 @@ namespace FreePIE.GUI.Bootstrap
             kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             kernel.Bind<IResultFactory>().To<ResultFactory>();
             kernel.Bind<IParser>().To<Parser>();
-            kernel.Bind<ITrayIcon>().To<TrayIconViewModel>().InSingletonScope();
+            kernel.Bind<MainShellViewModel>().ToSelf().InSingletonScope();
+            kernel.Bind<TrayIconViewModel>().ToSelf().InSingletonScope();
             ConfigurePanels();
 
             SetupCustomMessageBindings();
@@ -50,9 +49,14 @@ namespace FreePIE.GUI.Bootstrap
 	    {
 	        Coroutine.BeginExecute(kernel
                 .Get<SettingsLoaderViewModel>()
-                //.Load(() => DisplayRootViewFor<MainShellViewModel>())
-                .Load(() => DisplayRootViewFor<ITrayIcon>())
+                .Load(OnSettingsLoaded)
                 .GetEnumerator());
+        }
+
+        private void OnSettingsLoaded()
+        {
+            DisplayRootViewFor<TrayIconViewModel>();
+            DisplayRootViewFor<MainShellViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)

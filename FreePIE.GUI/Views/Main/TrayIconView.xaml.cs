@@ -23,5 +23,7 @@ namespace FreePIE.GUI.Views.Main
         {
             InitializeComponent();
         }
+
+        
     }
 }

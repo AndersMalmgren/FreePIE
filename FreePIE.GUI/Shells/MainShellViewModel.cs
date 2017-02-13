@@ -6,31 +6,34 @@ using FreePIE.Core.Common;
 using FreePIE.Core.Persistence;
 using FreePIE.Core.Persistence.Paths;
 using FreePIE.GUI.Common.AvalonDock;
+using FreePIE.GUI.Common.CommandLine;
 using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Views.Main;
 using FreePIE.GUI.Views.Plugin;
 using FreePIE.GUI.Views.Script;
-using FreePIE.GUI.Views.Script.Output;
 using Xceed.Wpf.AvalonDock;
 using Xceed.Wpf.AvalonDock.Layout.Serialization;
-using Action = System.Action;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 using MessageBoxResult = System.Windows.MessageBoxResult;
-//using Caliburn.Micro;
 
 namespace FreePIE.GUI.Shells
 {
-    public class MainShellViewModel : ShellPresentationModel, Core.Common.Events.IHandle<ScriptDocumentAddedEvent>
+    public class MainShellViewModel : ShellPresentationModel, 
+        Core.Common.Events.IHandle<ScriptDocumentAddedEvent>
+        ,Core.Common.Events.IHandle<ExitingEvent>
     {
         private const string dockingConfig = "layout.config";
         private readonly IEventAggregator eventAggregator;
         private readonly IPersistanceManager persistanceManager;
+        private readonly ISettingsManager settingsManager;
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
         private readonly IPaths paths;
-        private bool loaded;
+        private readonly IParser parser;
+        private WindowState windowState = WindowState.Minimized;
+        private bool showInTaskBar = true;
         public MainShellViewModel(IResultFactory resultFactory,
                                   IEventAggregator eventAggregator,
                                   IPersistanceManager persistanceManager,
@@ -40,6 +43,7 @@ namespace FreePIE.GUI.Shells
                                   IFileSystem fileSystem,
                                   ScriptDialogStrategy scriptDialogStrategy,
                                   IPaths paths,
+                                  IParser parser,
                                   IPortable portable
             )
             : base(resultFactory)
@@ -47,13 +51,15 @@ namespace FreePIE.GUI.Shells
             this.eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
             this.persistanceManager = persistanceManager;
+            this.settingsManager = settingsManager;
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
             this.paths = paths;
+            this.parser = parser;
 
             Scripts = new BindableCollection<ScriptEditorViewModel>();
             Tools = new BindableCollection<PanelViewModel> (panels);
-
+            
             Menu = mainMenuViewModel;
             Menu.Plugins =
                 settingsManager.ListConfigurablePluginSettings().Select(ps => new PluginSettingsMenuViewModel(ps));
@@ -64,17 +70,18 @@ namespace FreePIE.GUI.Shells
             DisplayName = string.Format("FreePIE - Programmable Input Emulator{0}", portable.IsPortable ? " (Portable mode)" : null);
         }
 
-        
+        protected override void OnViewReady(object view)
+        {
+            base.OnViewReady(view);
+            ShowInTaskBar = !settingsManager.Settings.MinimizeToTray;
+        }
+
         protected override void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            if (!loaded)
-            {
-                loaded = true;
-                InitDocking();
-
-                eventAggregator.Publish(new StartedEvent());
-            }
+            InitDocking();
+            parser.ParseAndExecute();
+            eventAggregator.Publish(new StartedEvent());
         }
 
         private void InitDocking()
@@ -99,6 +106,8 @@ namespace FreePIE.GUI.Shells
         }
 
         private PanelViewModel activeDocument;
+        
+
         public PanelViewModel ActiveDocument
         {
             get { return activeDocument; }
@@ -145,8 +154,34 @@ namespace FreePIE.GUI.Shells
 
         public BindableCollection<ScriptEditorViewModel> Scripts { get; set; }
         public BindableCollection<PanelViewModel> Tools { get; set; }
-
         public MainMenuViewModel Menu { get; set; }
+        public WindowState WindowState
+        {
+            get { return windowState; }
+            set
+            {
+                if (value == windowState) return;
+                windowState = value;
+                if (value == WindowState.Minimized)
+                    ShowInTaskBar = !settingsManager.Settings.MinimizeToTray;
+                else
+                    ShowInTaskBar = true;
+                NotifyOfPropertyChange(() => WindowState);
+            }
+        }
+
+        public bool ShowInTaskBar
+        {
+            get { return showInTaskBar; }
+            set
+            {
+                if (value == showInTaskBar) return;
+                    showInTaskBar = value;
+                
+                NotifyOfPropertyChange(() => ShowInTaskBar);
+            }
+        }
+
 
         protected override IEnumerable<IResult> CanClose()
         {
@@ -155,13 +190,11 @@ namespace FreePIE.GUI.Shells
             {
                 yield return result;
             }
-
+                
             eventAggregator.Publish(new ExitingEvent());
 
-            persistanceManager.Save();
-            var layoutSerializer = new XmlLayoutSerializer(DockingManager);
-            layoutSerializer.Serialize(paths.GetDataPath(dockingConfig));
         }
+        
 
         public void Handle(ScriptDocumentAddedEvent message)
         {
@@ -177,6 +210,13 @@ namespace FreePIE.GUI.Shells
 
             
             ActiveDocument = message.Document;
+        }
+
+        public void Handle(ExitingEvent message)
+        {
+            persistanceManager.Save();
+            var layoutSerializer = new XmlLayoutSerializer(DockingManager);
+            layoutSerializer.Serialize(paths.GetDataPath(dockingConfig));
         }
     }
 }

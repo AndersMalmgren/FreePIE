@@ -160,7 +160,7 @@ namespace FreePIE.GUI.Views.Main
         {
             NotifyOfPropertyChange(() => CanRunScript);
             NotifyOfPropertyChange(() => CanStopScript);
-            eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning));
+            eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument.Filename));
         }
 
         public bool CanStopScript
@@ -211,10 +211,6 @@ namespace FreePIE.GUI.Views.Main
 
         public IEnumerable<IResult> Close()
         {
-            //this closes to tray
-            //yield return resultFactory.Close();
-
-            //this actually exits the app
             yield return resultFactory.CloseApp();
         }
 

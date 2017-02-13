@@ -1,107 +1,140 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using Caliburn.Micro;
 using FreePIE.Core.Model.Events;
+using FreePIE.Core.Persistence;
 using FreePIE.GUI.Common.CommandLine;
-using FreePIE.GUI.Common.TrayIcon;
+//using FreePIE.GUI.Common.TrayIcon;
+using FreePIE.GUI.Events;
 using FreePIE.GUI.Events.Command;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells;
 using Hardcodet.Wpf.TaskbarNotification;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Main
 {
-    public class TrayIconViewModel : Screen, ITrayIcon, 
-        Core.Common.Events.IHandle<TrayNotificationEvent>, 
-        Core.Common.Events.IHandle<TrayEvent>
+    public class TrayIconViewModel : PropertyChangedBase,
+
+        Core.Common.Events.IHandle<TrayNotificationEvent>,
+        Core.Common.Events.IHandle<TrayEvent>,
+        Core.Common.Events.IHandle<ScriptStateChangedEvent>,
+        Core.Common.Events.IHandle<StartedEvent>,
+        Core.Common.Events.IHandle<ExitingEvent>,
+        Core.Common.Events.IHandle<ScriptErrorEvent>,
+    IDisposable
     {
         private readonly IEventAggregator eventAggregator;
+        
+        private readonly ISettingsManager settingsManager;
         private readonly IResultFactory resultFactory;
-        private readonly IWindowManager windowManager;
         private readonly MainShellViewModel shellViewModel;
-        private readonly IParser parser;
+        private ScriptStateChangedEvent lastScriptEvent;
 
-        public TrayIconViewModel(IResultFactory resultFactory, IEventAggregator eventAggregator, IWindowManager windowManager,
-            MainShellViewModel shellViewModel,
-            IParser parser)
+        private bool startInTray;
+
+        
+        public TrayIconViewModel(IResultFactory resultFactory,
+                                IEventAggregator eventAggregator,
+                                MainShellViewModel shellViewModel,
+                                ISettingsManager settingsManager
+                                ) 
         {
             this.resultFactory = resultFactory;
-            this.windowManager = windowManager;
-            this.parser = parser;
             this.shellViewModel = shellViewModel;
-
+            this.settingsManager = settingsManager;
             this.eventAggregator = eventAggregator;
             this.eventAggregator.Subscribe(this);
         }
 
-        #region ITrayIcon Implementation
-
-        protected override void OnActivate()
+        public void OnTrayIconLoaded(object source)
         {
-            base.OnActivate();
-
-            NotifyOfPropertyChange(() => CanShowWindow);
-            NotifyOfPropertyChange(() => CanHideWindow);
+            TaskbarTrayIcon = (TaskbarIcon)((ContentControl)source).Content;
         }
 
-        public bool CanShowWindow => (!shellViewModel.IsActive);
+        public bool CanShowWindow()
+        {
+            return shellViewModel.IsActive && shellViewModel.WindowState == WindowState.Minimized ;
+        }
+        public void ShowWindow()
+        {
+            shellViewModel.WindowState = WindowState.Normal;
+        }
+
+        public bool CanStopScript()
+        {
+            if (LastScriptEvent == null)
+                return false;
+            return LastScriptEvent.Running;
+        }
+
+        public bool CanRunScript()
+        {
+            if (LastScriptEvent == null)
+                return true;
+            return !LastScriptEvent.Running;
+        }
+        public void RunScript()
+        {
+            shellViewModel.Menu.RunScript();
+        }
+
+        public void StopScript()
+        {
+            shellViewModel.Menu.StopScript();
+        }
+        public IEnumerable<IResult> Close()
+        {
+            yield return resultFactory.CloseApp();
+        }
+        public string ToolTipText
+        {
+            get
+            {
+                if (lastScriptEvent != null)
+                {
+                    if (lastScriptEvent.Running)
+                    {
+                        return string.Format("Running \"{0}\"", lastScriptEvent.Script);
+                    }
+                }
+
+                return "Double-click for window, right-click for menu";
+            }
+        }
 
         /// <summary>
         /// If true application starts minimized in the taskbar
         /// </summary>
-        private bool StartInTray { get; set; }
-        public void OnTrayIconLoaded(object source)
+        public ScriptStateChangedEvent LastScriptEvent
         {
-            TaskbarTrayIcon = ((ContentControl)source).Content as TaskbarIcon;
-            
-            parser.ParseAndExecute();
-
-            if (CanShowWindow && !StartInTray)
-                ShowWindow();
-            //int i = Array.IndexOf(w.startupArgs, "/open");
-
-
-        }
-
-        public void ShowWindow()
-        {
-            windowManager.ShowWindow(shellViewModel);
-
-            NotifyOfPropertyChange(() => CanShowWindow);
-            NotifyOfPropertyChange(() => CanHideWindow);
-        }
-
-        public bool CanHideWindow
-        {
-            get
+            get { return lastScriptEvent; }
+            set
             {
-                return (shellViewModel.IsActive);
+                if (lastScriptEvent == null)
+                {
+                    lastScriptEvent = value;
+                    NotifyOfPropertyChange(() => LastScriptEvent);
+                }
+                else if (lastScriptEvent.Running != value.Running)
+                {
+                    lastScriptEvent = value;
+                    NotifyOfPropertyChange(() => LastScriptEvent);
+                }
             }
         }
-
-        public void HideWindow()
+        public bool MinimizeToTray
         {
-            shellViewModel.TryClose();
-
-            NotifyOfPropertyChange(() => CanShowWindow);
-            NotifyOfPropertyChange(() => CanHideWindow);
-        }
-
-        public void ExitApplication()
-        {
-             resultFactory.CloseApp().Execute(null);
-        }
-
-        public IEnumerable<IResult> Close()
-        {
-            yield return resultFactory.CloseApp();
+            get { return settingsManager.Settings.MinimizeToTray; }
+            set
+            {
+                settingsManager.Settings.MinimizeToTray = value;
+                this.shellViewModel.ShowInTaskBar = !value;
+                NotifyOfPropertyChange(() => MinimizeToTray);
+            }
         }
 
         #region TrayIcon
@@ -112,7 +145,6 @@ namespace FreePIE.GUI.Views.Main
             private set;
         }
 
-
         public void ShowBalloonTip(string title, string message)
         {
             ShowBalloonTip(title, message, BalloonIcon.Info);
@@ -120,12 +152,12 @@ namespace FreePIE.GUI.Views.Main
         public void ShowBalloonTip(string title, string message, BalloonIcon balloon)
         {
             //Icon.ShowBalloonTip(title, message, balloon);
-            TaskbarTrayIcon?.ShowBalloonTip(title, message, balloon);
+            if (TaskbarTrayIcon != null) TaskbarTrayIcon.ShowBalloonTip(title, message, balloon);
         }
 
         public void ShowBalloonTip(UIElement rootModel, PopupAnimation animation, int timeout = 4000)
         {
-            TaskbarTrayIcon?.ShowCustomBalloon(rootModel, animation, timeout);
+            if (TaskbarTrayIcon != null) TaskbarTrayIcon.ShowCustomBalloon(rootModel, animation, timeout);
         }
 
 
@@ -136,13 +168,14 @@ namespace FreePIE.GUI.Views.Main
 
         public void CloseBalloon()
         {
-            TaskbarTrayIcon?.CloseBalloon();
+            if (TaskbarTrayIcon != null) TaskbarTrayIcon.CloseBalloon();
         }
+
         #endregion
 
         public void Dispose()
         {
-            TaskbarTrayIcon?.Dispose();
+            if (TaskbarTrayIcon != null) TaskbarTrayIcon.Dispose();
         }
 
         /// <summary>
@@ -151,15 +184,37 @@ namespace FreePIE.GUI.Views.Main
         /// <param name="message"></param>
         public void Handle(TrayNotificationEvent message)
         {
-            TaskbarTrayIcon?.ShowBalloonTip(message.Title, message.message, BalloonIcon.Info);
+            if (TaskbarTrayIcon != null)
+                TaskbarTrayIcon.ShowBalloonTip(message.Title, message.message, BalloonIcon.Info);
         }
 
         public void Handle(TrayEvent message)
         {
             //prevent main window from showing automatically
-            StartInTray = true;
+            startInTray = true;
         }
 
-        #endregion
+        public void Handle(ScriptStateChangedEvent message)
+        {
+            LastScriptEvent = message;
+        }
+
+        public void Handle(StartedEvent message)
+        {
+            if (!startInTray)
+                ShowWindow();
+        }
+
+        public void Handle(ExitingEvent message)
+        {
+            Application.Current.Shutdown();
+        }
+
+        public void Handle(ScriptErrorEvent message)
+        {
+            BalloonIcon ico = message.Level == ErrorLevel.Warning ? BalloonIcon.Warning : BalloonIcon.Error;
+            if (TaskbarTrayIcon != null && shellViewModel.WindowState == WindowState.Minimized)
+                TaskbarTrayIcon.ShowBalloonTip("Script Error", message.Description, ico);
+        }
     }
 }
