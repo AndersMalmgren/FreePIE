@@ -32,7 +32,11 @@ namespace FreePIE.Core.Plugins
                 return new JoystickGlobal(device);
             });
             
-            return new GlobalIndexer<JoystickGlobal, int, string>(index => creator(diDevices[index]), index => creator(diDevices.Single(di => di.InstanceName == index)));
+            return new GlobalIndexer<JoystickGlobal, int, string>(intIndex => creator(diDevices[intIndex]),(strIndex, idx) =>
+            {
+                    var d = diDevices.Where(di => di.InstanceName == strIndex).ToArray();
+                    return d.Length > 0 && d.Length > idx ? creator(d[idx]) : null;
+            });
         }
 
         public override void Stop()
