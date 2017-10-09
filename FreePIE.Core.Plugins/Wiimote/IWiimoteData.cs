@@ -14,9 +14,11 @@ namespace FreePIE.Core.Plugins.Wiimote
         EulerAngles MotionPlusEulerAngles { get; }
         Nunchuck Nunchuck { get; }
         ClassicController ClassicController { get; }
+        Guitar Guitar { get; }
         bool IsDataValid(WiimoteDataValid valid);
         bool IsNunchuckButtonPressed(NunchuckButtons nunchuckButtons);
         bool IsClassicControllerButtonPressed(ClassicControllerButtons classicControllerButtons);
+        bool IsGuitarButtonPressed(GuitarButtons guitarButtons);
     }
 
     public class Gyro

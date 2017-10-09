@@ -43,6 +43,21 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
     }
 
+    public class GuitarButtonState
+    {
+        private IWiimoteData data;
+
+        public GuitarButtonState(IWiimoteData data)
+        {
+            this.data = data;
+        }
+
+        public bool button_down(GuitarButtons b)
+        {
+            return data.IsGuitarButtonPressed(b);
+        }
+    }
+
     public class ClassicControllerButtonState
     {
         private IWiimoteData data;

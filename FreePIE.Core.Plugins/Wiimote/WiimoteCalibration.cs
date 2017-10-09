@@ -21,6 +21,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly TimeSeries accelerationMagnitudes;
         private readonly TimeSeries nunchuckAccelerationMagnitudes;
         private readonly TimeSeries nunchuckStick;
+        private readonly TimeSeries guitarStick;
+        private readonly TimeSeries guitarWhammy;
         private readonly TimeSeries classicControllerRightStick;
         private readonly TimeSeries classicControllerLeftStick;
         private readonly TimeSeries classicControllerRightTrigger;
@@ -37,6 +39,8 @@ namespace FreePIE.Core.Plugins.Wiimote
             classicControllerLeftStick = new TimeSeries(256);
             classicControllerRightTrigger = new TimeSeries(256);
             classicControllerLeftTrigger = new TimeSeries(256);
+            guitarStick = new TimeSeries(256);
+            guitarWhammy = new TimeSeries(256);
         }
 
         private double EuclideanDistance(ushort a, ushort b, ushort c)
@@ -134,6 +138,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         private LinearCalibration Acceleration { get; set; }
         private TwoPointCalibration NunchuckStick { get; set; }
         private LinearCalibration NunchuckAcceleration { set; get; }
+        private TwoPointCalibration GuitarStick { get; set; }
+        private LinearCalibration GuitarWhammy { set; get; }
         private TwoPointCalibration ClassicControllerRightStick { get; set; }
         private TwoPointCalibration ClassicControllerLeftStick { get; set; }
         private LinearCalibration ClassicControllerRightTrigger { get; set; }
@@ -209,6 +215,24 @@ namespace FreePIE.Core.Plugins.Wiimote
             NunchuckAcceleration = new LinearCalibration(9.81 / gravity, offset);
         }
 
+        public AnalogTrigger NormalizeGuitarWhammy(DateTime measured, byte whammy)
+        {
+            guitarWhammy.Add(measured, whammy);
+
+            if (IsStickStationary(guitarWhammy) && !GuitarWhammyCalibrated)
+                TakeGuitarWhammyCalibrationSnapshot(whammy);
+
+            return GuitarWhammyCalibrated ? new AnalogTrigger(TransformLinear(GuitarWhammy, whammy)) : new AnalogTrigger(0);
+        }
+        public AnalogStick NormalizeGuitarStick(DateTime measured, byte stickX, byte stickY)
+        {
+            guitarStick.Add(measured, EuclideanDistance(stickX, stickY));
+
+            if (IsStickStationary(guitarStick) && !GuitarStickCalibrated)
+                TakeGuitarStickCalibrationSnapshot(stickX, stickY);
+
+            return GuitarStickCalibrated ? new AnalogStick(TransformLinear(GuitarStick.X, stickX), TransformLinear(GuitarStick.Y, stickY)) : new AnalogStick(0, 0);
+        }
         public AnalogStick NormalizeClassicControllerRightStick(DateTime measured, byte stickX, byte stickY)
         {
             classicControllerRightStick.Add(measured, EuclideanDistance(stickX, stickY));
@@ -308,6 +332,22 @@ namespace FreePIE.Core.Plugins.Wiimote
             get { return ClassicControllerLeftTrigger != null; }
         }
 
+        private bool GuitarStickCalibrated
+        {
+            get { return GuitarStick != null; }
+        }
+        private bool GuitarWhammyCalibrated
+        {
+            get { return GuitarWhammy != null; }
+        }
+        private void TakeGuitarStickCalibrationSnapshot(byte stickX, byte stickY)
+        {
+            GuitarStick = new TwoPointCalibration(new LinearCalibration(1, stickX), new LinearCalibration(1, stickY));
+        }
+        private void TakeGuitarWhammyCalibrationSnapshot(byte x)
+        {
+            GuitarWhammy = new LinearCalibration(1, x);
+        }
         private void TakeNunchuckStickCalibrationSnapshot(byte stickX, byte stickY)
         {
             NunchuckStick = new TwoPointCalibration(new LinearCalibration(1, stickX), new LinearCalibration(1, stickY));

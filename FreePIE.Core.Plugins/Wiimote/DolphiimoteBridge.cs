@@ -97,7 +97,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             dll.Update();
 
             if (occuredException != null)
-                throw occuredException;
+                throw new Exception(occuredException.Message, occuredException);
 
             foreach(var deferredEnable in deferredEnables.ToList())
             {

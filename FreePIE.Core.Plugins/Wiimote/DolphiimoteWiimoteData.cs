@@ -22,6 +22,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public Nunchuck Nunchuck { get; private set; }
         public ClassicController ClassicController { get; private set; }
+        public Guitar Guitar { get; private set; }
 
         public CalibratedValue<Acceleration> Acceleration { get; private set; }
 
@@ -48,6 +49,14 @@ namespace FreePIE.Core.Plugins.Wiimote
                 RightTrigger = new AnalogTrigger(0),
                 LeftTrigger = new AnalogTrigger(0)
             };
+
+            Guitar = new Guitar
+            {
+                Stick = new AnalogStick(0, 0),
+                TapBar = new TapBar(0x0F),
+                Whammy = new AnalogTrigger(0),
+                IsGH3 = false
+            };
         }
 
         public bool IsButtonPressed(WiimoteButtons b)
@@ -72,6 +81,11 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             UInt16 value = (UInt16)classicControllerButtons;
             return (data.classic_controller.buttons & value) == value;
+        }
+        public bool IsGuitarButtonPressed(GuitarButtons guitarButtons)
+        {
+            UInt16 value = (UInt16)guitarButtons;
+            return (data.guitar.buttons & value) == value;
         }
 
         private CalibratedValue<Gyro> CalculateMotionPlus(DolphiimoteMotionplus motionplus)
@@ -126,6 +140,19 @@ namespace FreePIE.Core.Plugins.Wiimote
                                                                 rawData.classic_controller.right_trigger),
                     LeftTrigger = calibration.NormalizeClassicControllerLeftTrigger(DateTime.Now,
                                                                 rawData.classic_controller.left_trigger),
+                };
+            }
+            if (IsDataValid(WiimoteDataValid.Guitar))
+            {
+                Guitar = new Guitar
+                {
+                    Stick = calibration.NormalizeGuitarStick(DateTime.Now,
+                                                               rawData.guitar.stick_x,
+                                                               rawData.guitar.stick_y),
+                    Whammy = calibration.NormalizeGuitarWhammy(DateTime.Now,
+                                                               rawData.guitar.whammy_bar),
+                    IsGH3 = rawData.guitar.is_gh3 == 1,
+                    TapBar = new TapBar(rawData.guitar.tap_bar),
                 };
             }
         }

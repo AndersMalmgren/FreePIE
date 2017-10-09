@@ -34,6 +34,21 @@ namespace FreePIE.Core.Plugins.Wiimote
         public NunchuckButtonState buttons { get; private set; }
     }
 
+    public class GuitarGlobal : Subscribable
+    {
+        private IWiimoteData data;
+
+        public GuitarGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
+        {
+            this.data = data;
+            this.buttons = new GuitarButtonState(data);
+        }
+        public GuitarButtonState buttons { get; private set; }
+        public AnalogStick stick { get { return data.Guitar.Stick; } }
+        public AnalogTrigger whammy { get { return data.Guitar.Whammy; } }
+        public bool IsGH3 { get { return data.Guitar.IsGH3; } }
+    }
+
     public class ClassicControllerGlobal : Subscribable
     {
         private IWiimoteData data;

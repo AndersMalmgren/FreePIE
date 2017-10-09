@@ -29,6 +29,19 @@ namespace FreePIE.Core.Plugins
     }
 
     [GlobalEnum]
+    public enum GuitarButtons : ushort
+    {
+        StrumDown = 0x4000,
+        StrumUp = 0x0001,
+        Green = 0x0010,
+        Red = 0x0040,
+        Yellow = 0x0008,
+        Blue = 0x0020,
+        Orange = 0x0080,
+        Plus = 0x0400,
+        Minus = 0x1000
+    }
+    [GlobalEnum]
     public enum ClassicControllerButtons : ushort
     {
         DPadLeft = 0x0002,
@@ -62,6 +75,7 @@ namespace FreePIE.Core.Plugins
         Acceleration = 0x0002,
         MotionPlus = 0x0004, 
         Nunchuck = 0x0008,
+        Guitar = 0x0010,
         ClassicController = 0x0001
     }
 
@@ -207,6 +221,7 @@ namespace FreePIE.Core.Plugins
         private readonly Action motionPlusTrigger;
         private readonly Action nunchuckTrigger;
         private readonly Action classicControllerTrigger;
+        private readonly Action guitarTrigger;
 
         private readonly Action accelerationCalibratedTrigger;
         private readonly Action motionPlusCalibratedTrigger;
@@ -221,6 +236,7 @@ namespace FreePIE.Core.Plugins
             motionplus = new MotionPlusGlobal(data, out motionPlusTrigger, out motionPlusCalibratedTrigger);
             nunchuck = new NunchuckGlobal(data, out nunchuckTrigger);
             classic_controller = new ClassicControllerGlobal(data, out classicControllerTrigger);
+            guitar = new GuitarGlobal(data, out guitarTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
         }
@@ -245,6 +261,9 @@ namespace FreePIE.Core.Plugins
 
             if (data.IsDataValid(WiimoteDataValid.ClassicController))
                 classicControllerTrigger();
+
+            if (data.IsDataValid(WiimoteDataValid.Guitar))
+                guitarTrigger();
 
             if (data.Acceleration.DidCalibrate)
                 accelerationCalibratedTrigger();
@@ -277,6 +296,12 @@ namespace FreePIE.Core.Plugins
         }
 
         public ClassicControllerGlobal classic_controller
+        {
+            get;
+            private set;
+        }
+
+        public GuitarGlobal guitar
         {
             get;
             private set;
