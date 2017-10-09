@@ -80,6 +80,9 @@
     <Compile Include="AhrsImuPlugin.cs" />
     <Compile Include="AndroidPlugin.cs" />
     <Compile Include="ApplePlugin.cs" />
+    <Compile Include="Wiimote\Guitar.cs" />
+    <Compile Include="Wiimote\ClassicController.cs" />
+    <Compile Include="WindowPlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="FreePieIOPlugin.cs" />
     <Compile Include="Globals\GlobalIndexer.cs" />
@@ -105,7 +108,6 @@
     <Compile Include="SpeechPlugin.cs" />
     <Compile Include="VJoyPlugin.cs" />
     <Compile Include="Wiimote\CircularBuffer.cs" />
-    <Compile Include="Wiimote\ClassicController.cs" />
     <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
     <Compile Include="Wiimote\IMotionPlusFuser.cs" />
     <Compile Include="Wiimote\Integrator.cs" />
