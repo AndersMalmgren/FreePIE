@@ -10,7 +10,6 @@ namespace FreePIE.Core.Plugins.Wiimote
     public class DolphiimoteBridge : IWiimoteBridge
     {
         private readonly DolphiimoteDll dll;
-        private readonly WiimoteCalibration calibration;
         private readonly Dictionary<uint, DolphiimoteWiimoteData> data;
         private readonly string logFile;
         private readonly Func<IMotionPlusFuser> fuserFactory;
