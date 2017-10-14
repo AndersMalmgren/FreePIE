@@ -29,7 +29,7 @@ namespace FreePIE.Core.Plugins
 
         private Stopwatch timer;
         private string activeWindow;
-        public int PollingInterval { private get; set; } = 100;
+        public int PollingInterval { get; set; } = 100;
 
 
         public override Action Start()
@@ -100,12 +100,12 @@ namespace FreePIE.Core.Plugins
             return plugin.IsActive(processName);
         }
 
-        public bool activate(string processName)
+        public bool setActive(string processName)
         {
             return plugin.Activate(processName);
         }
 
-        public string active
+        public string getActive
         {
             get { return plugin.GetActiveWindowProcessName(); }
         }
@@ -113,6 +113,7 @@ namespace FreePIE.Core.Plugins
         public int pollingInterval
         {
             set { plugin.PollingInterval = value; }
+            get { return plugin.PollingInterval; }
         }
     }
 
