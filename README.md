@@ -13,6 +13,12 @@ FreePIE is very similar to the popular utility GlovePIE, but encourages open dev
 
 FreePIE is licensed under GPLv2  
 
+Changelog 1.10.666.0
+* Added support for the Wii Classic Controller
+* Added support for the Wii guitar hero controllers
+* Added some interaction with the foreground window
+* Fixed Wiimote calibration for multiple wiimotes
+
 Changelog 1.9.629.0
 * Added possibility to index joysticks on device name
 * Updated Oculus VR (SDK 0.8)
