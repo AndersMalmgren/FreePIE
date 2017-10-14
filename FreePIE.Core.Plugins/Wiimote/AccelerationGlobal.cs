@@ -45,6 +45,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
         public GuitarButtonState buttons { get; private set; }
         public AnalogStick stick { get { return data.Guitar.Stick; } }
+        public TapBar tapbar { get { return data.Guitar.TapBar; } }
         public AnalogTrigger whammy { get { return data.Guitar.Whammy; } }
         public bool IsGH3 { get { return data.Guitar.IsGH3; } }
     }
