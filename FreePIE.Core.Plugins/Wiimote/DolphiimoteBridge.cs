@@ -24,7 +24,6 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.logFile = logFile;
             this.fuserFactory = fuserFactory;
 
-            calibration = new WiimoteCalibration();
             dll = new DolphiimoteDll(Path.Combine(Environment.CurrentDirectory, "DolphiiMote.dll"));
 
             deferredEnables = new Queue<KeyValuePair<byte, WiimoteCapabilities>>();
@@ -33,7 +32,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             data = new Dictionary<uint, DolphiimoteWiimoteData>();
 
             for (byte i = 0; i < 4; i++)
-                data[i] = new DolphiimoteWiimoteData(i, calibration, fuserFactory());
+                data[i] = new DolphiimoteWiimoteData(i, new WiimoteCalibration(), fuserFactory());
         }
 
         public void Init()
