@@ -80,6 +80,11 @@
     <Compile Include="AhrsImuPlugin.cs" />
     <Compile Include="AndroidPlugin.cs" />
     <Compile Include="ApplePlugin.cs" />
+<<<<<<< HEAD
+    <Compile Include="Window.cs" />
+=======
+    <Compile Include="WindowPlugin.cs" />
+>>>>>>> refs/remotes/AndersMalmgren/WindowPlugin
     <Compile Include="ComDevicePlugin.cs" />
     <Compile Include="FreePieIOPlugin.cs" />
     <Compile Include="Globals\GlobalIndexer.cs" />
