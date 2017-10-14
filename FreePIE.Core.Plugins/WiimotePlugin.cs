@@ -28,6 +28,39 @@ namespace FreePIE.Core.Plugins
         Z = 0x01, C = 0x02
     }
 
+    [GlobalEnum]
+    public enum GuitarButtons : ushort
+    {
+        StrumDown = 0x4000,
+        StrumUp = 0x0001,
+        Green = 0x0010,
+        Red = 0x0040,
+        Yellow = 0x0008,
+        Blue = 0x0020,
+        Orange = 0x0080,
+        Plus = 0x0400,
+        Minus = 0x1000
+    }
+    [GlobalEnum]
+    public enum ClassicControllerButtons : ushort
+    {
+        DPadLeft = 0x0002,
+        DPadRight = 0x8000,
+        DPadDown = 0x4000,
+        DPadUp = 0x0001,
+        A = 0x0010,
+        B = 0x0040,
+        X = 0x0008,
+        Y = 0x0020,
+        TriggerLeft = 0x2000,
+        TriggerRight = 0x0200,
+        ZLeft = 0x0080,
+        ZRight = 0x0004,
+        Plus = 0x0400,
+        Minus = 0x1000,
+        Home = 0x0800
+    }
+
     [GlobalEnum, Flags]
     public enum WiimoteCapabilities : ushort
     {
@@ -41,7 +74,9 @@ namespace FreePIE.Core.Plugins
     {
         Acceleration = 0x0002,
         MotionPlus = 0x0004, 
-        Nunchuck = 0x0008
+        Nunchuck = 0x0008,
+        Guitar = 0x0010,
+        ClassicController = 0x0001
     }
 
     public enum WiimoteExtensions
@@ -185,6 +220,8 @@ namespace FreePIE.Core.Plugins
         private readonly Action buttonTrigger;
         private readonly Action motionPlusTrigger;
         private readonly Action nunchuckTrigger;
+        private readonly Action classicControllerTrigger;
+        private readonly Action guitarTrigger;
 
         private readonly Action accelerationCalibratedTrigger;
         private readonly Action motionPlusCalibratedTrigger;
@@ -198,6 +235,8 @@ namespace FreePIE.Core.Plugins
             buttons = new WiimoteButtonState(data, out buttonTrigger);
             motionplus = new MotionPlusGlobal(data, out motionPlusTrigger, out motionPlusCalibratedTrigger);
             nunchuck = new NunchuckGlobal(data, out nunchuckTrigger);
+            classic_controller = new ClassicControllerGlobal(data, out classicControllerTrigger);
+            guitar = new GuitarGlobal(data, out guitarTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
         }
@@ -219,6 +258,12 @@ namespace FreePIE.Core.Plugins
 
             if (data.IsDataValid(WiimoteDataValid.Nunchuck))
                 nunchuckTrigger();
+
+            if (data.IsDataValid(WiimoteDataValid.ClassicController))
+                classicControllerTrigger();
+
+            if (data.IsDataValid(WiimoteDataValid.Guitar))
+                guitarTrigger();
 
             if (data.Acceleration.DidCalibrate)
                 accelerationCalibratedTrigger();
@@ -245,6 +290,18 @@ namespace FreePIE.Core.Plugins
         }
 
         public NunchuckGlobal nunchuck
+        {
+            get;
+            private set;
+        }
+
+        public ClassicControllerGlobal classic_controller
+        {
+            get;
+            private set;
+        }
+
+        public GuitarGlobal guitar
         {
             get;
             private set;
