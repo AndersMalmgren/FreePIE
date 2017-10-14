@@ -81,8 +81,10 @@ namespace FreePIE.GUI.Views.Main
 
             if (!string.IsNullOrEmpty(filePath))
                 document.LoadFileContent(fileSystem.ReadAllText(filePath));
-
+            
             eventAggregator.Publish(new ScriptDocumentAddedEvent(document));
+            
+            //ActiveDocument = document;
         }
 
         public IEnumerable<IResult> SaveScript()
@@ -158,7 +160,7 @@ namespace FreePIE.GUI.Views.Main
         {
             NotifyOfPropertyChange(() => CanRunScript);
             NotifyOfPropertyChange(() => CanStopScript);
-            eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning));
+            eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument.Filename));
         }
 
         public bool CanStopScript
@@ -209,7 +211,7 @@ namespace FreePIE.GUI.Views.Main
 
         public IEnumerable<IResult> Close()
         {
-            yield return resultFactory.Close();
+            yield return resultFactory.CloseApp();
         }
 
         public IEnumerable<IResult> ShowCurveSettingsMenu()

@@ -85,6 +85,7 @@
     <Compile Include="Model\Choices.cs" />
     <Compile Include="Model\Events\CurveChangedNameEvent.cs" />
     <Compile Include="Model\Events\ScriptErrorEvent.cs" />
+    <Compile Include="Model\Events\TrayNotificationEvent.cs" />
     <Compile Include="Model\Events\WatchEvent.cs" />
     <Compile Include="Model\PluginProperty.cs" />
     <Compile Include="Model\PluginSetting.cs" />
