@@ -80,40 +80,29 @@
     <Compile Include="AhrsImuPlugin.cs" />
     <Compile Include="AndroidPlugin.cs" />
     <Compile Include="ApplePlugin.cs" />
-<<<<<<< HEAD
-    <Compile Include="Window.cs" />
-=======
-    <Compile Include="WindowPlugin.cs" />
->>>>>>> refs/remotes/AndersMalmgren/WindowPlugin
     <Compile Include="ComDevicePlugin.cs" />
-    <Compile Include="FreePieIOPlugin.cs" />
-    <Compile Include="Globals\GlobalIndexer.cs" />
-    <Compile Include="HydraPlugin.cs" />
     <Compile Include="FreeImuPlugin.cs" />
+    <Compile Include="FreePieIOPlugin.cs" />
     <Compile Include="FreeSpacePlugin.cs" />
     <Compile Include="FreeTrackPlugin.cs" />
+    <Compile Include="Globals\GlobalIndexer.cs" />
+    <Compile Include="HydraPlugin.cs" />
     <Compile Include="Hydra\EmulatedData.cs" />
     <Compile Include="Hydra\HydraSpoof.cs" />
     <Compile Include="Hydra\Sixense.cs" />
     <Compile Include="JoystickPlugin.cs" />
     <Compile Include="KeyboardPlugin.cs" />
     <Compile Include="MemoryMapping\ArgumentExtension.cs" />
+    <Compile Include="MemoryMapping\DisconnectedFreepieData.cs" />
     <Compile Include="MemoryMapping\MappedMemory.cs" />
+    <Compile Include="MemoryMapping\MarshalledMemory.cs" />
+    <Compile Include="MemoryMapping\MarshalledString.cs" />
     <Compile Include="MemoryMapping\SharedMemoryWorker.cs" />
     <Compile Include="MemoryMapping\TrackIRWorker.cs" />
     <Compile Include="MemoryMapping\WorkerProcess.cs" />
     <Compile Include="MidiPlugin.cs" />
     <Compile Include="Midi\MidiStatus.cs" />
     <Compile Include="Midi\DataGlobal.cs" />
-    <Compile Include="TobiiEyeXPlugin.cs" />
-    <Compile Include="Wiimote\Calibratable.cs" />
-    <Compile Include="SpeechPlugin.cs" />
-    <Compile Include="VJoyPlugin.cs" />
-    <Compile Include="Wiimote\CircularBuffer.cs" />
-    <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
-    <Compile Include="Wiimote\IMotionPlusFuser.cs" />
-    <Compile Include="Wiimote\Integrator.cs" />
-    <Compile Include="Wiimote\MotionPlusGlobal.cs" />
     <Compile Include="MouseKeyIO.cs" />
     <Compile Include="MousePlugin.cs" />
     <Compile Include="OculusPlugin.cs" />
@@ -124,42 +113,51 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SensorFusion\MahonyAHRS.cs" />
     <Compile Include="SensorFusion\Quaternion.cs" />
+    <Compile Include="SpeechPlugin.cs" />
     <Compile Include="Strategies\GetPressedStrategy.cs" />
     <Compile Include="Strategies\SetPressedStrategy.cs" />
-    <Compile Include="Wiimote\Nunchuck.cs" />
-    <Compile Include="Wiimote\SamplePeriodCounter.cs" />
-    <Compile Include="Wiimote\SequenceExtensions.cs" />
-    <Compile Include="Wiimote\TimedValue.cs" />
-    <Compile Include="Wiimote\TimeSeries.cs" />
-    <Compile Include="Wiimote\WiimoteButton.cs" />
-    <Compile Include="Wiimote\Subscribable.cs" />
+    <Compile Include="TobiiEyeXPlugin.cs" />
     <Compile Include="TrackIRPlugin.cs" />
-    <Compile Include="MemoryMapping\DisconnectedFreepieData.cs" />
     <Compile Include="TrackIR\DllRegistrar.cs" />
     <Compile Include="TrackIR\HeadPoseData.cs" />
-    <Compile Include="MemoryMapping\MarshalledMemory.cs" />
-    <Compile Include="MemoryMapping\MarshalledString.cs" />
     <Compile Include="TrackIR\NativeDll.cs" />
     <Compile Include="TrackIR\NPClientSpoof.cs" />
     <Compile Include="TrackIR\TrackIRDll.cs" />
     <Compile Include="TrackIR\TrackIRHeadposeData.cs" />
+    <Compile Include="VJoyPlugin.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
     <Compile Include="Wiimote\AccelerationGlobal.cs" />
+    <Compile Include="Wiimote\Calibratable.cs" />
+    <Compile Include="Wiimote\CircularBuffer.cs" />
+    <Compile Include="Wiimote\ClassicController.cs" />
     <Compile Include="Wiimote\DolphiimoteBridge.cs" />
     <Compile Include="Wiimote\DolphiimoteDLL.cs" />
+    <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
+    <Compile Include="Wiimote\Guitar.cs" />
+    <Compile Include="Wiimote\IMotionPlusFuser.cs" />
+    <Compile Include="Wiimote\Integrator.cs" />
     <Compile Include="Wiimote\IWiimoteBridge.cs" />
     <Compile Include="Wiimote\IWiimoteData.cs" />
+    <Compile Include="Wiimote\MotionPlusGlobal.cs" />
+    <Compile Include="Wiimote\Nunchuck.cs" />
+    <Compile Include="Wiimote\SamplePeriodCounter.cs" />
+    <Compile Include="Wiimote\SequenceExtensions.cs" />
+    <Compile Include="Wiimote\Subscribable.cs" />
+    <Compile Include="Wiimote\TimedValue.cs" />
+    <Compile Include="Wiimote\TimeSeries.cs" />
+    <Compile Include="Wiimote\WiimoteButton.cs" />
     <Compile Include="Wiimote\WiimoteCalibration.cs" />
+    <Compile Include="WindowPlugin.cs" />
     <Compile Include="XBox360Plugin.cs" />
-    <Compile Include="ZeissPlugin.cs" />
-    <Compile Include="Zeiss\Api.cs" />
-    <Compile Include="Zeiss\Structs.cs" />
     <Compile Include="Yei3SpacePlugin.cs" />
     <Compile Include="Yei3Space\Api.cs" />
     <Compile Include="Yei3Space\Enums.cs" />
     <Compile Include="Yei3Space\TssComPort.cs" />
     <Compile Include="Yei3Space\TssStreamPacket.cs" />
+    <Compile Include="ZeissPlugin.cs" />
+    <Compile Include="Zeiss\Api.cs" />
+    <Compile Include="Zeiss\Structs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FreePIE.Core.Contracts\FreePIE.Core.Contracts.csproj">
@@ -177,7 +175,7 @@
     <None Include="Help\FreePIE.Core.Plugins.VJoyPlugin.rtf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

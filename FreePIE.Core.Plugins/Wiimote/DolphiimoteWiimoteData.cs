@@ -21,6 +21,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
 
         public Nunchuck Nunchuck { get; private set; }
+        public ClassicController ClassicController { get; private set; }
+        public Guitar Guitar { get; private set; }
 
         public CalibratedValue<Acceleration> Acceleration { get; private set; }
 
@@ -37,7 +39,23 @@ namespace FreePIE.Core.Plugins.Wiimote
             Nunchuck = new Nunchuck
             {
                 Acceleration = new Acceleration(0, 0, 0),
-                Stick = new NunchuckStick(0, 0)
+                Stick = new AnalogStick(0, 0)
+            };
+
+            ClassicController = new ClassicController
+            {
+                LeftStick = new AnalogStick(0,0),
+                RightStick = new AnalogStick(0,0),
+                RightTrigger = new AnalogTrigger(0),
+                LeftTrigger = new AnalogTrigger(0)
+            };
+
+            Guitar = new Guitar
+            {
+                Stick = new AnalogStick(0, 0),
+                TapBar = new TapBar(0x0F),
+                Whammy = new AnalogTrigger(0),
+                IsGH3 = false
             };
         }
 
@@ -57,6 +75,17 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             UInt16 value = (UInt16)nunchuckButtons;
             return (data.nunchuck.buttons & value) == value;
+        }
+
+        public bool IsClassicControllerButtonPressed(ClassicControllerButtons classicControllerButtons)
+        {
+            UInt16 value = (UInt16)classicControllerButtons;
+            return (data.classic_controller.buttons & value) == value;
+        }
+        public bool IsGuitarButtonPressed(GuitarButtons guitarButtons)
+        {
+            UInt16 value = (UInt16)guitarButtons;
+            return (data.guitar.buttons & value) == value;
         }
 
         private CalibratedValue<Gyro> CalculateMotionPlus(DolphiimoteMotionplus motionplus)
@@ -96,6 +125,35 @@ namespace FreePIE.Core.Plugins.Wiimote
                                                                                  rawData.nunchuck.y,
                                                                                  rawData.nunchuck.z)
                     };
+            }
+            if (IsDataValid(WiimoteDataValid.ClassicController))
+            {
+                ClassicController = new ClassicController
+                {
+                    RightStick = calibration.NormalizeClassicControllerRightStick(DateTime.Now,
+                                                               rawData.classic_controller.right_stick_x,
+                                                               rawData.classic_controller.right_stick_y),
+                    LeftStick = calibration.NormalizeClassicControllerLeftStick(DateTime.Now,
+                                                               rawData.classic_controller.left_stick_x,
+                                                               rawData.classic_controller.left_stick_y),
+                    RightTrigger = calibration.NormalizeClassicControllerRightTrigger(DateTime.Now,
+                                                                rawData.classic_controller.right_trigger),
+                    LeftTrigger = calibration.NormalizeClassicControllerLeftTrigger(DateTime.Now,
+                                                                rawData.classic_controller.left_trigger),
+                };
+            }
+            if (IsDataValid(WiimoteDataValid.Guitar))
+            {
+                Guitar = new Guitar
+                {
+                    Stick = calibration.NormalizeGuitarStick(DateTime.Now,
+                                                               rawData.guitar.stick_x,
+                                                               rawData.guitar.stick_y),
+                    Whammy = calibration.NormalizeGuitarWhammy(DateTime.Now,
+                                                               rawData.guitar.whammy_bar),
+                    IsGH3 = rawData.guitar.is_gh3 == 1,
+                    TapBar = new TapBar(rawData.guitar.tap_bar),
+                };
             }
         }
     }

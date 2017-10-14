@@ -264,7 +264,7 @@ namespace FreePIE.Core.ScriptEngine.Python
                 }
                 finally
                 {
-                    eventAggregator.Publish(new ScriptErrorEvent(ErrorLevel.Exception, e.Message, lineNumber));
+                    eventAggregator.Publish(new ScriptErrorEvent(ErrorLevel.Exception, e.ToString(), lineNumber));
                 }
             });
         }

@@ -11,6 +11,35 @@ namespace FreePIE.Core.Plugins.Wiimote
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct DolphiimoteClassicController
+    {
+        public byte left_stick_x;
+        public byte left_stick_y;
+
+        public byte right_stick_x;
+        public byte right_stick_y;
+
+        public byte left_trigger;
+        public byte right_trigger;
+
+        public UInt16 buttons;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DolphiimoteGuitar
+    {
+        public byte is_gh3;
+
+        public byte stick_x;
+        public byte stick_y;
+
+        public byte tap_bar;
+        public byte whammy_bar;
+
+        public UInt16 buttons;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct DolphiimoteNunchuck
     {
         public byte stick_x;
@@ -41,6 +70,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         public DolphiimoteAcceleration acceleration;
         public DolphiimoteMotionplus motionplus;
         public DolphiimoteNunchuck nunchuck;
+        public DolphiimoteClassicController classic_controller;
+        public DolphiimoteGuitar guitar;
     }
 
     public class EulerAngles
@@ -102,8 +133,8 @@ namespace FreePIE.Core.Plugins.Wiimote
             if (Marshal.SizeOf(typeof(DolphiimoteCallbacks)) != 20)
                 throw new InvalidOperationException("DolphiimoteCallbacks wrong size.");
 
-            if (Marshal.SizeOf(typeof(DolphiimoteData)) != 32)
-                throw new InvalidOperationException("DolphiimoteData wrong size.");
+            if (Marshal.SizeOf(typeof(DolphiimoteData)) != 48)
+                throw new InvalidOperationException("DolphiimoteData wrong size. Expected: 40, got:"+ Marshal.SizeOf(typeof(DolphiimoteData)));
 
             if (Marshal.SizeOf(typeof(DolphiimoteCapabilities)) != 16)
                 throw new InvalidOperationException("DolphiimoteCapabilities wrong size.");
