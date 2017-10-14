@@ -29,6 +29,8 @@ namespace FreePIE.Core.Plugins
 
         private Stopwatch timer;
         private string activeWindow;
+        public int PollingInterval { private get; set; } = 100;
+
 
         public override Action Start()
         {
@@ -45,7 +47,7 @@ namespace FreePIE.Core.Plugins
 
         public override void DoBeforeNextExecute()
         {
-            if (timer.ElapsedMilliseconds > 100)
+            if (timer.ElapsedMilliseconds > PollingInterval)
             {
                 timer.Restart();
                 var lastActiveWindow = activeWindow;
@@ -106,6 +108,11 @@ namespace FreePIE.Core.Plugins
         public string active
         {
             get { return plugin.GetActiveWindowProcessName(); }
+        }
+
+        public int pollingInterval
+        {
+            set { plugin.PollingInterval = value; }
         }
     }
 
