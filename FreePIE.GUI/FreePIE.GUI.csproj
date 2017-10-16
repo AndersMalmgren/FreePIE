@@ -136,6 +136,7 @@
     <Compile Include="Events\ScriptDocumentAddedEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
     <Compile Include="Events\ScriptEvent.cs" />
+    <Compile Include="Events\WindowStateChangedEvent.cs" />
     <Compile Include="Events\ScriptStateChangedEvent.cs" />
     <Compile Include="Events\ScriptUpdatedEvent.cs" />
     <Compile Include="Events\StartedEvent.cs" />

@@ -66,7 +66,7 @@ namespace FreePIE.GUI.Views.Main
                 activeDocument = value;
                 NotifyOfPropertyChange(() => CanQuickSaveScript);
                 NotifyOfPropertyChange(() => CanSaveScript);
-                NotifyOfPropertyChange(() => CanRunScript);
+                PublishScriptStateChange();
             }
         }
 
@@ -181,7 +181,10 @@ namespace FreePIE.GUI.Views.Main
         {
             NotifyOfPropertyChange(() => CanRunScript);
             NotifyOfPropertyChange(() => CanStopScript);
-            eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument.Filename));
+            if (activeDocument != null)
+                eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument.Filename));
+            else
+                eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, null));
         }
 
         public bool CanStopScript

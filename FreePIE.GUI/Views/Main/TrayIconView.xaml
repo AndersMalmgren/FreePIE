@@ -22,6 +22,7 @@
                 <MenuItem Header="Stop Script" cal:Message.Attach="StopScript" />
                 <Separator />
                 <MenuItem Header="Show Window" cal:Message.Attach="ShowWindow" />
+                <MenuItem Header="Hide Window" cal:Message.Attach="HideWindow" />
                 <MenuItem>
                     <MenuItem.Header>
                         <CheckBox Content="Minimize to Tray" IsChecked="{Binding Path=MinimizeToTray,Mode=TwoWay}"></CheckBox>

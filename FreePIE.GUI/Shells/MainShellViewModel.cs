@@ -167,6 +167,7 @@ namespace FreePIE.GUI.Shells
                 else
                     ShowInTaskBar = true;
                 NotifyOfPropertyChange(() => WindowState);
+                eventAggregator.Publish(new WindowStateChangedEvent(windowState, showInTaskBar));
             }
         }
 

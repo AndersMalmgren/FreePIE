@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Caliburn.Micro;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.Persistence;
@@ -21,7 +23,9 @@ namespace FreePIE.GUI.Views.Main
 
         Core.Common.Events.IHandle<TrayNotificationEvent>,
         Core.Common.Events.IHandle<TrayEvent>,
+        Core.Common.Events.IHandle<ActiveScriptDocumentChangedEvent>,
         Core.Common.Events.IHandle<ScriptStateChangedEvent>,
+        Core.Common.Events.IHandle<WindowStateChangedEvent>,
         Core.Common.Events.IHandle<StartedEvent>,
         Core.Common.Events.IHandle<ExitingEvent>,
         Core.Common.Events.IHandle<ScriptErrorEvent>,
@@ -33,10 +37,17 @@ namespace FreePIE.GUI.Views.Main
         private readonly IResultFactory resultFactory;
         private readonly MainShellViewModel shellViewModel;
         private ScriptStateChangedEvent lastScriptEvent;
+        private WindowStateChangedEvent lastWindowEvent = new WindowStateChangedEvent(WindowState.Minimized, true);
 
         private bool startInTray;
+        /*/
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+        //*/
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        
+
         public TrayIconViewModel(IResultFactory resultFactory,
                                 IEventAggregator eventAggregator,
                                 MainShellViewModel shellViewModel,
@@ -55,28 +66,72 @@ namespace FreePIE.GUI.Views.Main
             TaskbarTrayIcon = (TaskbarIcon)((ContentControl)source).Content;
         }
 
-        public bool CanShowWindow()
+        private PanelViewModel activeDocument;
+        private PanelViewModel ActiveDocument
         {
-            return shellViewModel.IsActive && shellViewModel.WindowState == WindowState.Minimized ;
+            get { return activeDocument; }
+            set
+            {
+                activeDocument = value;
+                NotifyOfPropertyChange(() => CanRunScript);
+                NotifyOfPropertyChange(() => CanStopScript);
+            }
         }
+
+        public bool CanShowWindow
+        {
+            get
+            {
+                return true;
+                /*/
+                return lastWindowEvent.WindowState == WindowState.Minimized
+                    || lastWindowEvent.ShowInTaskBar == false
+                    || GetForegroundWindow() != Process.GetCurrentProcess().MainWindowHandle;
+                //*/
+            }
+        }
+
+        public bool CanHideWindow
+        {
+            get
+            {
+                return lastWindowEvent.ShowInTaskBar == true;
+            }
+        }
+
         public void ShowWindow()
         {
-            shellViewModel.WindowState = WindowState.Normal;
+            if (lastWindowEvent.WindowState != WindowState.Maximized)
+                shellViewModel.WindowState = WindowState.Normal;
+            SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
         }
 
-        public bool CanStopScript()
+        public void HideWindow()
         {
-            if (LastScriptEvent == null)
-                return false;
-            return LastScriptEvent.Running;
+            shellViewModel.WindowState = WindowState.Minimized;
         }
 
-        public bool CanRunScript()
+        public bool CanStopScript
         {
-            if (LastScriptEvent == null)
-                return true;
-            return !LastScriptEvent.Running;
+            get
+            {
+                if (lastScriptEvent == null)
+                    return false;
+                return lastScriptEvent.Running;
+            }
         }
+
+        public bool CanRunScript
+        {
+            get
+            {
+                if (lastScriptEvent == null || activeDocument == null)
+                    return false;
+                return !lastScriptEvent.Running 
+                    && activeDocument != null && !string.IsNullOrEmpty(activeDocument.FileContent);
+            }
+        }
+
         public void RunScript()
         {
             shellViewModel.Menu.RunScript();
@@ -86,10 +141,12 @@ namespace FreePIE.GUI.Views.Main
         {
             shellViewModel.Menu.StopScript();
         }
+
         public IEnumerable<IResult> Close()
         {
             yield return resultFactory.CloseApp();
         }
+
         public string ToolTipText
         {
             get
@@ -106,26 +163,31 @@ namespace FreePIE.GUI.Views.Main
             }
         }
 
-        /// <summary>
-        /// If true application starts minimized in the taskbar
-        /// </summary>
         public ScriptStateChangedEvent LastScriptEvent
         {
             get { return lastScriptEvent; }
             set
             {
-                if (lastScriptEvent == null)
-                {
-                    lastScriptEvent = value;
-                    NotifyOfPropertyChange(() => LastScriptEvent);
-                }
-                else if (lastScriptEvent.Running != value.Running)
-                {
-                    lastScriptEvent = value;
-                    NotifyOfPropertyChange(() => LastScriptEvent);
-                }
+                lastScriptEvent = value;
+                NotifyOfPropertyChange(() => CanRunScript);
+                NotifyOfPropertyChange(() => CanStopScript);
             }
         }
+
+        public WindowStateChangedEvent LastWindowEvent
+        {
+            get { return lastWindowEvent; }
+            set
+            {
+                lastWindowEvent = value;
+                NotifyOfPropertyChange(() => CanHideWindow);
+                NotifyOfPropertyChange(() => CanShowWindow);
+            }
+        }
+
+        /// <summary>
+        /// If true application starts minimized in the taskbar
+        /// </summary>
         public bool MinimizeToTray
         {
             get { return settingsManager.Settings.MinimizeToTray; }
@@ -194,9 +256,19 @@ namespace FreePIE.GUI.Views.Main
             startInTray = true;
         }
 
+        public void Handle(ActiveScriptDocumentChangedEvent message)
+        {
+            ActiveDocument = message.Document;
+        }
+
         public void Handle(ScriptStateChangedEvent message)
         {
             LastScriptEvent = message;
+        }
+
+        public void Handle(WindowStateChangedEvent message)
+        {
+            LastWindowEvent = message;
         }
 
         public void Handle(StartedEvent message)
