@@ -5,8 +5,6 @@ using System.Runtime.InteropServices;
 using Caliburn.Micro;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.Persistence;
-using FreePIE.GUI.Common.CommandLine;
-//using FreePIE.GUI.Common.TrayIcon;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Events.Command;
 using FreePIE.GUI.Result;
@@ -40,10 +38,7 @@ namespace FreePIE.GUI.Views.Main
         private WindowStateChangedEvent lastWindowEvent = new WindowStateChangedEvent(WindowState.Minimized, true);
 
         private bool startInTray;
-        /*/
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-        //*/
+
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
@@ -66,37 +61,15 @@ namespace FreePIE.GUI.Views.Main
             TaskbarTrayIcon = (TaskbarIcon)((ContentControl)source).Content;
         }
 
-        private PanelViewModel activeDocument;
-        private PanelViewModel ActiveDocument
-        {
-            get { return activeDocument; }
-            set
-            {
-                activeDocument = value;
-                NotifyOfPropertyChange(() => CanRunScript);
-                NotifyOfPropertyChange(() => CanStopScript);
-            }
-        }
-
         public bool CanShowWindow
         {
-            get
-            {
-                return true;
-                /*/
-                return lastWindowEvent.WindowState == WindowState.Minimized
-                    || lastWindowEvent.ShowInTaskBar == false
-                    || GetForegroundWindow() != Process.GetCurrentProcess().MainWindowHandle;
-                //*/
-            }
+            get { return true; }
         }
 
         public bool CanHideWindow
         {
-            get
-            {
-                return lastWindowEvent.ShowInTaskBar == true;
-            }
+            get { return lastWindowEvent.ShowInTaskBar == true; }
+            set { }
         }
 
         public void ShowWindow()
@@ -109,6 +82,24 @@ namespace FreePIE.GUI.Views.Main
         public void HideWindow()
         {
             shellViewModel.WindowState = WindowState.Minimized;
+            if (!settingsManager.Settings.MinimizeToTray)
+            {
+                shellViewModel.ShowInTaskBar = false;
+                CanHideWindow = false;
+            }
+        }
+
+        private PanelViewModel activeDocument;
+        private PanelViewModel ActiveDocument
+        {
+            get { return activeDocument; }
+            set
+            {
+                activeDocument = value;
+                NotifyOfPropertyChange(() => CanRunScript);
+                NotifyOfPropertyChange(() => CanStopScript);
+                NotifyOfPropertyChange(() => CanActionScript);
+            }
         }
 
         public bool CanStopScript
@@ -128,8 +119,13 @@ namespace FreePIE.GUI.Views.Main
                 if (lastScriptEvent == null || activeDocument == null)
                     return false;
                 return !lastScriptEvent.Running 
-                    && activeDocument != null && !string.IsNullOrEmpty(activeDocument.FileContent);
+                    && !string.IsNullOrEmpty(activeDocument.FileContent);
             }
+        }
+
+        public bool CanActionScript
+        {
+            get { return CanStopScript || CanRunScript; }
         }
 
         public void RunScript()
@@ -142,9 +138,35 @@ namespace FreePIE.GUI.Views.Main
             shellViewModel.Menu.StopScript();
         }
 
+        public void ActionScript()
+        {
+            if (CanStopScript)
+                StopScript();
+            else if (CanRunScript)
+                RunScript();
+            /*/
+            else
+                OpenScript();
+            //*/
+        }
+
+        /*/
+        public IEnumerable<IResult> OpenScript()
+        {
+            if (lastWindowEvent.WindowState != WindowState.Maximized)
+                shellViewModel.WindowState = WindowState.Normal;
+            SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
+            return shellViewModel.Menu.OpenScript();
+        }
+        //*/
+
         public IEnumerable<IResult> Close()
         {
+            /*/
+            return shellViewModel.Menu.Close();
+            /*/
             yield return resultFactory.CloseApp();
+            //*/
         }
 
         public string ToolTipText
@@ -171,6 +193,7 @@ namespace FreePIE.GUI.Views.Main
                 lastScriptEvent = value;
                 NotifyOfPropertyChange(() => CanRunScript);
                 NotifyOfPropertyChange(() => CanStopScript);
+                NotifyOfPropertyChange(() => CanActionScript);
             }
         }
 

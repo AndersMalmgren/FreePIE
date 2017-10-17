@@ -18,10 +18,24 @@
         <ResourceDictionary>
             <ContextMenu x:Shared="false" x:Key="MainSysTrayMenu">
 
-                <MenuItem Header="Run Script" cal:Message.Attach="RunScript" />
-                <MenuItem Header="Stop Script" cal:Message.Attach="StopScript" />
+                <!--MenuItem Header="Open Script (Middle Mouse Click)" cal:Message.Attach="OpenScript" >
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconOpen}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator /!-->
+                <MenuItem Header="Run Script" InputGestureText="Middle Click" cal:Message.Attach="RunScript" >
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconPlay}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Stop Script" InputGestureText="Middle Click" cal:Message.Attach="StopScript" >
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconStop}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
-                <MenuItem Header="Show Window" cal:Message.Attach="ShowWindow" />
+                <MenuItem Header="Show Window" InputGestureText="Double Click" cal:Message.Attach="ShowWindow" />
                 <MenuItem Header="Hide Window" cal:Message.Attach="HideWindow" />
                 <MenuItem>
                     <MenuItem.Header>
@@ -29,17 +43,22 @@
                     </MenuItem.Header>
 
                 </MenuItem>
-                <MenuItem Header="Exit Freepie" cal:Message.Attach="Close" />
+                <MenuItem Header="Exit Freepie" cal:Message.Attach="Close" >
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconExit}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
 
             </ContextMenu>
 
             <!-- the application main system tray icon -->
             <tb:TaskbarIcon x:Key="MyTrayIcon"
-                        IconSource="/free-pie.ico"
-                        ToolTipText="{Binding Path=ToolTipText}"
-                            
-                        cal:Message.Attach="[Event TrayMouseDoubleClick] = [Action ShowWindow]"
-                        ContextMenu="{StaticResource MainSysTrayMenu}"  />
+                            IconSource="/free-pie.ico"
+                            ToolTipText="{Binding Path=ToolTipText}"
+                            cal:Message.Attach="[Event TrayMouseDoubleClick] = [Action ShowWindow]; 
+                                                [Event TrayMiddleMouseUp] = [Action ActionScript]"
+                            ContextMenu="{StaticResource MainSysTrayMenu}"
+                            MenuActivation="LeftOrRightClick"/>
         </ResourceDictionary>
     </Window.Resources>
 
