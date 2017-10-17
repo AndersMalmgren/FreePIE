@@ -32,6 +32,11 @@
                         <Image Source="{StaticResource IconSaveAs}"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem x:Name="RecentScripts" Header="Recent _Files" cal:Message.Attach="OpenRecentScript($orignalsourcecontext)">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconOpen}"/>
+                    </MenuItem.Icon>
+                </MenuItem>                
                 <MenuItem x:Name="Close" Header="E_xit" InputGestureText="Alt + F4">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconExit}"/>

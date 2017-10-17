@@ -5,6 +5,7 @@ using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Model.Events;
+using FreePIE.Core.Persistence;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
@@ -32,6 +33,7 @@ namespace FreePIE.GUI.Views.Main
         private readonly Func<ScriptEditorViewModel> scriptEditorFactory;
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
+        private readonly ISettingsManager settingsManager;
         private IScriptEngine currentScriptEngine;
         private bool scriptRunning;
 
@@ -40,7 +42,8 @@ namespace FreePIE.GUI.Views.Main
             Func<IScriptEngine> scriptEngineFactory,
             Func<ScriptEditorViewModel> scriptEditorFactory,
             IFileSystem fileSystem,
-            ScriptDialogStrategy scriptDialogStrategy)
+            ScriptDialogStrategy scriptDialogStrategy,
+            ISettingsManager settings)
         {
             eventAggregator.Subscribe(this);
            
@@ -50,6 +53,7 @@ namespace FreePIE.GUI.Views.Main
             this.scriptEditorFactory = scriptEditorFactory;
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
+            this.settingsManager = settings;
         }
 
         private PanelViewModel activeDocument;
@@ -76,6 +80,8 @@ namespace FreePIE.GUI.Views.Main
 
         private void CreateScriptViewModel(string filePath)
         {
+            if (!fileSystem.Exists(filePath)) return;
+
             var document = scriptEditorFactory()
                 .Configure(filePath);
 
@@ -83,6 +89,7 @@ namespace FreePIE.GUI.Views.Main
                 document.LoadFileContent(fileSystem.ReadAllText(filePath));
 
             eventAggregator.Publish(new ScriptDocumentAddedEvent(document));
+            AddRecentScript(filePath);
         }
 
         public IEnumerable<IResult> SaveScript()
@@ -105,6 +112,19 @@ namespace FreePIE.GUI.Views.Main
             document.FilePath = filePath;
             fileSystem.WriteAllText(filePath, document.FileContent);
             document.Saved();
+
+            AddRecentScript(filePath);
+        }
+
+        public void OpenRecentScript(string path)
+        {
+            CreateScriptViewModel(path);
+        }
+
+        private void AddRecentScript(string filePath)
+        {
+            settingsManager.Settings.AddRecentScript(filePath);
+            NotifyOfPropertyChange(() => RecentScripts);
         }
 
         public IEnumerable<IResult> QuickSaveScript()
@@ -238,5 +258,7 @@ namespace FreePIE.GUI.Views.Main
         public IEnumerable<PluginSettingsMenuViewModel> Plugins { get; set; }
         public IEnumerable<PluginHelpFileViewModel> HelpFiles { get; set; }
         public IEnumerable<PanelViewModel> Views { get; set; }
+
+        public IObservableCollection<string> RecentScripts { get { return new BindableCollection<string>(settingsManager.Settings.RecentScripts); }}
     }
 }
