@@ -7,6 +7,10 @@ obj
 *.bak
 *.lua
 
+# built application files
+*.apk
+*.ap_
+
 # nuget packages
 packages
 
