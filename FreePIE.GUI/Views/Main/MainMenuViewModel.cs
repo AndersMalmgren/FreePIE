@@ -54,6 +54,8 @@ namespace FreePIE.GUI.Views.Main
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
             this.settingsManager = settings;
+
+            RecentScripts = new BindableCollection<string>(settingsManager.Settings.RecentScripts);
         }
 
         private PanelViewModel activeDocument;
@@ -124,7 +126,8 @@ namespace FreePIE.GUI.Views.Main
         private void AddRecentScript(string filePath)
         {
             settingsManager.Settings.AddRecentScript(filePath);
-            NotifyOfPropertyChange(() => RecentScripts);
+            RecentScripts.Clear();
+            RecentScripts.AddRange(settingsManager.Settings.RecentScripts);
         }
 
         public IEnumerable<IResult> QuickSaveScript()
@@ -259,6 +262,6 @@ namespace FreePIE.GUI.Views.Main
         public IEnumerable<PluginHelpFileViewModel> HelpFiles { get; set; }
         public IEnumerable<PanelViewModel> Views { get; set; }
 
-        public IObservableCollection<string> RecentScripts { get { return new BindableCollection<string>(settingsManager.Settings.RecentScripts); }}
+        public IObservableCollection<string> RecentScripts { get; set; }
     }
 }
