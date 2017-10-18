@@ -82,7 +82,7 @@ namespace FreePIE.GUI.Views.Main
 
         private void CreateScriptViewModel(string filePath)
         {
-            if (!fileSystem.Exists(filePath)) return;
+            if (filePath != null && !fileSystem.Exists(filePath)) return;
 
             var document = scriptEditorFactory()
                 .Configure(filePath);
