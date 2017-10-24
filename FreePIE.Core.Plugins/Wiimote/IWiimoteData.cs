@@ -15,6 +15,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         Nunchuck Nunchuck { get; }
         ClassicController ClassicController { get; }
         Guitar Guitar { get; }
+        BalanceBoard BalanceBoard { get; }
         bool IsDataValid(WiimoteDataValid valid);
         bool IsNunchuckButtonPressed(NunchuckButtons nunchuckButtons);
         bool IsClassicControllerButtonPressed(ClassicControllerButtons classicControllerButtons);

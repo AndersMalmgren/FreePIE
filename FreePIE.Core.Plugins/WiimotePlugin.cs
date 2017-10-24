@@ -76,6 +76,7 @@ namespace FreePIE.Core.Plugins
         MotionPlus = 0x0004, 
         Nunchuck = 0x0008,
         Guitar = 0x0010,
+        BalanceBoard = 0x0020,
         ClassicController = 0x0001
     }
 
@@ -222,6 +223,7 @@ namespace FreePIE.Core.Plugins
         private readonly Action nunchuckTrigger;
         private readonly Action classicControllerTrigger;
         private readonly Action guitarTrigger;
+        private readonly Action balanceBoardTrigger;
 
         private readonly Action accelerationCalibratedTrigger;
         private readonly Action motionPlusCalibratedTrigger;
@@ -237,6 +239,7 @@ namespace FreePIE.Core.Plugins
             nunchuck = new NunchuckGlobal(data, out nunchuckTrigger);
             classic_controller = new ClassicControllerGlobal(data, out classicControllerTrigger);
             guitar = new GuitarGlobal(data, out guitarTrigger);
+            balance_board = new BalanceBoardGlobal(data, out balanceBoardTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
         }
@@ -264,6 +267,9 @@ namespace FreePIE.Core.Plugins
 
             if (data.IsDataValid(WiimoteDataValid.Guitar))
                 guitarTrigger();
+
+            if (data.IsDataValid(WiimoteDataValid.BalanceBoard))
+                balanceBoardTrigger();
 
             if (data.Acceleration.DidCalibrate)
                 accelerationCalibratedTrigger();
@@ -306,7 +312,11 @@ namespace FreePIE.Core.Plugins
             get;
             private set;
         }
-
+        public BalanceBoardGlobal balance_board
+        {
+            get;
+            private set;
+        }
         public WiimoteButtonState buttons
         { 
             get;

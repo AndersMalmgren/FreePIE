@@ -66,6 +66,26 @@ namespace FreePIE.Core.Plugins.Wiimote
         public AnalogTrigger leftTrigger { get { return data.ClassicController.LeftTrigger; } }
     }
 
+    public class BalanceBoardGlobal : Subscribable
+    {
+        private IWiimoteData data;
+
+        public BalanceBoardGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
+        {
+            this.data = data;
+        }
+        public BalanceBoardSensorRaw Raw { get { return data.BalanceBoard.Raw; } }
+        public BalanceBoardSensorRaw CalibrationKG0 { get { return data.BalanceBoard.KG0Calibration; } }
+        public BalanceBoardSensorRaw CalibrationKG17 { get { return data.BalanceBoard.KG17Calibration; } }
+        public BalanceBoardSensorRaw CalibrationK34 { get { return data.BalanceBoard.KG34Calibration; } }
+        public BalanceBoardSensor SensorsKG { get { return data.BalanceBoard.KG; } }
+        public BalanceBoardSensor SensorsLB { get { return data.BalanceBoard.LB; } }
+        public float TotalWeightKG { get { return data.BalanceBoard.KGWeight; } }
+        public float TotalWeightLB { get { return data.BalanceBoard.LBWeight; } }
+        public float CenterOfGravityX { get { return data.BalanceBoard.CenterOfGravityX; } }
+        public float CenterOfGravityY { get { return data.BalanceBoard.CenterOfGravityY; } }
+    }
+
     public class AnalogStick
     {
         public AnalogStick(double x, double y)

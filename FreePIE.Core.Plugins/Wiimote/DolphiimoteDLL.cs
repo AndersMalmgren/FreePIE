@@ -59,7 +59,36 @@ namespace FreePIE.Core.Plugins.Wiimote
         public byte slow_modes; //Yaw = 0x1, Roll = 0x2, Pitch = 0x4.
         public byte extension_connected;
     }
-
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DolphiimoteBalanceBoardSensorRaw
+    {
+        public UInt16 top_right;
+        public UInt16 bottom_right;
+        public UInt16 top_left;
+        public UInt16 bottom_left;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DolphiimoteBalanceBoardSensor
+    {
+        public float top_right;
+        public float bottom_right;
+        public float top_left;
+        public float bottom_left;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DolphiimoteBalanceBoard
+    {
+        public DolphiimoteBalanceBoardSensorRaw raw;
+        public DolphiimoteBalanceBoardSensorRaw calibration_kg0;
+        public DolphiimoteBalanceBoardSensorRaw calibration_kg17;
+        public DolphiimoteBalanceBoardSensorRaw calibration_kg34;
+        public DolphiimoteBalanceBoardSensor kg;
+        public DolphiimoteBalanceBoardSensor lb;
+        public float weight_kg;
+        public float weight_lb;
+        public float center_of_gravity_x;
+        public float center_of_gravity_y;
+    }
     [StructLayout(LayoutKind.Sequential)]
     public struct DolphiimoteData
     {
@@ -72,6 +101,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public DolphiimoteNunchuck nunchuck;
         public DolphiimoteClassicController classic_controller;
         public DolphiimoteGuitar guitar;
+        public DolphiimoteBalanceBoard balance_board;
     }
 
     public class EulerAngles
@@ -133,8 +163,8 @@ namespace FreePIE.Core.Plugins.Wiimote
             if (Marshal.SizeOf(typeof(DolphiimoteCallbacks)) != 20)
                 throw new InvalidOperationException("DolphiimoteCallbacks wrong size.");
 
-            if (Marshal.SizeOf(typeof(DolphiimoteData)) != 48)
-                throw new InvalidOperationException("DolphiimoteData wrong size. Expected: 40, got:"+ Marshal.SizeOf(typeof(DolphiimoteData)));
+            if (Marshal.SizeOf(typeof(DolphiimoteData)) != 128)
+                throw new InvalidOperationException("DolphiimoteData wrong size. Expected: 128, got:"+ Marshal.SizeOf(typeof(DolphiimoteData)));
 
             if (Marshal.SizeOf(typeof(DolphiimoteCapabilities)) != 16)
                 throw new InvalidOperationException("DolphiimoteCapabilities wrong size.");

@@ -20,6 +20,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             }
         }
 
+        public BalanceBoard BalanceBoard { get; private set; }
         public Nunchuck Nunchuck { get; private set; }
         public ClassicController ClassicController { get; private set; }
         public Guitar Guitar { get; private set; }
@@ -56,6 +57,20 @@ namespace FreePIE.Core.Plugins.Wiimote
                 TapBar = new TapBar(0x0F),
                 Whammy = new AnalogTrigger(0),
                 IsGH3 = false
+            };
+
+            BalanceBoard = new BalanceBoard
+            {
+                Raw = new BalanceBoardSensorRaw(0, 0, 0, 0),
+                KG0Calibration = new BalanceBoardSensorRaw(0, 0, 0, 0),
+                KG17Calibration = new BalanceBoardSensorRaw(0, 0, 0, 0),
+                KG34Calibration = new BalanceBoardSensorRaw(0, 0, 0, 0),
+                KG = new BalanceBoardSensor(0, 0, 0, 0),
+                LB = new BalanceBoardSensor(0, 0, 0, 0),
+                CenterOfGravityX = 0,
+                CenterOfGravityY = 0,
+                KGWeight = 0,
+                LBWeight = 0
             };
         }
 
@@ -153,6 +168,22 @@ namespace FreePIE.Core.Plugins.Wiimote
                                                                rawData.guitar.whammy_bar),
                     IsGH3 = rawData.guitar.is_gh3 == 1,
                     TapBar = new TapBar(rawData.guitar.tap_bar),
+                };
+            }
+            if (IsDataValid(WiimoteDataValid.BalanceBoard))
+            {
+                BalanceBoard = new BalanceBoard
+                {
+                    Raw = new BalanceBoardSensorRaw(rawData.balance_board.raw),
+                    KG0Calibration = new BalanceBoardSensorRaw(rawData.balance_board.calibration_kg0),
+                    KG17Calibration = new BalanceBoardSensorRaw(rawData.balance_board.calibration_kg17),
+                    KG34Calibration = new BalanceBoardSensorRaw(rawData.balance_board.calibration_kg34),
+                    KG = new BalanceBoardSensor(rawData.balance_board.kg),
+                    LB = new BalanceBoardSensor(rawData.balance_board.lb),
+                    CenterOfGravityX = rawData.balance_board.center_of_gravity_x,
+                    CenterOfGravityY = rawData.balance_board.center_of_gravity_y,
+                    KGWeight = rawData.balance_board.weight_kg,
+                    LBWeight = rawData.balance_board.weight_lb
                 };
             }
         }

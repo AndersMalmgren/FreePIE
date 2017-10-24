@@ -130,6 +130,7 @@
     <Compile Include="Wiimote\AccelerationGlobal.cs" />
     <Compile Include="Wiimote\Calibratable.cs" />
     <Compile Include="Wiimote\CircularBuffer.cs" />
+    <Compile Include="Wiimote\BalanceBoard.cs" />
     <Compile Include="Wiimote\ClassicController.cs" />
     <Compile Include="Wiimote\DolphiimoteBridge.cs" />
     <Compile Include="Wiimote\DolphiimoteDLL.cs" />
