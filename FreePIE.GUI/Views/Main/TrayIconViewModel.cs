@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Runtime.InteropServices;
+using System.Text;
 using Caliburn.Micro;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.Persistence;
@@ -40,6 +42,14 @@ namespace FreePIE.GUI.Views.Main
         private bool startInTray;
 
         [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+        [DllImport("user32.dll")]
+        static extern int GetWindowTextLength(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
 
@@ -76,7 +86,17 @@ namespace FreePIE.GUI.Views.Main
         {
             if (lastWindowEvent.WindowState != WindowState.Maximized)
                 shellViewModel.WindowState = WindowState.Normal;
-            SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
+            //SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
+            if (Process.GetCurrentProcess().ProcessName == "FreePIE" && !Process.GetCurrentProcess().MainWindowTitle.StartsWith("FreePIE"))
+                Process.GetCurrentProcess().Close();
+            var p = Process.GetProcessesByName("FreePIE");
+            p = Process.GetProcesses();
+            var FreePIE = "FreePIE - Programmable";
+            foreach (var proc in p)
+            {
+                if (proc.MainWindowTitle.StartsWith(FreePIE))
+                    SetForegroundWindow(proc.MainWindowHandle);
+            }
         }
 
         public void HideWindow()
@@ -98,7 +118,7 @@ namespace FreePIE.GUI.Views.Main
                 activeDocument = value;
                 NotifyOfPropertyChange(() => CanRunScript);
                 NotifyOfPropertyChange(() => CanStopScript);
-                NotifyOfPropertyChange(() => CanActionScript);
+                NotifyOfPropertyChange(() => CanRunStopScript);
             }
         }
 
@@ -122,8 +142,13 @@ namespace FreePIE.GUI.Views.Main
                     && !string.IsNullOrEmpty(activeDocument.FileContent);
             }
         }
-
-        public bool CanActionScript
+        /*/
+        public bool CanOpenLastScript
+        {
+            get { return settingsManager.Settings.RecentScripts.Count > 0; }
+        }
+        /*/
+        public bool CanRunStopScript
         {
             get { return CanStopScript || CanRunScript; }
         }
@@ -138,32 +163,36 @@ namespace FreePIE.GUI.Views.Main
             shellViewModel.Menu.StopScript();
         }
 
-        public void ActionScript()
+        public void RunStopScript()
         {
             if (CanStopScript)
                 StopScript();
             else if (CanRunScript)
                 RunScript();
+        }
+
+        public void Close()
+        {
+            var p = Process.GetProcessesByName("FreePIE");
+            var FreePIE = "FreePIE - Programmable";
+            foreach (var proc in p)
+            {
+                if (proc.MainWindowTitle.StartsWith(FreePIE))
+                    proc.CloseMainWindow();
+            }
             /*/
-            else
-                OpenScript();
-            //*/
-        }
-
-        /*/
-        public IEnumerable<IResult> OpenScript()
-        {
-            if (lastWindowEvent.WindowState != WindowState.Maximized)
-                shellViewModel.WindowState = WindowState.Normal;
-            SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
-            return shellViewModel.Menu.OpenScript();
-        }
-        //*/
-
-        public IEnumerable<IResult> Close()
-        {
+            Process.GetCurrentProcess().CloseMainWindow();
+            /*/
             /*/
             return shellViewModel.Menu.Close();
+            /*/
+            /*/resultFactory.Close();
+            var p = Process.GetProcessesByName("FreePIE");
+            CloseWindow(p[1].MainWindowHandle);
+            /*
+            DestroyWindow(p[1].MainWindowHandle);
+            SendMessage(p[0].MainWindowHandle, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+            //*/
             /*/
             yield return resultFactory.CloseApp();
             //*/
@@ -193,7 +222,7 @@ namespace FreePIE.GUI.Views.Main
                 lastScriptEvent = value;
                 NotifyOfPropertyChange(() => CanRunScript);
                 NotifyOfPropertyChange(() => CanStopScript);
-                NotifyOfPropertyChange(() => CanActionScript);
+                NotifyOfPropertyChange(() => CanRunStopScript);
             }
         }
 
@@ -217,8 +246,8 @@ namespace FreePIE.GUI.Views.Main
             set
             {
                 settingsManager.Settings.MinimizeToTray = value;
-                this.shellViewModel.ShowInTaskBar = !value;
-                NotifyOfPropertyChange(() => MinimizeToTray);
+                //this.shellViewModel.ShowInTaskBar = !value;
+                //NotifyOfPropertyChange(() => MinimizeToTray);
             }
         }
 

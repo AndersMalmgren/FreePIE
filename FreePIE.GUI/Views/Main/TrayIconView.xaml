@@ -18,12 +18,6 @@
         <ResourceDictionary>
             <ContextMenu x:Shared="false" x:Key="MainSysTrayMenu">
 
-                <!--MenuItem Header="Open Script (Middle Mouse Click)" cal:Message.Attach="OpenScript" >
-                    <MenuItem.Icon>
-                        <Image Source="{StaticResource IconOpen}"/>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <Separator /!-->
                 <MenuItem Header="Run Script" InputGestureText="Middle Click" cal:Message.Attach="RunScript" >
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconPlay}"/>
@@ -43,11 +37,11 @@
                     </MenuItem.Header>
 
                 </MenuItem>
-                <MenuItem Header="Exit Freepie" cal:Message.Attach="Close" >
+                <!--MenuItem Header="Exit Freepie" InputGestureText="Middle Click" cal:Message.Attach="Close" >
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconExit}"/>
                     </MenuItem.Icon>
-                </MenuItem>
+                </MenuItem!-->
 
             </ContextMenu>
 
@@ -56,7 +50,7 @@
                             IconSource="/free-pie.ico"
                             ToolTipText="{Binding Path=ToolTipText}"
                             cal:Message.Attach="[Event TrayMouseDoubleClick] = [Action ShowWindow]; 
-                                                [Event TrayMiddleMouseUp] = [Action ActionScript]"
+                                                [Event TrayMiddleMouseUp] = [Action RunStopScript]"
                             ContextMenu="{StaticResource MainSysTrayMenu}"
                             MenuActivation="LeftOrRightClick"/>
         </ResourceDictionary>

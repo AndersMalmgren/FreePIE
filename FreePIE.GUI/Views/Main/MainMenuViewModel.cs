@@ -80,7 +80,7 @@ namespace FreePIE.GUI.Views.Main
             return scriptDialogStrategy.Open(CreateScriptViewModel);
         }
 
-        private void CreateScriptViewModel(string filePath)
+        public void CreateScriptViewModel(string filePath)
         {
             if (filePath != null && !fileSystem.Exists(filePath)) return;
 
@@ -88,10 +88,12 @@ namespace FreePIE.GUI.Views.Main
                 .Configure(filePath);
 
             if (!string.IsNullOrEmpty(filePath))
+            {
                 document.LoadFileContent(fileSystem.ReadAllText(filePath));
+                AddRecentScript(filePath);
+            }
 
             eventAggregator.Publish(new ScriptDocumentAddedEvent(document));
-            AddRecentScript(filePath);
         }
 
         public IEnumerable<IResult> SaveScript()
