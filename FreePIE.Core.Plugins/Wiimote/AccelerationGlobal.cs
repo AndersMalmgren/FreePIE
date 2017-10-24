@@ -74,16 +74,16 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             this.data = data;
         }
-        public BalanceBoardSensorRaw Raw { get { return data.BalanceBoard.Raw; } }
-        public BalanceBoardSensorRaw CalibrationKG0 { get { return data.BalanceBoard.KG0Calibration; } }
-        public BalanceBoardSensorRaw CalibrationKG17 { get { return data.BalanceBoard.KG17Calibration; } }
-        public BalanceBoardSensorRaw CalibrationK34 { get { return data.BalanceBoard.KG34Calibration; } }
-        public BalanceBoardSensor SensorsKG { get { return data.BalanceBoard.KG; } }
-        public BalanceBoardSensor SensorsLB { get { return data.BalanceBoard.LB; } }
-        public float TotalWeightKG { get { return data.BalanceBoard.KGWeight; } }
-        public float TotalWeightLB { get { return data.BalanceBoard.LBWeight; } }
-        public float CenterOfGravityX { get { return data.BalanceBoard.CenterOfGravityX; } }
-        public float CenterOfGravityY { get { return data.BalanceBoard.CenterOfGravityY; } }
+        public BalanceBoardSensorRaw raw { get { return data.BalanceBoard.Raw; } }
+        public BalanceBoardSensorRaw calibrationKG0 { get { return data.BalanceBoard.KG0Calibration; } }
+        public BalanceBoardSensorRaw calibrationKG17 { get { return data.BalanceBoard.KG17Calibration; } }
+        public BalanceBoardSensorRaw calibrationK34 { get { return data.BalanceBoard.KG34Calibration; } }
+        public BalanceBoardSensor sensorsKG { get { return data.BalanceBoard.KG; } }
+        public BalanceBoardSensor sensorsLB { get { return data.BalanceBoard.LB; } }
+        public float totalWeightKG { get { return data.BalanceBoard.KGWeight; } }
+        public float totalWeightLB { get { return data.BalanceBoard.LBWeight; } }
+        public float centerOfGravityX { get { return data.BalanceBoard.CenterOfGravityX; } }
+        public float centerOfGravityY { get { return data.BalanceBoard.CenterOfGravityY; } }
     }
 
     public class AnalogStick
