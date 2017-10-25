@@ -1,0 +1,95 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace FreePIE.Core.Plugins.Wiimote
+{
+    public class NunchuckGlobal : Subscribable
+    {
+        private IWiimoteData data;
+
+        public NunchuckGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
+        {
+            this.data = data;
+            this.buttons = new NunchuckButtonState(data);
+        }
+
+        public Acceleration acceleration { get { return data.Nunchuck.Acceleration; } }
+        public AnalogStick stick { get { return data.Nunchuck.Stick; } }
+        public NunchuckButtonState buttons { get; private set; }
+    }
+
+    public class GuitarGlobal : Subscribable
+    {
+        private IWiimoteData data;
+
+        public GuitarGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
+        {
+            this.data = data;
+            this.buttons = new GuitarButtonState(data);
+        }
+        public GuitarButtonState buttons { get; private set; }
+        public AnalogStick stick { get { return data.Guitar.Stick; } }
+        public TapBar tapbar { get { return data.Guitar.TapBar; } }
+        public AnalogTrigger whammy { get { return data.Guitar.Whammy; } }
+        public bool IsGH3 { get { return data.Guitar.IsGH3; } }
+    }
+
+    public class ClassicControllerGlobal : Subscribable
+    {
+        private IWiimoteData data;
+
+        public ClassicControllerGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
+        {
+            this.data = data;
+            this.buttons = new ClassicControllerButtonState(data);
+        }
+        public ClassicControllerButtonState buttons { get; private set; }
+        public AnalogStick leftStick { get { return data.ClassicController.LeftStick; } }
+        public AnalogStick rightStick { get { return data.ClassicController.RightStick; } }
+        public AnalogTrigger rightTrigger { get { return data.ClassicController.RightTrigger; } }
+        public AnalogTrigger leftTrigger { get { return data.ClassicController.LeftTrigger; } }
+    }
+
+    public class BalanceBoardGlobal : Subscribable
+    {
+        private IWiimoteData data;
+
+        public BalanceBoardGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
+        {
+            this.data = data;
+        }
+        public BalanceBoardSensorRaw raw { get { return data.BalanceBoard.Raw; } }
+        public BalanceBoardSensorRaw calibrationKG0 { get { return data.BalanceBoard.KG0Calibration; } }
+        public BalanceBoardSensorRaw calibrationKG17 { get { return data.BalanceBoard.KG17Calibration; } }
+        public BalanceBoardSensorRaw calibrationK34 { get { return data.BalanceBoard.KG34Calibration; } }
+        public BalanceBoardSensor sensorsKG { get { return data.BalanceBoard.KG; } }
+        public BalanceBoardSensor sensorsLB { get { return data.BalanceBoard.LB; } }
+        public float totalWeightKG { get { return data.BalanceBoard.KGWeight; } }
+        public float totalWeightLB { get { return data.BalanceBoard.LBWeight; } }
+        public AnalogStick centerOfGravity { get { return data.BalanceBoard.CenterOfGravity; } }
+    }
+
+    public class AnalogStick
+    {
+        public AnalogStick(double x, double y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double x { get; private set; }
+        public double y { get; private set; }
+    }
+
+    public class AnalogTrigger
+    {
+        public AnalogTrigger(double x)
+        {
+            this.x = x;
+        }
+
+        public double x { get; private set; }
+    }
+}

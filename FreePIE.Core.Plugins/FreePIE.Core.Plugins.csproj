@@ -135,6 +135,7 @@
     <Compile Include="Wiimote\DolphiimoteBridge.cs" />
     <Compile Include="Wiimote\DolphiimoteDLL.cs" />
     <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
+    <Compile Include="Wiimote\ExtensionGlobal.cs" />
     <Compile Include="Wiimote\Guitar.cs" />
     <Compile Include="Wiimote\IMotionPlusFuser.cs" />
     <Compile Include="Wiimote\Integrator.cs" />
