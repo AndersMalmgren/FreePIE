@@ -60,7 +60,6 @@ namespace FreePIE.Core.Plugins.Wiimote
         public BalanceBoardSensor LB { get; set; }
         public float KGWeight { get; set; }
         public float LBWeight { get; set; }
-        public float CenterOfGravityX { get; set; }
-        public float CenterOfGravityY { get; set; }
+        public AnalogStick CenterOfGravity { get; set; }
     }
 }

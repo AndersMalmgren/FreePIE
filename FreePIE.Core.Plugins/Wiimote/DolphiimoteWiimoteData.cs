@@ -67,8 +67,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                 KG34Calibration = new BalanceBoardSensorRaw(0, 0, 0, 0),
                 KG = new BalanceBoardSensor(0, 0, 0, 0),
                 LB = new BalanceBoardSensor(0, 0, 0, 0),
-                CenterOfGravityX = 0,
-                CenterOfGravityY = 0,
+                CenterOfGravity = new AnalogStick(0,0),
                 KGWeight = 0,
                 LBWeight = 0
             };
@@ -180,8 +179,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                     KG34Calibration = new BalanceBoardSensorRaw(rawData.balance_board.calibration_kg34),
                     KG = new BalanceBoardSensor(rawData.balance_board.kg),
                     LB = new BalanceBoardSensor(rawData.balance_board.lb),
-                    CenterOfGravityX = rawData.balance_board.center_of_gravity_x,
-                    CenterOfGravityY = rawData.balance_board.center_of_gravity_y,
+                    CenterOfGravity = new AnalogStick(rawData.balance_board.center_of_gravity_x, rawData.balance_board.center_of_gravity_y),
                     KGWeight = rawData.balance_board.weight_kg,
                     LBWeight = rawData.balance_board.weight_lb
                 };
