@@ -83,6 +83,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public float totalWeightKG { get { return data.BalanceBoard.KGWeight; } }
         public float totalWeightLB { get { return data.BalanceBoard.LBWeight; } }
         public AnalogStick centerOfGravity { get { return data.BalanceBoard.CenterOfGravity; } }
+        public AnalogStick centerOfGravityPosition { get { return data.BalanceBoard.CenterOfGravityPosition; } }
     }
 
     public class AnalogStick

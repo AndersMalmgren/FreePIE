@@ -180,6 +180,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                     KG = new BalanceBoardSensor(rawData.balance_board.kg),
                     LB = new BalanceBoardSensor(rawData.balance_board.lb),
                     CenterOfGravity = new AnalogStick(rawData.balance_board.center_of_gravity_x, rawData.balance_board.center_of_gravity_y),
+                    CenterOfGravityPosition = new AnalogStick(rawData.balance_board.center_of_gravity_pos_x, rawData.balance_board.center_of_gravity_pos_y),
                     KGWeight = rawData.balance_board.weight_kg,
                     LBWeight = rawData.balance_board.weight_lb
                 };

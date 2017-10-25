@@ -61,5 +61,6 @@ namespace FreePIE.Core.Plugins.Wiimote
         public float KGWeight { get; set; }
         public float LBWeight { get; set; }
         public AnalogStick CenterOfGravity { get; set; }
+        public AnalogStick CenterOfGravityPosition { get; set; }
     }
 }
