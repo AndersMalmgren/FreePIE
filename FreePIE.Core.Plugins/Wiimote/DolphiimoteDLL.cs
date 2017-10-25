@@ -86,8 +86,6 @@ namespace FreePIE.Core.Plugins.Wiimote
         public DolphiimoteBalanceBoardSensor lb;
         public float weight_kg;
         public float weight_lb;
-        public float center_of_gravity_pos_x;
-        public float center_of_gravity_pos_y;
         public float center_of_gravity_x;
         public float center_of_gravity_y;
     }
@@ -165,8 +163,8 @@ namespace FreePIE.Core.Plugins.Wiimote
             if (Marshal.SizeOf(typeof(DolphiimoteCallbacks)) != 20)
                 throw new InvalidOperationException("DolphiimoteCallbacks wrong size.");
 
-            if (Marshal.SizeOf(typeof(DolphiimoteData)) != 136)
-                throw new InvalidOperationException("DolphiimoteData wrong size. Expected: 136, got:"+ Marshal.SizeOf(typeof(DolphiimoteData)));
+            if (Marshal.SizeOf(typeof(DolphiimoteData)) != 128)
+                throw new InvalidOperationException("DolphiimoteData wrong size. Expected: 128, got:"+ Marshal.SizeOf(typeof(DolphiimoteData)));
 
             if (Marshal.SizeOf(typeof(DolphiimoteCapabilities)) != 16)
                 throw new InvalidOperationException("DolphiimoteCapabilities wrong size.");
