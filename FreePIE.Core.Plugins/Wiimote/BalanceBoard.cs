@@ -45,7 +45,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public BalanceBoardSensor bottomRight { get; set; }
         public override string ToString()
         {
-            return String.Format("topLeft: {0}, topRight: {1}, bottomLeft: {2}, bottomRight: {3}", topLeft, topRight, bottomLeft, bottomRight);
+            return String.Format("topLeft: {0},\ntopRight: {1},\nbottomLeft: {2},\nbottomRight: {3}", topLeft, topRight, bottomLeft, bottomRight);
         }
     }
     public class BalanceBoard
@@ -55,7 +55,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public AnalogStick centerOfGravity { get; set; }
         public override string ToString()
         {
-            return String.Format("sensors: {0}, totalWeight: {1}, centerOfGravity: {2}", sensors, weight, centerOfGravity);
+            return String.Format("weight: {1},\ncenterOfGravity: {2},\n{0}", sensors, weight, centerOfGravity);
         }
     }
 
