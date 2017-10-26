@@ -14,7 +14,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public BalanceBoardSensorCalibration calibration { get; set; }
         public override string ToString()
         {
-            return String.Format("KG: {0}, LB: {1}, Raw: {2}, Calibration: {3}",kg,lb,raw,calibration);
+            return String.Format("kg: {0}, lb: {1}, raw: {2}, calibration: {3}",kg,lb,raw,calibration);
         }
     }
     public class BalanceBoardSensorCalibration
@@ -24,7 +24,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public UInt16 kg34 { get; set; }
         public override string ToString()
         {
-            return String.Format("0KG: {0}, 17KG: {1}, 34KG: {2}", kg00, kg17, kg34);
+            return String.Format("0kg: {0}, 17kg: {1}, 34kg: {2}", kg00, kg17, kg34);
         }
     }
     public class BalanceBoardWeight
@@ -34,7 +34,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public int raw { get; set; }
         public override string ToString()
         {
-            return String.Format("KG: {0}, LB: {1}, Raw: {2}", kg, lb, raw);
+            return String.Format("kg: {0}, lb: {1}, raw: {2}", kg, lb, raw);
         }
     }
     public class BalanceBoardSensorList
@@ -45,7 +45,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public BalanceBoardSensor bottomRight { get; set; }
         public override string ToString()
         {
-            return String.Format("Top Left: {0}, Top Right: {1}, Bottom Left: {2}, Bottom Right: {3}", topLeft, topRight, bottomLeft, bottomRight);
+            return String.Format("topLeft: {0}, topRight: {1}, bottomLeft: {2}, bottomRight: {3}", topLeft, topRight, bottomLeft, bottomRight);
         }
     }
     public class BalanceBoard
@@ -55,7 +55,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public AnalogStick centerOfGravity { get; set; }
         public override string ToString()
         {
-            return String.Format("Sensors: {0}, Total Weight: {1}, Center Of Gravity: {2}", sensors, weight, centerOfGravity);
+            return String.Format("sensors: {0}, totalWeight: {1}, centerOfGravity: {2}", sensors, weight, centerOfGravity);
         }
     }
 
