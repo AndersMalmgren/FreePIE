@@ -301,7 +301,7 @@ namespace FreePIE.Core.Plugins
             private set;
         }
 
-        public ClassicControllerGlobal classic_controller
+        public ClassicControllerGlobal classicController
         {
             get;
             private set;
@@ -312,7 +312,7 @@ namespace FreePIE.Core.Plugins
             get;
             private set;
         }
-        public BalanceBoardGlobal balance_board
+        public BalanceBoardGlobal balanceBoard
         {
             get;
             private set;
