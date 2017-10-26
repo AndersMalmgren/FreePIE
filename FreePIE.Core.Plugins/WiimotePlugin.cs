@@ -237,9 +237,9 @@ namespace FreePIE.Core.Plugins
             buttons = new WiimoteButtonState(data, out buttonTrigger);
             motionplus = new MotionPlusGlobal(data, out motionPlusTrigger, out motionPlusCalibratedTrigger);
             nunchuck = new NunchuckGlobal(data, out nunchuckTrigger);
-            classic_controller = new ClassicControllerGlobal(data, out classicControllerTrigger);
+            classicController = new ClassicControllerGlobal(data, out classicControllerTrigger);
             guitar = new GuitarGlobal(data, out guitarTrigger);
-            balance_board = new BalanceBoardGlobal(data, out balanceBoardTrigger);
+            balanceBoard = new BalanceBoardGlobal(data, out balanceBoardTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
         }
