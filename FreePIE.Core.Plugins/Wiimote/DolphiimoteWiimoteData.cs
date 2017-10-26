@@ -85,7 +85,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                     lb = 0,
                     raw = 0
                 },
-                CenterOfGravity = new AnalogStick(0,0)
+                centerOfGravity = new AnalogStick(0,0)
             };
         }
 
@@ -246,7 +246,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                         lb = rawData.balance_board.weight_lb,
                         raw = rawData.balance_board.raw.bottom_left + rawData.balance_board.raw.bottom_right + rawData.balance_board.raw.top_left + rawData.balance_board.raw.top_right
                     },
-                    CenterOfGravity = new AnalogStick(rawData.balance_board.center_of_gravity_x, rawData.balance_board.center_of_gravity_y)
+                    centerOfGravity = new AnalogStick(rawData.balance_board.center_of_gravity_x, rawData.balance_board.center_of_gravity_y)
                 };
             }
         }

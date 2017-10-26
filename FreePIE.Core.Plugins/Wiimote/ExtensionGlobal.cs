@@ -62,7 +62,11 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
         public BalanceBoardSensorList sensors { get { return data.BalanceBoard.sensors; } }
         public BalanceBoardWeight weight { get { return data.BalanceBoard.weight; } }
-        public AnalogStick centerOfGravity { get { return data.BalanceBoard.CenterOfGravity; } }
+        public AnalogStick centerOfGravity { get { return data.BalanceBoard.centerOfGravity; } }
+        public override string ToString()
+        {
+            return data.BalanceBoard.ToString();
+        }
     }
 
     public class AnalogStick
@@ -89,5 +93,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
 
         public double x { get; private set; }
+        public override string ToString()
+        {
+            return String.Format("value: {0}", x);
+        }
     }
 }
