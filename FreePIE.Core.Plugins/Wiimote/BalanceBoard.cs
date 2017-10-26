@@ -6,60 +6,49 @@ using System.Threading.Tasks;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
-    public class BalanceBoardSensorRaw
-    {
-
-        public BalanceBoardSensorRaw(DolphiimoteBalanceBoardSensorRaw sensor)
-        {
-            this.topLeft = sensor.top_left;
-            this.topRight = sensor.top_right;
-            this.bottomLeft = sensor.bottom_left;
-            this.bottomRight = sensor.bottom_right;
-        }
-
-        public BalanceBoardSensorRaw(int topLeft, int topRight, int bottomLeft, int bottomRight)
-        {
-            this.topLeft = topLeft;
-            this.topRight = topRight;
-            this.bottomLeft = bottomLeft;
-            this.bottomRight = bottomRight;
-        }
-        public int topLeft { get; set; }
-        public int topRight { get; set; }
-        public int bottomLeft { get; set; }
-        public int bottomRight { get; set; }
-    }
     public class BalanceBoardSensor
     {
-        public BalanceBoardSensor(DolphiimoteBalanceBoardSensor sensor)
+        public float kg { get; set; }
+        public float lb { get; set; }
+        public UInt16 raw { get; set; }
+        public BalanceBoardSensorCalibration calibration { get; set; }
+        public override string ToString()
         {
-            this.topLeft = sensor.top_left;
-            this.topRight = sensor.top_right;
-            this.bottomLeft = sensor.bottom_left;
-            this.bottomRight = sensor.bottom_right;
+            return String.Format("KG: {0}, LB: {1}, Raw: {2}, Calibration: {3}",kg,lb,raw,calibration);
         }
-        public BalanceBoardSensor(float topLeft, float topRight, float bottomLeft, float bottomRight)
+    }
+    public class BalanceBoardSensorCalibration
+    {
+        public UInt16 kg00 { get; set; }
+        public UInt16 kg17 { get; set; }
+        public UInt16 kg34 { get; set; }
+        public override string ToString()
         {
-            this.topLeft = topLeft;
-            this.topRight = topRight;
-            this.bottomLeft = bottomLeft;
-            this.bottomRight = bottomRight;
+            return String.Format("0KG: {0}, 17KG: {1}, 34KG: {2}", kg00, kg17, kg34);
         }
-        public float topLeft { get; set; }
-        public float topRight { get; set; }
-        public float bottomLeft { get; set; }
-        public float bottomRight { get; set; }
+    }
+    public class BalanceBoardWeight
+    {
+        public float kg { get; set; }
+        public float lb { get; set; }
+        public int raw { get; set; }
+        public override string ToString()
+        {
+            return String.Format("KG: {0}, LB: {1}, Raw: {2}", kg, lb, raw);
+        }
+    }
+    public class BalanceBoardSensorList
+    {
+        public BalanceBoardSensor topLeft { get; set; }
+        public BalanceBoardSensor topRight { get; set; }
+        public BalanceBoardSensor bottomLeft { get; set; }
+        public BalanceBoardSensor bottomRight { get; set; }
     }
     public class BalanceBoard
     {
-        public BalanceBoardSensorRaw Raw { get; set; }
-        public BalanceBoardSensorRaw KG0Calibration { get; set; }
-        public BalanceBoardSensorRaw KG17Calibration { get; set; }
-        public BalanceBoardSensorRaw KG34Calibration { get; set; }
-        public BalanceBoardSensor KG { get; set; }
-        public BalanceBoardSensor LB { get; set; }
-        public float KGWeight { get; set; }
-        public float LBWeight { get; set; }
+        public BalanceBoardSensorList sensors { get; set; }
+        public BalanceBoardWeight weight { get; set; }
         public AnalogStick CenterOfGravity { get; set; }
     }
+
 }

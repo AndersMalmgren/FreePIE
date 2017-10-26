@@ -58,18 +58,34 @@ namespace FreePIE.Core.Plugins.Wiimote
                 Whammy = new AnalogTrigger(0),
                 IsGH3 = false
             };
-
+            BalanceBoardSensor def = new BalanceBoardSensor
+            {
+                calibration = new BalanceBoardSensorCalibration
+                {
+                    kg00 = 0,
+                    kg17 = 0,
+                    kg34 = 0
+                },
+                kg = 0,
+                lb = 0,
+                raw = 0
+            };
             BalanceBoard = new BalanceBoard
             {
-                Raw = new BalanceBoardSensorRaw(0, 0, 0, 0),
-                KG0Calibration = new BalanceBoardSensorRaw(0, 0, 0, 0),
-                KG17Calibration = new BalanceBoardSensorRaw(0, 0, 0, 0),
-                KG34Calibration = new BalanceBoardSensorRaw(0, 0, 0, 0),
-                KG = new BalanceBoardSensor(0, 0, 0, 0),
-                LB = new BalanceBoardSensor(0, 0, 0, 0),
-                CenterOfGravity = new AnalogStick(0,0),
-                KGWeight = 0,
-                LBWeight = 0
+                sensors = new BalanceBoardSensorList
+                {
+                    bottomLeft = def,
+                    bottomRight = def, 
+                    topLeft = def,
+                    topRight = def
+                },
+                weight = new BalanceBoardWeight
+                {
+                    kg = 0,
+                    lb = 0,
+                    raw = 0
+                },
+                CenterOfGravity = new AnalogStick(0,0)
             };
         }
 
@@ -173,15 +189,64 @@ namespace FreePIE.Core.Plugins.Wiimote
             {
                 BalanceBoard = new BalanceBoard
                 {
-                    Raw = new BalanceBoardSensorRaw(rawData.balance_board.raw),
-                    KG0Calibration = new BalanceBoardSensorRaw(rawData.balance_board.calibration_kg0),
-                    KG17Calibration = new BalanceBoardSensorRaw(rawData.balance_board.calibration_kg17),
-                    KG34Calibration = new BalanceBoardSensorRaw(rawData.balance_board.calibration_kg34),
-                    KG = new BalanceBoardSensor(rawData.balance_board.kg),
-                    LB = new BalanceBoardSensor(rawData.balance_board.lb),
-                    CenterOfGravity = new AnalogStick(rawData.balance_board.center_of_gravity_x, rawData.balance_board.center_of_gravity_y),
-                    KGWeight = rawData.balance_board.weight_kg,
-                    LBWeight = rawData.balance_board.weight_lb
+                    sensors = new BalanceBoardSensorList
+                    {
+                        bottomLeft = new BalanceBoardSensor
+                        {
+                            calibration = new BalanceBoardSensorCalibration
+                            {
+                                kg00 = rawData.balance_board.calibration_kg0.bottom_left,
+                                kg17 = rawData.balance_board.calibration_kg17.bottom_left,
+                                kg34 = rawData.balance_board.calibration_kg34.bottom_left
+                            },
+                            kg = rawData.balance_board.kg.bottom_left,
+                            lb = rawData.balance_board.lb.bottom_left,
+                            raw = rawData.balance_board.raw.bottom_left
+                        },
+                        bottomRight = new BalanceBoardSensor
+                        {
+                            calibration = new BalanceBoardSensorCalibration
+                            {
+                                kg00 = rawData.balance_board.calibration_kg0.bottom_right,
+                                kg17 = rawData.balance_board.calibration_kg17.bottom_right,
+                                kg34 = rawData.balance_board.calibration_kg34.bottom_right
+                            },
+                            kg = rawData.balance_board.kg.bottom_right,
+                            lb = rawData.balance_board.lb.bottom_right,
+                            raw = rawData.balance_board.raw.bottom_right
+                        },
+                        topLeft = new BalanceBoardSensor
+                        {
+                            calibration = new BalanceBoardSensorCalibration
+                            {
+                                kg00 = rawData.balance_board.calibration_kg0.top_left,
+                                kg17 = rawData.balance_board.calibration_kg17.top_left,
+                                kg34 = rawData.balance_board.calibration_kg34.top_left
+                            },
+                            kg = rawData.balance_board.kg.top_left,
+                            lb = rawData.balance_board.lb.top_left,
+                            raw = rawData.balance_board.raw.top_left
+                        },
+                        topRight = new BalanceBoardSensor
+                        {
+                            calibration = new BalanceBoardSensorCalibration
+                            {
+                                kg00 = rawData.balance_board.calibration_kg0.top_right,
+                                kg17 = rawData.balance_board.calibration_kg17.top_right,
+                                kg34 = rawData.balance_board.calibration_kg34.top_right
+                            },
+                            kg = rawData.balance_board.kg.top_right,
+                            lb = rawData.balance_board.lb.top_right,
+                            raw = rawData.balance_board.raw.top_right
+                        },
+                    },
+                    weight = new BalanceBoardWeight
+                    {
+                        kg = rawData.balance_board.weight_kg,
+                        lb = rawData.balance_board.weight_lb,
+                        raw = rawData.balance_board.raw.bottom_left + rawData.balance_board.raw.bottom_right + rawData.balance_board.raw.top_left + rawData.balance_board.raw.top_right
+                    },
+                    CenterOfGravity = new AnalogStick(rawData.balance_board.center_of_gravity_x, rawData.balance_board.center_of_gravity_y)
                 };
             }
         }

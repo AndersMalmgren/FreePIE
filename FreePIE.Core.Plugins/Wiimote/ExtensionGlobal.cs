@@ -60,14 +60,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             this.data = data;
         }
-        public BalanceBoardSensorRaw raw { get { return data.BalanceBoard.Raw; } }
-        public BalanceBoardSensorRaw calibrationKG0 { get { return data.BalanceBoard.KG0Calibration; } }
-        public BalanceBoardSensorRaw calibrationKG17 { get { return data.BalanceBoard.KG17Calibration; } }
-        public BalanceBoardSensorRaw calibrationK34 { get { return data.BalanceBoard.KG34Calibration; } }
-        public BalanceBoardSensor sensorsKG { get { return data.BalanceBoard.KG; } }
-        public BalanceBoardSensor sensorsLB { get { return data.BalanceBoard.LB; } }
-        public float totalWeightKG { get { return data.BalanceBoard.KGWeight; } }
-        public float totalWeightLB { get { return data.BalanceBoard.LBWeight; } }
+        public BalanceBoardSensorList sensors { get { return data.BalanceBoard.sensors; } }
+        public BalanceBoardWeight weight { get { return data.BalanceBoard.weight; } }
         public AnalogStick centerOfGravity { get { return data.BalanceBoard.CenterOfGravity; } }
     }
 
@@ -81,6 +75,10 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public double x { get; private set; }
         public double y { get; private set; }
+        public override string ToString()
+        {
+            return String.Format("x: {0}, y: {0}", x, y);
+        }
     }
 
     public class AnalogTrigger
