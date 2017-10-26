@@ -24,6 +24,7 @@ using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Providers;
 using Microsoft.Scripting.Runtime;
+using IronPython.Runtime.Exceptions;
 
 namespace FreePIE.Core.ScriptEngine.Python
 {
@@ -255,7 +256,6 @@ namespace FreePIE.Core.ScriptEngine.Python
                 lineNumber = (e as SyntaxErrorException).Line;
 
             lineNumber -= startingLine;
-
             ThreadPool.QueueUserWorkItem(obj =>
             {
                 try
@@ -264,7 +264,7 @@ namespace FreePIE.Core.ScriptEngine.Python
                 }
                 finally
                 {
-                    eventAggregator.Publish(new ScriptErrorEvent(ErrorLevel.Exception, e.ToString(), lineNumber));
+                    eventAggregator.Publish(new ScriptErrorEvent(ErrorLevel.Exception, e.Message, lineNumber));
                 }
             });
         }

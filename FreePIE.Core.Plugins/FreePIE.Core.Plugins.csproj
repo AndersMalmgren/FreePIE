@@ -130,10 +130,12 @@
     <Compile Include="Wiimote\AccelerationGlobal.cs" />
     <Compile Include="Wiimote\Calibratable.cs" />
     <Compile Include="Wiimote\CircularBuffer.cs" />
+    <Compile Include="Wiimote\BalanceBoard.cs" />
     <Compile Include="Wiimote\ClassicController.cs" />
     <Compile Include="Wiimote\DolphiimoteBridge.cs" />
     <Compile Include="Wiimote\DolphiimoteDLL.cs" />
     <Compile Include="Wiimote\DolphiimoteWiimoteData.cs" />
+    <Compile Include="Wiimote\ExtensionGlobal.cs" />
     <Compile Include="Wiimote\Guitar.cs" />
     <Compile Include="Wiimote\IMotionPlusFuser.cs" />
     <Compile Include="Wiimote\Integrator.cs" />

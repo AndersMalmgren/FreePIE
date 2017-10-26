@@ -36,6 +36,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public void Init()
         {
+
             int wiimoteFlag = dll.Init(WiimoteDataReceived,
                                       WiimoteConnectionChanged,
                                       WiimoteCapabilitiesChanged,
