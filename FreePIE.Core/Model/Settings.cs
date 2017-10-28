@@ -7,6 +7,7 @@ namespace FreePIE.Core.Model
     {
         public List<Curve> Curves { get; set; }
         public List<PluginSetting> PluginSettings { get; set; }
+        public bool MinimizeToTray { get; set; }
 
         public List<string> RecentScripts { get; set; }
 

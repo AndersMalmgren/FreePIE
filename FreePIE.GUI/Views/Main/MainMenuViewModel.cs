@@ -19,9 +19,9 @@ using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
 namespace FreePIE.GUI.Views.Main
 {
-    public class MainMenuViewModel : PropertyChangedBase, 
-        Core.Common.Events.IHandle<ScriptUpdatedEvent>, 
-        Core.Common.Events.IHandle<ExitingEvent>, 
+    public class MainMenuViewModel : PropertyChangedBase,
+        Core.Common.Events.IHandle<ScriptUpdatedEvent>,
+        Core.Common.Events.IHandle<ExitingEvent>,
         Core.Common.Events.IHandle<ActiveScriptDocumentChangedEvent>,
         Core.Common.Events.IHandle<ScriptErrorEvent>,
         Core.Common.Events.IHandle<FileEvent>,
@@ -37,7 +37,7 @@ namespace FreePIE.GUI.Views.Main
         private IScriptEngine currentScriptEngine;
         private bool scriptRunning;
 
-        public MainMenuViewModel(IResultFactory resultFactory, 
+        public MainMenuViewModel(IResultFactory resultFactory,
             IEventAggregator eventAggregator,
             Func<IScriptEngine> scriptEngineFactory,
             Func<ScriptEditorViewModel> scriptEditorFactory,
@@ -46,7 +46,7 @@ namespace FreePIE.GUI.Views.Main
             ISettingsManager settings)
         {
             eventAggregator.Subscribe(this);
-           
+
             this.resultFactory = resultFactory;
             this.eventAggregator = eventAggregator;
             this.scriptEngineFactory = scriptEngineFactory;
@@ -62,11 +62,11 @@ namespace FreePIE.GUI.Views.Main
         private PanelViewModel ActiveDocument
         {
             get { return activeDocument; }
-            set { 
-                activeDocument = value; 
+            set {
+                activeDocument = value;
                 NotifyOfPropertyChange(() => CanQuickSaveScript);
                 NotifyOfPropertyChange(() => CanSaveScript);
-                NotifyOfPropertyChange(() => CanRunScript);
+                PublishScriptStateChange();
             }
         }
 
@@ -80,7 +80,7 @@ namespace FreePIE.GUI.Views.Main
             return scriptDialogStrategy.Open(CreateScriptViewModel);
         }
 
-        private void CreateScriptViewModel(string filePath)
+        public void CreateScriptViewModel(string filePath)
         {
             if (filePath != null && !fileSystem.Exists(filePath)) return;
 
@@ -88,10 +88,12 @@ namespace FreePIE.GUI.Views.Main
                 .Configure(filePath);
 
             if (!string.IsNullOrEmpty(filePath))
+            {
                 document.LoadFileContent(fileSystem.ReadAllText(filePath));
+                AddRecentScript(filePath);
+            }
 
             eventAggregator.Publish(new ScriptDocumentAddedEvent(document));
-            AddRecentScript(filePath);
         }
 
         public IEnumerable<IResult> SaveScript()
@@ -181,7 +183,10 @@ namespace FreePIE.GUI.Views.Main
         {
             NotifyOfPropertyChange(() => CanRunScript);
             NotifyOfPropertyChange(() => CanStopScript);
-            eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning));
+            if (activeDocument != null)
+                eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument.Filename));
+            else
+                eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, null));
         }
 
         public bool CanStopScript
@@ -232,7 +237,7 @@ namespace FreePIE.GUI.Views.Main
 
         public IEnumerable<IResult> Close()
         {
-            yield return resultFactory.Close();
+            yield return resultFactory.CloseApp();
         }
 
         public IEnumerable<IResult> ShowCurveSettingsMenu()

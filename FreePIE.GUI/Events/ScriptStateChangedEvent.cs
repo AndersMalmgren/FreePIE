@@ -3,9 +3,12 @@
     public class ScriptStateChangedEvent
     {
         public bool Running { get; set; }
-        public ScriptStateChangedEvent(bool running)
+
+        public string Script { get; set; }
+        public ScriptStateChangedEvent(bool running, string script)
         {
             Running = running;
+            Script = script;
         }
     }
 }
