@@ -56,7 +56,17 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             if(logFile == null)
                 Debug.WriteLine(log);
-            else File.AppendAllText(logFile, log);
+            else
+                try
+                {
+                    File.AppendAllText(logFile, log);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                    Debug.WriteLine(log);
+                    //throw;
+                }
         }
 
         private Exception occuredException;

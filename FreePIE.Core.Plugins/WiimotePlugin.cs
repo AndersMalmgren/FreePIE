@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Wiimote;
+using System.IO;
 using System.Linq;
 
 namespace FreePIE.Core.Plugins
@@ -115,7 +116,11 @@ namespace FreePIE.Core.Plugins
 
         public override object CreateGlobal()
         {
-            wiimoteBridge = new DolphiimoteBridge(logLevel, doLog ? "dolphiimote.log" : null, CreateMotionplusFuser);
+            string applicationDataSubPath = @"FreePIE\dolphiimote.log";
+            var applicationDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), applicationDataSubPath);
+            var dolphiimoteLogPath = !Environment.CurrentDirectory.StartsWith(@"C:\Program Files (x86)\FreePIE") 
+                ? @"dolphiimote.log" : applicationDataPath;
+            wiimoteBridge = new DolphiimoteBridge(logLevel, doLog ? dolphiimoteLogPath : null, CreateMotionplusFuser);
             globalUpdators = new Dictionary<uint, Action>();
             updatedWiimotes = new List<uint>();
             return Enumerable.Range(0, 4).Select(i => new WiimoteGlobal(this, wiimoteBridge.GetData((uint)i), globalUpdators)).ToArray();
