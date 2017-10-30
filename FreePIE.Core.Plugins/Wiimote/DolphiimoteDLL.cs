@@ -116,6 +116,10 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.pitch = pitch;
             this.roll = roll;
         }
+        public override string ToString()
+        {
+            return String.Format("yaw: {0}, pitch: {1}, roll: {2}", yaw, pitch, roll);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

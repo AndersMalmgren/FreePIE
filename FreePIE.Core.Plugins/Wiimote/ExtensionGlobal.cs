@@ -18,6 +18,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         public Acceleration acceleration { get { return data.Nunchuck.Acceleration; } }
         public AnalogStick stick { get { return data.Nunchuck.Stick; } }
         public NunchuckButtonState buttons { get; private set; }
+        public override string ToString()
+        {
+            return String.Format("Stick: {0}, Acceleration: {1}, Buttons: {2}", stick, acceleration, buttons);
+        }
     }
 
     public class GuitarGlobal : Subscribable
@@ -34,6 +38,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         public TapBar tapbar { get { return data.Guitar.TapBar; } }
         public AnalogTrigger whammy { get { return data.Guitar.Whammy; } }
         public bool IsGH3 { get { return data.Guitar.IsGH3; } }
+        public override string ToString()
+        {
+            return String.Format("Stick: {0}, Whammy: {1}, TapBar: {2}, GuitarHeroThree: {3}, Buttons: {4}", stick, whammy, tapbar, IsGH3, buttons);
+        }
     }
 
     public class ClassicControllerGlobal : Subscribable
@@ -50,6 +58,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         public AnalogStick rightStick { get { return data.ClassicController.RightStick; } }
         public AnalogTrigger rightTrigger { get { return data.ClassicController.RightTrigger; } }
         public AnalogTrigger leftTrigger { get { return data.ClassicController.LeftTrigger; } }
+        public override string ToString()
+        {
+            return String.Format("LeftStick: {0},  RightStick: {1}, LeftTrigger: {2}, RightTrigger: {3}, Buttons: {4}", leftStick, rightStick, leftTrigger, rightTrigger, buttons);
+        }
     }
 
     public class BalanceBoardGlobal : Subscribable

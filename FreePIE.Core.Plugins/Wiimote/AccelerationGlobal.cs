@@ -17,5 +17,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         public double x { get { return data.Acceleration.Value.x; } }
         public double y { get { return data.Acceleration.Value.y; } }
         public double z { get { return data.Acceleration.Value.z; } }
+        public override string ToString()
+        {
+            return String.Format("x: {0}, y: {1}, z: {2}", x, y, z);
+        }
     }
 }
