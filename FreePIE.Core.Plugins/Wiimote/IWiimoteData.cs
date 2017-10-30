@@ -20,6 +20,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         bool IsNunchuckButtonPressed(NunchuckButtons nunchuckButtons);
         bool IsClassicControllerButtonPressed(ClassicControllerButtons classicControllerButtons);
         bool IsGuitarButtonPressed(GuitarButtons guitarButtons);
+        WiimoteCapabilities EnabledCapabilities { get; set; }
+        WiimoteCapabilities AvailableCapabilities { get; set; }
+        WiimoteExtensions ExtensionType { get; set; }
+        ulong ExtensionID { get; set; }
     }
 
     public class Gyro

@@ -26,7 +26,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         public Guitar Guitar { get; private set; }
 
         public CalibratedValue<Acceleration> Acceleration { get; private set; }
-
+        public WiimoteCapabilities EnabledCapabilities { get; set; }
+        public WiimoteCapabilities AvailableCapabilities { get; set; }
+        public WiimoteExtensions ExtensionType { get; set; }
+        public ulong ExtensionID { get; set; }
         public DolphiimoteWiimoteData(byte wiimoteNumber, WiimoteCalibration calibration, IMotionPlusFuser fuser)
         {
             WiimoteNumber = wiimoteNumber;

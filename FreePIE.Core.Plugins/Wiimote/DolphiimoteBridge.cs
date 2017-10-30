@@ -18,6 +18,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly Queue<KeyValuePair<byte, WiimoteCapabilities>> deferredEnables;
 
         public event EventHandler<UpdateEventArgs<uint>> DataReceived;
+        public event EventHandler<UpdateEventArgs<uint>> CapabilitiesChanged;
         public DolphiimoteBridge(LogLevel logLevel, string logFile, Func<IMotionPlusFuser> fuserFactory)
         {
             this.logFile = logFile;
@@ -84,6 +85,12 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             knownCapabilities[wiimote] = (WiimoteCapabilities)capabilities.available_capabilities;
             dll.SetReportingMode(wiimote, 0x35);
+            this.data[wiimote].AvailableCapabilities = knownCapabilities[wiimote];
+            this.data[wiimote].EnabledCapabilities = (WiimoteCapabilities)capabilities.enabled_capabilities;
+            this.data[wiimote].ExtensionType = (WiimoteExtensions)capabilities.extension_type;
+            this.data[wiimote].ExtensionID = capabilities.extension_id;
+            if (CapabilitiesChanged != null)
+                CapabilitiesChanged(this, new UpdateEventArgs<uint>(wiimote));
         }
 
         private void WiimoteConnectionChanged(byte wiimote, bool connected)

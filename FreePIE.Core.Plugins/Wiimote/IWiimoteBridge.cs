@@ -21,6 +21,7 @@ namespace FreePIE.Core.Plugins.Wiimote
     {
         void DoTick();
         event EventHandler<UpdateEventArgs<uint>> DataReceived;
+        event EventHandler<UpdateEventArgs<uint>> CapabilitiesChanged;
         IWiimoteData GetData(uint i);
         void Shutdown();
         void Init();
