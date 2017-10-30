@@ -37,10 +37,14 @@ namespace FreePIE.Core.Plugins.Wiimote
         public AnalogStick stick { get { return data.Guitar.Stick; } }
         public TapBar tapbar { get { return data.Guitar.TapBar; } }
         public AnalogTrigger whammy { get { return data.Guitar.Whammy; } }
-        public bool IsGH3 { get { return data.Guitar.IsGH3; } }
+        public bool isGH3 { get { return data.Guitar.IsGH3; } }
         public override string ToString()
         {
-            return String.Format("Stick: {0}, Whammy: {1}, TapBar: {2}, GuitarHeroThree: {3}, Buttons: {4}", stick, whammy, tapbar, IsGH3, buttons);
+            if (isGH3)
+            {
+                return String.Format("Stick: {0}, Whammy: {1}, GuitarHeroThree: {2}, Buttons: {3}", stick, whammy, isGH3, buttons);
+            }
+            return String.Format("Stick: {0}, Whammy: {1}, TapBar: {2}, GuitarHeroThree: {3}, Buttons: {4}", stick, whammy, tapbar, isGH3, buttons);
         }
     }
 

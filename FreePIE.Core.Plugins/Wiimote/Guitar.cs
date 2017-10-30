@@ -39,5 +39,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             return val >= 0x1A && val < 0x1F;
         }
+        public override string ToString()
+        {
+            return String.Format("green: {0}, red {1}, yellow {2}, blue {3}, orange {4}", isGreen(), isRed(), isYellow(), isBlue(), isOrange());
+        }
     }
 }
