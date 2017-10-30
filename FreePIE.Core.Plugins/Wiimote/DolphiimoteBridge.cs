@@ -83,7 +83,6 @@ namespace FreePIE.Core.Plugins.Wiimote
         private void WiimoteCapabilitiesChanged(byte wiimote, DolphiimoteCapabilities capabilities)
         {
             knownCapabilities[wiimote] = (WiimoteCapabilities)capabilities.available_capabilities;
-            System.Threading.Thread.Sleep(100);
             dll.SetReportingMode(wiimote, 0x35);
         }
 
