@@ -80,6 +80,7 @@ namespace FreePIE.Core.Plugins
         ClassicController = 0x0001
     }
 
+    [GlobalEnum, Flags]
     public enum WiimoteExtensions
     {
         None = 0,
