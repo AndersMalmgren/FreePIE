@@ -20,7 +20,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public NunchuckButtonState buttons { get; private set; }
         public override string ToString()
         {
-            return String.Format("Stick: {0}, Acceleration: {1}, Buttons: {2}", stick, acceleration, buttons);
+            return String.Format("Stick: {0}, Buttons: {2}, Acceleration: {1}", stick, acceleration, buttons);
         }
     }
 
@@ -97,7 +97,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public double y { get; private set; }
         public override string ToString()
         {
-            return String.Format("x: {0}, y: {0}", x, y);
+            return String.Format("x: {0}, y: {1}", x, y);
         }
     }
 
