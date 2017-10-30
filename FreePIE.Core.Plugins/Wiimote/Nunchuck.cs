@@ -10,6 +10,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         public Acceleration Acceleration { get; set; }
 
         public AnalogStick Stick { get; set; }
+
+        public NunchuckButtons Buttons { get; set; }
     }
 
     public class Acceleration

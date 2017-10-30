@@ -11,6 +11,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public TapBar TapBar { get; set; }
         public AnalogTrigger Whammy { get; set; }
         public Boolean IsGH3 { get; set; }
+        public GuitarButtons Buttons { get; set; }
     }
     public class TapBar
     {

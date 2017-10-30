@@ -11,5 +11,6 @@ namespace FreePIE.Core.Plugins.Wiimote
         public AnalogStick LeftStick { get; set; }
         public AnalogTrigger LeftTrigger { get; set; }
         public AnalogTrigger RightTrigger { get; set; }
+        public ClassicControllerButtons Buttons { get; set; }
     }
 }

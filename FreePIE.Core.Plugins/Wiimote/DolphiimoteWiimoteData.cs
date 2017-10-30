@@ -107,18 +107,21 @@ namespace FreePIE.Core.Plugins.Wiimote
         public bool IsNunchuckButtonPressed(NunchuckButtons nunchuckButtons)
         {
             UInt16 value = (UInt16)nunchuckButtons;
-            return (data.nunchuck.buttons & value) == value;
+            UInt16 orig = (UInt16)Nunchuck.Buttons;
+            return (orig & value) == value;
         }
 
         public bool IsClassicControllerButtonPressed(ClassicControllerButtons classicControllerButtons)
         {
             UInt16 value = (UInt16)classicControllerButtons;
-            return (data.classic_controller.buttons & value) == value;
+            UInt16 orig = (UInt16)ClassicController.Buttons;
+            return (orig & value) == value;
         }
         public bool IsGuitarButtonPressed(GuitarButtons guitarButtons)
         {
             UInt16 value = (UInt16)guitarButtons;
-            return (data.guitar.buttons & value) == value;
+            UInt16 orig = (UInt16)Guitar.Buttons;
+            return (orig & value) == value;
         }
 
         private CalibratedValue<Gyro> CalculateMotionPlus(DolphiimoteMotionplus motionplus)
@@ -149,14 +152,15 @@ namespace FreePIE.Core.Plugins.Wiimote
             if (IsDataValid(WiimoteDataValid.Nunchuck))
             {
                 Nunchuck = new Nunchuck
-                    {
-                        Stick = calibration.NormalizeNunchuckStick(DateTime.Now,
+                {
+                    Stick = calibration.NormalizeNunchuckStick(DateTime.Now,
                                                                    rawData.nunchuck.stick_x,
                                                                    rawData.nunchuck.stick_y),
-                        Acceleration = calibration.NormalizeNunchuckAcceleration(DateTime.Now,
+                    Acceleration = calibration.NormalizeNunchuckAcceleration(DateTime.Now,
                                                                                  rawData.nunchuck.x,
                                                                                  rawData.nunchuck.y,
-                                                                                 rawData.nunchuck.z)
+                                                                                 rawData.nunchuck.z),
+                    Buttons = (NunchuckButtons)data.nunchuck.buttons
                     };
             }
             if (IsDataValid(WiimoteDataValid.ClassicController))
@@ -173,6 +177,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                                                                 rawData.classic_controller.right_trigger),
                     LeftTrigger = calibration.NormalizeClassicControllerLeftTrigger(DateTime.Now,
                                                                 rawData.classic_controller.left_trigger),
+                    Buttons = (ClassicControllerButtons)data.classic_controller.buttons
                 };
             }
             if (IsDataValid(WiimoteDataValid.Guitar))
@@ -186,6 +191,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                                                                rawData.guitar.whammy_bar),
                     IsGH3 = rawData.guitar.is_gh3 == 1,
                     TapBar = new TapBar(rawData.guitar.tap_bar),
+                    Buttons = (GuitarButtons)data.guitar.buttons
                 };
             }
             if (IsDataValid(WiimoteDataValid.BalanceBoard))
