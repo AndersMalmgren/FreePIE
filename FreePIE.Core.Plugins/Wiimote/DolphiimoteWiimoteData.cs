@@ -24,12 +24,18 @@ namespace FreePIE.Core.Plugins.Wiimote
         public Nunchuck Nunchuck { get; private set; }
         public ClassicController ClassicController { get; private set; }
         public Guitar Guitar { get; private set; }
-
         public CalibratedValue<Acceleration> Acceleration { get; private set; }
         public WiimoteCapabilities EnabledCapabilities { get; set; }
         public WiimoteCapabilities AvailableCapabilities { get; set; }
         public WiimoteExtensions ExtensionType { get; set; }
+        public int BatteryPercentage { get; set; }
         public ulong ExtensionID { get; set; }
+        byte map(byte value, byte istart, byte istop, byte ostart, byte ostop)
+        {
+            return (byte)(ostart + (float)(ostop - ostart) * ((float)(value - istart) / (float)(istop - istart)));
+        }
+        private static byte CLASSIC_LEFT_STICK_MAX = 63;
+        private static byte CLASSIC_OTHER_MAX = 31;
         public DolphiimoteWiimoteData(byte wiimoteNumber, WiimoteCalibration calibration, IMotionPlusFuser fuser)
         {
             WiimoteNumber = wiimoteNumber;
@@ -48,8 +54,8 @@ namespace FreePIE.Core.Plugins.Wiimote
 
             ClassicController = new ClassicController
             {
-                LeftStick = new AnalogStick(0,0),
-                RightStick = new AnalogStick(0,0),
+                LeftStick = new AnalogStick(0, 0),
+                RightStick = new AnalogStick(0, 0),
                 RightTrigger = new AnalogTrigger(0),
                 LeftTrigger = new AnalogTrigger(0)
             };
@@ -78,7 +84,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                 sensors = new BalanceBoardSensorList
                 {
                     bottomLeft = def,
-                    bottomRight = def, 
+                    bottomRight = def,
                     topLeft = def,
                     topRight = def
                 },
@@ -88,8 +94,9 @@ namespace FreePIE.Core.Plugins.Wiimote
                     lb = 0,
                     raw = 0
                 },
-                centerOfGravity = new AnalogStick(0,0)
+                centerOfGravity = new AnalogStick(0, 0)
             };
+            BatteryPercentage = 0;
         }
 
         public bool IsButtonPressed(WiimoteButtons b)
@@ -168,15 +175,15 @@ namespace FreePIE.Core.Plugins.Wiimote
                 ClassicController = new ClassicController
                 {
                     RightStick = calibration.NormalizeClassicControllerRightStick(DateTime.Now,
-                                                               rawData.classic_controller.right_stick_x,
-                                                               rawData.classic_controller.right_stick_y),
+                                                               map(rawData.classic_controller.right_stick_x, 0, CLASSIC_OTHER_MAX, 0, 200),
+                                                               map(rawData.classic_controller.right_stick_y, 0, CLASSIC_OTHER_MAX, 0, 200)),
                     LeftStick = calibration.NormalizeClassicControllerLeftStick(DateTime.Now,
-                                                               rawData.classic_controller.left_stick_x,
-                                                               rawData.classic_controller.left_stick_y),
+                                                               map(rawData.classic_controller.left_stick_x, 0, CLASSIC_LEFT_STICK_MAX, 0, 200),
+                                                               map(rawData.classic_controller.left_stick_y, 0, CLASSIC_LEFT_STICK_MAX, 0, 200)),
                     RightTrigger = calibration.NormalizeClassicControllerRightTrigger(DateTime.Now,
-                                                                rawData.classic_controller.right_trigger),
+                                                                map(rawData.classic_controller.right_trigger, 0, CLASSIC_OTHER_MAX, 0, 100)),
                     LeftTrigger = calibration.NormalizeClassicControllerLeftTrigger(DateTime.Now,
-                                                                rawData.classic_controller.left_trigger),
+                                                                map(rawData.classic_controller.left_trigger, 0, CLASSIC_OTHER_MAX, 0, 100)),
                     Buttons = (ClassicControllerButtons)data.classic_controller.buttons
                 };
             }

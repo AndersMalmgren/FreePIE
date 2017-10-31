@@ -24,7 +24,11 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         public UInt16 buttons;
     }
-
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DolphiimoteStatus
+    {
+        public byte battery_level;
+    }
     [StructLayout(LayoutKind.Sequential)]
     public struct DolphiimoteGuitar
     {
@@ -138,16 +142,20 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         private readonly DolphiimoteInit dolphiimoteInit;
         private readonly DolphiimoteUpdate dolphiimoteUpdate;
-        private readonly DolphiimoteDetermineCapabilities dolphiimoteDetermineCapabilities;
         private readonly DolphiimoteSetReportingMode dolphiimoteSetReportingMode;
         private readonly DolphiimoteShutdown dolphiimoteShutdown;
         private readonly DolphiimoteEnableCapabilities dolphiimoteEnableCapabilities;
+        private readonly DolphiimoteSetRunble dolphiimoteSetRumble;
+        private readonly DolphiimoteRequestStatus dolphiimoteRequestStatus;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void DataCallback(byte wiimote, IntPtr data, IntPtr userdata);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void CapabilitiesCallback(byte wiimote, IntPtr data, IntPtr userdata);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void StatusCallback(byte wiimote, IntPtr data, IntPtr userdata);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void ConnectionCallback(byte wiimote, byte status);
@@ -158,14 +166,15 @@ namespace FreePIE.Core.Plugins.Wiimote
         private DataCallback dataCallback;
         private CapabilitiesCallback capabilitiesCallback;
         private ConnectionCallback connectionCallback;
+        private StatusCallback statusCallback;
         private OnLog logCallback;
 
         public DolphiimoteDll(string path)
         {
             nativeDll = new NativeDll(path);
 
-            if (Marshal.SizeOf(typeof(DolphiimoteCallbacks)) != 20)
-                throw new InvalidOperationException("DolphiimoteCallbacks wrong size.");
+            if (Marshal.SizeOf(typeof(DolphiimoteCallbacks)) != 24)
+                throw new InvalidOperationException("DolphiimoteCallbacks wrong size. Expected: 24, got:" + Marshal.SizeOf(typeof(DolphiimoteCallbacks)));
 
             if (Marshal.SizeOf(typeof(DolphiimoteData)) != 128)
                 throw new InvalidOperationException("DolphiimoteData wrong size. Expected: 128, got:"+ Marshal.SizeOf(typeof(DolphiimoteData)));
@@ -174,11 +183,12 @@ namespace FreePIE.Core.Plugins.Wiimote
                 throw new InvalidOperationException("DolphiimoteCapabilities wrong size.");
 
             dolphiimoteInit = nativeDll.GetDelegateFromFunction<DolphiimoteInit>("dolphiimote_init");
-            dolphiimoteDetermineCapabilities = nativeDll.GetDelegateFromFunction<DolphiimoteDetermineCapabilities>("dolphiimote_determine_capabilities");
             dolphiimoteUpdate = nativeDll.GetDelegateFromFunction<DolphiimoteUpdate>("dolphiimote_update");
             dolphiimoteSetReportingMode = nativeDll.GetDelegateFromFunction<DolphiimoteSetReportingMode>("dolphiimote_set_reporting_mode");
             dolphiimoteShutdown = nativeDll.GetDelegateFromFunction<DolphiimoteShutdown>("dolphiimote_shutdown");
             dolphiimoteEnableCapabilities = nativeDll.GetDelegateFromFunction<DolphiimoteEnableCapabilities>("dolphiimote_enable_capabilities");
+            dolphiimoteSetRumble = nativeDll.GetDelegateFromFunction<DolphiimoteSetRunble>("dolphiimote_set_rumble");
+            dolphiimoteRequestStatus = nativeDll.GetDelegateFromFunction<DolphiimoteRequestStatus>("dolphiimote_request_status");
         }
 
         private T MarshalType<T>(IntPtr data) where T : struct
@@ -191,11 +201,12 @@ namespace FreePIE.Core.Plugins.Wiimote
             return Marshal.GetFunctionPointerForDelegate(del);
         }
 
-        public int Init(Action<byte, DolphiimoteData> newData, Action<byte, bool> wiimoteConnectionChanged, Action<byte, DolphiimoteCapabilities> capabilitiesChanged, Action<string> newLogMessage)
+        public int Init(Action<byte, DolphiimoteData> newData, Action<byte, bool> wiimoteConnectionChanged, Action<byte, DolphiimoteCapabilities> capabilitiesChanged, Action<byte, DolphiimoteStatus> statusChanged, Action<string> newLogMessage)
         {
             dataCallback = (wiimote, data, user) => newData(wiimote, MarshalType<DolphiimoteData>(data));
             capabilitiesCallback = (wiimote, capabilities, user) => capabilitiesChanged(wiimote, MarshalType<DolphiimoteCapabilities>(capabilities));
             connectionCallback = (wiimote, status) => wiimoteConnectionChanged(wiimote, Convert.ToBoolean(status));
+            statusCallback = (wiimote, status, user) => statusChanged(wiimote, MarshalType<DolphiimoteStatus>(status));
             logCallback = (str, length) => newLogMessage(Marshal.PtrToStringAnsi(str, (int)length));
 
             var callbacks = new DolphiimoteCallbacks
@@ -203,6 +214,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                 dataReceived = MarshalFunction(dataCallback),
                 capabilitiesChanged = MarshalFunction(capabilitiesCallback),
                 connectionChanged = MarshalFunction(connectionCallback),
+                statusChanged = MarshalFunction(statusCallback),
                 onLog = MarshalFunction(logCallback),
                 userData = IntPtr.Zero
             };
@@ -214,6 +226,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         private delegate void DolphiimoteEnableCapabilities(byte wiimote, ushort capabilities);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void DolphiimoteRequestStatus(byte wiimote);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate Int32 DolphiimoteInit(DolphiimoteCallbacks onUpdate);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -223,10 +238,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         private delegate void DolphiimoteUpdate();
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void DolphiimoteDetermineCapabilities(byte wiimote);
+        private delegate void DolphiimoteSetReportingMode(byte wiimote, byte mode);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void DolphiimoteSetReportingMode(byte wiimote, byte mode);
+        private delegate void DolphiimoteSetRunble(byte wiimote, bool shouldRunble);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct DolphiimoteCallbacks
@@ -234,6 +249,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             public IntPtr dataReceived;
             public IntPtr connectionChanged;
             public IntPtr capabilitiesChanged;
+            public IntPtr statusChanged;
             public IntPtr onLog;
             public IntPtr userData;
         }
@@ -247,12 +263,15 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             dolphiimoteSetReportingMode(wiimote, mode);
         }
-
-        public void DetermineCapabilities(byte i)
+        public void SetRumble(byte wiimote, Boolean state)
         {
-            dolphiimoteDetermineCapabilities(i);
+            dolphiimoteSetRumble(wiimote, state);
         }
-
+        
+        public void RequestStatus(byte wiimote)
+        {
+            dolphiimoteRequestStatus(wiimote);
+        }
         public void Shutdown()
         {
             dolphiimoteShutdown();

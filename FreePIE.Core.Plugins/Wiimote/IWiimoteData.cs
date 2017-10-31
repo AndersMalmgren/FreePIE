@@ -23,6 +23,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         WiimoteCapabilities EnabledCapabilities { get; set; }
         WiimoteCapabilities AvailableCapabilities { get; set; }
         WiimoteExtensions ExtensionType { get; set; }
+        int BatteryPercentage { get; set; }
         ulong ExtensionID { get; set; }
     }
 
