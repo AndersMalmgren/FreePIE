@@ -17,6 +17,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly Dictionary<byte, WiimoteCapabilities> knownCapabilities;
         private readonly Queue<KeyValuePair<byte, WiimoteCapabilities>> deferredEnables;
         private readonly Queue<KeyValuePair<byte, Boolean>> deferredRumbles;
+        private readonly Queue<KeyValuePair<byte, int>> deferredLEDChanges;
         private readonly Queue<byte> deferredStatusRequests;
 
         public event EventHandler<UpdateEventArgs<uint>> DataReceived;
@@ -31,6 +32,7 @@ namespace FreePIE.Core.Plugins.Wiimote
 
             deferredEnables = new Queue<KeyValuePair<byte, WiimoteCapabilities>>();
             deferredRumbles = new Queue<KeyValuePair<byte, Boolean>>();
+            deferredLEDChanges = new Queue<KeyValuePair<byte, int>>();
             deferredStatusRequests = new Queue<byte>();
             knownCapabilities = new Dictionary<byte, WiimoteCapabilities>();
 
@@ -57,6 +59,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         public void SetRumble(byte wiimote, Boolean shouldRumble)
         {
             deferredRumbles.Enqueue(new KeyValuePair<byte, bool>(wiimote, shouldRumble));
+        }
+        public void SetLEDState(byte wiimote, int ledState)
+        {
+            deferredLEDChanges.Enqueue(new KeyValuePair<byte, int>(wiimote, ledState));
         }
         public void RequestStatus(byte wiimote)
         {
@@ -93,6 +99,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         private void WiimoteStatusChanged(byte wiimote, DolphiimoteStatus status)
         {
             this.data[wiimote].BatteryPercentage = status.battery_level;
+            this.data[wiimote].LEDStatus = status.led_status;
             if (StatusChanged != null)
                 StatusChanged(this, new UpdateEventArgs<uint>(wiimote));
         }
@@ -137,6 +144,11 @@ namespace FreePIE.Core.Plugins.Wiimote
             {
                 dll.RequestStatus(wiimote);
                 deferredStatusRequests.Dequeue();
+            }
+            foreach (var deferredLEDChange in deferredLEDChanges.ToList())
+            {
+                dll.SetLedState(deferredLEDChange.Key, deferredLEDChange.Value);
+                deferredLEDChanges.Dequeue();
             }
         }
 

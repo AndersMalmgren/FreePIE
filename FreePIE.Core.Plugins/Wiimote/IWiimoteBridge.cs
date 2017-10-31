@@ -28,6 +28,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         void Init();
         void Enable(byte wiimote, WiimoteCapabilities flags);
         void SetRumble(byte wiimote, Boolean shouldRumble);
+        void SetLEDState(byte wiimote, int led_state);
         void RequestStatus(byte wiimote);
     }
 }

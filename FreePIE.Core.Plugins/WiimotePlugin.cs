@@ -203,6 +203,10 @@ namespace FreePIE.Core.Plugins
         {
             wiimoteBridge.SetRumble(wiimote, shouldRumble);
         }
+        public void SetLedState(byte wiimote, int led_state)
+        {
+            wiimoteBridge.SetLEDState(wiimote, led_state);
+        }
         public void RequestStatus(byte wiimote)
         {
             wiimoteBridge.RequestStatus(wiimote);
@@ -279,7 +283,7 @@ namespace FreePIE.Core.Plugins
             balanceBoard = new BalanceBoardGlobal(data, out balanceBoardTrigger);
             capabilities = new CapabilitiesGlobal(data, out capabilitiesTrigger);
             //TODO: Allow setting led status
-            status = new StatusGlobal(data, out statusTrigger);
+            status = new StatusGlobal(plugin, data, out statusTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
             capabilitiesUpdaters[data.WiimoteNumber] = capabilitiesTrigger;
@@ -292,11 +296,6 @@ namespace FreePIE.Core.Plugins
         public void setRumble(Boolean shouldRumble)
         {
             plugin.SetRumble(data.WiimoteNumber, shouldRumble);
-        }
-        public void requestStatus()
-        {
-            plugin.RequestStatus(data.WiimoteNumber);
-            System.Diagnostics.Debug.WriteLine("Requesting status for (1): {0}", data.WiimoteNumber);
         }
         private void OnWiimoteDataReceived()
         {

@@ -28,6 +28,7 @@ namespace FreePIE.Core.Plugins.Wiimote
     public struct DolphiimoteStatus
     {
         public byte battery_level;
+        public byte led_status;
     }
     [StructLayout(LayoutKind.Sequential)]
     public struct DolphiimoteGuitar
@@ -147,6 +148,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly DolphiimoteEnableCapabilities dolphiimoteEnableCapabilities;
         private readonly DolphiimoteSetRunble dolphiimoteSetRumble;
         private readonly DolphiimoteRequestStatus dolphiimoteRequestStatus;
+        private readonly DolphiimoteSetLedState dolphiimoteSetLedState;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void DataCallback(byte wiimote, IntPtr data, IntPtr userdata);
@@ -189,6 +191,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             dolphiimoteEnableCapabilities = nativeDll.GetDelegateFromFunction<DolphiimoteEnableCapabilities>("dolphiimote_enable_capabilities");
             dolphiimoteSetRumble = nativeDll.GetDelegateFromFunction<DolphiimoteSetRunble>("dolphiimote_set_rumble");
             dolphiimoteRequestStatus = nativeDll.GetDelegateFromFunction<DolphiimoteRequestStatus>("dolphiimote_request_status");
+            dolphiimoteSetLedState = nativeDll.GetDelegateFromFunction<DolphiimoteSetLedState>("dolphiimote_set_leds");
         }
 
         private T MarshalType<T>(IntPtr data) where T : struct
@@ -243,6 +246,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void DolphiimoteSetRunble(byte wiimote, bool shouldRunble);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void DolphiimoteSetLedState(byte wiimote, int led_state);
+
         [StructLayout(LayoutKind.Sequential)]
         private struct DolphiimoteCallbacks
         {
@@ -266,6 +272,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         public void SetRumble(byte wiimote, Boolean state)
         {
             dolphiimoteSetRumble(wiimote, state);
+        }
+        public void SetLedState(byte wiimote, int led_state)
+        {
+            dolphiimoteSetLedState(wiimote, led_state);
         }
         
         public void RequestStatus(byte wiimote)

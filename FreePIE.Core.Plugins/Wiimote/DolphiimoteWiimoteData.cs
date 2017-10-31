@@ -29,6 +29,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public WiimoteCapabilities AvailableCapabilities { get; set; }
         public WiimoteExtensions ExtensionType { get; set; }
         public int BatteryPercentage { get; set; }
+        public int LEDStatus { get; set; }
         public ulong ExtensionID { get; set; }
         byte map(byte value, byte istart, byte istop, byte ostart, byte ostop)
         {
