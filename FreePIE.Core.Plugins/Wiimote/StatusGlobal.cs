@@ -33,11 +33,12 @@ namespace FreePIE.Core.Plugins.Wiimote
             if (led == 2) mask = LED2_MASK;
             if (led == 3) mask = LED3_MASK;
             if (led == 4) mask = LED4_MASK;
-            return (data.LEDStatus & mask) == data.LEDStatus;
+            return (data.LEDStatus & mask) == mask;
         }
 
         public void setLEDState(int led, Boolean state)
         {
+            if (getLEDState(led) == state) return;
             int mask = LED1_MASK;
             if (led == 2) mask = LED2_MASK;
             if (led == 3) mask = LED3_MASK;
