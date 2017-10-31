@@ -30,9 +30,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         public bool getLEDState(int led)
         {
             int mask = LED1_MASK;
-            if (led == 2) mask = LED2_MASK;
-            if (led == 3) mask = LED3_MASK;
-            if (led == 4) mask = LED4_MASK;
+            if (led == 1) mask = LED2_MASK;
+            if (led == 2) mask = LED3_MASK;
+            if (led == 3) mask = LED4_MASK;
             return (data.LEDStatus & mask) == mask;
         }
 
@@ -40,9 +40,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             if (getLEDState(led) == state) return;
             int mask = LED1_MASK;
-            if (led == 2) mask = LED2_MASK;
-            if (led == 3) mask = LED3_MASK;
-            if (led == 4) mask = LED4_MASK;
+            if (led == 1) mask = LED2_MASK;
+            if (led == 2) mask = LED3_MASK;
+            if (led == 3) mask = LED4_MASK;
             if (state)
                 data.LEDStatus |= mask;
             else
