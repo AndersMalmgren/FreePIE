@@ -146,7 +146,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly DolphiimoteSetReportingMode dolphiimoteSetReportingMode;
         private readonly DolphiimoteShutdown dolphiimoteShutdown;
         private readonly DolphiimoteEnableCapabilities dolphiimoteEnableCapabilities;
-        private readonly DolphiimoteSetRunble dolphiimoteSetRumble;
+        private readonly DolphiimoteSetRumble dolphiimoteSetRumble;
         private readonly DolphiimoteRequestStatus dolphiimoteRequestStatus;
         private readonly DolphiimoteSetLedState dolphiimoteSetLedState;
 
@@ -189,7 +189,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             dolphiimoteSetReportingMode = nativeDll.GetDelegateFromFunction<DolphiimoteSetReportingMode>("dolphiimote_set_reporting_mode");
             dolphiimoteShutdown = nativeDll.GetDelegateFromFunction<DolphiimoteShutdown>("dolphiimote_shutdown");
             dolphiimoteEnableCapabilities = nativeDll.GetDelegateFromFunction<DolphiimoteEnableCapabilities>("dolphiimote_enable_capabilities");
-            dolphiimoteSetRumble = nativeDll.GetDelegateFromFunction<DolphiimoteSetRunble>("dolphiimote_set_rumble");
+            dolphiimoteSetRumble = nativeDll.GetDelegateFromFunction<DolphiimoteSetRumble>("dolphiimote_set_rumble");
             dolphiimoteRequestStatus = nativeDll.GetDelegateFromFunction<DolphiimoteRequestStatus>("dolphiimote_request_status");
             dolphiimoteSetLedState = nativeDll.GetDelegateFromFunction<DolphiimoteSetLedState>("dolphiimote_set_leds");
         }
@@ -244,7 +244,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         private delegate void DolphiimoteSetReportingMode(byte wiimote, byte mode);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void DolphiimoteSetRunble(byte wiimote, bool shouldRunble);
+        private delegate void DolphiimoteSetRumble(byte wiimote, bool shouldRumble);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void DolphiimoteSetLedState(byte wiimote, int led_state);
