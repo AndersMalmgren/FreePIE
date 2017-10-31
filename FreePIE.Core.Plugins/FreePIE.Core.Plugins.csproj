@@ -127,6 +127,7 @@
     <Compile Include="VJoyPlugin.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
+    <Compile Include="Wiimote\CapabilitiesGlobal.cs" />
     <Compile Include="Wiimote\AccelerationGlobal.cs" />
     <Compile Include="Wiimote\Calibratable.cs" />
     <Compile Include="Wiimote\CircularBuffer.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Wiimote\Nunchuck.cs" />
     <Compile Include="Wiimote\SamplePeriodCounter.cs" />
     <Compile Include="Wiimote\SequenceExtensions.cs" />
+    <Compile Include="Wiimote\StatusGlobal.cs" />
     <Compile Include="Wiimote\Subscribable.cs" />
     <Compile Include="Wiimote\TimedValue.cs" />
     <Compile Include="Wiimote\TimeSeries.cs" />

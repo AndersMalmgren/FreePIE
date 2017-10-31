@@ -21,9 +21,14 @@ namespace FreePIE.Core.Plugins.Wiimote
     {
         void DoTick();
         event EventHandler<UpdateEventArgs<uint>> DataReceived;
+        event EventHandler<UpdateEventArgs<uint>> CapabilitiesChanged;
+        event EventHandler<UpdateEventArgs<uint>> StatusChanged;
         IWiimoteData GetData(uint i);
         void Shutdown();
         void Init();
         void Enable(byte wiimote, WiimoteCapabilities flags);
+        void SetRumble(byte wiimote, Boolean shouldRumble);
+        void SetLEDState(byte wiimote, int led_state);
+        void RequestStatus(byte wiimote);
     }
 }

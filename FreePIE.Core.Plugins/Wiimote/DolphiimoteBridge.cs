@@ -16,8 +16,13 @@ namespace FreePIE.Core.Plugins.Wiimote
 
         private readonly Dictionary<byte, WiimoteCapabilities> knownCapabilities;
         private readonly Queue<KeyValuePair<byte, WiimoteCapabilities>> deferredEnables;
+        private readonly Queue<KeyValuePair<byte, Boolean>> deferredRumbles;
+        private readonly Queue<KeyValuePair<byte, int>> deferredLEDChanges;
+        private readonly Queue<byte> deferredStatusRequests;
 
         public event EventHandler<UpdateEventArgs<uint>> DataReceived;
+        public event EventHandler<UpdateEventArgs<uint>> CapabilitiesChanged;
+        public event EventHandler<UpdateEventArgs<uint>> StatusChanged;
         public DolphiimoteBridge(LogLevel logLevel, string logFile, Func<IMotionPlusFuser> fuserFactory)
         {
             this.logFile = logFile;
@@ -26,6 +31,9 @@ namespace FreePIE.Core.Plugins.Wiimote
             dll = new DolphiimoteDll(Path.Combine(Environment.CurrentDirectory, "DolphiiMote.dll"));
 
             deferredEnables = new Queue<KeyValuePair<byte, WiimoteCapabilities>>();
+            deferredRumbles = new Queue<KeyValuePair<byte, Boolean>>();
+            deferredLEDChanges = new Queue<KeyValuePair<byte, int>>();
+            deferredStatusRequests = new Queue<byte>();
             knownCapabilities = new Dictionary<byte, WiimoteCapabilities>();
 
             data = new Dictionary<uint, DolphiimoteWiimoteData>();
@@ -37,19 +45,28 @@ namespace FreePIE.Core.Plugins.Wiimote
         public void Init()
         {
 
-            int wiimoteFlag = dll.Init(WiimoteDataReceived,
+            dll.Init(WiimoteDataReceived,
                                       WiimoteConnectionChanged,
                                       WiimoteCapabilitiesChanged,
+                                      WiimoteStatusChanged,
                                       WiimoteLogReceived);
-
-            for (byte i = 0; i < 4; i++, wiimoteFlag >>= 1)
-                if ((wiimoteFlag & 0x01) == 0x01)
-                    dll.DetermineCapabilities(i);
         }
 
         public void Enable(byte wiimote, WiimoteCapabilities flags)
         {
             deferredEnables.Enqueue(new KeyValuePair<byte, WiimoteCapabilities>(wiimote, flags));
+        }
+        public void SetRumble(byte wiimote, Boolean shouldRumble)
+        {
+            deferredRumbles.Enqueue(new KeyValuePair<byte, bool>(wiimote, shouldRumble));
+        }
+        public void SetLEDState(byte wiimote, int ledState)
+        {
+            deferredLEDChanges.Enqueue(new KeyValuePair<byte, int>(wiimote, ledState));
+        }
+        public void RequestStatus(byte wiimote)
+        {
+            deferredStatusRequests.Enqueue(wiimote);
         }
 
         private void WiimoteLogReceived(string log)
@@ -79,11 +96,23 @@ namespace FreePIE.Core.Plugins.Wiimote
             if (DataReceived != null)
                 DataReceived(this, new UpdateEventArgs<uint>(wiimote));
         }
-
+        private void WiimoteStatusChanged(byte wiimote, DolphiimoteStatus status)
+        {
+            this.data[wiimote].BatteryPercentage = status.battery_level;
+            this.data[wiimote].LEDStatus = status.led_status;
+            if (StatusChanged != null)
+                StatusChanged(this, new UpdateEventArgs<uint>(wiimote));
+        }
         private void WiimoteCapabilitiesChanged(byte wiimote, DolphiimoteCapabilities capabilities)
         {
             knownCapabilities[wiimote] = (WiimoteCapabilities)capabilities.available_capabilities;
             dll.SetReportingMode(wiimote, 0x35);
+            this.data[wiimote].AvailableCapabilities = knownCapabilities[wiimote];
+            this.data[wiimote].EnabledCapabilities = (WiimoteCapabilities)capabilities.enabled_capabilities;
+            this.data[wiimote].ExtensionType = (WiimoteExtensions)capabilities.extension_type;
+            this.data[wiimote].ExtensionID = capabilities.extension_id;
+            if (CapabilitiesChanged != null)
+                CapabilitiesChanged(this, new UpdateEventArgs<uint>(wiimote));
         }
 
         private void WiimoteConnectionChanged(byte wiimote, bool connected)
@@ -105,6 +134,21 @@ namespace FreePIE.Core.Plugins.Wiimote
 
                 dll.EnableCapabilities(deferredEnable.Key, deferredEnable.Value);
                 deferredEnables.Dequeue();
+            }
+            foreach (var deferredRumble in deferredRumbles.ToList())
+            {
+                dll.SetRumble(deferredRumble.Key, deferredRumble.Value);
+                deferredRumbles.Dequeue();
+            }
+            foreach (byte wiimote in deferredStatusRequests.ToList())
+            {
+                dll.RequestStatus(wiimote);
+                deferredStatusRequests.Dequeue();
+            }
+            foreach (var deferredLEDChange in deferredLEDChanges.ToList())
+            {
+                dll.SetLedState(deferredLEDChange.Key, deferredLEDChange.Value);
+                deferredLEDChanges.Dequeue();
             }
         }
 

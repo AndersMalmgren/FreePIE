@@ -11,6 +11,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public TapBar TapBar { get; set; }
         public AnalogTrigger Whammy { get; set; }
         public Boolean IsGH3 { get; set; }
+        public GuitarButtons Buttons { get; set; }
     }
     public class TapBar
     {
@@ -38,6 +39,10 @@ namespace FreePIE.Core.Plugins.Wiimote
         public Boolean isOrange()
         {
             return val >= 0x1A && val < 0x1F;
+        }
+        public override string ToString()
+        {
+            return String.Format("green: {0}, red {1}, yellow {2}, blue {3}, orange {4}", isGreen(), isRed(), isYellow(), isBlue(), isOrange());
         }
     }
 }

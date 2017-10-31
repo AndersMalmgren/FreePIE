@@ -80,6 +80,7 @@ namespace FreePIE.Core.Plugins
         ClassicController = 0x0001
     }
 
+    [GlobalEnum, Flags]
     public enum WiimoteExtensions
     {
         None = 0,
@@ -88,7 +89,10 @@ namespace FreePIE.Core.Plugins
         ClassicControllerPro = 4,
         GuitarHeroGuitar = 8,
         GuitarHeroDrums = 16,
-        MotionPlus = 32
+        MotionPlus = 32,
+        BalanceBoard = 64,
+        //Skip passthrough as its not an exposed id.
+        Unknown = 256
     }
 
     public enum FusionType
@@ -105,7 +109,11 @@ namespace FreePIE.Core.Plugins
         private bool doLog;
         private IWiimoteBridge wiimoteBridge;
         private Dictionary<uint, Action> globalUpdators;
+        private Dictionary<uint, Action> globalUpdatorsCapabilities;
+        private Dictionary<uint, Action> globalUpdatorsStatus;
         private IList<uint> updatedWiimotes;
+        private IList<uint> updatedWiimotesCapabilities;
+        private IList<uint> updatedWiimotesStatus;
 
         private Dictionary<FusionType, Func<IMotionPlusFuser>> fuserFactories = new Dictionary <FusionType, Func<IMotionPlusFuser>>()
             {
@@ -117,8 +125,12 @@ namespace FreePIE.Core.Plugins
         {
             wiimoteBridge = new DolphiimoteBridge(logLevel, doLog ? "dolphiimote.log" : null, CreateMotionplusFuser);
             globalUpdators = new Dictionary<uint, Action>();
+            globalUpdatorsCapabilities = new Dictionary<uint, Action>();
+            globalUpdatorsStatus = new Dictionary<uint, Action>();
             updatedWiimotes = new List<uint>();
-            return Enumerable.Range(0, 4).Select(i => new WiimoteGlobal(this, wiimoteBridge.GetData((uint)i), globalUpdators)).ToArray();
+            updatedWiimotesCapabilities = new List<uint>();
+            updatedWiimotesStatus = new List<uint>();
+            return Enumerable.Range(0, 4).Select(i => new WiimoteGlobal(this, wiimoteBridge.GetData((uint)i), globalUpdators, globalUpdatorsCapabilities, globalUpdatorsStatus)).ToArray();
         }
 
         public override bool GetProperty(int index, IPluginProperty property)
@@ -177,6 +189,8 @@ namespace FreePIE.Core.Plugins
         public override Action Start()
         {
             wiimoteBridge.DataReceived += WiimoteDataReceived;
+            wiimoteBridge.CapabilitiesChanged += CapabilitiesChanged;
+            wiimoteBridge.StatusChanged += StatusChanged;
             wiimoteBridge.Init();
             return null;
         }
@@ -185,12 +199,32 @@ namespace FreePIE.Core.Plugins
         {
             wiimoteBridge.Enable(wiimote, flags);
         }
-
+        public void SetRumble(byte wiimote, Boolean shouldRumble)
+        {
+            wiimoteBridge.SetRumble(wiimote, shouldRumble);
+        }
+        public void SetLedState(byte wiimote, int led_state)
+        {
+            wiimoteBridge.SetLEDState(wiimote, led_state);
+        }
+        public void RequestStatus(byte wiimote)
+        {
+            wiimoteBridge.RequestStatus(wiimote);
+        }
         private void WiimoteDataReceived(object sender, UpdateEventArgs<uint> updated)
         {
             updatedWiimotes.Add(updated.UpdatedValue);
         }
 
+        private void CapabilitiesChanged(object sender, UpdateEventArgs<uint> updated)
+        {
+            updatedWiimotesCapabilities.Add(updated.UpdatedValue);
+        }
+
+        private void StatusChanged(object sender, UpdateEventArgs<uint> updated)
+        {
+            updatedWiimotesStatus.Add(updated.UpdatedValue);
+        }
         public override void Stop()
         {
             wiimoteBridge.Dispose();
@@ -204,10 +238,15 @@ namespace FreePIE.Core.Plugins
         public override void DoBeforeNextExecute()
         {
             updatedWiimotes.Clear();
+            updatedWiimotesCapabilities.Clear();
             wiimoteBridge.DoTick();
 
             foreach(var wiimote in updatedWiimotes)
                 globalUpdators[wiimote]();
+            foreach (var wiimote in updatedWiimotesCapabilities)
+                globalUpdatorsCapabilities[wiimote]();
+            foreach (var wiimote in updatedWiimotesStatus)
+                globalUpdatorsStatus[wiimote]();
         }
     }
 
@@ -224,11 +263,13 @@ namespace FreePIE.Core.Plugins
         private readonly Action classicControllerTrigger;
         private readonly Action guitarTrigger;
         private readonly Action balanceBoardTrigger;
+        private readonly Action capabilitiesTrigger;
+        private readonly Action statusTrigger;
 
         private readonly Action accelerationCalibratedTrigger;
         private readonly Action motionPlusCalibratedTrigger;
 
-        public WiimoteGlobal(WiimotePlugin plugin, IWiimoteData data, Dictionary<uint, Action> updaters)
+        public WiimoteGlobal(WiimotePlugin plugin, IWiimoteData data, Dictionary<uint, Action> updaters, Dictionary<uint, Action> capabilitiesUpdaters, Dictionary<uint, Action> statusUpdaters)
         {
             this.plugin = plugin;
             this.data = data;
@@ -240,19 +281,26 @@ namespace FreePIE.Core.Plugins
             classicController = new ClassicControllerGlobal(data, out classicControllerTrigger);
             guitar = new GuitarGlobal(data, out guitarTrigger);
             balanceBoard = new BalanceBoardGlobal(data, out balanceBoardTrigger);
+            capabilities = new CapabilitiesGlobal(data, out capabilitiesTrigger);
+            //TODO: Allow setting led status
+            status = new StatusGlobal(plugin, data, out statusTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;
+            capabilitiesUpdaters[data.WiimoteNumber] = capabilitiesTrigger;
+            statusUpdaters[data.WiimoteNumber] = statusTrigger;
         }
-
         public void enable(WiimoteCapabilities flags)
         {
             plugin.Enable(data.WiimoteNumber, flags);
         }
-
+        public void setRumble(Boolean shouldRumble)
+        {
+            plugin.SetRumble(data.WiimoteNumber, shouldRumble);
+        }
         private void OnWiimoteDataReceived()
         {
-            buttonTrigger();
 
+            buttonTrigger();
             if (data.IsDataValid(WiimoteDataValid.Acceleration))
                 accelerationTrigger();
 
@@ -277,7 +325,11 @@ namespace FreePIE.Core.Plugins
             if (data.MotionPlus.DidCalibrate)
                 motionPlusCalibratedTrigger();
         }
-
+        public CapabilitiesGlobal capabilities
+        {
+            get;
+            private set;
+        }
         public MotionPlusGlobal motionplus
         { 
             get;
@@ -313,6 +365,11 @@ namespace FreePIE.Core.Plugins
             private set;
         }
         public BalanceBoardGlobal balanceBoard
+        {
+            get;
+            private set;
+        }
+        public StatusGlobal status
         {
             get;
             private set;
