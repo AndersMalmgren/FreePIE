@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
-using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.Persistence;
 using FreePIE.Core.ScriptEngine;
@@ -17,7 +16,7 @@ using FreePIE.GUI.Views.Plugin;
 using FreePIE.GUI.Views.Script;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
-namespace FreePIE.GUI.Views.Main
+namespace FreePIE.GUI.Views.Main.Menu
 {
     public class MainMenuViewModel : PropertyChangedBase, 
         Core.Common.Events.IHandle<ScriptUpdatedEvent>, 
@@ -55,7 +54,7 @@ namespace FreePIE.GUI.Views.Main
             this.scriptDialogStrategy = scriptDialogStrategy;
             this.settingsManager = settings;
 
-            RecentScripts = new BindableCollection<string>(settingsManager.Settings.RecentScripts);
+            RecentScripts = new BindableCollection<RecentFileViewModel>(ListRecentFiles());
         }
 
         private PanelViewModel activeDocument;
@@ -118,16 +117,21 @@ namespace FreePIE.GUI.Views.Main
             AddRecentScript(filePath);
         }
 
-        public void OpenRecentScript(string path)
+        public void OpenRecentScript(RecentFileViewModel model)
         {
-            CreateScriptViewModel(path);
+            CreateScriptViewModel(model.File);
         }
 
         private void AddRecentScript(string filePath)
         {
             settingsManager.Settings.AddRecentScript(filePath);
             RecentScripts.Clear();
-            RecentScripts.AddRange(settingsManager.Settings.RecentScripts);
+            RecentScripts.AddRange(ListRecentFiles());
+        }
+
+        private IEnumerable<RecentFileViewModel> ListRecentFiles()
+        {
+            return settingsManager.Settings.RecentScripts.Select((file, index) => new RecentFileViewModel(file, index));
         }
 
         public IEnumerable<IResult> QuickSaveScript()
@@ -262,6 +266,6 @@ namespace FreePIE.GUI.Views.Main
         public IEnumerable<PluginHelpFileViewModel> HelpFiles { get; set; }
         public IEnumerable<PanelViewModel> Views { get; set; }
 
-        public IObservableCollection<string> RecentScripts { get; set; }
+        public IObservableCollection<RecentFileViewModel> RecentScripts { get; set; }
     }
 }

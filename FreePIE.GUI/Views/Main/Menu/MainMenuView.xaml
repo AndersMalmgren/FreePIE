@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="FreePIE.GUI.Views.Main.MainMenuView"
+﻿<UserControl x:Class="FreePIE.GUI.Views.Main.Menu.MainMenuView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -32,7 +32,7 @@
                         <Image Source="{StaticResource IconSaveAs}"/>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="RecentScripts" Header="Recent _Files" cal:Message.Attach="OpenRecentScript($orignalsourcecontext)">
+                <MenuItem x:Name="RecentScripts" DisplayMemberPath="Caption" Header="Recent _Files" cal:Message.Attach="OpenRecentScript($orignalsourcecontext)">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconOpen}"/>
                     </MenuItem.Icon>
