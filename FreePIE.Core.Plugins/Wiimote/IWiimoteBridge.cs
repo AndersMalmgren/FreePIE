@@ -30,5 +30,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         void SetRumble(byte wiimote, Boolean shouldRumble);
         void SetLEDState(byte wiimote, int led_state);
         void RequestStatus(byte wiimote);
+        void PlaySoundPCM(byte wiimote, String file, int volume);
+        void StopSound(byte wiimote);
     }
 }

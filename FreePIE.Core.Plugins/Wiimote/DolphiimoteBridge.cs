@@ -18,6 +18,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly Queue<KeyValuePair<byte, WiimoteCapabilities>> deferredEnables;
         private readonly Queue<KeyValuePair<byte, Boolean>> deferredRumbles;
         private readonly Queue<KeyValuePair<byte, int>> deferredLEDChanges;
+        private readonly Queue<KeyValuePair<byte, KeyValuePair<String, int>>> deferredSoundsPCM;
+        private readonly Queue<byte> deferredStopSounds;
         private readonly Queue<byte> deferredStatusRequests;
 
         public event EventHandler<UpdateEventArgs<uint>> DataReceived;
@@ -33,6 +35,8 @@ namespace FreePIE.Core.Plugins.Wiimote
             deferredEnables = new Queue<KeyValuePair<byte, WiimoteCapabilities>>();
             deferredRumbles = new Queue<KeyValuePair<byte, Boolean>>();
             deferredLEDChanges = new Queue<KeyValuePair<byte, int>>();
+            deferredSoundsPCM = new Queue<KeyValuePair<byte, KeyValuePair<String, int>>>();
+            deferredStopSounds = new Queue<byte>();
             deferredStatusRequests = new Queue<byte>();
             knownCapabilities = new Dictionary<byte, WiimoteCapabilities>();
 
@@ -68,7 +72,14 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             deferredStatusRequests.Enqueue(wiimote);
         }
-
+        public void PlaySoundPCM(byte wiimote, String file, int volume)
+        {
+            deferredSoundsPCM.Enqueue(new KeyValuePair<byte, KeyValuePair<string, int>>(wiimote, new KeyValuePair<string, int>(file, volume)));
+        }
+        public void StopSound(byte wiimote)
+        {
+            deferredStopSounds.Enqueue(wiimote);
+        }
         private void WiimoteLogReceived(string log)
         {
             if(logFile == null)
@@ -154,6 +165,16 @@ namespace FreePIE.Core.Plugins.Wiimote
             {
                 dll.RequestStatus(wiimote);
                 deferredStatusRequests.Dequeue();
+            }
+            foreach (byte wiimote in deferredStopSounds.ToList())
+            {
+                dll.StopSound(wiimote);
+                deferredStopSounds.Dequeue();
+            }
+            foreach (var deferredSound in deferredSoundsPCM.ToList())
+            {
+                dll.PlaySoundPCM(deferredSound.Key, deferredSound.Value.Key, deferredSound.Value.Value);
+                deferredSoundsPCM.Dequeue();
             }
             foreach (var deferredLEDChange in deferredLEDChanges.ToList())
             {

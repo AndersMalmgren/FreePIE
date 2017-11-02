@@ -212,6 +212,14 @@ namespace FreePIE.Core.Plugins
         {
             wiimoteBridge.SetLEDState(wiimote, led_state);
         }
+        public void PlaySoundPCM(byte wiimote, String file, int volume)
+        {
+            wiimoteBridge.PlaySoundPCM(wiimote, file, volume);
+        }
+        public void StopSound(byte wiimote)
+        {
+            wiimoteBridge.StopSound(wiimote);
+        }
         public void RequestStatus(byte wiimote)
         {
             wiimoteBridge.RequestStatus(wiimote);
@@ -301,6 +309,14 @@ namespace FreePIE.Core.Plugins
         public void setRumble(Boolean shouldRumble)
         {
             plugin.SetRumble(data.WiimoteNumber, shouldRumble);
+        }
+        public void stopSound()
+        {
+            plugin.StopSound(data.WiimoteNumber);
+        }
+        public void playSoundPCM(String file, int volume)
+        {
+            plugin.PlaySoundPCM(data.WiimoteNumber, Path.GetFullPath(file), volume);
         }
         private void OnWiimoteDataReceived()
         {

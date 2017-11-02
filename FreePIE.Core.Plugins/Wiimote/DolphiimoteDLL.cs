@@ -149,6 +149,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly DolphiimoteSetRumble dolphiimoteSetRumble;
         private readonly DolphiimoteRequestStatus dolphiimoteRequestStatus;
         private readonly DolphiimoteSetLedState dolphiimoteSetLedState;
+        private readonly DolphiimotePlaySoundPCM dolphiimotePlaySoundPCM;
+        private readonly DolphiimoteStopSound dolphiimoteStopSound;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void DataCallback(byte wiimote, IntPtr data, IntPtr userdata);
@@ -192,6 +194,10 @@ namespace FreePIE.Core.Plugins.Wiimote
             dolphiimoteSetRumble = nativeDll.GetDelegateFromFunction<DolphiimoteSetRumble>("dolphiimote_set_rumble");
             dolphiimoteRequestStatus = nativeDll.GetDelegateFromFunction<DolphiimoteRequestStatus>("dolphiimote_request_status");
             dolphiimoteSetLedState = nativeDll.GetDelegateFromFunction<DolphiimoteSetLedState>("dolphiimote_set_leds");
+            dolphiimoteRequestStatus = nativeDll.GetDelegateFromFunction<DolphiimoteRequestStatus>("dolphiimote_request_status");
+            dolphiimoteSetLedState = nativeDll.GetDelegateFromFunction<DolphiimoteSetLedState>("dolphiimote_set_leds");
+            dolphiimotePlaySoundPCM = nativeDll.GetDelegateFromFunction<DolphiimotePlaySoundPCM>("dolphiimote_play_sound_pcm");
+            dolphiimoteStopSound = nativeDll.GetDelegateFromFunction<DolphiimoteStopSound>("dolphiimote_stop_sound");
         }
 
         private T MarshalType<T>(IntPtr data) where T : struct
@@ -249,6 +255,12 @@ namespace FreePIE.Core.Plugins.Wiimote
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void DolphiimoteSetLedState(byte wiimote, int led_state);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void DolphiimotePlaySoundPCM(byte wiimote, string file, int volume);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void DolphiimoteStopSound(byte wiimote);
+
         [StructLayout(LayoutKind.Sequential)]
         private struct DolphiimoteCallbacks
         {
@@ -277,7 +289,14 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             dolphiimoteSetLedState(wiimote, led_state);
         }
-        
+        public void PlaySoundPCM(byte wiimote, String file, int volume)
+        {
+            dolphiimotePlaySoundPCM(wiimote, file, volume);
+        }
+        public void StopSound(byte wiimote)
+        {
+            dolphiimoteStopSound(wiimote);
+        }
         public void RequestStatus(byte wiimote)
         {
             dolphiimoteRequestStatus(wiimote);
