@@ -295,7 +295,6 @@ namespace FreePIE.Core.Plugins
             guitar = new GuitarGlobal(data, out guitarTrigger);
             balanceBoard = new BalanceBoardGlobal(data, out balanceBoardTrigger);
             capabilities = new CapabilitiesGlobal(data, out capabilitiesTrigger);
-            //TODO: Allow setting led status
             status = new StatusGlobal(plugin, data, out statusTrigger);
 
             updaters[data.WiimoteNumber] = OnWiimoteDataReceived;

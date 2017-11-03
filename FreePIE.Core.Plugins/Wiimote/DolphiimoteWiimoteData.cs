@@ -8,6 +8,8 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly IMotionPlusFuser fuser;
         private DolphiimoteData data;
 
+        public bool PlayingSound { get; set; }
+
         public byte WiimoteNumber { get; private set; }
 
         public CalibratedValue<Gyro> MotionPlus { get; private set; }

@@ -21,7 +21,6 @@ namespace FreePIE.Core.Plugins.Wiimote
         private readonly Queue<KeyValuePair<byte, KeyValuePair<String, int>>> deferredSoundsPCM;
         private readonly Queue<byte> deferredStopSounds;
         private readonly Queue<byte> deferredStatusRequests;
-
         public event EventHandler<UpdateEventArgs<uint>> DataReceived;
         public event EventHandler<UpdateEventArgs<uint>> CapabilitiesChanged;
         public event EventHandler<UpdateEventArgs<uint>> StatusChanged;
@@ -147,8 +146,23 @@ namespace FreePIE.Core.Plugins.Wiimote
 
             if (occuredException != null)
                 throw new Exception(occuredException.Message, occuredException);
-
-            foreach(var deferredEnable in deferredEnables.ToList())
+            foreach (var deferredSound in deferredSoundsPCM.ToList())
+            {
+                dll.PlaySoundPCM(deferredSound.Key, deferredSound.Value.Key, deferredSound.Value.Value);
+                deferredSoundsPCM.Dequeue();
+                data[deferredSound.Key].PlayingSound = true;
+            }
+            foreach (byte wiimote in deferredStopSounds.ToList())
+            {
+                dll.StopSound(wiimote);
+                deferredStopSounds.Dequeue();
+                data[wiimote].PlayingSound = false;
+            }
+            //Don't tick anything if sound is playing.
+            foreach (DolphiimoteWiimoteData d in data.Values) {
+                if (d.PlayingSound) return;
+            }
+            foreach (var deferredEnable in deferredEnables.ToList())
             {
                 if (!HasRequestedCapabilities(deferredEnable.Key, deferredEnable.Value))
                     continue;
@@ -165,16 +179,6 @@ namespace FreePIE.Core.Plugins.Wiimote
             {
                 dll.RequestStatus(wiimote);
                 deferredStatusRequests.Dequeue();
-            }
-            foreach (byte wiimote in deferredStopSounds.ToList())
-            {
-                dll.StopSound(wiimote);
-                deferredStopSounds.Dequeue();
-            }
-            foreach (var deferredSound in deferredSoundsPCM.ToList())
-            {
-                dll.PlaySoundPCM(deferredSound.Key, deferredSound.Value.Key, deferredSound.Value.Value);
-                deferredSoundsPCM.Dequeue();
             }
             foreach (var deferredLEDChange in deferredLEDChanges.ToList())
             {
