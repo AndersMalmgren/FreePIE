@@ -11,6 +11,7 @@ using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Views.Main;
+using FreePIE.GUI.Views.Main.Menu;
 using FreePIE.GUI.Views.Plugin;
 using FreePIE.GUI.Views.Script;
 using Xceed.Wpf.AvalonDock;

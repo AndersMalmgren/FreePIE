@@ -1,6 +1,6 @@
 ﻿using System.Windows.Threading;
 
-namespace FreePIE.GUI.Views.Main
+namespace FreePIE.GUI.Views.Main.Menu
 {
     /// <summary>
     /// Interaction logic for MainMenuView.xaml

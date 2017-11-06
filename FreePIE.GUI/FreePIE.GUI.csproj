@@ -177,10 +177,11 @@
     </Compile>
     <Compile Include="Views\Curves\CurveViewModel.cs" />
     <Compile Include="Common\TrayIcon\ITrayIcon.cs" />
-    <Compile Include="Views\Main\MainMenuView.xaml.cs">
+    <Compile Include="Views\Main\Menu\MainMenuView.xaml.cs">
       <DependentUpon>MainMenuView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Main\MainMenuViewModel.cs" />
+    <Compile Include="Views\Main\Menu\MainMenuViewModel.cs" />
+    <Compile Include="Views\Main\Menu\RecentFileViewModel.cs" />
     <Compile Include="Views\Main\PanelViewModel.cs" />
     <Compile Include="Views\Main\SettingsLoaderViewModel.cs" />
     <Compile Include="Views\Main\TrayIconView.xaml.cs">
@@ -265,7 +266,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Main\MainMenuView.xaml">
+    <Page Include="Views\Main\Menu\MainMenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -456,7 +457,7 @@ copy "$(SolutionDir)\Lib\Tobii\*.dll" "$(TargetDir)"</PostBuildEvent>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
