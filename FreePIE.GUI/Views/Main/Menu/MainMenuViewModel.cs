@@ -65,6 +65,7 @@ namespace FreePIE.GUI.Views.Main.Menu
                 activeDocument = value;
                 NotifyOfPropertyChange(() => CanQuickSaveScript);
                 NotifyOfPropertyChange(() => CanSaveScript);
+                NotifyOfPropertyChange(() => CanCloseScript);
                 PublishScriptStateChange();
             }
         }
@@ -77,6 +78,11 @@ namespace FreePIE.GUI.Views.Main.Menu
         public IEnumerable<IResult> OpenScript()
         {
             return scriptDialogStrategy.Open(CreateScriptViewModel);
+        }
+
+        public void CloseScript()
+        {
+            activeDocument.Close();
         }
 
         public void CreateScriptViewModel(string filePath)
@@ -150,6 +156,11 @@ namespace FreePIE.GUI.Views.Main.Menu
         public bool CanQuickSaveScript
         {
             get { return CanSaveScript; }
+        }
+
+        public bool CanCloseScript
+        {
+            get { return activeDocument != null; }
         }
 
         public bool PathSet

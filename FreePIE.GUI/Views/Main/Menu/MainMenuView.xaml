@@ -22,6 +22,11 @@
                         <Image Source="{StaticResource IconOpen}"/>
                     </MenuItem.Icon>
                 </common:GestureMenuItem>
+                <MenuItem x:Name="CloseScript" Header="_Close">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconClose}"/>
+                    </MenuItem.Icon>
+                </MenuItem>    
               <common:GestureMenuItem x:Name="QuickSaveScript" Key="S" Modifiers="Ctrl" Header="_Save">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconSave}"/>

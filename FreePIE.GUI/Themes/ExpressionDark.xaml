@@ -32,6 +32,7 @@
     <BitmapImage x:Key="IconFind" UriSource="../Resources/find-16.png" />
     <BitmapImage x:Key="IconPrev" UriSource="../Resources/prev-16.png" />
     <BitmapImage x:Key="IconNext" UriSource="../Resources/next-16.png" />
+    <BitmapImage x:Key="IconClose" UriSource="../Resources/close-16.png" />
 
     <!-- Main Colors -->
 
