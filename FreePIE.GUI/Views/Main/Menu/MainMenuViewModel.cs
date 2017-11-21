@@ -198,10 +198,7 @@ namespace FreePIE.GUI.Views.Main.Menu
         {
             NotifyOfPropertyChange(() => CanRunScript);
             NotifyOfPropertyChange(() => CanStopScript);
-            if (activeDocument != null)
-                eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument.Filename));
-            else
-                eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, null));
+            eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument?.Filename));
         }
 
         public bool CanStopScript
