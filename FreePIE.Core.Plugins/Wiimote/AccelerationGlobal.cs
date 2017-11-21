@@ -17,32 +17,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         public double x { get { return data.Acceleration.Value.x; } }
         public double y { get { return data.Acceleration.Value.y; } }
         public double z { get { return data.Acceleration.Value.z; } }
-    }
-
-    public class NunchuckGlobal : Subscribable
-    {
-        private IWiimoteData data;
-
-        public NunchuckGlobal(IWiimoteData data, out Action trigger) : base(out trigger)
+        public override string ToString()
         {
-            this.data = data;
-            this.buttons = new NunchuckButtonState(data);
+            return String.Format("x: {0}, y: {1}, z: {2}", x, y, z);
         }
-
-        public Acceleration acceleration { get { return data.Nunchuck.Acceleration; } }
-        public NunchuckStick stick { get { return data.Nunchuck.Stick; } }
-        public NunchuckButtonState buttons { get; private set; }
-    }
-
-    public class NunchuckStick
-    {
-        public NunchuckStick(double x, double y)
-        {
-            this.x = x;
-            this.y = y;
-        }
-
-        public double x { get; private set; }
-        public double y { get; private set; }
     }
 }

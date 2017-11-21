@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
-using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Model.Events;
+using FreePIE.Core.Persistence;
 using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Common.Strategies;
 using FreePIE.GUI.Events;
@@ -16,11 +16,11 @@ using FreePIE.GUI.Views.Plugin;
 using FreePIE.GUI.Views.Script;
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 
-namespace FreePIE.GUI.Views.Main
+namespace FreePIE.GUI.Views.Main.Menu
 {
-    public class MainMenuViewModel : PropertyChangedBase, 
-        Core.Common.Events.IHandle<ScriptUpdatedEvent>, 
-        Core.Common.Events.IHandle<ExitingEvent>, 
+    public class MainMenuViewModel : PropertyChangedBase,
+        Core.Common.Events.IHandle<ScriptUpdatedEvent>,
+        Core.Common.Events.IHandle<ExitingEvent>,
         Core.Common.Events.IHandle<ActiveScriptDocumentChangedEvent>,
         Core.Common.Events.IHandle<ScriptErrorEvent>,
         Core.Common.Events.IHandle<FileEvent>,
@@ -32,35 +32,40 @@ namespace FreePIE.GUI.Views.Main
         private readonly Func<ScriptEditorViewModel> scriptEditorFactory;
         private readonly IFileSystem fileSystem;
         private readonly ScriptDialogStrategy scriptDialogStrategy;
+        private readonly ISettingsManager settingsManager;
         private IScriptEngine currentScriptEngine;
         private bool scriptRunning;
 
-        public MainMenuViewModel(IResultFactory resultFactory, 
+        public MainMenuViewModel(IResultFactory resultFactory,
             IEventAggregator eventAggregator,
             Func<IScriptEngine> scriptEngineFactory,
             Func<ScriptEditorViewModel> scriptEditorFactory,
             IFileSystem fileSystem,
-            ScriptDialogStrategy scriptDialogStrategy)
+            ScriptDialogStrategy scriptDialogStrategy,
+            ISettingsManager settings)
         {
             eventAggregator.Subscribe(this);
-           
+
             this.resultFactory = resultFactory;
             this.eventAggregator = eventAggregator;
             this.scriptEngineFactory = scriptEngineFactory;
             this.scriptEditorFactory = scriptEditorFactory;
             this.fileSystem = fileSystem;
             this.scriptDialogStrategy = scriptDialogStrategy;
+            this.settingsManager = settings;
+
+            RecentScripts = new BindableCollection<RecentFileViewModel>(ListRecentFiles());
         }
 
         private PanelViewModel activeDocument;
         private PanelViewModel ActiveDocument
         {
             get { return activeDocument; }
-            set { 
-                activeDocument = value; 
+            set {
+                activeDocument = value;
                 NotifyOfPropertyChange(() => CanQuickSaveScript);
                 NotifyOfPropertyChange(() => CanSaveScript);
-                NotifyOfPropertyChange(() => CanRunScript);
+                PublishScriptStateChange();
             }
         }
 
@@ -74,13 +79,18 @@ namespace FreePIE.GUI.Views.Main
             return scriptDialogStrategy.Open(CreateScriptViewModel);
         }
 
-        private void CreateScriptViewModel(string filePath)
+        public void CreateScriptViewModel(string filePath)
         {
+            if (filePath != null && !fileSystem.Exists(filePath)) return;
+
             var document = scriptEditorFactory()
                 .Configure(filePath);
 
             if (!string.IsNullOrEmpty(filePath))
+            {
                 document.LoadFileContent(fileSystem.ReadAllText(filePath));
+                AddRecentScript(filePath);
+            }
 
             eventAggregator.Publish(new ScriptDocumentAddedEvent(document));
         }
@@ -105,6 +115,25 @@ namespace FreePIE.GUI.Views.Main
             document.FilePath = filePath;
             fileSystem.WriteAllText(filePath, document.FileContent);
             document.Saved();
+
+            AddRecentScript(filePath);
+        }
+
+        public void OpenRecentScript(RecentFileViewModel model)
+        {
+            CreateScriptViewModel(model.File);
+        }
+
+        private void AddRecentScript(string filePath)
+        {
+            settingsManager.Settings.AddRecentScript(filePath);
+            RecentScripts.Clear();
+            RecentScripts.AddRange(ListRecentFiles());
+        }
+
+        private IEnumerable<RecentFileViewModel> ListRecentFiles()
+        {
+            return settingsManager.Settings.RecentScripts.Select((file, index) => new RecentFileViewModel(file, index));
         }
 
         public IEnumerable<IResult> QuickSaveScript()
@@ -158,7 +187,10 @@ namespace FreePIE.GUI.Views.Main
         {
             NotifyOfPropertyChange(() => CanRunScript);
             NotifyOfPropertyChange(() => CanStopScript);
-            eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning));
+            if (activeDocument != null)
+                eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument.Filename));
+            else
+                eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, null));
         }
 
         public bool CanStopScript
@@ -209,7 +241,7 @@ namespace FreePIE.GUI.Views.Main
 
         public IEnumerable<IResult> Close()
         {
-            yield return resultFactory.Close();
+            yield return resultFactory.CloseApp();
         }
 
         public IEnumerable<IResult> ShowCurveSettingsMenu()
@@ -238,5 +270,7 @@ namespace FreePIE.GUI.Views.Main
         public IEnumerable<PluginSettingsMenuViewModel> Plugins { get; set; }
         public IEnumerable<PluginHelpFileViewModel> HelpFiles { get; set; }
         public IEnumerable<PanelViewModel> Views { get; set; }
+
+        public IObservableCollection<RecentFileViewModel> RecentScripts { get; set; }
     }
 }

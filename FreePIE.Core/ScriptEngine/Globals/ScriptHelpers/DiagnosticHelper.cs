@@ -30,5 +30,23 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
         {
             eventAggregator.Publish(new WatchEvent(indexer, value));
         }
+
+        public void notify(string message)
+        {
+            eventAggregator.Publish(new TrayNotificationEvent(message, ""));
+
+        }
+        public void notify(string title, string message)
+        {
+            eventAggregator.Publish(new TrayNotificationEvent(message, title));
+
+        }
+        public void notify(string title,string message, params object[] args)
+        {
+            eventAggregator.Publish(new TrayNotificationEvent(string.Format(message, args),title));
+           
+        }
+
+        
     }
 }

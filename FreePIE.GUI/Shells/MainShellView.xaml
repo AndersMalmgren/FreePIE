@@ -4,7 +4,9 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:avalonDock1="clr-namespace:FreePIE.GUI.Common.AvalonDock"
-        Title="FreePIE" Background="{DynamicResource WindowBackgroundBrush}">
+        Title="FreePIE" Background="{DynamicResource WindowBackgroundBrush}" 
+        WindowState="{Binding WindowState, Mode = TwoWay}" 
+        ShowInTaskbar="{Binding ShowInTaskBar, Mode=TwoWay}">
     <Window.Resources>
         <xcad:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>

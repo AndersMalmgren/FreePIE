@@ -9,7 +9,9 @@ namespace FreePIE.Core.Plugins.Wiimote
     {
         public Acceleration Acceleration { get; set; }
 
-        public NunchuckStick Stick { get; set; }
+        public AnalogStick Stick { get; set; }
+
+        public NunchuckButtons Buttons { get; set; }
     }
 
     public class Acceleration
@@ -24,5 +26,9 @@ namespace FreePIE.Core.Plugins.Wiimote
         public double x { get; private set; }
         public double y { get; private set; }
         public double z { get; private set; }
+        public override string ToString()
+        {
+            return String.Format("x: {0}, y: {1}, z: {2}", x, y, z);
+        }
     }
 }

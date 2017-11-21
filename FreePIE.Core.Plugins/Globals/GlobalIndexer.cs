@@ -37,16 +37,40 @@ namespace FreePIE.Core.Plugins.Globals
 
     public class GlobalIndexer<T, TIndexOne, TIndexTwo> : GlobalIndexer<T, TIndexOne>
     {
-        private readonly GlobalIndexer<T, TIndexTwo> indexerTwo; 
+        private readonly Func<TIndexTwo, int, T> _initializerTwo;
+        private readonly Dictionary<TIndexTwo, Dictionary<int, T>> globals2;
 
-        public GlobalIndexer(Func<TIndexOne, T> initilizerOne, Func<TIndexTwo, T> initilizerTwo) : base(initilizerOne)
+        public GlobalIndexer(
+            Func<TIndexOne, T> initializerOne,
+            Func<TIndexTwo, int, T> initializerTwo
+            ) : base(initializerOne)
         {
-            this.indexerTwo = new GlobalIndexer<T, TIndexTwo>(initilizerTwo);
+            _initializerTwo = initializerTwo;
+            globals2 = new Dictionary<TIndexTwo, Dictionary<int, T>>();
         }
 
-        public T this[TIndexTwo index]
+
+        public T this[TIndexTwo key, int index = 0]
         {
-            get { return indexerTwo[index]; }
+            get
+            {
+                Dictionary<int, T> theKey;
+                T theglobal;
+                if (!globals2.TryGetValue(key, out theKey))
+                {
+                    globals2[key] = theKey = new Dictionary<int, T>();
+                }
+
+
+                if (!theKey.TryGetValue(index, out theglobal))
+                {
+                    theKey[index] = theglobal = _initializerTwo(key, index);
+                }
+
+
+                return theglobal;
+            }
         }
     }
+    
 }
