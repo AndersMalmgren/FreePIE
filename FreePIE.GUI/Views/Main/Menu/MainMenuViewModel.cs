@@ -153,25 +153,13 @@ namespace FreePIE.GUI.Views.Main.Menu
             return SaveScript();
         }
 
-        public bool CanQuickSaveScript
-        {
-            get { return CanSaveScript; }
-        }
+        public bool CanQuickSaveScript => CanSaveScript;
 
-        public bool CanCloseScript
-        {
-            get { return activeDocument != null; }
-        }
+        public bool CanCloseScript => activeDocument != null;
 
-        public bool PathSet
-        {
-            get { return !string.IsNullOrEmpty(activeDocument.FilePath); }
-        }
+        public bool PathSet => !string.IsNullOrEmpty(activeDocument.FilePath);
 
-        public bool CanSaveScript
-        {
-            get { return activeDocument != null; }
-        }
+        public bool CanSaveScript => activeDocument != null;
 
         public void RunScript()
         {
@@ -201,15 +189,9 @@ namespace FreePIE.GUI.Views.Main.Menu
             eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument?.Filename));
         }
 
-        public bool CanStopScript
-        {
-            get { return scriptRunning; }
-        }
+        public bool CanStopScript => scriptRunning;
 
-        public bool CanRunScript
-        {
-            get { return !scriptRunning && activeDocument != null && !string.IsNullOrEmpty(activeDocument.FileContent); }
-        }
+        public bool CanRunScript => !scriptRunning && !string.IsNullOrEmpty(activeDocument?.FileContent);
 
         public void Handle(FileEvent message)
         {
