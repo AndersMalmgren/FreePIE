@@ -52,7 +52,7 @@
                 <avalonDock1:AutobinderTemplateSelector>
                     <avalonDock1:AutobinderTemplateSelector.Template>
                         <DataTemplate>
-                            <ContentControl cal:View.Model="{Binding . }" IsTabStop="False" />
+                            <ContentControl cal:View.Model="{Binding  }" IsTabStop="False" />
                         </DataTemplate>
                     </avalonDock1:AutobinderTemplateSelector.Template>
                 </avalonDock1:AutobinderTemplateSelector>
