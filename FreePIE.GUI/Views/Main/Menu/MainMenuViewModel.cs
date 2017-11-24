@@ -125,6 +125,11 @@ namespace FreePIE.GUI.Views.Main.Menu
             AddRecentScript(filePath);
         }
 
+        public bool CanOpenRecentScript
+        {
+            get { return RecentScripts.Any(); }
+        }
+
         public void OpenRecentScript(RecentFileViewModel model)
         {
             CreateScriptViewModel(model.File);
@@ -135,6 +140,7 @@ namespace FreePIE.GUI.Views.Main.Menu
             settingsManager.Settings.AddRecentScript(filePath);
             RecentScripts.Clear();
             RecentScripts.AddRange(ListRecentFiles());
+            NotifyOfPropertyChange(() => CanOpenRecentScript);
         }
 
         private IEnumerable<RecentFileViewModel> ListRecentFiles()
