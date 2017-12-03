@@ -1,4 +1,4 @@
-set PATH=%PATH%;%WINDIR%\Microsoft.Net\Framework64\v4.0.30319.
+set PATH=%PATH%;C:\Program Files (x86)\MSBuild\14.0\Bin\amd64
 
 rem go to current folder
 cd %~dp0

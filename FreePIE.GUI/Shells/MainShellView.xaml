@@ -45,13 +45,14 @@
                     <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
                     <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
                     <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"/>
+                    <Setter Property="CloseCommand" Value="{ Binding Model.CloseCommand, Mode=TwoWay}" />
                 </Style>
             </xcad:DockingManager.LayoutItemContainerStyle>
             <xcad:DockingManager.LayoutItemTemplateSelector>
                 <avalonDock1:AutobinderTemplateSelector>
                     <avalonDock1:AutobinderTemplateSelector.Template>
                         <DataTemplate>
-                            <ContentControl cal:View.Model="{Binding . }" IsTabStop="False" />
+                            <ContentControl cal:View.Model="{Binding  }" IsTabStop="False" />
                         </DataTemplate>
                     </avalonDock1:AutobinderTemplateSelector.Template>
                 </avalonDock1:AutobinderTemplateSelector>

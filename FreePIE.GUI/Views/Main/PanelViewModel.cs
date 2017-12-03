@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Caliburn.Micro;
@@ -81,6 +82,16 @@ namespace FreePIE.GUI.Views.Main
         public virtual void Saved()
         {
             
+        }
+
+        public ICommand CloseCommand { get; set; }
+
+        public void Close()
+        {
+            if (CloseCommand.CanExecute(this))
+            {
+                CloseCommand.Execute(this);
+            }
         }
     }
 }
