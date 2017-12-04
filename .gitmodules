@@ -1,0 +1,3 @@
+[submodule "Lib/OculusVR/Code/LibOVR"]
+	path = Lib/OculusVR/Code/LibOVR
+	url = https://github.com/drowhunter/LibOVR.git
