@@ -56,6 +56,9 @@
     <Reference Include="PPJoyWrapper">
       <HintPath>..\Lib\PPJoyWrapper\PPJoyWrapper.dll</HintPath>
     </Reference>
+    <Reference Include="ScpWrapper">
+      <HintPath>..\Lib\ScpWrapper\ScpWrapper.dll</HintPath>
+    </Reference>
     <Reference Include="SlimDX, Version=4.0.11.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\SlimDX\SlimDX.dll</HintPath>
@@ -103,6 +106,7 @@
     <Compile Include="MidiPlugin.cs" />
     <Compile Include="Midi\MidiStatus.cs" />
     <Compile Include="Midi\DataGlobal.cs" />
+    <Compile Include="ScpPlugin.cs" />
     <Compile Include="MouseKeyIO.cs" />
     <Compile Include="MousePlugin.cs" />
     <Compile Include="OculusPlugin.cs" />
