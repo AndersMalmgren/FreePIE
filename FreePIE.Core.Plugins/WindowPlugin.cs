@@ -19,8 +19,16 @@ namespace FreePIE.Core.Plugins
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
+        [DllImport("user32")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool EnumChildWindows(IntPtr window, EnumWindowProc callback, IntPtr lParam);
+
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern int GetPackageFullName(IntPtr hProcess, ref UInt32 packageFullNameLength, StringBuilder fullName);
+
 
         public override string FriendlyName
         {
@@ -30,6 +38,8 @@ namespace FreePIE.Core.Plugins
         private Stopwatch timer;
         private string activeWindow;
         public int PollingInterval { get; set; } = 100;
+
+        private delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
 
 
         public override Action Start()
@@ -57,17 +67,58 @@ namespace FreePIE.Core.Plugins
                     OnUpdate();
             }
         }
-        
+
         public string GetActiveWindowProcessName()
         {
-            if(activeWindow != null) return activeWindow;
-            
+            if (activeWindow != null) return activeWindow;
+
             var handle = GetForegroundWindow();
             uint pid = 0;
             GetWindowThreadProcessId(handle, out pid);
 
             var process = Process.GetProcessById((int)pid);
-            return activeWindow = process.ProcessName;
+
+            if (String.Equals(process.ProcessName, "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase))
+            {
+                EnumWindowProc childProc = new EnumWindowProc(delegate (IntPtr childHwnd, IntPtr lParam)
+                {
+                    int ERROR_SUCCESS = 0x0;
+                    int APPMODEL_ERROR_NO_PACKAGE = 0x3D54;
+                    int ERROR_INSUFFICIENT_BUFFER = 0x7A;
+
+                    GetWindowThreadProcessId(childHwnd, out pid);
+                    process = Process.GetProcessById((int)pid);
+                    uint len = 256;
+                    StringBuilder sb = new StringBuilder((int)len);
+                    var err = GetPackageFullName(process.Handle, ref len, sb);
+
+                    if (err == APPMODEL_ERROR_NO_PACKAGE)
+                    {
+                        return true;
+                    }
+                    else if (err == ERROR_INSUFFICIENT_BUFFER)
+                    {
+                        Debug.WriteLine("Insuffucient buffer length.");
+                        return false;
+                    }
+                    else if (err == ERROR_SUCCESS)
+                    {
+                        // activeWindow = sb.ToString();
+                        activeWindow = process.ProcessName;
+                        return false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                });
+                EnumChildWindows(handle, childProc, IntPtr.Zero);
+                return activeWindow;
+            }
+            else
+            {
+                return activeWindow = process.ProcessName;
+            }
         }
 
         public override object CreateGlobal()
