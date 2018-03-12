@@ -239,7 +239,7 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        public bool lb
+        public bool leftShoulder
         {
             get { return  _data.Buttons.HasFlag(X360Button.LB); }
             set {
@@ -250,7 +250,7 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        public bool rb
+        public bool rightShoulder
         {
             get { return  _data.Buttons.HasFlag(X360Button.RB); }
             set {
@@ -327,7 +327,7 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        public bool ls
+        public bool leftThumb
         {
             get { return _data.Buttons.HasFlag(X360Button.LS); }
             set
@@ -339,7 +339,7 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        public bool rs
+        public bool rightThumb
         {
             get { return _data.Buttons.HasFlag(X360Button.RS); }
             set
@@ -354,7 +354,7 @@ namespace FreePIE.Core.Plugins
         /// <summary>
         /// Acceptable values range 0 - 1
         /// </summary>
-        public double lt
+        public double leftTrigger
         {
             get { return  _data.LT/255.0; }
             set
@@ -370,7 +370,7 @@ namespace FreePIE.Core.Plugins
         }
 
         
-        public double rt
+        public double rightTrigger
         {
             get { return _data.RT/255.0; }
             set
@@ -389,7 +389,7 @@ namespace FreePIE.Core.Plugins
         
 
         
-        public double lx
+        public double leftStickX
         {
             get {
                 if (_data.LX < 0)
@@ -404,7 +404,7 @@ namespace FreePIE.Core.Plugins
             }
         }
 
-        public double ly
+        public double leftStickY
         {
             
             get
@@ -423,7 +423,7 @@ namespace FreePIE.Core.Plugins
 
         }
 
-        public double rx
+        public double rightStickX
         {
             get
             {
@@ -434,7 +434,7 @@ namespace FreePIE.Core.Plugins
         }
 
 
-        public double ry
+        public double rightStickY
         {
             get
             {
@@ -473,12 +473,7 @@ namespace FreePIE.Core.Plugins
             return Math.Max(Math.Min(((x - xMin) / (xMax - xMin)) * (yMax - yMin) + yMin, yMax), yMin);
         }
 
-        //private double ensureMapRange(double x, double xMin, double xMax, double yMin, double yMax)
-        //{
-        //    return Math.Max(Math.Min(((x - xMin) / (xMax - xMin)) * (yMax - yMin) + yMin, yMax), yMin);
-        //}
-
-
+        
     }
     /*
     public class x360ButtonCollection : ButtonCollectionBase<X360Button>
