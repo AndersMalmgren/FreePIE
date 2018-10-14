@@ -136,7 +136,7 @@ namespace FreePIE.Core.Plugins
             var status = joystick.GetVJDStatus(Index);
             if (status != VjdStat.VJD_STAT_OWN)
             {
-                System.Console.WriteLine("No longer own the vjoy device... attempting to reaquire");
+                System.Console.WriteLine("No longer own the vjoy device. Attempting to reacquire.");
 
                 string error = null;
                 switch (status)
