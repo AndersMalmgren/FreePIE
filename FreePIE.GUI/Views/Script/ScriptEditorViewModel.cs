@@ -146,6 +146,8 @@ namespace FreePIE.GUI.Views.Script
             }
         }
 
+        public override string ToolTip => FilePath ?? Filename;
+
         public override string ContentId
         {
             get { return FilePath ?? Filename; }
@@ -186,6 +188,7 @@ namespace FreePIE.GUI.Views.Script
             {
                 base.FilePath = value;
                 NotifyOfPropertyChange(() => Title);
+                NotifyOfPropertyChange(() => ToolTip);
                 NotifyOfPropertyChange(() => ContentId);
             }
         }

@@ -41,6 +41,7 @@
             <xcad:DockingManager.LayoutItemContainerStyle>
                 <Style TargetType="{x:Type xcad:LayoutItem}">
                     <Setter Property="Title" Value="{Binding Model.Title}" />
+                    <Setter Property="ToolTip" Value="{Binding Model.ToolTip}" />
                     <Setter Property="IconSource" Value="{Binding Model.Icon}"/>
                     <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
                     <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
