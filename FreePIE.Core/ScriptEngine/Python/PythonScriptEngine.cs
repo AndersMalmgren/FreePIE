@@ -115,7 +115,7 @@ namespace FreePIE.Core.ScriptEngine.Python
             this.log = log;
         }
 
-        public void Start(string script)
+        public void Start(string script, string scriptName)
         {
             thread = new Thread(obj1 => 
             {
@@ -148,7 +148,8 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                     pluginStarted.Wait();
 
-                    Engine.SetSearchPaths(GetPythonPaths());
+                    string[] additionalPaths = new string[] {Path.GetDirectoryName(scriptName)};
+                    Engine.SetSearchPaths(GetPythonPaths(additionalPaths));
 
                     script = PreProcessScript(script, usedGlobalEnums, globals);
                 }, logToFile: true);
@@ -179,9 +180,15 @@ namespace FreePIE.Core.ScriptEngine.Python
             });
         }
 
-        ICollection<string> GetPythonPaths()
+        ICollection<string> GetPythonPaths(string[] additionalPaths)
         {
-            return new Collection<string> { paths.GetApplicationPath("pylib") };
+            var pythonPaths = new Collection<string> { paths.GetApplicationPath("pylib") };
+            foreach (string dir in additionalPaths)
+            {
+                pythonPaths.Add(dir);
+            }
+            return pythonPaths;
+
         }
 
         private void CatchThreadAbortedException(Action func)

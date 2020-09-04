@@ -173,7 +173,8 @@ namespace FreePIE.GUI.Views.Main.Menu
             PublishScriptStateChange();
 
             currentScriptEngine = scriptEngineFactory();
-            currentScriptEngine.Start(activeDocument.FileContent);
+
+            currentScriptEngine.Start(activeDocument.FileContent, activeDocument.FilePath);
         }
 
         public void StopScript()
