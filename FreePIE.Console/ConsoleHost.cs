@@ -56,7 +56,7 @@ namespace FreePIE.Console
 
                 System.Console.WriteLine("Starting script parser");
 
-                scriptEngine.Start(script, activeDocument.FilePath);
+                scriptEngine.Start(script, args[0]);
                 waitUntilStopped.WaitOne();
             }
             catch (Exception e)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Model.Events;
@@ -174,7 +175,11 @@ namespace FreePIE.GUI.Views.Main.Menu
 
             currentScriptEngine = scriptEngineFactory();
 
-            currentScriptEngine.Start(activeDocument.FileContent, activeDocument.FilePath);
+            List<string> additionalPaths = new List<string>();
+            if (activeDocument != null)
+                additionalPaths.Add(Path.GetDirectoryName(activeDocument.FilePath));
+
+            currentScriptEngine.Start(activeDocument.FileContent, additionalPaths);
         }
 
         public void StopScript()

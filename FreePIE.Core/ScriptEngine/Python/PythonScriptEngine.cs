@@ -115,7 +115,7 @@ namespace FreePIE.Core.ScriptEngine.Python
             this.log = log;
         }
 
-        public void Start(string script, string scriptName)
+        public void Start(string script, List<string> additionalPaths)
         {
             thread = new Thread(obj1 => 
             {
@@ -148,7 +148,6 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                     pluginStarted.Wait();
 
-                    string[] additionalPaths = new string[] {Path.GetDirectoryName(scriptName)};
                     Engine.SetSearchPaths(GetPythonPaths(additionalPaths));
 
                     script = PreProcessScript(script, usedGlobalEnums, globals);
@@ -180,7 +179,7 @@ namespace FreePIE.Core.ScriptEngine.Python
             });
         }
 
-        ICollection<string> GetPythonPaths(string[] additionalPaths)
+        ICollection<string> GetPythonPaths(List<string> additionalPaths)
         {
             var pythonPaths = new Collection<string> { paths.GetApplicationPath("pylib") };
             foreach (string dir in additionalPaths)
