@@ -14,5 +14,6 @@ namespace FreePIE.Core.Common
         string GetFilename(string path);
         void Delete(string path);
         void CreateDirectory(string path);
+        string GetDirectoryName(string path);
     }
 }
