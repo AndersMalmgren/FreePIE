@@ -4,7 +4,7 @@ namespace FreePIE.Core.ScriptEngine
 {
     public interface IScriptEngine
     {
-        void Start(string script, string scriptName);
+        void Start(string script, string scriptPath = null);
         void Stop();
     }
 }
