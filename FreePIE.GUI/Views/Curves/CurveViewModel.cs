@@ -104,17 +104,6 @@ namespace FreePIE.GUI.Views.Curves
             get { return selectedPointIndex.HasValue; }
         }
 
-        private bool canSetDefault;
-        public bool CanSetDefault
-        {
-            get { return canSetDefault; }
-            set
-            {
-                canSetDefault = value;
-                NotifyOfPropertyChange(() => canSetDefault);
-            }
-        }
-
         public void ApplyNewValuesToSelectedPoint()
         {
             ApplyNewSelectedPoint(new Point(SelectedPointX, SelectedPointY));
@@ -129,14 +118,14 @@ namespace FreePIE.GUI.Views.Curves
 
             UpdateSelectedPoint();
 
-            CanSetDefault = selectedPointIndex == Curve.Points.Count - 1;
             NotifyOfPropertyChange(() => HasSelectedPoint);
         }
 
         private void UpdateSelectedPoint()
         {
-            SelectedPointX = GetSelectedPoint().X;
-            SelectedPointY = GetSelectedPoint().Y;
+            var selected = GetSelectedPoint();
+            SelectedPointX = selected.X;
+            SelectedPointY = selected.Y;
         }
 
         private double selectedPointX;

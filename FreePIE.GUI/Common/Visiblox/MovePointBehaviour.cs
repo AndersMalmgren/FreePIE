@@ -175,7 +175,7 @@ namespace FreePIE.GUI.Common.Visiblox
                     IsClickPositionCloseToPoint(position.Y, Chart.YAxis.GetDataValueAsRenderPositionWithZoom(dp.Y)))
                 {
                     _selectedPoint = dp;
-                    var point = new Core.Model.Point((double)_selectedPoint.XValue, (double)_selectedPoint.XValue);
+                    var point = new Core.Model.Point((double)_selectedPoint.XValue, (double)_selectedPoint.YValue);
                     OnPointSelected(this, new PointSelectedEventArgs { Point = point});
                     break;
                 }

@@ -58,7 +58,7 @@ namespace FreePIE.Core.Model
 
         public static bool operator ==(Point x, Point y)
         {
-            return x.X == y.X && y.Y == y.Y;
+            return Math.Abs(x.X - y.X) < double.Epsilon && Math.Abs(x.Y - y.Y) < double.Epsilon;
         }
 
         public static bool operator !=(Point x, Point y)
@@ -82,7 +82,7 @@ namespace FreePIE.Core.Model
 
         public bool Equals(Point other)
         {
-            return X.Equals(other.X) && Y.Equals(other.Y);
+            return this == other;
         }
     }
 }
