@@ -23,6 +23,8 @@ namespace FreePIE.GUI.Views.Main
             }
         }
 
+        public virtual string ToolTip => null;
+
         public virtual bool IsFileContent
         {
             get { return false; }

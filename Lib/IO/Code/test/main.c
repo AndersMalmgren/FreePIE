@@ -1,4 +1,4 @@
-#include "../Generic6DoF/include/freepie_io.h"
+#include "freepie_io.h"
 #include <stdio.h>
 #include <string.h>
 #include <Windows.h>
@@ -38,12 +38,12 @@ void increment(int count, freepie_io_6dof_data *data)
   int i;
   for(i = 0; i < count; i++)
   {
-    data[i].x += 1e-3;
-    data[i].y += 1e-3;
-    data[i].z += 1e-3;
-    data[i].yaw += 1e-3;
-    data[i].pitch += 1e-3;
-    data[i].roll += 1e-3;
+    data[i].x += 1e-3f;
+    data[i].y += 1e-3f;
+    data[i].z += 1e-3f;
+    data[i].yaw += 1e-3f;
+    data[i].pitch += 1e-3f;
+    data[i].roll += 1e-3f;
   }
 }
 
@@ -59,7 +59,7 @@ int main()
 
   if(slots > ARRAY_SIZE)
   {
-    printf("Allocated data too small to accomodate %i slots.", slots);
+    printf("Allocated data too small to accommodate %i slots.", slots);
     return 0;
   }
   if(do_read)

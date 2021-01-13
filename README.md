@@ -13,6 +13,12 @@ FreePIE is very similar to the popular utility GlovePIE, but encourages open dev
 
 FreePIE is licensed under GPLv2  
 
+Changelog 1.11.724.0
+* Added support for the Wii Balanceboard
+* System tray feature use /t to minimize to tray from command line
+* Recent files menu and other smaller UI updates
+* Various stability fixes
+
 Changelog 1.10.666.0
 * Added support for the Wii Classic Controller
 * Added support for the Wii guitar hero controllers

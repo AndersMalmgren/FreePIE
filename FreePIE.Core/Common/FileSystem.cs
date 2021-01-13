@@ -40,6 +40,11 @@ namespace FreePIE.Core.Common
             return Path.GetFileName(path);
         }
 
+        public string GetDirectoryName(string path)
+        {
+            return Path.GetDirectoryName(path);
+        }
+
         public void Delete(string path)
         {
             File.Delete(path);
