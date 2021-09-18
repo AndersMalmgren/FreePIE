@@ -140,6 +140,8 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                     scope = CreateScope(globals);
 
+                    InitGlobalVariables(globals);
+
                     foreach (var plugin in usedPlugins)
                         StartPlugin(plugin, pluginStarted, pluginStopped);
 
@@ -175,6 +177,15 @@ namespace FreePIE.Core.ScriptEngine.Python
                 scope.SetVariable("stopping", true);
                 CatchThreadAbortedException(() => compiled.Execute(scope));
             });
+        }
+
+        private static void InitGlobalVariables(IDictionary<string, object> globals)
+        {
+            foreach (var variable in Engine.Runtime.Globals.GetVariableNames())
+                Engine.Runtime.Globals.RemoveVariable(variable);
+
+            foreach (var kvp in globals)
+                Engine.Runtime.Globals.SetVariable(kvp.Key, kvp.Value);
         }
 
         ICollection<string> GetPythonPaths(IEnumerable<string> additionalPaths)
