@@ -88,6 +88,37 @@ namespace FreePIE.Core.Plugins
             SetForegroundWindow(p.First().MainWindowHandle);
             return true;
         }
+
+        public bool Start(string processName)
+        {
+            var p = Process.Start(processName);
+            if (p == null) return false;
+            return true;
+        }
+
+        public bool Start(string processName, string arguments)
+        {
+            var p = Process.Start(processName, arguments);
+            if (p == null) return false;
+            return true;
+        }
+
+        public bool Close(string processName)
+        {
+            var p = Process.GetProcessesByName(processName);
+            if (!p.Any()) return false;
+
+            p.First().Close();
+            return true;
+        }
+
+        public bool CloseMainWindow(string processName)
+        {
+            var p = Process.GetProcessesByName(processName);
+            if (!p.Any()) return false;
+
+            return p.First().CloseMainWindow();
+        }
     }
 
     [Global(Name = "window")]
@@ -108,6 +139,26 @@ namespace FreePIE.Core.Plugins
         public string getActive
         {
             get { return plugin.GetActiveWindowProcessName(); }
+        }
+
+        public bool open(string processName)
+        {
+            return plugin.Start(processName);
+        }
+
+        public bool open(string processName, string arguments)
+        {
+            return plugin.Start(processName, arguments);
+        }
+
+        public bool close(string processName)
+        {
+            return plugin.Close(processName);
+        }
+
+        public bool closeMainWindow(string processName)
+        {
+            return plugin.CloseMainWindow(processName);
         }
 
         public int pollingInterval
