@@ -80,6 +80,7 @@ namespace FreePIE.Core.Common
 
             if (np > 1)
             {
+                if (knownSamples[0].X == z) return knownSamples[0].Y; 
 
                 double[] a = new double[np];
 

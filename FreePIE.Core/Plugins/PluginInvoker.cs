@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using FreePIE.Core.Common;
@@ -36,7 +37,10 @@ namespace FreePIE.Core.Plugins
                 return pluginTypes;
 
             var path = paths.GetApplicationPath(pluginFolder);
-            var dlls = fileSystem.GetFiles(path, "*.dll");
+            var dlls = fileSystem
+                .GetFiles(path, "*.dll")
+                .Where(dll => dll.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase))
+                .ToList();
 
             pluginTypes = dlls
                 .Select(Assembly.LoadFile)

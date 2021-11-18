@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -11,20 +10,15 @@ using FreePIE.Core.Common.Events;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Model.Events;
-using FreePIE.Core.Persistence;
 using FreePIE.Core.Persistence.Paths;
 using FreePIE.Core.ScriptEngine.Globals;
 using FreePIE.Core.ScriptEngine.ThreadTiming;
-using IronPython;
-using IronPython.Compiler;
 using IronPython.Hosting;
 using IronPython.Modules;
 using IronPython.Runtime.Operations;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting.Hosting.Providers;
-using Microsoft.Scripting.Runtime;
-using IronPython.Runtime.Exceptions;
+using Microsoft.Scripting.Utils;
 
 namespace FreePIE.Core.ScriptEngine.Python
 {
@@ -80,6 +74,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         private readonly IThreadTimingFactory threadTimingFactory;
         private readonly IPaths paths;
         private readonly ILog log;
+        private readonly IFileSystem fileSystem;
         private static Microsoft.Scripting.Hosting.ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
         private InterlockableBool stopRequested;
@@ -105,7 +100,8 @@ namespace FreePIE.Core.ScriptEngine.Python
             IEventAggregator eventAggregator, 
             IThreadTimingFactory threadTimingFactory, 
             IPaths paths, 
-            ILog log)
+            ILog log,
+            IFileSystem fileSystem)
         {
             this.parser = parser;
             this.globalProviders = globalProviders;
@@ -113,9 +109,10 @@ namespace FreePIE.Core.ScriptEngine.Python
             this.threadTimingFactory = threadTimingFactory;
             this.paths = paths;
             this.log = log;
+            this.fileSystem = fileSystem;
         }
 
-        public void Start(string script)
+        public void Start(string script, string scriptPath = null)
         {
             thread = new Thread(obj1 => 
             {
@@ -143,12 +140,15 @@ namespace FreePIE.Core.ScriptEngine.Python
 
                     scope = CreateScope(globals);
 
+                    InitGlobalVariables(globals);
+
                     foreach (var plugin in usedPlugins)
                         StartPlugin(plugin, pluginStarted, pluginStopped);
 
                     pluginStarted.Wait();
 
-                    Engine.SetSearchPaths(GetPythonPaths());
+                    var additionalPaths = new [] { scriptPath }.Where(p => !string.IsNullOrEmpty(p)).Select(p => fileSystem.GetDirectoryName(p));
+                    Engine.SetSearchPaths(GetPythonPaths(additionalPaths));
 
                     script = PreProcessScript(script, usedGlobalEnums, globals);
                 }, logToFile: true);
@@ -179,9 +179,21 @@ namespace FreePIE.Core.ScriptEngine.Python
             });
         }
 
-        ICollection<string> GetPythonPaths()
+        private static void InitGlobalVariables(IDictionary<string, object> globals)
         {
-            return new Collection<string> { paths.GetApplicationPath("pylib") };
+            foreach (var variable in Engine.Runtime.Globals.GetVariableNames())
+                Engine.Runtime.Globals.RemoveVariable(variable);
+
+            foreach (var kvp in globals)
+                Engine.Runtime.Globals.SetVariable(kvp.Key, kvp.Value);
+        }
+
+        ICollection<string> GetPythonPaths(IEnumerable<string> additionalPaths)
+        {
+            var pythonPaths = new Collection<string> { paths.GetApplicationPath("pylib") };
+            pythonPaths.AddRange(additionalPaths);
+           
+            return pythonPaths;
         }
 
         private void CatchThreadAbortedException(Action func)

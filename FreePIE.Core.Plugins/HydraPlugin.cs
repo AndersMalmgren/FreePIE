@@ -108,7 +108,7 @@ namespace FreePIE.Core.Plugins
 
         public override void Stop()
         {
-            if(isReading)
+            if(isReading && readInitlized)
                 Sixense.Exit();
         }
 
