@@ -46,7 +46,7 @@ namespace FreePIE.Core.Plugins
             return new GlobalIndexer<JoystickGlobal, int, string>(intIndex => creator(diDevices[intIndex]),(strIndex, idx) =>
             {
                  var d = diDevices.Where(di => di.InstanceName == strIndex).ToArray();
-                 return d.Length > 0 && d.Length > idx ? creator(d[idx]) : null;
+                 return d.Length > 0 && d.Length > idx ? creator(d[idx]) : throw new Exception($"Could not acquire device with name {strIndex}");
             });
         }
 
