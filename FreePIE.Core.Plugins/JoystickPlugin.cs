@@ -1,41 +1,52 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Globals;
-using FreePIE.Core.Plugins.Strategies;
+using FreePIE.Core.Plugins.VJoy;
 using SlimDX.DirectInput;
+using Device = FreePIE.Core.Plugins.Dx.Device;
+using EffectType = FreePIE.Core.Plugins.VJoy.EffectType;
 
 namespace FreePIE.Core.Plugins
 {
     [GlobalType(Type = typeof(JoystickGlobal), IsIndexed = true)]
     public class JoystickPlugin : Plugin
     {
+        private readonly IHandleProvider handleProvider;
         private List<Device> devices;
+
+        public JoystickPlugin(IHandleProvider handleProvider)
+        {
+            this.handleProvider = handleProvider;
+        }
 
         public override object CreateGlobal()
         {
             var directInput = new DirectInput();
-            var handle = Process.GetCurrentProcess().MainWindowHandle;
+            var handle = handleProvider.Handle;
             devices = new List<Device>();
+            var globalCache = new Dictionary<Guid, JoystickGlobal>();
 
             var diDevices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
             var creator = new Func<DeviceInstance, JoystickGlobal>(d =>
             {
+                if (globalCache.ContainsKey(d.InstanceGuid)) return globalCache[d.InstanceGuid];
+
                 var controller = new Joystick(directInput, d.InstanceGuid);
                 controller.SetCooperativeLevel(handle, CooperativeLevel.Exclusive | CooperativeLevel.Background);
                 controller.Acquire();
 
                 var device = new Device(controller);
                 devices.Add(device);
-                return new JoystickGlobal(device);
+                return globalCache[d.InstanceGuid] = new JoystickGlobal(device);
             });
-            
+
             return new GlobalIndexer<JoystickGlobal, int, string>(intIndex => creator(diDevices[intIndex]),(strIndex, idx) =>
             {
-                    var d = diDevices.Where(di => di.InstanceName == strIndex).ToArray();
-                    return d.Length > 0 && d.Length > idx ? creator(d[idx]) : null;
+                 var d = diDevices.Where(di => di.InstanceName == strIndex).ToArray();
+                 return d.Length > 0 && d.Length > idx ? creator(d[idx]) : null;
             });
         }
 
@@ -54,55 +65,7 @@ namespace FreePIE.Core.Plugins
             get { return "Joystick"; }
         }
     }
-
-    public class Device : IDisposable
-    {
-        private readonly Joystick joystick;
-        private JoystickState state;
-        private readonly GetPressedStrategy<int> getPressedStrategy;
-
-        public Device(Joystick joystick)
-        {
-            this.joystick = joystick;
-            SetRange(-1000, 1000);
-            getPressedStrategy = new GetPressedStrategy<int>(GetDown);
-        }
-
-        public void Dispose()
-        {
-            joystick.Dispose();
-        }
-
-        public JoystickState State
-        {
-            get { return state ?? (state = joystick.GetCurrentState()); }
-        }
-
-        public void Reset()
-        {
-            state = null;
-        }
-
-        public void SetRange(int lowerRange, int upperRange)
-        {
-            foreach (DeviceObjectInstance deviceObject in joystick.GetObjects()) 
-            {
-                if ((deviceObject.ObjectType & ObjectDeviceType.Axis) != 0)
-                    joystick.GetObjectPropertiesById((int)deviceObject.ObjectType).SetRange(lowerRange, upperRange);
-            }
-        }
-
-        public bool GetPressed(int button)
-        {
-            return getPressedStrategy.IsPressed(button);
-        }
-
-        public bool GetDown(int button)
-        {
-            return State.IsPressed(button);
-        }
-    }
-
+    
     [Global(Name = "joystick")]
     public class JoystickGlobal
     {
@@ -114,6 +77,8 @@ namespace FreePIE.Core.Plugins
         }
 
         private JoystickState State { get { return device.State; } }
+
+        internal Device Device {  get { return device; } }
 
         public void setRange(int lowerRange, int upperRange)
         {
@@ -142,7 +107,7 @@ namespace FreePIE.Core.Plugins
 
         public int z
         {
-            get { return State.Z;  }
+            get { return State.Z; }
         }
 
         public int xRotation
@@ -168,6 +133,27 @@ namespace FreePIE.Core.Plugins
         public int[] pov
         {
             get { return State.GetPointOfViewControllers(); }
+        }
+
+        /*    public bool AutoCenter
+            {
+                get { return device.AutoCenter; }
+                set { device.AutoCenter = value; }
+            }*/
+
+        public bool supportsFfb { get { return device.SupportsFfb; } }
+        public void createEffect(int blockIndex, EffectType effectType, int duration, IEnumerable dirs)
+        {
+            device.CreateEffect(blockIndex, effectType, duration, dirs.Cast<int>().ToArray());
+        }
+        public void setConstantForce(int blockIndex, int magnitude)
+        {
+            device.SetConstantForce(blockIndex, magnitude);
+        }
+
+        public void operateEffect(int blockIndex, EffectOperation effectOperation, int loopCount = 0)
+        {
+            device.OperateEffect(blockIndex, effectOperation, loopCount);
         }
     }
 }

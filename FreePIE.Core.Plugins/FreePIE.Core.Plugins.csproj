@@ -81,6 +81,7 @@
     <Compile Include="AndroidPlugin.cs" />
     <Compile Include="ApplePlugin.cs" />
     <Compile Include="ComDevicePlugin.cs" />
+    <Compile Include="Dx\Device.cs" />
     <Compile Include="FreeImuPlugin.cs" />
     <Compile Include="FreePieIOPlugin.cs" />
     <Compile Include="FreeSpacePlugin.cs" />
@@ -125,6 +126,12 @@
     <Compile Include="TrackIR\TrackIRDll.cs" />
     <Compile Include="TrackIR\TrackIRHeadposeData.cs" />
     <Compile Include="VJoyPlugin.cs" />
+    <Compile Include="VJoy\EffectReport.cs" />
+    <Compile Include="VJoy\Enums.cs" />
+    <Compile Include="VJoy\Extensions.cs" />
+    <Compile Include="VJoy\FFBData.cs" />
+    <Compile Include="VJoy\VJoyFFBWrap.cs" />
+    <Compile Include="VJoy\VJoyGlobalHolder.cs" />
     <Compile Include="VuzixTrackerPlugin.cs" />
     <Compile Include="WiimotePlugin.cs" />
     <Compile Include="Wiimote\CapabilitiesGlobal.cs" />

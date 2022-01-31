@@ -2,6 +2,8 @@
 using System.Linq;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Events;
+using FreePIE.Core.Common.System;
+using FreePIE.Core.Contracts;
 using FreePIE.Core.Persistence;
 using FreePIE.Core.Persistence.Paths;
 using FreePIE.Core.Plugins;
@@ -36,6 +38,8 @@ namespace FreePIE.Core.Services
             kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
             kernel.Bind<IFileSystem>().To<FileSystem>();
             kernel.Bind<ILog>().To<Log>();
+
+            kernel.Bind<IHandleProvider>().To<MainWindowHandleProvider>();
         }
 
         private static void BindGlobalsProviders(StandardKernel kernel)
