@@ -86,7 +86,7 @@ namespace FreePIE.Core.Plugins
             uint driverVersion = 0;
             bool match = joystick.DriverMatch(ref apiVersion, ref driverVersion);
             if (!match)
-                Console.WriteLine("vJoy version of Driver ({0:X}) does NOT match DLL Version ({1:X})", driverVersion, apiVersion);
+                Console.Error.WriteLine("vJoy version of Driver ({0:X}) does NOT match DLL Version ({1:X})", driverVersion, apiVersion);
 
             Version = new VjoyVersionGlobal(apiVersion, driverVersion);
 

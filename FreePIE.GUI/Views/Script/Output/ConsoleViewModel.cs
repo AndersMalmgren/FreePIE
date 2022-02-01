@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Threading;
+using FreePIE.Core.Common.Events;
+using FreePIE.Core.Model.Events;
 using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script.Output
@@ -12,10 +14,11 @@ namespace FreePIE.GUI.Views.Script.Output
     {
         private readonly ConsoleTextWriter consoleTextWriter;
 
-        public ConsoleViewModel()
+        public ConsoleViewModel(IEventAggregator eventAggregator)
         {
             consoleTextWriter = new ConsoleTextWriter(this);
             Console.SetOut(consoleTextWriter);
+            Console.SetError(new ConsoleErrorWriter(eventAggregator));
 
             Title = "Console";
             IconName = "console-16.png";
@@ -85,6 +88,23 @@ namespace FreePIE.GUI.Views.Script.Output
         public override Encoding Encoding
         {
             get { return Encoding.UTF8; }
+        }
+    }
+
+    public class ConsoleErrorWriter : TextWriter
+    {
+        private readonly IEventAggregator eventAggregator;
+
+        public ConsoleErrorWriter(IEventAggregator eventAggregator)
+        {
+            this.eventAggregator = eventAggregator;
+        }
+
+        public override Encoding Encoding { get; }
+
+        public override void WriteLine(string value)
+        {
+            eventAggregator.Publish(new ScriptErrorEvent(ErrorLevel.Warning, value, null));
         }
     }
 }
