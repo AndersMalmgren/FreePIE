@@ -35,7 +35,7 @@ namespace FreePIE.Core.Plugins.TrackIR
 
                 DllRegistrar.InjectFakeTrackIRDll(Environment.CurrentDirectory + @"\");
                 hasInjectedDll = true;
-            } else Debug.WriteLine("No fake trackir dll found in current directory - obviously not spoofing.");
+            } else Console.Error.WriteLine("No fake trackir dll found in current directory - obviously not spoofing.");
         }
 
         private unsafe void InitDllLogging()
