@@ -66,7 +66,7 @@ namespace FreePIE.GUI.Views.Main.Menu
                 NotifyOfPropertyChange(() => CanQuickSaveScript);
                 NotifyOfPropertyChange(() => CanSaveScript);
                 NotifyOfPropertyChange(() => CanCloseScript);
-                PublishScriptStateChange();
+                PublishScriptStateChange(false);
             }
         }
 
@@ -189,11 +189,12 @@ namespace FreePIE.GUI.Views.Main.Menu
             yield return resultFactory.ShowDialog<AboutViewModel>();
         }
 
-        private void PublishScriptStateChange()
+        private void PublishScriptStateChange(bool triggerScriptChangeEvent = true)
         {
             NotifyOfPropertyChange(() => CanRunScript);
             NotifyOfPropertyChange(() => CanStopScript);
-            eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument?.Filename));
+            if(triggerScriptChangeEvent)
+                eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument?.Filename));
         }
 
         public bool CanStopScript => scriptRunning;
