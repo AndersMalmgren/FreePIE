@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreePIE.Console", "FreePIE.Console\FreePIE.Console.csproj", "{D0368562-09D1-4E6E-8BD3-C1138764971E}"
 EndProject
@@ -70,6 +70,7 @@ Global
 		{58285BD6-810D-4BBD-8249-230C3B0AC76F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{58285BD6-810D-4BBD-8249-230C3B0AC76F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{58285BD6-810D-4BBD-8249-230C3B0AC76F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{58285BD6-810D-4BBD-8249-230C3B0AC76F}.Debug|x86.Build.0 = Debug|Any CPU
 		{58285BD6-810D-4BBD-8249-230C3B0AC76F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58285BD6-810D-4BBD-8249-230C3B0AC76F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{58285BD6-810D-4BBD-8249-230C3B0AC76F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -80,6 +81,7 @@ Global
 		{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}.Debug|x86.Build.0 = Debug|Any CPU
 		{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BCF7160F-9CB9-46E5-91CA-EE15E1D5ED54}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -90,6 +92,7 @@ Global
 		{65D8F959-C4AD-4EC9-9EFA-9EBB9D8CA7CB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{65D8F959-C4AD-4EC9-9EFA-9EBB9D8CA7CB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{65D8F959-C4AD-4EC9-9EFA-9EBB9D8CA7CB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{65D8F959-C4AD-4EC9-9EFA-9EBB9D8CA7CB}.Debug|x86.Build.0 = Debug|Any CPU
 		{65D8F959-C4AD-4EC9-9EFA-9EBB9D8CA7CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65D8F959-C4AD-4EC9-9EFA-9EBB9D8CA7CB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{65D8F959-C4AD-4EC9-9EFA-9EBB9D8CA7CB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -153,6 +156,9 @@ Global
 		{AB8FED7B-DCC4-4985-A031-BB97351C24E6} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
 		{F8B146B6-E6D8-46A9-A9B8-C3EC9A2D8732} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
 		{DFBE147A-E57B-42AC-A560-B69C6FAC1C38} = {77C0351A-C1CF-4A50-BE67-4EC19DEA5ADD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F7FF16F2-8111-4245-B7D9-B93D6AF0C138}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = FreePIE.vsmdi

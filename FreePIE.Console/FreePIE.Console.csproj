@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FreePIE.Console</RootNamespace>
     <AssemblyName>FreePIE.Console</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -58,6 +58,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -72,7 +73,8 @@ xcopy /S /I "$(SolutionDir)\Lib\IronPython\pylib\*" "$(TargetDir)pylib\"
 copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\SlimDX\*.*" "$(TargetDir)"
-copy "$(SolutionDir)\Lib\piefreespace\*.dll" "$(TargetDir)"</PostBuildEvent>
+copy "$(SolutionDir)\Lib\piefreespace\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\ViGem\*.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
