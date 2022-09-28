@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FreePIE.Core.Plugins.Strategies
@@ -17,12 +17,10 @@ namespace FreePIE.Core.Plugins.Strategies
         public bool IsPressed(T code)
         {
             bool previouslyPressed = pressed.ContainsKey(code) && pressed[code];
-            pressed[code] = isDown(code);
+            pressed[code] = isDown(code); 
 
-            if (previouslyPressed)
-                return false;
-
-            return pressed[code];
+            return !previouslyPressed && pressed[code];    // Pressed = false before and true now
         }
     }
 }
+

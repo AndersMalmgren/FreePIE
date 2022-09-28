@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -8,7 +8,6 @@ using SlimDX.DirectInput;
 
 namespace FreePIE.Core.Plugins
 {
-
     // SlimDX key-codes
     [GlobalEnum]
     public enum Key
@@ -176,7 +175,7 @@ namespace FreePIE.Core.Plugins
             0x08, //D7 = 7,
             0x09, //D8 = 8,
             0x0A, //D9 = 9,
-            0x1E, //A = 10,
+            0x1E, //A = 10
             0x30, //B = 11,
             0x2E, //C = 12,
             0x20, //D = 13,
@@ -192,7 +191,7 @@ namespace FreePIE.Core.Plugins
             0x31, //N = 23,
             0x18, //O = 24,
             0x19, //P = 25,
-            0x10, //Q = 26,
+            0x10, //Q = 26
             0x13, //R = 27,
             0x1F, //S = 28,
             0x14, //T = 29,
@@ -319,9 +318,10 @@ namespace FreePIE.Core.Plugins
         private DirectInput DirectInputInstance = new DirectInput();
         private Keyboard KeyboardDevice;
         private KeyboardState KeyState = new KeyboardState();
+        private KeyboardState LastKeyState = new KeyboardState();
         private bool[] MyKeyDown = new bool[150];
         private SetPressedStrategy setKeyPressedStrategy;
-        private GetPressedStrategy<int> getKeyPressedStrategy;
+        private GetHeldDownStrategy<int> getKeyHeldDownStrategy;
 
         public override object CreateGlobal()
         {
@@ -345,10 +345,8 @@ namespace FreePIE.Core.Plugins
             KeyboardDevice.SetCooperativeLevel(handle, CooperativeLevel.Background | CooperativeLevel.Nonexclusive);
             KeyboardDevice.Acquire();
 
-            KeyboardDevice.GetCurrentState(ref KeyState);
-
             setKeyPressedStrategy = new SetPressedStrategy(KeyDown, KeyUp);
-            getKeyPressedStrategy = new GetPressedStrategy<int>(IsKeyDown);
+            getKeyHeldDownStrategy = new GetHeldDownStrategy<int>(IsKeyDown);
 
             OnStarted(this, new EventArgs());
             return null;
@@ -389,7 +387,9 @@ namespace FreePIE.Core.Plugins
 
         public override void DoBeforeNextExecute()
         {
-            KeyboardDevice.GetCurrentState(ref KeyState);
+            LastKeyState = KeyState ?? KeyboardDevice.GetCurrentState();
+            KeyState = null;
+            KeyState=KeyboardDevice.GetCurrentState();
             setKeyPressedStrategy.Do();
         }
 
@@ -403,15 +403,52 @@ namespace FreePIE.Core.Plugins
 
         public bool IsKeyUp(int keycode)
         {
-            // Returns true if the key is currently being pressed
+            // Returns true if the key is currently being released
             var key = (SlimDX.DirectInput.Key) keycode;
             bool up = KeyState.IsReleased(key) && !MyKeyDown[keycode];
             return up;
         }
 
-        public bool WasKeyPressed(int key)
+        //public bool IsKeyPressed(int keycode)
+        //{
+        //    // Returns true if the key is currently being released
+        //    var key = (SlimDX.DirectInput.Key)keycode;
+        //    bool up = KeyState.IsReleased(key) && !MyKeyDown[keycode];
+        //    return up;
+        //}
+
+        public bool WasKeyHeldDown(int key, int lapse)
         {
-            return getKeyPressedStrategy.IsPressed(key);
+            if (WasKeyPressed(key))                 // pressed key = start timer
+            {
+                getKeyHeldDownStrategy.CreateTimerIfNotExist(key, lapse);
+                return false;
+            }
+            if (WasKeyReleased(key))                 // released key = stop timer
+            {
+                getKeyHeldDownStrategy.StopTimer(key, lapse);
+                return false;
+            }
+            if(IsKeyDown(key)) return getKeyHeldDownStrategy.IsTimeElapsed(key, lapse);
+
+            return false;
+        }
+
+        public bool WasKeyPreHeldDown(int key, int lapse)
+        {
+            return WasKeyHeldDown(key, lapse) && getKeyHeldDownStrategy.IsPressed(key, lapse);
+        }
+
+        public bool WasKeyPressed(int keycode)
+        {
+            var key = (SlimDX.DirectInput.Key)keycode;
+            return LastKeyState.IsReleased(key) && KeyState.IsPressed(key);
+        }
+
+        public bool WasKeyReleased(int keycode)
+        {
+            var key = (SlimDX.DirectInput.Key)keycode;
+            return LastKeyState.IsPressed(key) && KeyState.IsReleased(key);
         }
 
         private MouseKeyIO.KEYBDINPUT KeyInput(ushort code, uint flag)
@@ -516,7 +553,22 @@ namespace FreePIE.Core.Plugins
 
         public bool getPressed(Key key)
         {
-            return plugin.WasKeyPressed((int) key);
+            return plugin.WasKeyPressed((int)key);
+        }
+
+        public bool getReleased(Key key)
+        {
+            return plugin.WasKeyReleased((int)key);
+        }
+
+        public bool getHeldDown(Key key, int lapse)
+        {
+            return plugin.WasKeyHeldDown((int)key, lapse);
+        }
+
+        public bool getPressedHeldDown(Key key, int lapse)
+        {
+           return plugin.WasKeyPreHeldDown((int)key, lapse);
         }
 
         public void setPressed(Key key)

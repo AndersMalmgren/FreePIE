@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -22,11 +22,12 @@ namespace FreePIE.Core.Plugins
         private DirectInput directInputInstance = new DirectInput();
         private Mouse mouseDevice;
         private MouseState currentMouseState;
+        private MouseState lastMouseState;
         private bool leftPressed;
         private bool rightPressed;
         private bool middlePressed;
-        private GetPressedStrategy<int> getButtonPressedStrategy;
         private SetPressedStrategy setButtonPressedStrategy;
+        private GetHeldDownStrategy<int> getButtonHeldDownStrategy;
 
         public override object CreateGlobal()
         {
@@ -45,8 +46,8 @@ namespace FreePIE.Core.Plugins
             mouseDevice.Properties.AxisMode = DeviceAxisMode.Relative;   // Get delta values
             mouseDevice.Acquire();
 
-            getButtonPressedStrategy = new GetPressedStrategy<int>(IsButtonDown);
             setButtonPressedStrategy = new SetPressedStrategy(SetButtonDown, SetButtonUp);
+            getButtonHeldDownStrategy = new GetHeldDownStrategy<int>(IsButtonDown);
           
             OnStarted(this, new EventArgs());
             return null;
@@ -104,47 +105,39 @@ namespace FreePIE.Core.Plugins
                 wheel = 0;
             }
 
-            currentMouseState = null;  // flush the mouse state
+            lastMouseState = currentMouseState ?? mouseDevice.GetCurrentState();
+            //currentMouseState = null;  // flush the mouse state
+            currentMouseState = mouseDevice.GetCurrentState();
 
             setButtonPressedStrategy.Do();
         }
 
         public double DeltaX
         {
-            set
-            {
-                deltaXOut = deltaXOut + value;
-            }
-
+            set { deltaXOut = deltaXOut + value; }
             get { return CurrentMouseState.X; }
         }
 
         public double DeltaY
         {
-            set
-            {
-                deltaYOut = deltaYOut + value;
-            }
-
+            set { deltaYOut = deltaYOut + value; }
             get { return CurrentMouseState.Y; }
         }
 
         public int Wheel
         {
             get { return CurrentMouseState.Z; }
-            set { wheel = value; }
-            
+            set { wheel = value; } 
         }
 
         private MouseState CurrentMouseState
         {
-            get
-            {
-                if (currentMouseState == null)
-                    currentMouseState = mouseDevice.GetCurrentState();
+            get { return currentMouseState; }
+        }
 
-                return currentMouseState;
-            }
+        private MouseState LastMouseState
+        {
+            get { return lastMouseState; }
         }
 
         public bool IsButtonDown(int index)
@@ -154,7 +147,34 @@ namespace FreePIE.Core.Plugins
 
         public bool IsButtonPressed(int button)
         {
-            return getButtonPressedStrategy.IsPressed(button);
+            return LastMouseState.IsReleased(button) && CurrentMouseState.IsPressed(button);
+        }
+
+        public bool IsButtonReleased(int button)
+        {
+            return LastMouseState.IsPressed(button) && CurrentMouseState.IsReleased(button);
+        }
+
+        public bool IsButtonHeldDown(int button, int lapse)
+        {
+            if (IsButtonPressed(button))                 // pressed button = start timer
+            {
+                getButtonHeldDownStrategy.CreateTimerIfNotExist(button, lapse);
+                return false;
+            }
+            if (IsButtonReleased(button))                 // released button = stop timer
+            {
+                getButtonHeldDownStrategy.StopTimer(button, lapse);
+                return false;
+            }
+            if (IsButtonDown(button)) return getButtonHeldDownStrategy.IsTimeElapsed(button, lapse);
+
+            return false;
+        }
+
+        public bool IsButtonPreHeldDown(int button, int lapse)
+        {
+            return IsButtonHeldDown(button, lapse) && getButtonHeldDownStrategy.IsPressed(button, lapse);
         }
 
         private void SetButtonDown(int button)
@@ -311,6 +331,21 @@ namespace FreePIE.Core.Plugins
             return plugin.IsButtonPressed(button);
         }
 
+        public bool getReleased(int button)
+        {
+            return plugin.IsButtonReleased(button);
+        }
+
+        public bool getHeldDown(int button, int lapse)
+        {
+            return plugin.IsButtonHeldDown(button, lapse);
+        }
+
+        public bool getPressedHeldDown(int button, int lapse)
+        {
+            return plugin.IsButtonPreHeldDown(button, lapse);
+        }
+ 
         public void setPressed(int button)
         {
             plugin.PressAndRelease(button);
