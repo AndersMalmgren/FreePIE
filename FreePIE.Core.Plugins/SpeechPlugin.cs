@@ -15,6 +15,7 @@ namespace FreePIE.Core.Plugins
         private SpeechRecognitionEngine recognitionEngine;
         private Dictionary<string, RecognitionInfo> recognizerResults;
 
+        private bool recognitionActive = true;
 
         public override object CreateGlobal()
         {
@@ -34,6 +35,11 @@ namespace FreePIE.Core.Plugins
             }
         }
 
+        public void EnableRecognition(bool enable)
+        {
+            recognitionActive = enable;   
+        }
+        
         public void SelectVoice(string name)
         {
             EnsureSynthesizer();
@@ -87,10 +93,14 @@ namespace FreePIE.Core.Plugins
 
                 recognitionEngine.SpeechRecognized += (s, e) =>
                 {
-                    var info = recognizerResults[e.Result.Text];
+                    if (recognitionActive)
+                    {
+                        var info = recognizerResults[e.Result.Text];
 
-                    if (e.Result.Confidence >= info.Confidence)
-                        info.Result = true;
+                        if (e.Result.Confidence >= info.Confidence)
+                            info.Result = true;    
+                    }
+                    
                 };
 
             }
@@ -157,6 +167,11 @@ namespace FreePIE.Core.Plugins
         public void selectVoice(string name)
         {
             plugin.SelectVoice(name);
+        }
+
+        public void enableRecognition(bool enable)
+        {
+            plugin.EnableRecognition(enable);
         }
     }
 }
