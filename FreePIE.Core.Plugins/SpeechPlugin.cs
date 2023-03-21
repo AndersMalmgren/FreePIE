@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Speech.Recognition;
 using System.Speech.Synthesis;
 using FreePIE.Core.Contracts;
@@ -14,6 +15,7 @@ namespace FreePIE.Core.Plugins
 
         private SpeechRecognitionEngine recognitionEngine;
         private Dictionary<string, RecognitionInfo> recognizerResults;
+        private string[] voices;
 
 
         public override object CreateGlobal()
@@ -76,6 +78,15 @@ namespace FreePIE.Core.Plugins
             return result;
         }
 
+        public string[] Voices
+        {
+            get
+            {
+                EnsureSynthesizer();
+                return voices;
+            }
+        }
+
         private bool EnsureRecognizer()
         {
             var result = recognitionEngine == null;
@@ -107,6 +118,7 @@ namespace FreePIE.Core.Plugins
                 synth = new SpeechSynthesizer();
                 synth.SetOutputToDefaultAudioDevice();
                 synth.SpeakCompleted += (s, e) => Speaking = false;
+                voices = synth.GetInstalledVoices().Where(v => v.Enabled).Select(v => v.VoiceInfo.Name).ToArray();
             }
         }
 
@@ -158,5 +170,7 @@ namespace FreePIE.Core.Plugins
         {
             plugin.SelectVoice(name);
         }
+
+        public string[] voices => plugin.Voices;
     }
 }
