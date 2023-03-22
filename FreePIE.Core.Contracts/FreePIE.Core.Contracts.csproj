@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
+    <Compile Include="Deprecated.cs" />
     <Compile Include="IGlobalNameProvider.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="IPluginProperty.cs" />

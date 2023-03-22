@@ -100,15 +100,21 @@ namespace FreePIE.Core.Plugins
             return plugin.IsActive(processName);
         }
 
+        [Deprecated("activate")]
         public bool setActive(string processName)
         {
             return plugin.Activate(processName);
         }
 
-        public string getActive
+        public bool activate(string processName)
         {
-            get { return plugin.GetActiveWindowProcessName(); }
+            return plugin.Activate(processName);
         }
+
+        [Deprecated("active")] public string getActive => active;
+
+        public string active => plugin.GetActiveWindowProcessName();
+
 
         public int pollingInterval
         {
