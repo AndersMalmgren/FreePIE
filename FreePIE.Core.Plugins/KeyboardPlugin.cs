@@ -528,5 +528,11 @@ namespace FreePIE.Core.Plugins
         {
             plugin.PressAndRelease((int)key, state);
         }
+
+        public bool this[Key key]
+        {
+            get { return getKeyDown(key); }
+            set { setKey(key, value); }
+        }
     }
 }
