@@ -47,6 +47,7 @@ namespace FreePIE.Core.Plugins
 
         public override void DoBeforeNextExecute()
         {
+            holders.ForEach(h => h.CheckAlive());
             holders.ForEach(h => h.SendPressed());
         }
 
@@ -128,6 +129,35 @@ namespace FreePIE.Core.Plugins
             currentAxisValue = new Dictionary<HID_USAGES, int>();
 
             joystick.ResetVJD(index);
+        }
+
+        public void CheckAlive()
+        {
+            var status = joystick.GetVJDStatus(Index);
+            if (status != VjdStat.VJD_STAT_OWN)
+            {
+                System.Console.WriteLine("No longer own the vjoy device. Attempting to reacquire.");
+
+                string error = null;
+                switch (status)
+                {
+                    case VjdStat.VJD_STAT_BUSY:
+                        error = "vJoy Device {0} is already owned by another feeder";
+                        break;
+                    case VjdStat.VJD_STAT_MISS:
+                        error = "vJoy Device {0} is not installed or disabled";
+                        break;
+                    case VjdStat.VJD_STAT_UNKN:
+                        error = ("vJoy Device {0} general error");
+                        break;
+                }
+
+                if (error == null && !joystick.AcquireVJD(Index))
+                    error = "Failed to acquire vJoy device number {0}";
+
+                if (error != null)
+                    throw new Exception(string.Format(error, Index));
+            }
         }
 
         public void SetButton(int button, bool pressed)
