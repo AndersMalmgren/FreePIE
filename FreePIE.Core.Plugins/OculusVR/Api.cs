@@ -11,7 +11,7 @@ namespace FreePIE.Core.Plugins.OculusVR
         [DllImport("OVRFreePIE.dll", CallingConvention = CallingConvention.Cdecl)]
         private extern static int ovr_freepie_init();
         [DllImport("OVRFreePIE.dll", CallingConvention = CallingConvention.Cdecl)]
-        private extern static int ovr_freepie_read(out OculusVr6Dof output);
+        private extern static int ovr_freepie_read(out OculusVrData output);
         [DllImport("OVRFreePIE.dll")]
         private extern static int ovr_freepie_destroy();
         [DllImport("OVRFreePIE.dll")]
@@ -22,9 +22,9 @@ namespace FreePIE.Core.Plugins.OculusVR
             return ovr_freepie_init() == 0;
         }
 
-        public static OculusVr6Dof Read()
+        public static OculusVrData Read()
         {
-            OculusVr6Dof output;
+            OculusVrData output;
             ovr_freepie_read(out output);
             return output;
         }
