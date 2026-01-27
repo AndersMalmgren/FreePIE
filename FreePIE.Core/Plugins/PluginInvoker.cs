@@ -42,11 +42,26 @@ namespace FreePIE.Core.Plugins
                 .Where(dll => dll.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase))
                 .ToList();
 
-            pluginTypes = dlls
-                .Select(Assembly.LoadFile)
-                .SelectMany(a => a.GetTypes().Where(t => typeof (IPlugin).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)).ToList();
 
-            return pluginTypes;
+            try
+            {
+
+                pluginTypes = dlls
+                    .Select(Assembly.LoadFile)
+                    .SelectMany(a => a.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)).ToList();
+
+                return pluginTypes;
+            }
+
+            catch (Exception ex)
+            {
+                if (ex is ReflectionTypeLoadException typeLoadException && typeLoadException.LoaderExceptions != null)
+                {
+                    throw new Exception($"{ex.Message}: {string.Join(";", typeLoadException.LoaderExceptions.Select(le => le.Message).Distinct())}");
+                }
+
+                throw;
+            }
         }
 
         public IEnumerable<IPlugin> InvokeAndConfigurePlugins(IEnumerable<Type> pluginTypes)
