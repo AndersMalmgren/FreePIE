@@ -27,12 +27,15 @@ namespace FreePIE.Core.Plugins
             var data = Data;
             newData = true;
             var values = line.Split(',');
-            if (values.Length != 3)
+            if (values.Length != 6)
                 return;
 
             data.Yaw = ParseFloat(values[0]);
             data.Pitch = ParseFloat(values[1]);
             data.Roll = ParseFloat(values[2]);
+            data.X = ParseFloat(values[3]);
+            data.Y = ParseFloat(values[4]);
+            data.Z = ParseFloat(values[5]);
             Data = data;
             newData = true;
         }
