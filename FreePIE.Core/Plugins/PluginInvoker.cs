@@ -53,14 +53,9 @@ namespace FreePIE.Core.Plugins
                 return pluginTypes;
             }
 
-            catch (Exception ex)
+            catch (ReflectionTypeLoadException e)
             {
-                if (ex is ReflectionTypeLoadException typeLoadException && typeLoadException.LoaderExceptions != null)
-                {
-                    throw new Exception($"{ex.Message}: {string.Join(";", typeLoadException.LoaderExceptions.Select(le => le.Message).Distinct())}");
-                }
-
-                throw;
+                throw new Exception($"{e.Message}: {string.Join(";", e.LoaderExceptions.Select(le => le.Message).Distinct())}");
             }
         }
 
