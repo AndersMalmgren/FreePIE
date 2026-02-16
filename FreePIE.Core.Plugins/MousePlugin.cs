@@ -6,6 +6,8 @@ using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
 using SlimDX.RawInput;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace FreePIE.Core.Plugins
 {
@@ -16,6 +18,8 @@ namespace FreePIE.Core.Plugins
         // Mouse position state variables
         private double deltaXOut;
         private double deltaYOut;
+        public float absoluteX = -1;
+        public float absoluteY = -1;
         private int wheel;
         public const int WheelMax = 120;
 
@@ -82,12 +86,29 @@ namespace FreePIE.Core.Plugins
         public override void DoBeforeNextExecute()
         {
             // If a mouse command was given in the script, issue it all at once right here
-            if ((int)deltaXOut != 0 || (int)deltaYOut != 0 || wheel != 0)
+            if ((int)deltaXOut != 0 || (int)deltaYOut != 0 || wheel != 0 || absoluteX != 0 || absoluteY != 0)
             {
 
                 var input = new MouseKeyIO.INPUT[1];
                 input[0].type = MouseKeyIO.INPUT_MOUSE;
-                input[0].mi = MouseInput((int)deltaXOut, (int)deltaYOut, (uint)wheel, 0, MouseKeyIO.MOUSEEVENTF_MOVE | MouseKeyIO.MOUSEEVENTF_WHEEL);
+                if (absoluteX != -1 || absoluteY != -1)
+                {
+                    if (absoluteX == -1)
+                    {
+                        absoluteX = (float)Cursor.Position.X / SystemInformation.VirtualScreen.Width * 65535+1;
+                    }
+
+                    if (absoluteY == -1)
+                    {
+                        absoluteY = (float)Cursor.Position.Y / SystemInformation.VirtualScreen.Height * 65535+1;
+                    }
+                    
+                    input[0].mi = MouseInput((int)absoluteX, (int)absoluteY, (uint)wheel, 0, MouseKeyIO.MOUSEEVENTF_MOVE | MouseKeyIO.MOUSEEVENTF_WHEEL | MouseKeyIO.MOUSEEVENTF_ABSOLUTE);
+                }
+                else
+                {
+                    input[0].mi = MouseInput((int)deltaXOut, (int)deltaYOut, (uint)wheel, 0, MouseKeyIO.MOUSEEVENTF_MOVE | MouseKeyIO.MOUSEEVENTF_WHEEL);
+                }
 
                 MouseKeyIO.SendInput(1, input, Marshal.SizeOf(input[0].GetType()));
 
@@ -100,9 +121,11 @@ namespace FreePIE.Core.Plugins
                 {
                     deltaYOut = deltaYOut - (int)deltaYOut;
                 }
-
+                
+                absoluteX = -1;
+                absoluteY = -1;
                 wheel = 0;
-            }
+             }
 
             currentMouseState = null;  // flush the mouse state
 
@@ -258,6 +281,17 @@ namespace FreePIE.Core.Plugins
         {
             get { return plugin.DeltaY; }
             set { plugin.DeltaY = value; }
+        }
+
+        public int x
+        {
+            get { return Cursor.Position.X; }
+            set { plugin.absoluteX = (float)value / SystemInformation.VirtualScreen.Width * 65535; }
+        }
+        public int y
+        {
+            get { return Cursor.Position.Y; }
+            set { plugin.absoluteY = (float)value / SystemInformation.VirtualScreen.Height * 65535; }
         }
 
         public int wheel
