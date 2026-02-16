@@ -23,7 +23,7 @@ namespace FreePIE.GUI.Shells
 {
     public class MainShellViewModel : ShellPresentationModel, 
         Core.Common.Events.IHandle<ScriptDocumentAddedEvent>
-        ,Core.Common.Events.IHandle<ExitingEvent>
+        ,Core.Common.Events.IHandle<ExitingEvent>, Core.Common.Events.IHandle<SaveSettingsEvent>
     {
         private const string dockingConfig = "layout.config";
         private readonly IEventAggregator eventAggregator;
@@ -219,6 +219,11 @@ namespace FreePIE.GUI.Shells
             persistanceManager.Save();
             var layoutSerializer = new XmlLayoutSerializer(DockingManager);
             layoutSerializer.Serialize(paths.GetDataPath(dockingConfig));
+        }
+
+        void Core.Common.Events.IHandle<SaveSettingsEvent>.Handle(SaveSettingsEvent message)
+        {
+            this.settingsManager.Save();
         }
     }
 }

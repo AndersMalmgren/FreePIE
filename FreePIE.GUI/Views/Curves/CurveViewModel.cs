@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using Caliburn.Micro;
+﻿using Caliburn.Micro;
+
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Model;
@@ -11,8 +8,15 @@ using FreePIE.GUI.Common.Visiblox;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells.Curves;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 using Point = FreePIE.Core.Model.Point;
+
 
 namespace FreePIE.GUI.Views.Curves
 {
@@ -78,6 +82,34 @@ namespace FreePIE.GUI.Views.Curves
                 eventAggregator.Publish(new DeleteCurveEvent(this));
         }
 
+        
+        /// <summary>
+        /// Generates a python script that creates the curve
+        /// </summary>
+        /// <returns></returns>
+        public void Script()
+        {
+            
+            string python = $"{Curve.Name} = curves.create({Curve.Points.First().X}, {Curve.Points.Last().X}";
+            foreach (var point in Curve.Points.Skip(1).TakeAllButLast())
+            {                
+                python += $", {point.X:0.000}, {point.Y:0.000}";
+            }
+            python += ")";
+
+
+            try
+            {
+                Clipboard.SetDataObject(python);
+            }
+            catch (Exception x)
+            {
+
+            }
+
+        }
+
+        
         public IEnumerable<IResult> Reset()
         {
             var dialog = resultFactory.ShowDialog<NewCurveViewModel>().Configure(m => m.Init(Curve));
@@ -102,6 +134,11 @@ namespace FreePIE.GUI.Views.Curves
         public bool HasSelectedPoint
         {
             get { return selectedPointIndex.HasValue; }
+        }
+
+        public bool HasPoints
+        {
+            get { return Curve.Points.Any(); }
         }
 
         private bool canSetDefault;
@@ -242,7 +279,6 @@ namespace FreePIE.GUI.Views.Curves
                 selectablePoints = value;
                 NotifyOfPropertyChange(() => SelectablePoints);
             }
-        }
-
+        }        
     }
 }

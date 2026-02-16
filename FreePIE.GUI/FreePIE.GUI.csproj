@@ -133,6 +133,7 @@
     <Compile Include="Events\Command\RunEvent.cs" />
     <Compile Include="Events\Command\TrayEvent.cs" />
     <Compile Include="Events\DeleteCurveEvent.cs" />
+    <Compile Include="Events\SaveSettingsEvent.cs" />
     <Compile Include="Events\ScriptDocumentAddedEvent.cs" />
     <Compile Include="Events\ExitingEvent.cs" />
     <Compile Include="Events\ScriptEvent.cs" />
