@@ -431,6 +431,7 @@
     <Resource Include="Resources\close-16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.WinFX.targets" />
   <PropertyGroup>
     <PostBuildEvent>md "$(TargetDir)plugins"
 
