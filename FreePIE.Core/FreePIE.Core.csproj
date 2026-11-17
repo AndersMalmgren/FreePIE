@@ -128,6 +128,12 @@
     <Compile Include="ScriptEngine\IScriptParser.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptEngine.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptParser.cs" />
+    <Compile Include="ScriptEngine\Python\NeedIndexerRewriter.cs" />
+    <Compile Include="ScriptEngine\Python\Ast\PythonAstParser.cs" />
+    <Compile Include="ScriptEngine\Python\Ast\PythonScope.cs" />
+    <Compile Include="ScriptEngine\Python\Ast\ScriptEdit.cs" />
+    <Compile Include="ScriptEngine\Python\Ast\ScriptModel.cs" />
+    <Compile Include="ScriptEngine\Python\Ast\ScriptModelBuilder.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\IThreadTimingFactory.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\Strategies\BeginPeriodSystemTimerStrategy.cs" />
     <Compile Include="ScriptEngine\ThreadTiming\Strategies\ThreadYieldMicroSecondsStrategy.cs" />
