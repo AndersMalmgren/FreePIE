@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace FreePIE.Core.Model
 {
+    
     public class Curve
     {
-        public Curve(List<Point> points) : this(null, points) {}
+        public Curve(IEnumerable<Point> points) : this(null, points) {}
 
-        public Curve(string name, List<Point> points)
+        public Curve(string name, IEnumerable<Point> points)
         {
             Name = name;
-            Points = points;
+            Points = points.ToList();
             ValidateCurve = true;
         }
 
         public Curve() {}
 
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public List<Point> Points { get; set; }
         public string Name { get; set; }
         public bool? ValidateCurve { get; set; }
@@ -43,8 +46,14 @@ namespace FreePIE.Core.Model
                       .Select(value => new Point(value, value))
                       .ToList();
         }
-    }
 
+        public override string ToString()
+        {
+            return "[" + string.Join(", ", Points.Select(p => $"({p.X}, {p.Y})")) + "]";
+        }
+
+    }
+    [DebuggerDisplay("({X}, {Y})")]
     public struct Point
     {
         public Point(double x, double y) : this()
@@ -84,5 +93,26 @@ namespace FreePIE.Core.Model
         {
             return X.Equals(other.X) && Y.Equals(other.Y);
         }
+
+        public void Deconstruct(out double x, out double y)
+        {
+            x = this.X;
+            y = this.Y;
+        }
+
+        public static implicit operator Point((double x, double y) tuple)
+        {
+            return new Point(tuple.x, tuple.y);
+        }
+
+        public static implicit operator (double x, double y)(Point point)
+        {
+            return (point.X, point.Y);
+        }
     }
+
+    
+
 }
+
+

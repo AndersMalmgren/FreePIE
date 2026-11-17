@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using FreePIE.Core.Common;
 using FreePIE.Core.Contracts;
@@ -7,6 +8,7 @@ using FreePIE.Core.Persistence;
 
 namespace FreePIE.Core.ScriptEngine.Globals
 {
+    
     public class CurveGlobalProvider : IGlobalProvider
     {
         private readonly ISettingsManager settingsManager;
@@ -20,6 +22,7 @@ namespace FreePIE.Core.ScriptEngine.Globals
             return settingsManager.Settings.Curves.Where(c => !string.IsNullOrEmpty(c.Name)).Select(c => new CurveGlobal(c));
         }
 
+        [DebuggerDisplay("{curve.Points}")]
         public class CurveGlobal : IGlobalNameProvider
         {
             private readonly Curve curve;
