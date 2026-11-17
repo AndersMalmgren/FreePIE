@@ -36,7 +36,7 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
 
         void OnPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            if (PreviewTextInput != null)
+            if (PreviewTextInput != null && IsEditable())
                 PreviewTextInput(sender, e);
         }
 
@@ -45,15 +45,21 @@ namespace FreePIE.GUI.CodeCompletion.AvalonEdit
             return searchPanel == null || searchPanel.IsClosed;
         }
 
+        // Completion is not shown when the text can not be edited, for example while the script runs
+        private bool IsEditable()
+        {
+            return textArea.ReadOnlySectionProvider.CanInsert(textArea.Caret.Offset);
+        }
+
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (KeyDown != null && SearchPanelHidden())
+            if (KeyDown != null && SearchPanelHidden() && IsEditable())
                 KeyDown(sender, e);
         }
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (KeyUp != null && SearchPanelHidden())
+            if (KeyUp != null && SearchPanelHidden() && IsEditable())
                 KeyUp(sender, e);
         }
 

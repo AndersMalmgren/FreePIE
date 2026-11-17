@@ -15,7 +15,9 @@
 				SyntaxHighlighting="Python"   
                 Script="{ Binding Path=Script, Mode=TwoWay}"    
                 Replacer="{ Binding Path=Replacer, Mode=TwoWay}"    
-                IsEnabled="{ Binding Enabled}"
+                IsReadOnly="{ Binding IsReadOnly}"
+                Breakpoints="{ Binding Breakpoints}"
+                ExecutionLine="{ Binding ExecutionLine}"
                 Caret="{ Binding Path=CaretPosition, Mode=TwoWay }"
                 ShowLineNumbers="True">
             <AvalonEdit:BindableScriptEditor.ContextMenu>

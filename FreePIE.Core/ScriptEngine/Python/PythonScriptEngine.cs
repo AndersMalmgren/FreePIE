@@ -75,6 +75,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         private readonly IPaths paths;
         private readonly ILog log;
         private readonly IFileSystem fileSystem;
+        private readonly PythonScriptDebugger debugger;
         private static Microsoft.Scripting.Hosting.ScriptEngine engine;
         private IEnumerable<IPlugin> usedPlugins;
         private InterlockableBool stopRequested;
@@ -110,6 +111,12 @@ namespace FreePIE.Core.ScriptEngine.Python
             this.paths = paths;
             this.log = log;
             this.fileSystem = fileSystem;
+            debugger = new PythonScriptDebugger(eventAggregator);
+        }
+
+        public IScriptDebugger Debugger
+        {
+            get { return debugger; }
         }
 
         public void Start(string script, string scriptPath = null)
@@ -167,13 +174,26 @@ namespace FreePIE.Core.ScriptEngine.Python
             {
                 var compiled = Engine.CreateScriptSourceFromString(script).Compile();
 
-                while (!stopRequested)
+                debugger.Attach(Engine, script, startingLine);
+                try
                 {
-                    usedPlugins.ForEach(p => p.DoBeforeNextExecute());
-                    CatchThreadAbortedException(() => compiled.Execute(scope));
-                    scope.SetVariable("starting", false);
-                    threadTimingFactory.Get().Wait();
+                    while (!stopRequested)
+                    {
+                        usedPlugins.ForEach(p => p.DoBeforeNextExecute());
+
+                        if (debugger.TraceChanged)
+                            debugger.UpdateTrace();
+
+                        CatchThreadAbortedException(() => compiled.Execute(scope));
+                        scope.SetVariable("starting", false);
+                        threadTimingFactory.Get().Wait();
+                    }
                 }
+                finally
+                {
+                    debugger.Detach();
+                }
+
                 scope.SetVariable("stopping", true);
                 CatchThreadAbortedException(() => compiled.Execute(scope));
             });
@@ -322,6 +342,8 @@ namespace FreePIE.Core.ScriptEngine.Python
 
             if (wasStopRequested)
                 return;
+
+            debugger.Stop();
 
             const int maximumShutdownTime = 200;
 

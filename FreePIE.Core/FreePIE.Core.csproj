@@ -85,6 +85,8 @@
     <Compile Include="Model\Choices.cs" />
     <Compile Include="Model\Events\CurveChangedNameEvent.cs" />
     <Compile Include="Model\Events\ScriptErrorEvent.cs" />
+    <Compile Include="Model\Events\ScriptPausedEvent.cs" />
+    <Compile Include="Model\Events\ScriptResumedEvent.cs" />
     <Compile Include="Model\Events\TrayNotificationEvent.cs" />
     <Compile Include="Model\Events\WatchEvent.cs" />
     <Compile Include="Model\PluginProperty.cs" />
@@ -130,12 +132,15 @@
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\Strategies\ContinuesRotationStrategy.cs" />
     <Compile Include="ScriptEngine\Globals\ScriptHelpers\SystemHelper.cs" />
     <Compile Include="ScriptEngine\ICodeCompletionProvider.cs" />
+    <Compile Include="ScriptEngine\IScriptDebugger.cs" />
     <Compile Include="ScriptEngine\IScriptEngine.cs" />
     <Compile Include="ScriptEngine\IScriptParser.cs" />
+    <Compile Include="ScriptEngine\Python\PythonScriptDebugger.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptEngine.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptParser.cs" />
     <Compile Include="ScriptEngine\Python\NeedIndexerRewriter.cs" />
     <Compile Include="ScriptEngine\Python\PythonRuntimeInfo.cs" />
+    <Compile Include="ScriptEngine\Python\Ast\EvaluableExpressionFinder.cs" />
     <Compile Include="ScriptEngine\Python\Ast\PythonAstParser.cs" />
     <Compile Include="ScriptEngine\Python\Ast\PythonScope.cs" />
     <Compile Include="ScriptEngine\Python\Ast\ScriptEdit.cs" />
