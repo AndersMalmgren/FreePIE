@@ -168,6 +168,12 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private ScriptType InferCall(CallExpression call, PythonScope scope, int depth)
         {
+            // The runtime info has the members of the returned type under the method of a global, so curves.create(...) resolves like curves.create
+            var member = call.Target as MemberExpression;
+            var global = member != null ? InferExpression(member.Target, scope, depth + 1) as AliasType : null;
+            if (global != null)
+                return global.GetMember(member.Name);
+
             var target = InferCallTarget(call.Target, scope, depth);
             if (target == null)
                 return null;

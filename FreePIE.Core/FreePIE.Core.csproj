@@ -84,6 +84,7 @@
     <Compile Include="Model\Choice.cs" />
     <Compile Include="Model\Choices.cs" />
     <Compile Include="Model\Events\CurveChangedNameEvent.cs" />
+    <Compile Include="Model\Events\CurvesChangedEvent.cs" />
     <Compile Include="Model\Events\ScriptErrorEvent.cs" />
     <Compile Include="Model\Events\ScriptPausedEvent.cs" />
     <Compile Include="Model\Events\ScriptResumedEvent.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="ScriptEngine\IScriptDebugger.cs" />
     <Compile Include="ScriptEngine\IScriptEngine.cs" />
     <Compile Include="ScriptEngine\IScriptParser.cs" />
+    <Compile Include="ScriptEngine\Python\CurveScript.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptDebugger.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptEngine.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptParser.cs" />

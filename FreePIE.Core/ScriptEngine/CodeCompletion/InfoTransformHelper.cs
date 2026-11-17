@@ -80,7 +80,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             AddEvents(dotDelim, globalMembers);
             AddProperties(dotDelim, globalMembers);
 
-            AddMethods(dotDelim, globalMembers);
+            AddMethods(dotDelim, globalMembers, true);
         }
 
         private static void AddProperties(Node<TokenInfo> propDelim, List<MemberInfo> members)
@@ -93,9 +93,9 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             eventDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Event).Select(m => MapEvent(m as EventInfo)));
         }
 
-        private static void AddMethods(Node<TokenInfo> methodDelim, IEnumerable<MemberInfo> members)
+        private static void AddMethods(Node<TokenInfo> methodDelim, IEnumerable<MemberInfo> members, bool withReturnedMembers)
         {
-            methodDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Method && !(m as MethodInfo).IsSpecialName && !IsDeprecated(m)).Select(m => MapMethod(m as MethodInfo)));
+            methodDelim.AddChildren(members.Where(m => m.MemberType == MemberTypes.Method && !(m as MethodInfo).IsSpecialName && !IsDeprecated(m)).Select(m => MapMethod(m as MethodInfo, withReturnedMembers)));
         }
 
         private static Node<TokenInfo> MapClassType(Type type)
@@ -158,7 +158,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
                 var members = GetFilteredMembers(propertyInfo.PropertyType);
 
                 AddEvents(dotDelim, members);
-                AddMethods(dotDelim, members);
+                AddMethods(dotDelim, members, false);
                 AddProperties(dotDelim, members);
             }
 
@@ -176,7 +176,8 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return member.DeclaringType != typeof(object);
         }
 
-        private static TokenInfo MapMethod(MethodInfo mi)
+        // The members of the returned type are only added one level down, a method can return its own type
+        private static Node<TokenInfo> MapMethod(MethodInfo mi, bool withReturnedMembers)
         {
             var expInfo = new ExpressionInfo {Name = mi.Name, Kind = ExpressionKind.Method};
 
@@ -185,7 +186,19 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             expInfo.Description = string.Format("{0} {1} ({2})", returnType, mi.Name, string.Join(",", parameters));
             expInfo.Signature = new SignatureInfo(mi.Name, parameters, returnType);
 
-            return new TokenInfo(new Token(TokenType.Identifier, mi.Name), expInfo);
+            var node = new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Identifier, mi.Name), expInfo));
+
+            if (withReturnedMembers && mi.ReturnType != typeof(void) && !mi.ReturnType.IsEnum && IsUserDefinedType(mi.ReturnType))
+            {
+                var dotDelim = node.AddChild(ConstructDelimiterNode('.'));
+                var members = GetFilteredMembers(mi.ReturnType);
+
+                AddEvents(dotDelim, members);
+                AddMethods(dotDelim, members, false);
+                AddProperties(dotDelim, members);
+            }
+
+            return node;
         }
 
         private static IEnumerable<ParameterInfo> GetParametersWithoutIndexer(MethodInfo mi)

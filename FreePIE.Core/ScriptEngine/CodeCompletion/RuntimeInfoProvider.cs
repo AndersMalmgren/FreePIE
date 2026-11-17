@@ -8,7 +8,7 @@ using FreePIE.Core.ScriptEngine.Globals;
 
 namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
-    public class RuntimeInfoProvider : IRuntimeInfoProvider, IHandle<CurveChangedNameEvent>
+    public class RuntimeInfoProvider : IRuntimeInfoProvider, IHandle<CurveChangedNameEvent>, IHandle<CurvesChangedEvent>
     {
         private readonly IEnumerable<IGlobalProvider> providers;
         private readonly IPluginInvoker invoker;
@@ -45,6 +45,11 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
 
         public void Handle(CurveChangedNameEvent message)
+        {
+            runtimeInfo = null;
+        }
+
+        public void Handle(CurvesChangedEvent message)
         {
             runtimeInfo = null;
         }

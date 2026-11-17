@@ -8,7 +8,6 @@ using FreePIE.Core.Persistence;
 
 namespace FreePIE.Core.ScriptEngine.Globals
 {
-    
     public class CurveGlobalProvider : IGlobalProvider
     {
         private readonly ISettingsManager settingsManager;

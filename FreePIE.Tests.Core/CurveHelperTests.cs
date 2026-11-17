@@ -1,92 +1,139 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using FreePIE.Core.Common.Extensions;
+using System.Globalization;
+using System.Threading;
+using FreePIE.Core.Model;
 using FreePIE.Core.ScriptEngine.Globals;
 using FreePIE.Core.ScriptEngine.Globals.ScriptHelpers;
-using FreePIE.Tests.Test;
-
+using FreePIE.Core.ScriptEngine.Python;
+using Microsoft.Scripting.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FreePIE.Tests.Core
 {
     [TestClass]
-    public class CurveHelperTests : TestBase
+    public class CurveHelperTests
     {
-        protected CurveHelper curveHelper;
+        private ScriptEngine engine;
+        private ScriptScope scope;
 
-        public CurveHelperTests()
+        [TestInitialize]
+        public void Context()
         {
-            curveHelper = Get<CurveHelper>();
+            engine = IronPython.Hosting.Python.CreateEngine();
+            scope = engine.CreateScope();
+            scope.SetVariable("curves", new CurveHelper());
         }
 
-        [TestMethod]
-        public void It_should_return_a_named_CurveGlobal()
+        private CurveGlobalProvider.CurveGlobal Execute(string script)
         {
-            var curve = curveHelper.create(0,1);
-            Assert.IsInstanceOfType(curve, typeof(CurveGlobalProvider.CurveGlobal));
-            Assert.IsTrue(curve.Name.Length == 36);
+            return engine.Execute<CurveGlobalProvider.CurveGlobal>(script, scope);
         }
 
-        [TestMethod]
-        public void It_should_solve_for_y()
+        private void AssertInvalid(string script, string expectedMessage)
         {
-            var curve = curveHelper.create(0,1);
-
-            var y = curve.getY(0.5);
-
-            Assert.AreEqual(0.5, y);
-        }
-
-        [TestMethod]
-        public void It_should_ease_in_should_be_correct()
-        {
-            double min = 0;
-            double max = 100;
-
-            CurveGlobalProvider.CurveGlobal curve = curveHelper.create(min, max,60,12,93,70);
-
-            var results = new Dictionary<double,double>();
-            for(var i = min; i <= max; i+= (int)(max/10))
+            try
             {
-                results.Add(i , Math.Round(curve.getY(i),2));
+                Execute(script);
+            }
+            catch (ArgumentException e)
+            {
+                StringAssert.Contains(e.Message, expectedMessage);
+                return;
             }
 
-            Assert.IsTrue(results.All(_ => _.Value >= min && _.Value <= max));
-            
-            Assert.AreEqual(results.First().Key , results.First().Value);
-            Assert.AreEqual(results.Last().Key , results.Last().Value);
-
-            Assert.IsTrue(results.Skip(1).TakeAllButLast().All(_ => _.Value < _.Key));
-            
-
-            
+            Assert.Fail("Expected an ArgumentException for " + script);
         }
 
         [TestMethod]
-        public void It_should_ease_out_should_be_correct()
+        public void A_curve_can_be_created_from_a_python_list_of_tuples()
         {
-            double min = 0;
-            double max = 100;
+            var curve = Execute("curves.create([(0, 0), (12, 40), (50, 91), (100, 100)])");
 
-            CurveGlobalProvider.CurveGlobal curve = curveHelper.create(min, max, 12, 40, 50, 91);
+            Assert.AreEqual(0, curve.getY(0), 0.0001);
+            Assert.AreEqual(40, curve.getY(12), 0.0001);
+            Assert.AreEqual(91, curve.getY(50), 0.0001);
+            Assert.AreEqual(100, curve.getY(100), 0.0001);
+        }
 
-            var results = new Dictionary<double, double>();
-            for (var i = min; i <= max; i += (int)(max / 10))
+        [TestMethod]
+        public void A_curve_can_be_created_from_lists_and_generated_points()
+        {
+            Assert.AreEqual(40, Execute("curves.create([[0, 0], [12.5, 40], [100, 100]])").getY(12.5), 0.0001);
+            Assert.AreEqual(25, Execute("curves.create([(x, x * x / 100.0) for x in range(0, 101, 25)])").getY(50), 0.0001);
+        }
+
+        [TestMethod]
+        public void Ease_in_and_ease_out_curves_stay_below_and_above_the_linear_curve()
+        {
+            var easeIn = Execute("curves.create([(0, 0), (60, 12), (93, 70), (100, 100)])");
+            var easeOut = Execute("curves.create([(0, 0), (12, 40), (50, 91), (100, 100)])");
+
+            for (var x = 10; x < 100; x += 10)
             {
-                results.Add(i, Math.Round(curve.getY(i), 2));
+                Assert.IsTrue(easeIn.getY(x) < x, "Ease in at " + x);
+                Assert.IsTrue(easeOut.getY(x) > x, "Ease out at " + x);
             }
+        }
 
-            Assert.IsTrue(results.All(_ => _.Value >= min && _.Value <= max));
+        [TestMethod]
+        public void Each_point_must_be_a_pair()
+        {
+            AssertInvalid("curves.create([(0, 0), (50,), (100, 100)])", "pair");
+            AssertInvalid("curves.create([0, 50, 100])", "pair");
+        }
 
-            Assert.AreEqual(results.First().Key, results.First().Value);
-            Assert.AreEqual(results.Last().Key, results.Last().Value);
+        [TestMethod]
+        public void Point_values_must_be_numbers()
+        {
+            AssertInvalid("curves.create([(0, 0), ('a', 50), (100, 100)])", "numbers");
+        }
 
-            Assert.IsTrue(results.Skip(1).TakeAllButLast().All(_ => _.Value > _.Key));
+        [TestMethod]
+        public void A_curve_needs_at_least_two_points()
+        {
+            AssertInvalid("curves.create([(0, 0)])", "two points");
+        }
 
+        [TestMethod]
+        public void Points_must_be_sorted_on_x_without_duplicates()
+        {
+            AssertInvalid("curves.create([(0, 0), (80, 20), (20, 80), (100, 100)])", "sorted");
+            AssertInvalid("curves.create([(0, 0), (50, 20), (50, 80), (100, 100)])", "sorted");
+        }
 
+        [TestMethod]
+        public void A_curve_copied_as_script_creates_the_same_curve_regardless_of_culture()
+        {
+            var original = new Curve("Ease out", new[] { new Point(0, 10), new Point(12.5, 40.25), new Point(50, 91), new Point(100, 95) });
+            var originalGlobal = new CurveGlobalProvider.CurveGlobal(original);
 
+            var culture = Thread.CurrentThread.CurrentCulture;
+            try
+            {
+                Thread.CurrentThread.CurrentCulture = new CultureInfo("sv-SE");
+                var script = CurveScript.Create(original);
+
+                Assert.AreEqual("Ease_out = curves.create([(0, 10), (12.5, 40.25), (50, 91), (100, 95)])", script);
+
+                engine.Execute(script, scope);
+                var copy = scope.GetVariable<CurveGlobalProvider.CurveGlobal>("Ease_out");
+
+                for (var x = 0; x <= 100; x += 5)
+                    Assert.AreEqual(originalGlobal.getY(x), copy.getY(x), 0.0001);
+            }
+            finally
+            {
+                Thread.CurrentThread.CurrentCulture = culture;
+            }
+        }
+
+        [TestMethod]
+        public void A_curve_name_that_is_not_a_python_identifier_is_made_into_one()
+        {
+            var points = new[] { new Point(0, 0), new Point(100, 100) };
+
+            StringAssert.StartsWith(CurveScript.Create(new Curve("1st curve", points)), "_1st_curve = ");
+            StringAssert.StartsWith(CurveScript.Create(new Curve(points)), "curve = ");
         }
     }
 }

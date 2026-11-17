@@ -1,22 +1,20 @@
-﻿using Caliburn.Micro;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Windows;
+using Caliburn.Micro;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Extensions;
 using FreePIE.Core.Model;
 using FreePIE.Core.Model.Events;
+using FreePIE.Core.ScriptEngine.Python;
 using FreePIE.GUI.Common.Visiblox;
 using FreePIE.GUI.Events;
 using FreePIE.GUI.Result;
 using FreePIE.GUI.Shells.Curves;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-
 using IEventAggregator = FreePIE.Core.Common.Events.IEventAggregator;
 using Point = FreePIE.Core.Model.Point;
-
 
 namespace FreePIE.GUI.Views.Curves
 {
@@ -82,34 +80,23 @@ namespace FreePIE.GUI.Views.Curves
                 eventAggregator.Publish(new DeleteCurveEvent(this));
         }
 
-        
-        /// <summary>
-        /// Generates a python script that creates the curve
-        /// </summary>
-        /// <returns></returns>
-        public void Script()
+        public IEnumerable<IResult> Script()
         {
-            
-            string python = $"{Curve.Name} = curves.create({Curve.Points.First().X}, {Curve.Points.Last().X}";
-            foreach (var point in Curve.Points.Skip(1).TakeAllButLast())
-            {                
-                python += $", {point.X:0.000}, {point.Y:0.000}";
-            }
-            python += ")";
-
-
+            var copied = true;
             try
             {
-                Clipboard.SetDataObject(python);
+                Clipboard.SetDataObject(CurveScript.Create(Curve), true);
             }
-            catch (Exception x)
+            catch (ExternalException)
             {
-
+                // Another application can hold the clipboard open
+                copied = false;
             }
 
+            if (!copied)
+                yield return resultFactory.ShowMessageBox("Copy curve", "Could not copy to the clipboard, it is in use by another application. Please try again.", MessageBoxButton.OK);
         }
 
-        
         public IEnumerable<IResult> Reset()
         {
             var dialog = resultFactory.ShowDialog<NewCurveViewModel>().Configure(m => m.Init(Curve));
@@ -134,11 +121,6 @@ namespace FreePIE.GUI.Views.Curves
         public bool HasSelectedPoint
         {
             get { return selectedPointIndex.HasValue; }
-        }
-
-        public bool HasPoints
-        {
-            get { return Curve.Points.Any(); }
         }
 
         private bool canSetDefault;
@@ -279,6 +261,7 @@ namespace FreePIE.GUI.Views.Curves
                 selectablePoints = value;
                 NotifyOfPropertyChange(() => SelectablePoints);
             }
-        }        
+        }
+
     }
 }

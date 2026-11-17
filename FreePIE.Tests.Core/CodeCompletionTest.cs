@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using FreePIE.Core.Common.Events;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Model;
+using FreePIE.Core.Model.Events;
+using FreePIE.Core.Persistence;
 using FreePIE.Core.Persistence.Paths;
 using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
@@ -29,7 +32,7 @@ namespace FreePIE.Tests.Core
     {
         public IEnumerable<object> ListGlobals()
         {
-            return new object[] { new FilterHelper(), new TestJoystickPlugin() };
+            return new object[] { new FilterHelper(), new CurveHelper(), new TestJoystickPlugin() };
         }
     }
 
@@ -204,6 +207,48 @@ namespace FreePIE.Tests.Core
             AssertContains(Names(
                 "f = filters",
                 "f.s|"), "simple", "stopWatch");
+        }
+
+        [TestMethod]
+        public void Variables_assigned_from_a_method_on_a_global_gets_members_of_the_returned_type()
+        {
+            AssertContains(Names(
+                "if starting:",
+                "    curve = curves.create([(0, 0), (100, 100)])",
+                "filters.simple(curve.|"), "getY", "Name");
+
+            AssertDoesNotContain(Names(
+                "curve = curves.create([(0, 0), (100, 100)])",
+                "curve.getY(1).|"), "getY");
+        }
+
+        [TestMethod]
+        public void Added_and_deleted_curves_are_suggested_after_curves_changed()
+        {
+            var settings = new Settings();
+            settings.AddNewCurve(Curve.Create("first", 0, 100, 3));
+
+            var settingsManager = MockRepository.GenerateStub<ISettingsManager>();
+            settingsManager.Stub(x => x.Settings).Return(settings);
+
+            var invoker = MockRepository.GenerateStub<IPluginInvoker>();
+            invoker.Stub(x => x.ListAllPluginTypes()).Return(new Type[0]);
+            invoker.Stub(x => x.ListAllGlobalEnumTypes()).Return(new Type[0]);
+
+            var eventAggregator = new EventAggregator();
+            var runtimeInfo = new RuntimeInfoProvider(invoker, new IGlobalProvider[] { new CurveGlobalProvider(settingsManager) }, eventAggregator);
+            Func<IList<string>> curveNames = () => runtimeInfo.AnalyzeExpression(new[] { new Token(TokenType.Identifier, string.Empty) }).Select(i => i.Name).ToList();
+
+            CollectionAssert.AreEqual(new[] { "first" }, curveNames().ToList());
+
+            var second = Curve.Create("second", 0, 100, 3);
+            settings.AddNewCurve(second);
+            eventAggregator.Publish(new CurvesChangedEvent());
+            CollectionAssert.AreEqual(new[] { "first", "second" }, curveNames().ToList());
+
+            settings.RemoveCurve(second);
+            eventAggregator.Publish(new CurvesChangedEvent());
+            CollectionAssert.AreEqual(new[] { "first" }, curveNames().ToList());
         }
 
         [TestMethod]

@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace FreePIE.Core.Model
 {
-    
     public class Curve
     {
         public Curve(IEnumerable<Point> points) : this(null, points) {}
@@ -51,8 +50,8 @@ namespace FreePIE.Core.Model
         {
             return "[" + string.Join(", ", Points.Select(p => $"({p.X}, {p.Y})")) + "]";
         }
-
     }
+
     [DebuggerDisplay("({X}, {Y})")]
     public struct Point
     {
@@ -93,26 +92,5 @@ namespace FreePIE.Core.Model
         {
             return X.Equals(other.X) && Y.Equals(other.Y);
         }
-
-        public void Deconstruct(out double x, out double y)
-        {
-            x = this.X;
-            y = this.Y;
-        }
-
-        public static implicit operator Point((double x, double y) tuple)
-        {
-            return new Point(tuple.x, tuple.y);
-        }
-
-        public static implicit operator (double x, double y)(Point point)
-        {
-            return (point.X, point.Y);
-        }
     }
-
-    
-
 }
-
-
