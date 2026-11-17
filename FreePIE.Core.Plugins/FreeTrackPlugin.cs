@@ -155,6 +155,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "freeTrack")]
+    [Documentation("Reads or emulates a FreeTrack head tracker through the FreeTrack shared memory")]
     public class FreeTrackGlobal : UpdateblePluginGlobal<FreeTrackPlugin>
     {
         public FreeTrackGlobal(FreeTrackPlugin plugin) : base(plugin) { }
@@ -168,36 +169,42 @@ namespace FreePIE.Core.Plugins
             plugin.Data = setValue(data);
         }
 
+        [Documentation("Head yaw, positive to the left. Set it to emulate FreeTrack")]
         public float yaw
         {
             get { return plugin.Data.Yaw; }
             set { Write(d => { d.Yaw = value; return d; }); }
         }
 
+        [Documentation("Head pitch, positive up. Set it to emulate FreeTrack")]
         public float pitch
         {
             get { return plugin.Data.Pitch; }
             set { Write(d => { d.Pitch = value; return d; }); }
         }
 
+        [Documentation("Head roll, positive to the left. Set it to emulate FreeTrack")]
         public float roll
         {
             get { return plugin.Data.Roll; }
             set { Write(d => { d.Roll = value; return d; }); }
         }
 
+        [Documentation("Head x position. Set it to emulate FreeTrack")]
         public float x
         {
             get { return plugin.Data.X; }
             set { Write(d => { d.X = value; return d; }); }
         }
 
+        [Documentation("Head y position. Set it to emulate FreeTrack")]
         public float y
         {
             get { return plugin.Data.Y; }
             set { Write(d => { d.Y = value; return d; }); }
         }
 
+        [Documentation("Head z position. Set it to emulate FreeTrack")]
         public float z
         {
             get { return plugin.Data.Z; }

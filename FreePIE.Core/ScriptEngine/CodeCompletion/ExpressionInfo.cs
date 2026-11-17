@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace FreePIE.Core.ScriptEngine.CodeCompletion
 {
@@ -41,6 +42,11 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         public virtual string GetCompletion(string token)
         {
             return Name;
+        }
+
+        public static string WithDocumentation(string header, string documentation)
+        {
+            return string.IsNullOrEmpty(documentation) ? header : string.Format("{0}{1}{1}{2}", header, Environment.NewLine, documentation.Trim());
         }
     }
 }

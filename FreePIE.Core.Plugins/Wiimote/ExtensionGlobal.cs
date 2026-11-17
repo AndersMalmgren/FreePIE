@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
+    [Documentation("The Nunchuck extension")]
     public class NunchuckGlobal : Subscribable
     {
         private IWiimoteData data;
@@ -15,8 +14,11 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.buttons = new NunchuckButtonState(data);
         }
 
+        [Documentation("Acceleration of the Nunchuck in m/s2")]
         public Acceleration acceleration { get { return data.Nunchuck.Acceleration; } }
+        [Documentation("The analog stick")]
         public AnalogStick stick { get { return data.Nunchuck.Stick; } }
+        [Documentation("The Nunchuck buttons")]
         public NunchuckButtonState buttons { get; private set; }
         public override string ToString()
         {
@@ -24,6 +26,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
     }
 
+    [Documentation("The Guitar Hero guitar extension")]
     public class GuitarGlobal : Subscribable
     {
         private IWiimoteData data;
@@ -33,10 +36,15 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.data = data;
             this.buttons = new GuitarButtonState(data);
         }
+        [Documentation("The guitar buttons")]
         public GuitarButtonState buttons { get; private set; }
+        [Documentation("The analog stick")]
         public AnalogStick stick { get { return data.Guitar.Stick; } }
+        [Documentation("The touch bar, not available on Guitar Hero 3 guitars")]
         public TapBar tapbar { get { return data.Guitar.TapBar; } }
+        [Documentation("The whammy bar")]
         public AnalogTrigger whammy { get { return data.Guitar.Whammy; } }
+        [Documentation("True for a Guitar Hero 3 guitar")]
         public bool isGH3 { get { return data.Guitar.IsGH3; } }
         public override string ToString()
         {
@@ -48,6 +56,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
     }
 
+    [Documentation("The Classic Controller extension")]
     public class ClassicControllerGlobal : Subscribable
     {
         private IWiimoteData data;
@@ -57,10 +66,15 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.data = data;
             this.buttons = new ClassicControllerButtonState(data);
         }
+        [Documentation("The Classic Controller buttons")]
         public ClassicControllerButtonState buttons { get; private set; }
+        [Documentation("The left analog stick")]
         public AnalogStick leftStick { get { return data.ClassicController.LeftStick; } }
+        [Documentation("The right analog stick")]
         public AnalogStick rightStick { get { return data.ClassicController.RightStick; } }
+        [Documentation("The right analog trigger")]
         public AnalogTrigger rightTrigger { get { return data.ClassicController.RightTrigger; } }
+        [Documentation("The left analog trigger")]
         public AnalogTrigger leftTrigger { get { return data.ClassicController.LeftTrigger; } }
         public override string ToString()
         {
@@ -68,6 +82,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
     }
 
+    [Documentation("The Balance Board")]
     public class BalanceBoardGlobal : Subscribable
     {
         private IWiimoteData data;
@@ -76,8 +91,11 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             this.data = data;
         }
+        [Documentation("The four weight sensors")]
         public BalanceBoardSensorList sensors { get { return data.BalanceBoard.sensors; } }
+        [Documentation("The total weight")]
         public BalanceBoardWeight weight { get { return data.BalanceBoard.weight; } }
+        [Documentation("The center of gravity")]
         public AnalogStick centerOfGravity { get { return data.BalanceBoard.centerOfGravity; } }
         public override string ToString()
         {
@@ -85,6 +103,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
     }
 
+    [Documentation("An analog stick")]
     public class AnalogStick
     {
         public AnalogStick(double x, double y)
@@ -93,7 +112,9 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.y = y;
         }
 
+        [Documentation("Horizontal position")]
         public double x { get; private set; }
+        [Documentation("Vertical position")]
         public double y { get; private set; }
         public override string ToString()
         {
@@ -101,6 +122,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
     }
 
+    [Documentation("An analog trigger")]
     public class AnalogTrigger
     {
         public AnalogTrigger(double x)
@@ -108,6 +130,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.x = x;
         }
 
+        [Documentation("How far the trigger is pressed")]
         public double x { get; private set; }
         public override string ToString()
         {

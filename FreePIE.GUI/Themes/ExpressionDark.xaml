@@ -787,7 +787,8 @@
                     <Grid>
                         <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" Background="{DynamicResource ControlBackgroundBrush}" />
                         <ScrollViewer Margin="1" Style="{DynamicResource NuclearScrollViewer}" Focusable="false" Background="{x:Null}">
-                            <StackPanel Margin="1,1,1,1" IsItemsHost="true" />
+                            <!-- A plain StackPanel disables virtualization, the code completion list then creates hundreds of items on every keystroke -->
+                            <VirtualizingStackPanel Margin="1,1,1,1" IsItemsHost="true" />
                         </ScrollViewer>
                     </Grid>
                     <ControlTemplate.Triggers>

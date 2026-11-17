@@ -11,6 +11,7 @@ namespace FreePIE.Core.Plugins
 
     // SlimDX key-codes
     [GlobalEnum]
+    [Documentation("Keyboard keys used by the keyboard global")]
     public enum Key
     {
         D0 = 0,
@@ -477,6 +478,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "keyboard")]
+    [Documentation("Reads and emulates the keyboard")]
     public class KeyboardGlobal 
     {
         private readonly KeyboardPlugin plugin;
@@ -486,26 +488,31 @@ namespace FreePIE.Core.Plugins
             this.plugin = plugin;
         }
 
+        [Documentation("True while the key is down")]
         public bool getKeyDown(Key key)
         {
             return plugin.IsKeyDown((int) key);
         }
 
+        [Documentation("Presses the key and keeps it down until setKeyUp is called")]
         public void setKeyDown(Key key)
         {
             plugin.KeyDown((int) key);
         }
 
+        [Documentation("True while the key is up")]
         public bool getKeyUp(Key key)
         {
             return plugin.IsKeyUp((int) key);
         }
 
+        [Documentation("Releases the key")]
         public void setKeyUp(Key key)
         {
             plugin.KeyUp((int) key);
         }
 
+        [Documentation("Presses or releases the key")]
         public void setKey(Key key, bool down)
         {
             if (down)
@@ -514,16 +521,19 @@ namespace FreePIE.Core.Plugins
                 plugin.KeyUp((int) key);
         }
 
+        [Documentation("True once when the key goes down, false until it has been released and pressed again")]
         public bool getPressed(Key key)
         {
             return plugin.WasKeyPressed((int) key);
         }
 
+        [Documentation("Taps the key, it is pressed now and released in the next iteration")]
         public void setPressed(Key key)
         {
             plugin.PressAndRelease((int) key);
         }
 
+        [Documentation("Taps the key once each time state changes from false to true")]
         public void setPressed(Key key, bool state)
         {
             plugin.PressAndRelease((int)key, state);

@@ -54,6 +54,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "freeImu")]
+    [Documentation("Orientation from a FreeIMU device connected to a COM port")]
     public class FreeImuGlobal : DofGlobal<FreeImuPlugin>
     {
         public FreeImuGlobal(FreeImuPlugin plugin) : base(plugin) { }

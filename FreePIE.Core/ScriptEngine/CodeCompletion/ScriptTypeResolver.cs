@@ -272,7 +272,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             {
                 Name = name,
                 Kind = function.IsMethod ? ExpressionKind.Method : ExpressionKind.Function,
-                Description = WithDocumentation(header, GetDocumentation(definition.Body)),
+                Description = ExpressionInfo.WithDocumentation(header, GetDocumentation(definition.Body)),
                 Signature = new SignatureInfo(name, signatureParameters, "def", GetDocumentation(definition.Body))
             };
         }
@@ -293,7 +293,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             {
                 Name = name,
                 Kind = ExpressionKind.Class,
-                Description = WithDocumentation(header, GetDocumentation(definition.Body)),
+                Description = ExpressionInfo.WithDocumentation(header, GetDocumentation(definition.Body)),
                 Signature = new SignatureInfo(name, parameters, "class", GetDocumentation(definition.Body))
             };
         }
@@ -321,11 +321,6 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             var constant = expression != null ? expression.Expression as ConstantExpression : null;
 
             return constant != null ? constant.Value as string : null;
-        }
-
-        private static string WithDocumentation(string header, string documentation)
-        {
-            return string.IsNullOrEmpty(documentation) ? header : string.Format("{0}{1}{1}{2}", header, Environment.NewLine, documentation.Trim());
         }
     }
 

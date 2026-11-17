@@ -19,10 +19,37 @@ using Rhino.Mocks;
 namespace FreePIE.Tests.Core
 {
     [Global(Name = "testjoystick")]
+    [Documentation("A test joystick")]
     public class TestJoystickGlobal
     {
+        [Documentation("The x axis")]
         public double x { get; set; }
         public double y { get; set; }
+
+        [Documentation("Centers the stick")]
+        public void center(double speed) { }
+
+        public TestJoystickExtension extension { get; set; }
+    }
+
+    public class TestJoystickExtension
+    {
+        public TestStick stick { get; set; }
+    }
+
+    public class TestStick
+    {
+        [Documentation("Horizontal position")]
+        public double x { get; set; }
+    }
+
+    [GlobalEnum]
+    [Documentation("Test axes")]
+    public enum TestAxis
+    {
+        [Documentation("The horizontal axis")]
+        Horizontal = 1,
+        Vertical = 2
     }
 
     [GlobalType(Type = typeof(TestJoystickGlobal), IsIndexed = true)]
@@ -48,7 +75,7 @@ namespace FreePIE.Tests.Core
         {
             var invoker = MockRepository.GenerateStub<IPluginInvoker>();
             invoker.Stub(x => x.ListAllPluginTypes()).Return(new Type[0]);
-            invoker.Stub(x => x.ListAllGlobalEnumTypes()).Return(new Type[0]);
+            invoker.Stub(x => x.ListAllGlobalEnumTypes()).Return(new[] { typeof(TestAxis) });
 
             var runtimeInfo = new RuntimeInfoProvider(invoker, new IGlobalProvider[] { new TestGlobalProvider() }, MockRepository.GenerateStub<IEventAggregator>());
             var scriptInfo = new ScriptInfoProvider(runtimeInfo, new PythonRuntimeInfo(MockRepository.GenerateStub<IPaths>())) { AnalyzeInBackground = false };
@@ -301,6 +328,67 @@ namespace FreePIE.Tests.Core
 
             Assert.AreEqual(1, result.ParameterIndex);
             Assert.AreEqual("Double simple(Double x, Double smoothing)", result.BestMatch.ToString());
+        }
+
+        [TestMethod]
+        public void Documentation_attributes_are_shown_for_globals_and_their_members()
+        {
+            Assert.AreEqual("A test joystick", Complete("testjoy|").Single().Description);
+
+            var members = Complete("testjoystick[0].|");
+            Assert.AreEqual(ExpressionInfo.WithDocumentation("Double x", "The x axis"), members.Single(i => i.Name == "x").Description);
+            Assert.AreEqual("Double y", members.Single(i => i.Name == "y").Description);
+            StringAssert.EndsWith(members.Single(i => i.Name == "center").Description, "Centers the stick");
+        }
+
+        [TestMethod]
+        public void Documentation_attributes_are_shown_for_nested_members()
+        {
+            var x = Complete("testjoystick[0].extension.stick.|").Single(i => i.Name == "x");
+            Assert.AreEqual(ExpressionInfo.WithDocumentation("Double x", "Horizontal position"), x.Description);
+
+            var assigned = Complete(
+                "n = testjoystick[0].extension",
+                "n.stick.|").Single(i => i.Name == "x");
+            Assert.AreEqual(ExpressionInfo.WithDocumentation("Double x", "Horizontal position"), assigned.Description);
+        }
+
+        [TestMethod]
+        public void Documentation_attributes_are_shown_for_global_enums_and_their_members()
+        {
+            Assert.AreEqual(ExpressionInfo.WithDocumentation("Enum", "Test axes"), Complete("TestAx|").Single().Description);
+
+            var members = Complete("TestAxis.|");
+            Assert.AreEqual(ExpressionInfo.WithDocumentation("Horizontal = 1", "The horizontal axis"), members.Single(i => i.Name == "Horizontal").Description);
+            Assert.AreEqual("Vertical = 2", members.Single(i => i.Name == "Vertical").Description);
+        }
+
+        [TestMethod]
+        public void Signature_help_shows_all_overloads_of_plugin_methods()
+        {
+            var result = Signature("x = filters.continuousRotation(|");
+
+            CollectionAssert.AreEquivalent(
+                new[] { "Double continuousRotation(Double x)", "Double continuousRotation(Double x, Units unit)" },
+                result.Signatures.Select(s => s.ToString()).ToList());
+        }
+
+        [TestMethod]
+        public void Overloaded_plugin_methods_are_suggested_once_and_describe_all_overloads()
+        {
+            var overloads = Complete("x = filters.continuousRot|");
+
+            Assert.AreEqual(1, overloads.Count);
+            StringAssert.Contains(overloads[0].Description, "Double continuousRotation(Double x)");
+            StringAssert.Contains(overloads[0].Description, "Double continuousRotation(Double x, Units unit)");
+        }
+
+        [TestMethod]
+        public void Signature_help_for_plugin_methods_shows_the_documentation()
+        {
+            var result = Signature("testjoystick[0].center(|");
+
+            Assert.AreEqual("Centers the stick", result.BestMatch.Documentation);
         }
 
         [TestMethod]

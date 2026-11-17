@@ -7,6 +7,7 @@ using PPJoy;
 namespace FreePIE.Core.Plugins
 {
     [GlobalEnum]
+    [Documentation("Axes of a PPJoy virtual joystick")]
     public enum AxisTypes
     {
         X           = 0,
@@ -185,6 +186,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "ppJoy")]
+    [Documentation("Emulates a PPJoy virtual joystick, index by device, ppJoy[0] is the first virtual joystick")]
     public class PPJoyGlobal
     {
         private readonly int index;
@@ -196,26 +198,31 @@ namespace FreePIE.Core.Plugins
             this.plugin = plugin;
         }
 
+        [Documentation("Sets the axis to a value within the range set with setRange")]
         public void setAxis(AxisTypes axisType, int value)
         {
             plugin.SetAxis(index, axisType, value);
         }
 
+        [Documentation("Sets the range of the values passed to setAxis, the default is -1000 to 1000")]
         public void setRange(int lowerRange, int upperRange)
         {
             plugin.SetRange(index, lowerRange, upperRange);
         }
 
+        [Documentation("Clicks the button, it is pressed now and released in the next iteration")]
         public void setPressed(int button)
         {
             plugin.SetPressed(index, button);
         }
 
+        [Documentation("Clicks the button once each time state changes from false to true")]
         public void setPressed(int button, bool state)
         {
             plugin.SetPressed(index, button, state);
         }
 
+        [Documentation("Presses or releases the button")]
         public void setButton(int button, bool pressed)
         {
             plugin.SetButton(index, button, pressed);

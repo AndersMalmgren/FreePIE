@@ -91,10 +91,12 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "window")]
+    [Documentation("Checks and changes the active window. The update event is raised when the active window changes")]
     public class WindowGlobal : UpdateblePluginGlobal<WindowPlugin>
     {
         public WindowGlobal(WindowPlugin plugin) : base(plugin) { }
 
+        [Documentation("True if the active window belongs to the process, the name is without .exe and not case sensitive")]
         public bool isActive(string processName)
         {
             return plugin.IsActive(processName);
@@ -106,6 +108,7 @@ namespace FreePIE.Core.Plugins
             return plugin.Activate(processName);
         }
 
+        [Documentation("Brings the main window of the process to the front, returns false if the process is not running")]
         public bool activate(string processName)
         {
             return plugin.Activate(processName);
@@ -113,9 +116,11 @@ namespace FreePIE.Core.Plugins
 
         [Deprecated("active")] public string getActive => active;
 
+        [Documentation("Process name of the active window")]
         public string active => plugin.GetActiveWindowProcessName();
 
 
+        [Documentation("How often the active window is checked for the update event, in milliseconds (default 100)")]
         public int pollingInterval
         {
             set { plugin.PollingInterval = value; }

@@ -1,4 +1,5 @@
-﻿using FreePIE.Core.Plugins.TrackIR;
+﻿using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.TrackIR;
 using System;
 using System.Runtime.InteropServices;
 
@@ -109,10 +110,14 @@ namespace FreePIE.Core.Plugins.Wiimote
         public DolphiimoteBalanceBoard balance_board;
     }
 
+    [Documentation("Orientation in degrees")]
     public class EulerAngles
     {
+        [Documentation("Yaw in degrees")]
         public double yaw { get; set; }
+        [Documentation("Pitch in degrees")]
         public double pitch { get; set; }
+        [Documentation("Roll in degrees")]
         public double roll { get; set; }
 
         public EulerAngles(double yaw, double pitch, double roll)

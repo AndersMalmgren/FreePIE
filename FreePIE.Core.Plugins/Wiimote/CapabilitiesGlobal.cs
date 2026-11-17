@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
+    [Documentation("The available and enabled Wiimote features and the connected extension")]
     public class CapabilitiesGlobal : Subscribable
     {
         private IWiimoteData data;
@@ -14,14 +13,17 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.data = data;
         }
         
+        [Documentation("True if the feature has been enabled")]
         public Boolean has_enabled_capability(WiimoteCapabilities capability)
         {
             return (data.EnabledCapabilities & capability) == capability;
         }
+        [Documentation("True if the Wiimote supports the feature")]
         public Boolean has_available_capability(WiimoteCapabilities capability)
         {
             return (data.AvailableCapabilities & capability) == capability;
         }
+        [Documentation("True if the extension is connected")]
         public Boolean has_extension(WiimoteExtensions extension)
         {
             return data.ExtensionType == extension;

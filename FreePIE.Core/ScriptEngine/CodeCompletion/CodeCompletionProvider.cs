@@ -44,8 +44,28 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         {
             return infos
                 .GroupBy(i => i.Name)
-                .Select(g => g.First())
+                .Select(MergeOverloads)
                 .OrderBy(i => i.Name, StringComparer.OrdinalIgnoreCase);
+        }
+
+        // The infos are shared by the runtime info tree, so a new info is created instead of changing the first overload
+        private static ExpressionInfo MergeOverloads(IEnumerable<ExpressionInfo> group)
+        {
+            var first = group.First();
+            var overloads = group.Where(i => i.Kind == first.Kind && i.Signature != null).Select(i => i.Signature).ToList();
+            if (first.Signature == null || overloads.Count < 2)
+                return first;
+
+            var signatures = string.Join(Environment.NewLine, overloads.Select(s => s.ToString()));
+            var documentation = string.Join(Environment.NewLine, overloads.Select(s => s.Documentation).Where(d => d.Length > 0).Distinct());
+
+            return new ExpressionInfo
+            {
+                Name = first.Name,
+                Kind = first.Kind,
+                Signature = first.Signature,
+                Description = ExpressionInfo.WithDocumentation(signatures, documentation)
+            };
         }
 
         public void ScriptChanged(string script, int offset)

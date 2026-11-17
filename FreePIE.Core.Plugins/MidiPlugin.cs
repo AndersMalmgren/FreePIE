@@ -103,10 +103,12 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "midi")]
+    [Documentation("Reads a MIDI input device, index by device number, midi[0] is the first device. Use the update event to get every message")]
     public class MidiGlobal : UpdateblePluginGlobal<MidiGlobalHolder>
     {
         public MidiGlobal(MidiGlobalHolder plugin) : base(plugin) { }
 
+        [Documentation("The current MIDI message")]
         public DataGlobal data
         {
             get { return plugin.Data; }

@@ -206,22 +206,26 @@ namespace FreePIE.Core.Plugins
         }
 
 
+        [Documentation("When true, yaw keeps increasing past a full turn instead of wrapping around")]
         public bool continuousYawMode
         {
             get { return Device.ContinousYawMode; }
             set { Device.ContinousYawMode = value; }
         }
 
+        [Documentation("Yaw in radians")]
         public double yaw
         {
             get { return Device.Yaw; }
         }
 
+        [Documentation("Pitch in radians")]
         public double pitch
         {
             get { return Device.Pitch; }
         }
 
+        [Documentation("Roll in radians")]
         public double roll
         {
             get { return Device.Roll; }
@@ -244,6 +248,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "iPhone")]
+    [Documentation("Orientation from an iPhone, sent over UDP by a sensor app")]
     public class iPhonePluginGlobal : ApplePluginGlobal
     {
 
@@ -270,6 +275,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "iPod")]
+    [Documentation("Orientation from an iPod touch, sent over UDP by a sensor app")]
     public class iPodPluginGlobal : ApplePluginGlobal
     {
 
@@ -296,6 +302,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "iPad")]
+    [Documentation("Orientation from an iPad, sent over UDP by a sensor app")]
     public class iPadPluginGlobal : ApplePluginGlobal
     {
 

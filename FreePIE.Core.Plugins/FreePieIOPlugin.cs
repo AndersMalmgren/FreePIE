@@ -125,6 +125,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "freePieIO")]
+    [Documentation("Reads or writes 6DOF data in the FreePIE IO shared memory (FPGeneric), index by slot 0 to 3")]
     public class FreePieIOPluginGlobal : UpdateblePluginGlobal<FrePieIOPluginHolder>
     {
         private readonly Action<FreePieIO6Dof> setter;
@@ -142,36 +143,42 @@ namespace FreePIE.Core.Plugins
             setter(setValue(data));
         }
 
+        [Documentation("Yaw. Set it to write to the shared memory")]
         public float yaw
         {
             get { return getter().Yaw; }
             set { Write(d => { d.Yaw = value; return d; }); }
         }
 
+        [Documentation("Pitch. Set it to write to the shared memory")]
         public float pitch
         {
             get { return getter().Pitch; }
             set { Write(d => { d.Pitch = value; return d; }); }
         }
 
+        [Documentation("Roll. Set it to write to the shared memory")]
         public float roll
         {
             get { return getter().Roll; }
             set { Write(d => { d.Roll = value; return d; }); }
         }
 
+        [Documentation("X position. Set it to write to the shared memory")]
         public float x
         {
             get { return getter().X; }
             set { Write(d => { d.X = value; return d; }); }
         }
 
+        [Documentation("Y position. Set it to write to the shared memory")]
         public float y
         {
             get { return getter().Y; }
             set { Write(d => { d.Y = value; return d; }); }
         }
 
+        [Documentation("Z position. Set it to write to the shared memory")]
         public float z
         {
             get { return getter().Z; }

@@ -80,6 +80,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "ahrsImu")]
+    [Documentation("Orientation from a Sparkfun 9DOF Razor IMU with the AHRS firmware, connected to a COM port")]
     public class AhrsImuGlobal : DofGlobal<AhrsImuPlugin>
     {
         public AhrsImuGlobal(AhrsImuPlugin plugin) : base(plugin) { }

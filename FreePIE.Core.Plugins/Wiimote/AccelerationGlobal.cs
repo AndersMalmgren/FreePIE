@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
+    [Documentation("Calibrated acceleration in m/s2")]
     public class AccelerationGlobal : Calibratable
     {
         private IWiimoteData data;
@@ -14,8 +13,11 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.data = data;
         }
 
+        [Documentation("Acceleration along the x axis in m/s2")]
         public double x { get { return data.Acceleration.Value.x; } }
+        [Documentation("Acceleration along the y axis in m/s2")]
         public double y { get { return data.Acceleration.Value.y; } }
+        [Documentation("Acceleration along the z axis in m/s2")]
         public double z { get { return data.Acceleration.Value.z; } }
         public override string ToString()
         {

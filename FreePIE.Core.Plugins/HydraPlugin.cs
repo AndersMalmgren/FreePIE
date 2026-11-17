@@ -179,6 +179,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "hydra")]
+    [Documentation("Reads a Razer Hydra controller through the Sixense SDK, index by controller 0 or 1. Set the values to emulate the Sixense SDK in a game, see the help")]
     public class HydraPluginGlobal : UpdateblePluginGlobal<HydraPlugin>
     {
         private readonly int index;
@@ -188,6 +189,7 @@ namespace FreePIE.Core.Plugins
             this.index = index;
         }
 
+        [Documentation("The hand of the controller, 'L' or 'R'")]
         public char side
         {
             get
@@ -213,134 +215,157 @@ namespace FreePIE.Core.Plugins
                 plugin.EmulatedData[index].Buttons &= ~button;
         }
 
+        [Documentation("Button 1")]
         public bool one
         {
             get { return (plugin.Controller[index].buttons & Sixense.BUTTON_1) != 0; }
             set { SetButtonState(Sixense.BUTTON_1, value); }
         }
 
+        [Documentation("Button 2")]
         public bool two
         {
             get { return (plugin.Controller[index].buttons & Sixense.BUTTON_2) != 0; }
             set { SetButtonState(Sixense.BUTTON_2, value); }
         }
 
+        [Documentation("Button 3")]
         public bool three
         {
             get { return (plugin.Controller[index].buttons & Sixense.BUTTON_3) != 0; }
             set { SetButtonState(Sixense.BUTTON_3, value); }
         }
 
+        [Documentation("Button 4")]
         public bool four
         {
             get { return (plugin.Controller[index].buttons & Sixense.BUTTON_4) != 0; }
             set { SetButtonState(Sixense.BUTTON_4, value); }
         }
 
+        [Documentation("Start button")]
         public bool start
         {
             get { return (plugin.Controller[index].buttons & Sixense.BUTTON_START) != 0; }
             set { SetButtonState(Sixense.BUTTON_START, value); }
         }
 
+        [Documentation("Bumper button")]
         public bool bumper
         {
             get { return (plugin.Controller[index].buttons & Sixense.BUTTON_BUMPER) != 0; }
             set { SetButtonState(Sixense.BUTTON_BUMPER, value); }
         }
 
+        [Documentation("Trigger, 0 to 1")]
         public float trigger
         {
             get { return plugin.Controller[index].trigger; }
             set { plugin.EmulatedData[index].Trigger = value; }
         }
 
+        [Documentation("True while the stick is pressed in")]
         public bool joybutton
         {
             get { return (plugin.Controller[index].buttons & Sixense.BUTTON_JOYSTICK) != 0; }
             set { SetButtonState(Sixense.BUTTON_JOYSTICK, value); }
         }
 
+        [Documentation("Stick horizontal axis, -1 to 1")]
         public float joyx
         {
             get { return plugin.Controller[index].joystick_x; }
             set { plugin.EmulatedData[index].JoystickX = value; }
         }
 
+        [Documentation("Stick vertical axis, -1 to 1")]
         public float joyy
         {
             get { return plugin.Controller[index].joystick_y; }
             set { plugin.EmulatedData[index].JoystickY = value; }
         }
 
+        [Documentation("X position in millimeters")]
         public float x
         {
             get { return plugin.Controller[index].pos_x; }
             set { plugin.EmulatedData[index].X = value; }
         }
 
+        [Documentation("Y position in millimeters")]
         public float y
         {
             get { return plugin.Controller[index].pos_y; }
             set { plugin.EmulatedData[index].Y = value; }
         }
 
+        [Documentation("Z position in millimeters")]
         public float z
         {
             get { return plugin.Controller[index].pos_z; }
             set { plugin.EmulatedData[index].Z = value; }
         }
 
+        [Documentation("Yaw in radians")]
         public float yaw
         {
             get { return plugin.Angles[index].yaw; }
             set { plugin.EmulatedData[index].Yaw = value; }
         }
 
+        [Documentation("Pitch in radians")]
         public float pitch
         {
             get { return plugin.Angles[index].pitch; }
             set { plugin.EmulatedData[index].Pitch = value; }
         }
 
+        [Documentation("Roll in radians")]
         public float roll
         {
             get { return plugin.Angles[index].roll; }
             set { plugin.EmulatedData[index].Roll = value; }
         }
 
+        [Documentation("Rotation quaternion component 0")]
         public float q0
         {
             get { return plugin.Controller[index].rot_quat0; }
         }
 
+        [Documentation("Rotation quaternion component 1")]
         public float q1
         {
             get { return plugin.Controller[index].rot_quat1; }
         }
 
+        [Documentation("Rotation quaternion component 2")]
         public float q2
         {
             get { return plugin.Controller[index].rot_quat2; }
         }
 
+        [Documentation("Rotation quaternion component 3")]
         public float q3
         {
             get { return plugin.Controller[index].rot_quat3; }
         }
 
+        [Documentation("True when the controller is enabled")]
         public bool enabled
         {
             get { return plugin.Controller[index].enabled == 1; }
             set { plugin.EmulatedData[index].Enabled = value ? 1 : 0; }
         }
 
+        [Documentation("True when the controller is in the base station")]
         public bool isDocked
         {
             get { return plugin.Controller[index].is_docked == 1; }
             set { plugin.EmulatedData[index].IsDocked = (byte)(value ? 1 : 0); }
         }
 
+        [Documentation("Starts hemisphere tracking, hold the controller in front of the base station when calling it")]
         public void enableHemisphereTracking()
         {
             Sixense.AutoEnableHemisphereTracking(index);

@@ -255,6 +255,7 @@ namespace FreePIE.Core.Plugins {
    //                          FreeSpacePluginGlobal
    //==========================================================================
    [Global(Name = "freespace")]
+   [Documentation("Orientation from a Hillcrest Labs Freespace motion controller")]
    public class FreeSpacePluginGlobal {
       private readonly FreeSpacePlugin Device;
 
@@ -264,22 +265,26 @@ namespace FreePIE.Core.Plugins {
       }
 
       //-----------------------------------------------------------------------
+      [Documentation("When true, yaw keeps increasing past a full turn instead of wrapping around")]
       public bool continuousYawMode {
          get { return Device.ContinousYawMode; }
          set { Device.ContinousYawMode = value; }
       }
 
       //-----------------------------------------------------------------------
+      [Documentation("Yaw in radians")]
       public double yaw {
          get { return Device.Yaw; }
       }
 
       //-----------------------------------------------------------------------
+      [Documentation("Pitch in radians")]
       public double pitch {
          get { return Device.Pitch; }
       }
 
       //-----------------------------------------------------------------------
+      [Documentation("Roll in radians")]
       public double roll {
          get { return Device.Roll; }
       }
