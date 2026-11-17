@@ -140,6 +140,7 @@
     <Compile Include="ICompletionItem.cs" />
     <Compile Include="EditorAdapterConverter.cs" />
     <Compile Include="Event\Actions\PopupActions.cs" />
+    <Compile Include="Event\Actions\PopupStateAction.cs" />
     <Compile Include="EditorAdapterBase.cs" />
     <Compile Include="Event\Actions\CustomKeyAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

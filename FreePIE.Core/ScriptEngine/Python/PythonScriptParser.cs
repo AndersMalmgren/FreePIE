@@ -10,6 +10,7 @@ using FreePIE.Core.Plugins;
 using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.Core.ScriptEngine.Globals;
 using FreePIE.Core.ScriptEngine.Globals.ScriptHelpers;
+using FreePIE.Core.ScriptEngine.Python.Ast;
 
 namespace FreePIE.Core.ScriptEngine.Python
 {
@@ -64,15 +65,33 @@ namespace FreePIE.Core.ScriptEngine.Python
                     .ToList();
         }
 
-        private static readonly char[] ExpressionDelimiters = "(){}\t \r\n:".ToArray();
-        private static readonly char[] ExpressionEndDelimiters = ")]\r\n\t".ToArray();
+        private static readonly char[] ExpressionDelimiters = "(){}\t \r\n:=+-*/%<>!,;&|^~@'\"#".ToArray();
+        private static readonly char[] ExpressionEndDelimiters = ")]}\r\n\t :=+-*/%<>!,;&|^~@'\"#".ToArray();
         private static readonly char[] TokenDelimiters = ".".ToArray();
 
+        // Indexers are part of the token (joystick[0].x) so delimiters inside brackets are ignored
         private int GetStartOfExpression(string script, int offset)
         {
+            int depth = 0;
             for(int i = offset; i > 0; i--)
             {
-                if (ExpressionDelimiters.Contains(script[i - 1]))
+                var c = script[i - 1];
+
+                if (c == ']')
+                    depth++;
+                else if (c == '[')
+                {
+                    if (depth == 0)
+                    {
+                        // An indexer being written (joystick[0) is part of the token
+                        var isIndexer = i > 1 && char.IsLetterOrDigit(script[i - 2]) && script.Substring(i, offset - i).All(char.IsDigit);
+                        if (!isIndexer)
+                            return i;
+                    }
+                    else
+                        depth--;
+                }
+                else if (depth == 0 && ExpressionDelimiters.Contains(c))
                     return i;
             }
 
@@ -150,58 +169,24 @@ namespace FreePIE.Core.ScriptEngine.Python
 
         private string FindAndInitMethodsThatNeedIndexer(string script, IEnumerable<object> globals)
         {
-            var globalsThatNeedsIndex = globals
+            var methodsThatNeedIndexer = globals
                 .SelectMany(g => g.GetType().GetMethods()
                     .Where(m => m.GetCustomAttributes(typeof(NeedIndexer), false).Length > 0)
-                    .Select(m => new { Global = g, MethodInfo = m }))
-                    .ToList();
+                    .Select(m => new IndexerMethod(GlobalsInfo.GetGlobalName(g), m.Name, m.GetParameters().Last().Name)))
+                .GroupBy(m => new { m.GlobalName, m.MethodName })
+                .Select(g => g.First())
+                .ToList();
 
-            for (int i = 0; i < script.Length; i++)
-            {
-                foreach (var needIndex in globalsThatNeedsIndex)
-                {
-                    var name = GlobalsInfo.GetGlobalName(needIndex.Global);
-                    var methodName = needIndex.MethodInfo.Name;
-                    var searchFor = string.Format("{0}.{1}", name, methodName);
+            if (!methodsThatNeedIndexer.Any())
+                return script;
 
-                    if (i + searchFor.Length <= script.Length && script.Substring(i, searchFor.Length) == searchFor)
-                    {
-                        int argumentStart = i + searchFor.Length;
-                        var arguments = ExtractArguments(script, argumentStart);
-                        int argumentEnd = argumentStart + arguments.Length;
+            var model = ScriptModel.Parse(script);
 
-                        var proccesedArguments = FindAndInitMethodsThatNeedIndexer(arguments.Substring(0, arguments.Length - 1), globals);
+            // Syntax errors are reported by the script engine when the script is compiled
+            if (model == null)
+                return script;
 
-                        var newArguments = string.Format(@"{0}, ""{1}"")", proccesedArguments, arguments.Substring(1, arguments.Length - 2).Replace(@"""", @"'"));
-
-                        script = script.Substring(0, argumentStart) +
-                                    newArguments + script.Substring(argumentEnd, script.Length - argumentEnd);
-
-                        i = argumentStart + newArguments.Length;
-                    }
-                }
-            }
-
-            return script;
-        }
-
-        private string ExtractArguments(string script, int start)
-        {
-            int parenthesesCount = 0;
-            int index = start;
-            do
-            {
-                if (script[index] == '(')
-                    parenthesesCount++;
-
-                if (script[index] == ')')
-                    parenthesesCount--;
-
-                index++;
-
-            } while (parenthesesCount > 0 && index < script.Length);
-
-            return script.Substring(start, index - start);
+            return new NeedIndexerRewriter(model, methodsThatNeedIndexer).Rewrite();
         }
     }
 

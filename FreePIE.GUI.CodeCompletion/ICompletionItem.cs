@@ -4,6 +4,7 @@
     {
         string Name { get; }
         string Description { get; }
+        string Kind { get; }
         void Insert();
     }
 }

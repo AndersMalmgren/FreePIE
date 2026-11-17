@@ -36,5 +36,10 @@ namespace FreePIE.GUI.Common.CodeCompletion
         {
             get { return info.GetFormattedDescription(); }
         }
+
+        public string Kind
+        {
+            get { return info.Kind.ToString(); }
+        }
     }
 }

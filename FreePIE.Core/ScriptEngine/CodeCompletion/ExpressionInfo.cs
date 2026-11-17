@@ -6,6 +6,10 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public ExpressionKind Kind { get; set; }
+
+        // Set for callables, used by signature help
+        public SignatureInfo Signature { get; set; }
 
         public ExpressionInfo()
         {

@@ -60,6 +60,8 @@ namespace FreePIE.Core.Services
             kernel.Bind<IScriptParser>().To<PythonScriptParser>();
             kernel.Bind<ICodeCompletionProvider>().To<CodeCompletionProvider>();
             kernel.Bind<IRuntimeInfoProvider>().To<RuntimeInfoProvider>();
+            kernel.Bind<IScriptInfoProvider>().To<ScriptInfoProvider>();
+            kernel.Bind<IPythonRuntimeInfo>().To<PythonRuntimeInfo>().InSingletonScope();
             kernel.Bind<IThreadTimingFactory>().To<ThreadTimingFactory>().InSingletonScope();
         }
 

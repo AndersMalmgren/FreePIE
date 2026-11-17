@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Events;
@@ -25,9 +27,11 @@ namespace FreePIE.GUI.Views.Script
             this.fileSystem = fileSystem;
             Replacer = new Replacer();
             CompletionWindow = completionModel;
+            SignatureHelp = new SignatureHelpViewModel();
             Enabled = true;
-            UpdateCompletionItems();
             eventAggregator.Subscribe(this);
+            provider.ScriptAnalyzed += (sender, args) => Caliburn.Micro.Execute.BeginOnUIThread(OnScriptAnalyzed);
+            completionModel.Observers.Add(new PopupStateAction(OnCompletionPopupStateChanged));
             completionModel.Observers.Add(new OpenOnWriteAction(IsBeginningOfExpression));
             completionModel.Observers.Add(new CloseOnSteppingIntoEndOfExpression(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
             completionModel.Observers.Add(new CloseOnWritingEndOfExpression(IsEndOfExpression));
@@ -52,7 +56,30 @@ namespace FreePIE.GUI.Views.Script
             var caret = CaretPosition;
             var scriptWithNextChar = (Script ?? string.Empty).Insert(CaretPosition, nextChar.ToString(CultureInfo.InvariantCulture));
             caret++;
-            return provider.IsBeginningOfExpression(Script, CaretPosition) || provider.IsBeginningOfExpression(scriptWithNextChar, caret);
+            var isBeginning = provider.IsBeginningOfExpression(Script, CaretPosition) || provider.IsBeginningOfExpression(scriptWithNextChar, caret);
+
+            // The popup is only shown if there are suggestions, so they are needed before it opens
+            if (isBeginning)
+                UpdateCompletionItems();
+
+            return isBeginning;
+        }
+
+        private void OnCompletionPopupStateChanged(bool isOpen)
+        {
+            isCompletionOpen = isOpen;
+
+            if (isOpen)
+                UpdateCompletionItems();
+        }
+
+        // The script has been analyzed in the background, suggestions may include new names
+        private void OnScriptAnalyzed()
+        {
+            if (isCompletionOpen)
+                UpdateCompletionItems(true);
+
+            UpdateSignatureHelp();
         }
 
         private bool IsEndOfExpression(char nextChar)
@@ -61,6 +88,8 @@ namespace FreePIE.GUI.Views.Script
         }
 
         public CompletionPopupViewModel CompletionWindow { get; set; }
+
+        public SignatureHelpViewModel SignatureHelp { get; private set; }
 
         private string script;
         public string Script
@@ -71,6 +100,8 @@ namespace FreePIE.GUI.Views.Script
                 script = value;
                 eventAggregator.Publish(new ScriptUpdatedEvent(value));
                 NotifyOfPropertyChange(() => Script);
+                provider.ScriptChanged(value, caretPosition);
+                UpdateSignatureHelp();
             }
         }
 
@@ -97,13 +128,28 @@ namespace FreePIE.GUI.Views.Script
                 if (caretPosition == value) return;
 
                 caretPosition = value;
-                UpdateCompletionItems();
+
+                // Suggestions are only calculated while they are shown, it's too expensive to do on every keystroke
+                if (isCompletionOpen)
+                    UpdateCompletionItems();
+
+                UpdateSignatureHelp();
                 NotifyOfPropertyChange(() => CaretPosition);
             }
         }
 
-        private void UpdateCompletionItems()
+        private bool isCompletionOpen;
+        private string completionScript;
+        private int completionCaret = -1;
+
+        private void UpdateCompletionItems(bool force = false)
         {
+            if (!force && ReferenceEquals(completionScript, script) && completionCaret == caretPosition)
+                return;
+
+            completionScript = script;
+            completionCaret = caretPosition;
+
             var codeResults = provider.GetSuggestionsForExpression(script, caretPosition);
 
             var suggestions = codeResults.ExpressionInfos.Select(x =>
@@ -112,7 +158,24 @@ namespace FreePIE.GUI.Views.Script
             CompletionWindow.CompletionItems.Clear();
             CompletionWindow.CompletionItems.AddRange(suggestions);
             if (CompletionWindow.CompletionItems.Any())
-                CompletionWindow.SelectedCompletionItem = CompletionWindow.CompletionItems.First();
+                CompletionWindow.SelectedCompletionItem = GetBestMatch(CompletionWindow.CompletionItems, codeResults.ActiveToken.Value);
+        }
+
+        // Prefer the suggestion with the same casing as what has been written (axis before Axis)
+        private static ICompletionItem GetBestMatch(IList<ICompletionItem> items, string token)
+        {
+            return items.FirstOrDefault(i => i.Name == token)
+                   ?? items.FirstOrDefault(i => i.Name.StartsWith(token, StringComparison.Ordinal))
+                   ?? items.First();
+        }
+
+        private void UpdateSignatureHelp()
+        {
+            if (SignatureHelp == null)
+                return;
+
+            var caret = Math.Min(caretPosition, (script ?? string.Empty).Length);
+            SignatureHelp.Update(provider.GetSignatureHelp(script, caret));
         }
 
         private void OnInsertion(string insertedScript, int caretOffset, int range)
@@ -165,6 +228,7 @@ namespace FreePIE.GUI.Views.Script
         public void LoadFileContent(string content)
         {
             script = content;
+            provider.ScriptChanged(content, 0);
 			ResetDirtyFlag();
         }
 

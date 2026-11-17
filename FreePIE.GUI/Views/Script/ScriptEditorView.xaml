@@ -48,5 +48,36 @@
                                                                                                Path=DataContext.CompletionWindow }"
                                       Target="{Binding ElementName=textEditor, Path=TextArea, Converter={CodeCompletion:EditorAdapterConverter}}">
       </CodeCompletion:CompletionPopupView>
+        <Popup x:Name="signatureHelpPopup"
+               PlacementTarget="{Binding ElementName=textEditor, Path=TextArea.TextView}"
+               Placement="Top"
+               StaysOpen="True"
+               AllowsTransparency="True"
+               IsHitTestVisible="False"
+               Focusable="False">
+            <Border DataContext="{Binding SignatureHelp}"
+                    Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}"
+                    BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+                    BorderThickness="1" Padding="4,2" MaxWidth="600">
+                <StackPanel>
+                    <TextBlock FontFamily="Consolas" TextWrapping="Wrap"
+                               Foreground="{DynamicResource {x:Static SystemColors.InfoTextBrushKey}}">
+                        <Run Text="{Binding Before, Mode=OneWay}" /><Run Text="{Binding Current, Mode=OneWay}" FontWeight="Bold" /><Run Text="{Binding After, Mode=OneWay}" /><Run Text="{Binding Overloads, Mode=OneWay}" Foreground="Gray" />
+                    </TextBlock>
+                    <TextBlock Text="{Binding Documentation, Mode=OneWay}" TextWrapping="Wrap" Margin="0,2,0,0"
+                               Foreground="{DynamicResource {x:Static SystemColors.InfoTextBrushKey}}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasDocumentation}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 </UserControl>

@@ -7,13 +7,78 @@
   Placement="Bottom"
   MaxHeight="202"
   AllowsTransparency="true">
+  <Popup.Resources>
+    <DataTemplate x:Key="CompletionItemTemplate">
+          <StackPanel Orientation="Horizontal">
+            <Border x:Name="Glyph" Width="15" Height="13" CornerRadius="2" Margin="0,0,4,0" Background="#78909C" VerticalAlignment="Center">
+              <TextBlock x:Name="GlyphText" Text="?" Foreground="White" FontSize="9" FontWeight="Bold"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+          </StackPanel>
+          <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding Kind}" Value="Global">
+              <Setter TargetName="Glyph" Property="Background" Value="#2E7D32" />
+              <Setter TargetName="GlyphText" Property="Text" Value="G" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Property">
+              <Setter TargetName="Glyph" Property="Background" Value="#6A1B9A" />
+              <Setter TargetName="GlyphText" Property="Text" Value="P" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Field">
+              <Setter TargetName="Glyph" Property="Background" Value="#6A1B9A" />
+              <Setter TargetName="GlyphText" Property="Text" Value="F" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Method">
+              <Setter TargetName="Glyph" Property="Background" Value="#1565C0" />
+              <Setter TargetName="GlyphText" Property="Text" Value="M" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Function">
+              <Setter TargetName="Glyph" Property="Background" Value="#1565C0" />
+              <Setter TargetName="GlyphText" Property="Text" Value="ƒ" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Event">
+              <Setter TargetName="Glyph" Property="Background" Value="#EF6C00" />
+              <Setter TargetName="GlyphText" Property="Text" Value="E" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Class">
+              <Setter TargetName="Glyph" Property="Background" Value="#C62828" />
+              <Setter TargetName="GlyphText" Property="Text" Value="C" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Enum">
+              <Setter TargetName="Glyph" Property="Background" Value="#00838F" />
+              <Setter TargetName="GlyphText" Property="Text" Value="En" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="EnumMember">
+              <Setter TargetName="Glyph" Property="Background" Value="#00838F" />
+              <Setter TargetName="GlyphText" Property="Text" Value="e" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Variable">
+              <Setter TargetName="Glyph" Property="Background" Value="#455A64" />
+              <Setter TargetName="GlyphText" Property="Text" Value="V" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Parameter">
+              <Setter TargetName="Glyph" Property="Background" Value="#455A64" />
+              <Setter TargetName="GlyphText" Property="Text" Value="a" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Module">
+              <Setter TargetName="Glyph" Property="Background" Value="#795548" />
+              <Setter TargetName="GlyphText" Property="Text" Value="{}{}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Kind}" Value="Keyword">
+              <Setter TargetName="Glyph" Property="Background" Value="#9E9E9E" />
+              <Setter TargetName="GlyphText" Property="Text" Value="K" />
+            </DataTrigger>
+          </DataTemplate.Triggers>
+    </DataTemplate>
+  </Popup.Resources>
   <DockPanel>
     <Controls:EvenListBox MinWidth="100" MaxWidth="200" DockPanel.Dock="Left"
                           x:Name="CompletionItems"
                           ItemsSource ="{Binding CompletionItems }"
                           SelectedItem="{Binding SelectedCompletionItem, Mode=TwoWay }"
                           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                          DisplayMemberPath="Name"
+                          ItemTemplate="{StaticResource CompletionItemTemplate}"
                           DisplayedRows="7">
     </Controls:EvenListBox>
     <StackPanel Margin="1">

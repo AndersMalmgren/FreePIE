@@ -42,6 +42,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         private static Node<TokenInfo> MapClass(Type type)
         {
             var node = MapClassType(type);
+            node.Value.Info.Kind = ExpressionKind.Global;
 
             var name = GlobalsInfo.GetGlobalName(type);
 
@@ -113,6 +114,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             string name = GlobalsInfo.GetGlobalName(type) ?? (obj as IGlobalNameProvider).Name;
 
             Node<TokenInfo> node = MapClassType(type);
+            node.Value.Info.Kind = ExpressionKind.Global;
 
             node.SetName(name);
 
@@ -128,7 +130,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static TokenInfo MapEvent(EventInfo ei)
         {
-            var expInfo = new ExpressionInfo { Name = ei.Name, Description = "Event" };
+            var expInfo = new ExpressionInfo { Name = ei.Name, Description = "Event", Kind = ExpressionKind.Event };
 
             return new TokenInfo(new Token(TokenType.Identifier, ei.Name), expInfo);
         }
@@ -144,6 +146,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
                 new ExpressionInfo
                     {
                         Name = propertyInfo.Name,
+                        Kind = ExpressionKind.Property,
                         Description = string.Format("{0} {1}", propertyInfo.PropertyType.Name, propertyInfo.Name)
                     }));
 
@@ -175,10 +178,12 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static TokenInfo MapMethod(MethodInfo mi)
         {
-            var expInfo = new ExpressionInfo {Name = mi.Name};
+            var expInfo = new ExpressionInfo {Name = mi.Name, Kind = ExpressionKind.Method};
 
-            var parameters = string.Join(",", GetParametersWithoutIndexer(mi).Select(pi => string.Format("{0} {1}", pi.ParameterType.Name, pi.Name)));
-            expInfo.Description = string.Format("{0} {1} ({2})", mi.ReturnType.Name == "Void" ? "void" : mi.ReturnType.Name, mi.Name, parameters);
+            var parameters = GetParametersWithoutIndexer(mi).Select(pi => string.Format("{0} {1}", pi.ParameterType.Name, pi.Name)).ToList();
+            var returnType = mi.ReturnType.Name == "Void" ? "void" : mi.ReturnType.Name;
+            expInfo.Description = string.Format("{0} {1} ({2})", returnType, mi.Name, string.Join(",", parameters));
+            expInfo.Signature = new SignatureInfo(mi.Name, parameters, returnType);
 
             return new TokenInfo(new Token(TokenType.Identifier, mi.Name), expInfo);
         }
@@ -194,6 +199,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return new ExpressionInfo
                        {
                            Name = name,
+                           Kind = ExpressionKind.EnumMember,
                            Description = string.Format("{0} = {1}", name, Convert.ToInt32(Enum.Parse(type, name)))
                        };
         }
@@ -205,7 +211,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static Node<TokenInfo> MapEnum(Type type)
         {
-            var expInfo = new ExpressionInfo {Name = type.Name, Description = "Enum"};
+            var expInfo = new ExpressionInfo {Name = type.Name, Description = "Enum", Kind = ExpressionKind.Enum};
 
             var node = new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Identifier, type.Name), expInfo));
 
