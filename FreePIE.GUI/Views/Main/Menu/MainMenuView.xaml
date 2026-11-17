@@ -73,9 +73,21 @@
                     </MenuItem.Icon>
                 </common:GestureMenuItem>
                 <Separator/>
-                <common:GestureMenuItem x:Name="StepInto" Header="Step _Into" Key="F11"/>
-                <common:GestureMenuItem x:Name="StepOver" Header="Step _Over" Key="F10"/>
-                <common:GestureMenuItem x:Name="StepOut" Header="Step Ou_t" Key="F11" Modifiers="Shift"/>
+                <common:GestureMenuItem x:Name="StepInto" Header="Step _Into" Key="F11">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconStepIn}"/>
+                    </MenuItem.Icon>
+                </common:GestureMenuItem>
+                <common:GestureMenuItem x:Name="StepOver" Header="Step _Over" Key="F10">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconStepOver}"/>
+                    </MenuItem.Icon>
+                </common:GestureMenuItem>
+                <common:GestureMenuItem x:Name="StepOut" Header="Step Ou_t" Key="F11" Modifiers="Shift">
+                    <MenuItem.Icon>
+                        <Image Source="{StaticResource IconStepOut}"/>
+                    </MenuItem.Icon>
+                </common:GestureMenuItem>
                 <Separator/>
                 <common:GestureMenuItem x:Name="ToggleBreakpoint" Header="Toggle _Breakpoint" Key="F9"/>
                 <common:GestureMenuItem x:Name="DeleteAllBreakpoints" Header="_Delete All Breakpoints" Key="F9" Modifiers="Ctrl+Shift"/>

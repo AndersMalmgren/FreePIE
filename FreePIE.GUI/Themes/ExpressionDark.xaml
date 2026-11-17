@@ -20,6 +20,9 @@
     <BitmapImage x:Key="IconExit" UriSource="../Resources/exit-16.png" />
     <BitmapImage x:Key="IconPlay" UriSource="../Resources/play-16.png" />
     <BitmapImage x:Key="IconStop" UriSource="../Resources/stop-16.png" />
+    <BitmapImage x:Key="IconStepIn" UriSource="../Resources/step-in-16.png" />
+    <BitmapImage x:Key="IconStepOver" UriSource="../Resources/step-over-16.png" />
+    <BitmapImage x:Key="IconStepOut" UriSource="../Resources/step-out-16.png" />
     <BitmapImage x:Key="IconSettings" UriSource="../Resources/settings-16.png" />
     <BitmapImage x:Key="IconCurve" UriSource="../Resources/curve-16.png" />
     <BitmapImage x:Key="IconAbout" UriSource="../Resources/about-16.png" />
