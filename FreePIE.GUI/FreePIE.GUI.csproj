@@ -225,6 +225,7 @@
       <DependentUpon>ScriptEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Script\ScriptEditorViewModel.cs" />
+    <Compile Include="Views\Script\SignatureHelpViewModel.cs" />
     <Page Include="Shells\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

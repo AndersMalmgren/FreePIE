@@ -65,15 +65,33 @@ namespace FreePIE.Core.ScriptEngine.Python
                     .ToList();
         }
 
-        private static readonly char[] ExpressionDelimiters = "(){}\t \r\n:".ToArray();
-        private static readonly char[] ExpressionEndDelimiters = ")]\r\n\t".ToArray();
+        private static readonly char[] ExpressionDelimiters = "(){}\t \r\n:=+-*/%<>!,;&|^~@'\"#".ToArray();
+        private static readonly char[] ExpressionEndDelimiters = ")]}\r\n\t :=+-*/%<>!,;&|^~@'\"#".ToArray();
         private static readonly char[] TokenDelimiters = ".".ToArray();
 
+        // Indexers are part of the token (joystick[0].x) so delimiters inside brackets are ignored
         private int GetStartOfExpression(string script, int offset)
         {
+            int depth = 0;
             for(int i = offset; i > 0; i--)
             {
-                if (ExpressionDelimiters.Contains(script[i - 1]))
+                var c = script[i - 1];
+
+                if (c == ']')
+                    depth++;
+                else if (c == '[')
+                {
+                    if (depth == 0)
+                    {
+                        // An indexer being written (joystick[0) is part of the token
+                        var isIndexer = i > 1 && char.IsLetterOrDigit(script[i - 2]) && script.Substring(i, offset - i).All(char.IsDigit);
+                        if (!isIndexer)
+                            return i;
+                    }
+                    else
+                        depth--;
+                }
+                else if (depth == 0 && ExpressionDelimiters.Contains(c))
                     return i;
             }
 

@@ -23,6 +23,15 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
 
         public static PythonAst Parse(string script)
         {
+            bool hasErrors;
+            var ast = Parse(script, out hasErrors);
+
+            return hasErrors ? null : ast;
+        }
+
+        // The parser recovers from most syntax errors, the returned AST contains everything that could be parsed
+        public static PythonAst Parse(string script, out bool hasErrors)
+        {
             var source = Engine.CreateScriptSourceFromString(script, SourceCodeKind.File);
             var language = HostingHelpers.GetLanguageContext(Engine);
             var errors = new ParseErrorSink();
@@ -31,7 +40,8 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
 
             var ast = parser.ParseFile(false);
 
-            return errors.HasErrors ? null : ast;
+            hasErrors = errors.HasErrors;
+            return ast;
         }
 
         private class ParseErrorSink : ErrorSink

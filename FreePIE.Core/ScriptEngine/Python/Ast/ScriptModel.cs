@@ -11,16 +11,18 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
     {
         private const int MaxBaseClassDepth = 10;
 
-        private ScriptModel(string script, PythonAst ast)
+        private ScriptModel(string script, PythonAst ast, bool hasErrors)
         {
             Script = script;
             Ast = ast;
+            HasErrors = hasErrors;
             Module = new PythonScope(ScopeKind.Module, string.Empty, ast, null);
             Calls = new List<PythonCall>();
         }
 
         public string Script { get; private set; }
         public PythonAst Ast { get; private set; }
+        public bool HasErrors { get; private set; }
         public PythonScope Module { get; private set; }
         public IList<PythonCall> Calls { get; private set; }
 
@@ -32,11 +34,17 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
         // Returns null if the script contains syntax errors
         public static ScriptModel Parse(string script)
         {
-            var ast = PythonAstParser.Parse(script);
-            if (ast == null)
-                return null;
+            var model = ParseTolerant(script);
+            return model.HasErrors ? null : model;
+        }
 
-            var model = new ScriptModel(script, ast);
+        // Builds a model from everything the parser could recover, used for scripts that are being edited
+        public static ScriptModel ParseTolerant(string script)
+        {
+            bool hasErrors;
+            var ast = PythonAstParser.Parse(script, out hasErrors);
+
+            var model = new ScriptModel(script, ast, hasErrors);
             ast.Walk(new ScriptModelBuilder(model));
 
             return model;
@@ -44,6 +52,9 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
 
         public string GetText(Node node)
         {
+            if (node.StartIndex < 0 || node.EndIndex > Script.Length || node.EndIndex < node.StartIndex)
+                return string.Empty;
+
             return Script.Substring(node.StartIndex, node.EndIndex - node.StartIndex);
         }
 
@@ -111,8 +122,27 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
             return call != null && call.Target is NameExpression;
         }
 
+        // The class and its base classes that are defined in the script, closest first
+        public IEnumerable<PythonScope> GetClassHierarchy(PythonScope @class)
+        {
+            var visited = new HashSet<PythonScope>();
+            var current = new List<PythonScope> { @class };
+
+            for (int depth = 0; depth < MaxBaseClassDepth && current.Any(); depth++)
+            {
+                current = current.Where(visited.Add).ToList();
+
+                foreach (var c in current)
+                    yield return c;
+
+                current = current
+                    .SelectMany(c => ((ClassDefinition)c.Node).Bases.OfType<NameExpression>().SelectMany(b => ResolveClasses(b.Name, c.Parent)))
+                    .ToList();
+            }
+        }
+
         // The first parameter of a method (self) refers to an instance of the class
-        private static PythonScope InferSelf(string name, PythonScope scope)
+        public static PythonScope InferSelf(string name, PythonScope scope)
         {
             var function = scope.SelfAndAncestors().FirstOrDefault(s => s.Kind != ScopeKind.Lambda);
             if (function == null || !function.IsMethod || !function.Function.Parameters.Any())

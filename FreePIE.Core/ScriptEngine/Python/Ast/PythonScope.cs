@@ -18,6 +18,7 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
 
         private readonly Dictionary<string, List<PythonBinding>> bindings;
         private readonly HashSet<string> globalNames;
+        private readonly Dictionary<string, List<PythonBinding>> attributes;
 
         public PythonScope(ScopeKind kind, string name, Node node, PythonScope parent)
         {
@@ -29,6 +30,8 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
             Calls = new List<PythonCall>();
             bindings = new Dictionary<string, List<PythonBinding>>();
             globalNames = new HashSet<string>();
+            attributes = new Dictionary<string, List<PythonBinding>>();
+            Returns = new List<Expression>();
 
             if (parent != null)
                 parent.Children.Add(this);
@@ -40,6 +43,9 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
         public PythonScope Parent { get; private set; }
         public IList<PythonScope> Children { get; private set; }
         public IList<PythonCall> Calls { get; private set; }
+
+        // Expressions returned by a function
+        public IList<Expression> Returns { get; private set; }
 
         public FunctionDefinition Function
         {
@@ -81,6 +87,27 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
         {
             List<PythonBinding> result;
             return bindings.TryGetValue(name, out result) ? result : NoBindings;
+        }
+
+        // Instance attributes of a class (self.x = ...)
+        public IEnumerable<string> AttributeNames
+        {
+            get { return attributes.Keys; }
+        }
+
+        public IList<PythonBinding> GetAttributes(string name)
+        {
+            List<PythonBinding> result;
+            return attributes.TryGetValue(name, out result) ? result : NoBindings;
+        }
+
+        public void AddAttribute(PythonBinding binding)
+        {
+            List<PythonBinding> list;
+            if (!attributes.TryGetValue(binding.Name, out list))
+                attributes[binding.Name] = list = new List<PythonBinding>();
+
+            list.Add(binding);
         }
 
         public void DeclareGlobal(string name)

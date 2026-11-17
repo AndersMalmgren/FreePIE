@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Events;
@@ -25,6 +27,7 @@ namespace FreePIE.GUI.Views.Script
             this.fileSystem = fileSystem;
             Replacer = new Replacer();
             CompletionWindow = completionModel;
+            SignatureHelp = new SignatureHelpViewModel();
             Enabled = true;
             UpdateCompletionItems();
             eventAggregator.Subscribe(this);
@@ -62,6 +65,8 @@ namespace FreePIE.GUI.Views.Script
 
         public CompletionPopupViewModel CompletionWindow { get; set; }
 
+        public SignatureHelpViewModel SignatureHelp { get; private set; }
+
         private string script;
         public string Script
         {
@@ -71,6 +76,7 @@ namespace FreePIE.GUI.Views.Script
                 script = value;
                 eventAggregator.Publish(new ScriptUpdatedEvent(value));
                 NotifyOfPropertyChange(() => Script);
+                UpdateSignatureHelp();
             }
         }
 
@@ -98,6 +104,7 @@ namespace FreePIE.GUI.Views.Script
 
                 caretPosition = value;
                 UpdateCompletionItems();
+                UpdateSignatureHelp();
                 NotifyOfPropertyChange(() => CaretPosition);
             }
         }
@@ -112,7 +119,24 @@ namespace FreePIE.GUI.Views.Script
             CompletionWindow.CompletionItems.Clear();
             CompletionWindow.CompletionItems.AddRange(suggestions);
             if (CompletionWindow.CompletionItems.Any())
-                CompletionWindow.SelectedCompletionItem = CompletionWindow.CompletionItems.First();
+                CompletionWindow.SelectedCompletionItem = GetBestMatch(CompletionWindow.CompletionItems, codeResults.ActiveToken.Value);
+        }
+
+        // Prefer the suggestion with the same casing as what has been written (axis before Axis)
+        private static ICompletionItem GetBestMatch(IList<ICompletionItem> items, string token)
+        {
+            return items.FirstOrDefault(i => i.Name == token)
+                   ?? items.FirstOrDefault(i => i.Name.StartsWith(token, StringComparison.Ordinal))
+                   ?? items.First();
+        }
+
+        private void UpdateSignatureHelp()
+        {
+            if (SignatureHelp == null)
+                return;
+
+            var caret = Math.Min(caretPosition, (script ?? string.Empty).Length);
+            SignatureHelp.Update(provider.GetSignatureHelp(script, caret));
         }
 
         private void OnInsertion(string insertedScript, int caretOffset, int range)

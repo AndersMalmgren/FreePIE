@@ -79,6 +79,15 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
             return true;
         }
 
+        public override bool Walk(ReturnStatement node)
+        {
+            var function = Current.SelfAndAncestors().FirstOrDefault(s => s.Kind == ScopeKind.Function);
+            if (function != null && node.Expression != null)
+                function.Returns.Add(node.Expression);
+
+            return true;
+        }
+
         public override bool Walk(ForStatement node)
         {
             Bind(node.Left, null);
@@ -149,6 +158,13 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
                 return;
             }
 
+            var member = target as MemberExpression;
+            if (member != null)
+            {
+                BindAttribute(member, value);
+                return;
+            }
+
             var parenthesis = target as ParenthesisExpression;
             if (parenthesis != null)
             {
@@ -162,6 +178,18 @@ namespace FreePIE.Core.ScriptEngine.Python.Ast
                 foreach (var item in sequence.Items)
                     Bind(item, null);
             }
+        }
+
+        // self.x = value inside a method adds an instance attribute to the class
+        private void BindAttribute(MemberExpression target, Expression value)
+        {
+            var receiver = target.Target as NameExpression;
+            if (receiver == null)
+                return;
+
+            var @class = ScriptModel.InferSelf(receiver.Name, Current);
+            if (@class != null)
+                @class.AddAttribute(new PythonBinding(target.Name, target, value, Current, null));
         }
 
         private void BindName(string name, Node node)

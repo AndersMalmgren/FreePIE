@@ -111,6 +111,11 @@
     <Compile Include="ScriptEngine\CodeCompletion\ExpressionInfo.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\IndexedExpressionInfo.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\InfoTransformHelper.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\ExpressionKind.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\ScriptInfoProvider.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\ScriptTextHelper.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\ScriptTypeResolver.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\SignatureInfo.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\IRuntimeInfoProvider.cs" />
     <Compile Include="Model\Node.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\RuntimeInfoProvider.cs" />
@@ -129,6 +134,7 @@
     <Compile Include="ScriptEngine\Python\PythonScriptEngine.cs" />
     <Compile Include="ScriptEngine\Python\PythonScriptParser.cs" />
     <Compile Include="ScriptEngine\Python\NeedIndexerRewriter.cs" />
+    <Compile Include="ScriptEngine\Python\PythonRuntimeInfo.cs" />
     <Compile Include="ScriptEngine\Python\Ast\PythonAstParser.cs" />
     <Compile Include="ScriptEngine\Python\Ast\PythonScope.cs" />
     <Compile Include="ScriptEngine\Python\Ast\ScriptEdit.cs" />
