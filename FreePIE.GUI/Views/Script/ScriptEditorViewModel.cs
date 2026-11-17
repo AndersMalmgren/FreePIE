@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using FreePIE.Core.Common;
@@ -28,7 +29,8 @@ namespace FreePIE.GUI.Views.Script
             Replacer = new Replacer();
             CompletionWindow = completionModel;
             SignatureHelp = new SignatureHelpViewModel();
-            Enabled = true;
+            Breakpoints = new Caliburn.Micro.BindableCollection<int>();
+            Breakpoints.CollectionChanged += OnBreakpointsChanged;
             eventAggregator.Subscribe(this);
             provider.ScriptAnalyzed += (sender, args) => Caliburn.Micro.Execute.BeginOnUIThread(OnScriptAnalyzed);
             completionModel.Observers.Add(new PopupStateAction(OnCompletionPopupStateChanged));
@@ -105,15 +107,70 @@ namespace FreePIE.GUI.Views.Script
             }
         }
 
-        private bool enabled;
-        public bool Enabled
+        // The script can not be edited while it runs, but breakpoints can be changed and values inspected
+        private bool isReadOnly;
+        public bool IsReadOnly
         {
-            get { return enabled; }
-            set 
-            { 
-                enabled = value; 
-                NotifyOfPropertyChange(() => Enabled);
+            get { return isReadOnly; }
+            set
+            {
+                isReadOnly = value;
+                NotifyOfPropertyChange(() => IsReadOnly);
             }
+        }
+
+        public Caliburn.Micro.BindableCollection<int> Breakpoints { get; private set; }
+
+        private int executionLine;
+        // The line where the script is paused, 0 when it's not paused
+        public int ExecutionLine
+        {
+            get { return executionLine; }
+            set
+            {
+                executionLine = value;
+                NotifyOfPropertyChange(() => ExecutionLine);
+            }
+        }
+
+        public void ToggleBreakpoint()
+        {
+            var text = script ?? string.Empty;
+            var lineNumber = text.Take(Math.Min(caretPosition, text.Length)).Count(c => c == '\n') + 1;
+
+            if (!Breakpoints.Remove(lineNumber))
+                Breakpoints.Add(lineNumber);
+        }
+
+        public void DeleteAllBreakpoints()
+        {
+            Breakpoints.Clear();
+        }
+
+        private IScriptDebugger debugger;
+
+        public void AttachDebugger(IScriptDebugger scriptDebugger)
+        {
+            debugger = scriptDebugger;
+            debugger.SetBreakpoints(Breakpoints);
+        }
+
+        public void DetachDebugger()
+        {
+            debugger = null;
+            ExecutionLine = 0;
+        }
+
+        private void OnBreakpointsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (debugger != null)
+                debugger.SetBreakpoints(Breakpoints);
+        }
+
+        // Describes the value of the expression at index while the script is paused, null if there is nothing to show
+        public string GetValueDescription(int index)
+        {
+            return debugger != null && debugger.IsPaused ? debugger.Evaluate(script, index) : null;
         }
 
         public Replacer Replacer { get; set; }
@@ -259,7 +316,7 @@ namespace FreePIE.GUI.Views.Script
 
         public void Handle(ScriptStateChangedEvent message)
         {
-            Enabled = !message.Running;
+            IsReadOnly = message.Running;
         }
     }
 }

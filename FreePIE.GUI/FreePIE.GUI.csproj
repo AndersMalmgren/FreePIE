@@ -113,6 +113,8 @@
     <Compile Include="Common\AvalonDock\AutobinderTemplateSelector.cs" />
     <Compile Include="Common\AvalonDock\DocumentContext.cs" />
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
+    <Compile Include="Common\AvalonEdit\BreakpointMargin.cs" />
+    <Compile Include="Common\AvalonEdit\DebuggerBackgroundRenderer.cs" />
     <Compile Include="Common\Caliburn\ActionMessageCommand.cs" />
     <Compile Include="Common\Caliburn\GestureMenuItem.cs" />
     <Compile Include="Common\Caliburn\InputBindingTrigger.cs" />

@@ -68,6 +68,7 @@
     <Compile Include="CodeCompletionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PluginInvokerTests.cs" />
+    <Compile Include="ScriptDebuggerTest.cs" />
     <Compile Include="ScriptParserTokenTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -62,7 +62,7 @@
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
             <MenuItem Header="_Script">
-                <common:GestureMenuItem x:Name="RunScript" Header="_Run script" Key="F5">
+                <common:GestureMenuItem x:Name="RunScript" Header="{Binding RunScriptHeader}" Key="F5">
                     <MenuItem.Icon>
                         <Image Source="{StaticResource IconPlay}"/>
                     </MenuItem.Icon>
@@ -72,6 +72,13 @@
                         <Image Source="{StaticResource IconStop}"/>
                     </MenuItem.Icon>
                 </common:GestureMenuItem>
+                <Separator/>
+                <common:GestureMenuItem x:Name="StepInto" Header="Step _Into" Key="F11"/>
+                <common:GestureMenuItem x:Name="StepOver" Header="Step _Over" Key="F10"/>
+                <common:GestureMenuItem x:Name="StepOut" Header="Step Ou_t" Key="F11" Modifiers="Shift"/>
+                <Separator/>
+                <common:GestureMenuItem x:Name="ToggleBreakpoint" Header="Toggle _Breakpoint" Key="F9"/>
+                <common:GestureMenuItem x:Name="DeleteAllBreakpoints" Header="_Delete All Breakpoints" Key="F9" Modifiers="Ctrl+Shift"/>
             </MenuItem>
             <MenuItem Header="S_ettings">
                 <MenuItem x:Name="Plugins" DisplayMemberPath="Name" Header="_Plugins" cal:Message.Attach="ShowPluginSettings($orignalsourcecontext)">
