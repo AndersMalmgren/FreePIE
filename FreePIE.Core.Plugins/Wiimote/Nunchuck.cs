@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
@@ -14,6 +12,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public NunchuckButtons Buttons { get; set; }
     }
 
+    [Documentation("Acceleration in m/s2")]
     public class Acceleration
     {
         public Acceleration(double x, double y, double z)
@@ -23,8 +22,11 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.z = z;
         }
 
+        [Documentation("Acceleration along the x axis in m/s2")]
         public double x { get; private set; }
+        [Documentation("Acceleration along the y axis in m/s2")]
         public double y { get; private set; }
+        [Documentation("Acceleration along the z axis in m/s2")]
         public double z { get; private set; }
         public override string ToString()
         {

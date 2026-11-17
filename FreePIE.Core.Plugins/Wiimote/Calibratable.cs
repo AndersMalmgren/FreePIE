@@ -1,4 +1,5 @@
 ﻿using System;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
@@ -15,6 +16,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                 calibrated();
         }
 
+        [Documentation("Raised when the calibration is done")]
         public event Action calibrated;
     }
 }

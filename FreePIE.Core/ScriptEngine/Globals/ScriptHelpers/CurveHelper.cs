@@ -9,8 +9,10 @@ using FreePIE.Core.Model;
 namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
 {
     [Global(Name = "curves")]
+    [Documentation("Creates curves from code. Curves made in the curve settings are globals named after the curve")]
     public class CurveHelper : IScriptHelper
     {
+        [Documentation("Creates a curve from a list of (x, y) points sorted on x, for example curves.create([(0, 0), (0.5, 0.2), (1, 1)])")]
         public CurveGlobalProvider.CurveGlobal create(IEnumerable points)
         {
             if (points == null)

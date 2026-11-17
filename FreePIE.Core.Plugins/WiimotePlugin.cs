@@ -8,6 +8,7 @@ using System.Linq;
 namespace FreePIE.Core.Plugins
 {
     [GlobalEnum]
+    [Documentation("Wiimote buttons, used with wiimote[0].buttons")]
     public enum WiimoteButtons : ushort
     {
         DPadLeft = 0x0100,
@@ -24,12 +25,14 @@ namespace FreePIE.Core.Plugins
     }
 
     [GlobalEnum]
+    [Documentation("Nunchuck buttons, used with wiimote[0].nunchuck.buttons")]
     public enum NunchuckButtons
     {
         Z = 0x01, C = 0x02
     }
 
     [GlobalEnum]
+    [Documentation("Guitar Hero guitar buttons, used with wiimote[0].guitar.buttons")]
     public enum GuitarButtons : ushort
     {
         StrumDown = 0x4000,
@@ -43,6 +46,7 @@ namespace FreePIE.Core.Plugins
         Minus = 0x1000
     }
     [GlobalEnum]
+    [Documentation("Classic Controller buttons, used with wiimote[0].classicController.buttons")]
     public enum ClassicControllerButtons : ushort
     {
         DPadLeft = 0x0002,
@@ -63,6 +67,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [GlobalEnum, Flags]
+    [Documentation("Wiimote features that can be enabled with wiimote[0].enable, combine with |")]
     public enum WiimoteCapabilities : ushort
     {
         None = 0,
@@ -82,6 +87,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [GlobalEnum, Flags]
+    [Documentation("Extensions that can be connected to a Wiimote")]
     public enum WiimoteExtensions
     {
         None = 0,
@@ -256,6 +262,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "wiimote")]
+    [Documentation("Reads a Wiimote and its extensions, index by Wiimote, wiimote[0] is the first. Call enable to start receiving motion and extension data")]
     public class WiimoteGlobal
     {
         private readonly WiimotePlugin plugin;
@@ -294,10 +301,12 @@ namespace FreePIE.Core.Plugins
             capabilitiesUpdaters[data.WiimoteNumber] = capabilitiesTrigger;
             statusUpdaters[data.WiimoteNumber] = statusTrigger;
         }
+        [Documentation("Enables features, for example wiimote[0].enable(WiimoteCapabilities.MotionPlus | WiimoteCapabilities.Extension)")]
         public void enable(WiimoteCapabilities flags)
         {
             plugin.Enable(data.WiimoteNumber, flags);
         }
+        [Documentation("Turns rumble on or off")]
         public void setRumble(Boolean shouldRumble)
         {
             plugin.SetRumble(data.WiimoteNumber, shouldRumble);
@@ -330,55 +339,65 @@ namespace FreePIE.Core.Plugins
             if (data.MotionPlus.DidCalibrate)
                 motionPlusCalibratedTrigger();
         }
+        [Documentation("The available and enabled features and the connected extension")]
         public CapabilitiesGlobal capabilities
         {
             get;
             private set;
         }
+        [Documentation("Angular velocity from the MotionPlus")]
         public MotionPlusGlobal motionplus
         { 
             get;
             private set;
         }
 
+        [Documentation("Orientation fused from the MotionPlus and the accelerometer, in degrees")]
         public EulerAngles ahrs
         {
             get { return data.MotionPlusEulerAngles; }
         }
 
+        [Documentation("Calibrated acceleration")]
         public AccelerationGlobal acceleration
         {
             get;
             private set;
         }
 
+        [Documentation("The connected Nunchuck")]
         public NunchuckGlobal nunchuck
         {
             get;
             private set;
         }
 
+        [Documentation("The connected Classic Controller")]
         public ClassicControllerGlobal classicController
         {
             get;
             private set;
         }
 
+        [Documentation("The connected Guitar Hero guitar")]
         public GuitarGlobal guitar
         {
             get;
             private set;
         }
+        [Documentation("The Balance Board")]
         public BalanceBoardGlobal balanceBoard
         {
             get;
             private set;
         }
+        [Documentation("Battery and LED status")]
         public StatusGlobal status
         {
             get;
             private set;
         }
+        [Documentation("The Wiimote buttons")]
         public WiimoteButtonState buttons
         { 
             get;

@@ -43,6 +43,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         {
             var node = MapClassType(type);
             node.Value.Info.Kind = ExpressionKind.Global;
+            node.Value.Info.Description = GetGlobalDocumentation(type);
 
             var name = GlobalsInfo.GetGlobalName(type);
 
@@ -66,9 +67,25 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             return globalType != null && globalType.IsIndexed;
         }
 
+        // Plugins are usually documented on the global class, but the plugin class is also accepted
+        private static string GetGlobalDocumentation(Type type)
+        {
+            var globalType = type.GetCustomAttributes(typeof(GlobalType), false).FirstOrDefault() as GlobalType;
+            var documentation = globalType != null ? GetDocumentation(globalType.Type) : null;
+
+            return documentation ?? GetDocumentation(type) ?? string.Empty;
+        }
+
         private static bool IsDeprecated(MemberInfo info)
         {
             return info.GetCustomAttributes(typeof (Deprecated), false).Length > 0;
+        }
+
+        private static string GetDocumentation(MemberInfo info)
+        {
+            var documentation = info.GetCustomAttributes(typeof(Documentation), true).FirstOrDefault() as Documentation;
+
+            return documentation != null ? documentation.Description : null;
         }
 
         private static void AddClassMembers(Node<TokenInfo> node, Type type)
@@ -115,6 +132,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
             Node<TokenInfo> node = MapClassType(type);
             node.Value.Info.Kind = ExpressionKind.Global;
+            node.Value.Info.Description = GetGlobalDocumentation(type);
 
             node.SetName(name);
 
@@ -130,7 +148,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static TokenInfo MapEvent(EventInfo ei)
         {
-            var expInfo = new ExpressionInfo { Name = ei.Name, Description = "Event", Kind = ExpressionKind.Event };
+            var expInfo = new ExpressionInfo { Name = ei.Name, Description = ExpressionInfo.WithDocumentation("Event", GetDocumentation(ei)), Kind = ExpressionKind.Event };
 
             return new TokenInfo(new Token(TokenType.Identifier, ei.Name), expInfo);
         }
@@ -147,7 +165,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
                     {
                         Name = propertyInfo.Name,
                         Kind = ExpressionKind.Property,
-                        Description = string.Format("{0} {1}", propertyInfo.PropertyType.Name, propertyInfo.Name)
+                        Description = ExpressionInfo.WithDocumentation(string.Format("{0} {1}", propertyInfo.PropertyType.Name, propertyInfo.Name), GetDocumentation(propertyInfo))
                     }));
 
             if(IsUserDefinedType(propertyInfo.PropertyType))
@@ -183,8 +201,9 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
             var parameters = GetParametersWithoutIndexer(mi).Select(pi => string.Format("{0} {1}", pi.ParameterType.Name, pi.Name)).ToList();
             var returnType = mi.ReturnType.Name == "Void" ? "void" : mi.ReturnType.Name;
-            expInfo.Description = string.Format("{0} {1} ({2})", returnType, mi.Name, string.Join(",", parameters));
-            expInfo.Signature = new SignatureInfo(mi.Name, parameters, returnType);
+            var documentation = GetDocumentation(mi);
+            expInfo.Description = ExpressionInfo.WithDocumentation(string.Format("{0} {1} ({2})", returnType, mi.Name, string.Join(",", parameters)), documentation);
+            expInfo.Signature = new SignatureInfo(mi.Name, parameters, returnType, documentation);
 
             var node = new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Identifier, mi.Name), expInfo));
 
@@ -213,7 +232,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
                        {
                            Name = name,
                            Kind = ExpressionKind.EnumMember,
-                           Description = string.Format("{0} = {1}", name, Convert.ToInt32(Enum.Parse(type, name)))
+                           Description = ExpressionInfo.WithDocumentation(string.Format("{0} = {1}", name, Convert.ToInt32(Enum.Parse(type, name))), GetDocumentation(type.GetField(name)))
                        };
         }
 
@@ -224,7 +243,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
         private static Node<TokenInfo> MapEnum(Type type)
         {
-            var expInfo = new ExpressionInfo {Name = type.Name, Description = "Enum", Kind = ExpressionKind.Enum};
+            var expInfo = new ExpressionInfo {Name = type.Name, Description = ExpressionInfo.WithDocumentation("Enum", GetDocumentation(type)), Kind = ExpressionKind.Enum};
 
             var node = new Node<TokenInfo>(new TokenInfo(new Token(TokenType.Identifier, type.Name), expInfo));
 

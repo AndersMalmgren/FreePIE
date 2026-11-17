@@ -9,6 +9,7 @@ using FreePIE.Core.ScriptEngine.ThreadTiming.Strategies;
 namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
 {
     [Global(Name = "system")]
+    [Documentation("Controls how the script is executed")]
     public class SystemHelper : IScriptHelper
     {
         private readonly IThreadTimingFactory threadTimingFactory;
@@ -18,11 +19,13 @@ namespace FreePIE.Core.ScriptEngine.Globals.ScriptHelpers
             this.threadTimingFactory = threadTimingFactory;
         }
 
+        [Documentation("Sets how the script thread waits between iterations, see TimingTypes")]
         public void setThreadTiming(TimingTypes timing)
         {
             threadTimingFactory.Set(timing);
         }
 
+        [Documentation("Time to wait between script iterations, in milliseconds (microseconds with ThreadYieldMicroSeconds)")]
         public int threadExecutionInterval
         {
             get { return threadTimingFactory.Get().ThreadExecutionInterval; }

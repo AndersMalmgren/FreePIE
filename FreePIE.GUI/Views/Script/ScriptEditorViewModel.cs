@@ -6,6 +6,7 @@ using System.Linq;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Events;
 using FreePIE.Core.ScriptEngine;
+using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.GUI.CodeCompletion;
 using FreePIE.GUI.CodeCompletion.Event.Actions;
 using FreePIE.GUI.Common.AvalonEdit;
@@ -198,10 +199,12 @@ namespace FreePIE.GUI.Views.Script
         private bool isCompletionOpen;
         private string completionScript;
         private int completionCaret = -1;
+        private IList<ExpressionInfo> completionInfos;
 
         private void UpdateCompletionItems(bool force = false)
         {
-            if (!force && ReferenceEquals(completionScript, script) && completionCaret == caretPosition)
+            var isSamePosition = ReferenceEquals(completionScript, script) && completionCaret == caretPosition;
+            if (!force && isSamePosition)
                 return;
 
             completionScript = script;
@@ -209,13 +212,25 @@ namespace FreePIE.GUI.Views.Script
 
             var codeResults = provider.GetSuggestionsForExpression(script, caretPosition);
 
-            var suggestions = codeResults.ExpressionInfos.Select(x =>
+            // Rebuilding the list is expensive in WPF and the background analysis often finds the same suggestions again
+            var infos = codeResults.ExpressionInfos.ToList();
+            var isSame = isSamePosition && IsSameSuggestions(completionInfos, infos);
+            completionInfos = infos;
+            if (isSame)
+                return;
+
+            var suggestions = infos.Select(x =>
                 new CompletionItem(x, codeResults.ActiveToken.Value, codeResults.ReplaceRange, script, OnInsertion));
 
             CompletionWindow.CompletionItems.Clear();
             CompletionWindow.CompletionItems.AddRange(suggestions);
             if (CompletionWindow.CompletionItems.Any())
                 CompletionWindow.SelectedCompletionItem = GetBestMatch(CompletionWindow.CompletionItems, codeResults.ActiveToken.Value);
+        }
+
+        private static bool IsSameSuggestions(IList<ExpressionInfo> previous, IList<ExpressionInfo> current)
+        {
+            return previous != null && previous.Count == current.Count && previous.Zip(current, (a, b) => a.Name == b.Name && a.Kind == b.Kind && a.Description == b.Description).All(same => same);
         }
 
         // Prefer the suggestion with the same casing as what has been written (axis before Axis)

@@ -75,6 +75,7 @@ namespace FreePIE.Core.Plugins
             plugin.GlobalHasUpdateListener = onUpdate != null;
         }
 
+        [Documentation("Raised when the plugin has received new data, assign a function with +=")]
         public event GlobalNoArgumentEvent update
         {
             add

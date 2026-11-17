@@ -167,17 +167,24 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "yei")]
+    [Documentation("Orientation from a YEI 3-Space sensor, index by device, yei[0] is the first sensor")]
     public class Yei3SpaceGlobal : UpdateblePluginGlobal<Yei3SpaceGlobalHolder>
     {
         public Yei3SpaceGlobal(Yei3SpaceGlobalHolder plugin)
             : base(plugin)
         {
         }
+        [Documentation("Yaw in radians")]
         public double yaw { get { return plugin.Quaternion.Yaw; } }
+        [Documentation("Pitch in radians")]
         public double pitch { get { return plugin.Quaternion.Pitch; } }
+        [Documentation("Roll in radians")]
         public double roll { get { return plugin.Quaternion.Roll; } }
+        [Documentation("True while button 0 is down")]
         public bool button0 { get { return Convert.ToBoolean(plugin.ButtonState & 1); } }
+        [Documentation("True while button 1 is down")]
         public bool button1 { get { return Convert.ToBoolean(plugin.ButtonState & 2); } }
+        [Documentation("Sets the current orientation as the zero orientation")]
         public void tareSensor()
         {
             plugin.TareSensor();

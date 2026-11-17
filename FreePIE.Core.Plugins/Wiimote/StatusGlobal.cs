@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
+    [Documentation("Battery and LED status, call request to update it")]
     public class StatusGlobal : Subscribable
     {
         private const int LED1_MASK = 0x10;
@@ -20,6 +19,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.plugin = plugin;
         }
 
+        [Documentation("Battery level in percent")]
         public int batteryPercentage
         {
             get
@@ -27,6 +27,7 @@ namespace FreePIE.Core.Plugins.Wiimote
                 return data.BatteryPercentage;
             }
         }
+        [Documentation("True if the LED is lit, LEDs are numbered 0 to 3")]
         public bool getLEDState(int led)
         {
             int mask = LED1_MASK;
@@ -36,6 +37,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             return (data.LEDStatus & mask) == mask;
         }
 
+        [Documentation("Turns the LED on or off, LEDs are numbered 0 to 3")]
         public void setLEDState(int led, Boolean state)
         {
             if (getLEDState(led) == state) return;
@@ -51,6 +53,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
         
 
+        [Documentation("Requests a status update from the Wiimote")]
         public void request()
         {
             plugin.RequestStatus(data.WiimoteNumber);

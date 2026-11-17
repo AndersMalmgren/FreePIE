@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
+    [Documentation("A Balance Board weight sensor")]
     public class BalanceBoardSensor
     {
+        [Documentation("Weight on the sensor in kilograms")]
         public float kg { get; set; }
+        [Documentation("Weight on the sensor in pounds")]
         public float lb { get; set; }
+        [Documentation("Raw sensor value")]
         public UInt16 raw { get; set; }
         public BalanceBoardSensorCalibration calibration { get; set; }
         public override string ToString()
@@ -27,21 +28,30 @@ namespace FreePIE.Core.Plugins.Wiimote
             return String.Format("0kg: {0}, 17kg: {1}, 34kg: {2}", kg00, kg17, kg34);
         }
     }
+    [Documentation("Total weight on the Balance Board")]
     public class BalanceBoardWeight
     {
+        [Documentation("Total weight in kilograms")]
         public float kg { get; set; }
+        [Documentation("Total weight in pounds")]
         public float lb { get; set; }
+        [Documentation("Raw sensor value")]
         public int raw { get; set; }
         public override string ToString()
         {
             return String.Format("kg: {0}, lb: {1}, raw: {2}", kg, lb, raw);
         }
     }
+    [Documentation("The four Balance Board weight sensors")]
     public class BalanceBoardSensorList
     {
+        [Documentation("The top left sensor")]
         public BalanceBoardSensor topLeft { get; set; }
+        [Documentation("The top right sensor")]
         public BalanceBoardSensor topRight { get; set; }
+        [Documentation("The bottom left sensor")]
         public BalanceBoardSensor bottomLeft { get; set; }
+        [Documentation("The bottom right sensor")]
         public BalanceBoardSensor bottomRight { get; set; }
         public override string ToString()
         {

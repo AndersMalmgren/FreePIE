@@ -243,54 +243,89 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "tobiiEyeX")]
+    [Documentation("Gaze and eye tracking from a Tobii EyeX eye tracker")]
     public class TobiiEyeXGlobal : UpdateblePluginGlobal<TobiiEyeXPlugin>
     {
         public TobiiEyeXGlobal(TobiiEyeXPlugin plugin) : base(plugin) { }
 
+        [Documentation("Head yaw in radians, estimated from the eye positions")]
         public float yaw { get { return plugin.Yaw; } }
+        [Documentation("Head roll in radians, estimated from the eye positions")]
         public float roll { get { return plugin.Roll; } }
 
+        [Documentation("Horizontal gaze distance from the screen center, -1 to 1")]
         public float normalizedCenterDeltaX { get { return plugin.NormalizedCenterDelta.X; } }
+        [Documentation("Vertical gaze distance from the screen center, -1 to 1")]
         public float normalizedCenterDeltaY { get { return plugin.NormalizedCenterDelta.Y; } }
 
+        [Documentation("Horizontal gaze point, 0 to 1 from the left edge of the screen")]
         public float gazePointNormalizedX { get { return plugin.NormalizedGazePoint.X; } }
+        [Documentation("Vertical gaze point, 0 to 1 from the top edge of the screen")]
         public float gazePointNormalizedY { get { return plugin.NormalizedGazePoint.Y; } }
 
+        [Documentation("Horizontal gaze point in screen pixels")]
         public float gazePointInPixelsX { get { return (float)plugin.LastGazePointEventArgs.X; } }
+        [Documentation("Vertical gaze point in screen pixels")]
         public float gazePointInPixelsY { get { return (float)plugin.LastGazePointEventArgs.Y; } }
+        [Documentation("Timestamp of the gaze data")]
         public float gazeDataTimestamp { get { return (float)plugin.LastGazePointEventArgs.Timestamp; } }
 
+        [Documentation("Left eye x position in millimeters from the center of the screen")]
         public float leftEyePositionInMmX { get { return (float)plugin.LastEyePositionEventArgs.LeftEye.X; } }
+        [Documentation("Left eye y position in millimeters from the center of the screen")]
         public float leftEyePositionInMmY { get { return (float)plugin.LastEyePositionEventArgs.LeftEye.Y; } }
+        [Documentation("Left eye distance from the screen in millimeters")]
         public float leftEyePositionInMmZ { get { return (float)plugin.LastEyePositionEventArgs.LeftEye.Z; } }
 
+        [Documentation("Right eye x position in millimeters from the center of the screen")]
         public float rightEyePositionInMmX { get { return (float)plugin.LastEyePositionEventArgs.RightEye.X; } }
+        [Documentation("Right eye y position in millimeters from the center of the screen")]
         public float rightEyePositionInMmY { get { return (float)plugin.LastEyePositionEventArgs.RightEye.Y; } }
+        [Documentation("Right eye distance from the screen in millimeters")]
         public float rightEyePositionInMmZ { get { return (float)plugin.LastEyePositionEventArgs.RightEye.Z; } }
 
+        [Documentation("Left eye x position within the track box, 0 to 1")]
         public float leftEyePositionNormalizedX { get { return (float)plugin.LastEyePositionEventArgs.LeftEyeNormalized.X; } }
+        [Documentation("Left eye y position within the track box, 0 to 1")]
         public float leftEyePositionNormalizedY { get { return (float)plugin.LastEyePositionEventArgs.LeftEyeNormalized.Y; } }
+        [Documentation("Left eye z position within the track box, 0 to 1")]
         public float leftEyePositionNormalizedZ { get { return (float)plugin.LastEyePositionEventArgs.LeftEyeNormalized.Z; } }
 
+        [Documentation("Right eye x position within the track box, 0 to 1")]
         public float rightEyePositionNormalizedX { get { return (float)plugin.LastEyePositionEventArgs.RightEyeNormalized.X; } }
+        [Documentation("Right eye y position within the track box, 0 to 1")]
         public float rightEyePositionNormalizedY { get { return (float)plugin.LastEyePositionEventArgs.RightEyeNormalized.Y; } }
+        [Documentation("Right eye z position within the track box, 0 to 1")]
         public float rightEyePositionNormalizedZ { get { return (float)plugin.LastEyePositionEventArgs.RightEyeNormalized.Z; } }
 
+        [Documentation("Smoothed x position between the eyes in millimeters")]
         public float averageEyePositionInMmX { get { return plugin.AverageHeadPositionMm.X; } }
+        [Documentation("Smoothed y position between the eyes in millimeters")]
         public float averageEyePositionInMmY { get { return plugin.AverageHeadPositionMm.Y; } }
+        [Documentation("Smoothed distance between the eyes and the screen in millimeters")]
         public float averageEyePositionInMmZ { get { return plugin.AverageHeadPositionMm.Z; } }
 
+        [Documentation("Smoothed x position between the eyes within the track box, 0 to 1")]
         public float averageEyePositionNormalizedX { get { return plugin.AverageHeadPositionNorm.X; } }
+        [Documentation("Smoothed y position between the eyes within the track box, 0 to 1")]
         public float averageEyePositionNormalizedY { get { return plugin.AverageHeadPositionNorm.Y; } }
+        [Documentation("Smoothed z position between the eyes within the track box, 0 to 1")]
         public float averageEyePositionNormalizedZ { get { return plugin.AverageHeadPositionNorm.Z; } }
 
+        [Documentation("Timestamp of the eye position data")]
         public float eyeDataTimestamp { get { return (float)plugin.LastEyePositionEventArgs.Timestamp; } }
 
+        [Documentation("What caused the last update, for example GazeDataChanged or EyeDataChanged")]
         public string updateReason { get { return plugin.UpdateReason.ToString(); } }
+        [Documentation("Whether a user is in front of the eye tracker")]
         public string userPresence { get { return plugin.UserPresence.ToString(); } }
+        [Documentation("Status of the eye tracker")]
         public string deviceStatus { get { return plugin.DeviceStatus.ToString(); } }
+        [Documentation("Name of the current calibration profile")]
         public string userProfileName { get { return plugin.CurrentProfileName; } }
+        [Documentation("Width of the display in millimeters")]
         public float displaySizeX { get { return plugin.DisplaySize.X; } }
+        [Documentation("Height of the display in millimeters")]
         public float displaySizeY { get { return plugin.DisplaySize.Y; } }
     }
 

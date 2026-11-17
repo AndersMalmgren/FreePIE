@@ -61,18 +61,26 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "oculusVR")]
+    [Documentation("Head tracking from an Oculus Rift DK1 or DK2")]
     public class OculusGlobal : UpdateblePluginGlobal<OculusPlugin>
     {
         public OculusGlobal(OculusPlugin plugin) : base(plugin){}
 
+        [Documentation("Head yaw in radians")]
         public float yaw { get { return plugin.Data.Yaw; } }
+        [Documentation("Head pitch in radians")]
         public float pitch { get { return plugin.Data.Pitch; } }
+        [Documentation("Head roll in radians")]
         public float roll { get { return plugin.Data.Roll; } }
 
+        [Documentation("Head x position in meters (DK2)")]
         public float x { get { return plugin.Data.X; } }
+        [Documentation("Head y position in meters (DK2)")]
         public float y { get { return plugin.Data.Y; } }
+        [Documentation("Head z position in meters (DK2)")]
         public float z { get { return plugin.Data.Z; } }
 
+        [Documentation("Resets the orientation so the current direction is forward")]
         public void center()
         {
             plugin.Center();

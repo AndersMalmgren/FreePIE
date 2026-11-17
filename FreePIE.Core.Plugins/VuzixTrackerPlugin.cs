@@ -31,9 +31,13 @@ namespace FreePIE.Core.Plugins {
 
    //==========================================================================
    [GlobalEnum]
+   [Documentation("Units of the Vuzix tracker angles")]
    public enum VuzixDataUnits {
+      [Documentation("Raw sensor values")]
       RAW = 0,
+      [Documentation("Degrees, the default")]
       DEGREES = 1,
+      [Documentation("Radians")]
       RADIANS = 2
    }
 
@@ -228,6 +232,7 @@ namespace FreePIE.Core.Plugins {
    //                          VuzixTrackerPluginGlobal
    //==========================================================================
     [Global(Name = "vuzix")]
+    [Documentation("Head tracking from Vuzix video eyewear")]
     public class VuzixTrackerPluginGlobal
     {
         private readonly VuzixTrackerPlugin vuzix;
@@ -240,42 +245,50 @@ namespace FreePIE.Core.Plugins {
 
         //-----------------------------------------------------------------------
 
+        [Documentation("Sets the unit of yaw, pitch and roll, degrees by default")]
         public VuzixDataUnits DataUnits
         {
             set { vuzix.SetDataUnits(value); }
         }
 
+        [Documentation("When true, yaw keeps increasing past a full turn instead of wrapping around")]
         public bool continuousYawMode
         {
             get { return vuzix.ContinousYawMode; }
             set { vuzix.ContinousYawMode = value; }
         }
 
+        [Documentation("Head yaw in the unit set with DataUnits")]
         public double yaw
         {
             get { return vuzix.Yaw; }
         }
 
+        [Documentation("Head pitch in the unit set with DataUnits")]
         public double pitch
         {
             get { return vuzix.Pitch; }
         }
 
+        [Documentation("Head roll in the unit set with DataUnits")]
         public double roll
         {
             get { return vuzix.Roll; }
         }
 
+        [Documentation("Head x position")]
         public double x
         {
             get { return vuzix.X; }
         }
 
+        [Documentation("Head y position")]
         public double y
         {
             get { return vuzix.Y; }
         }
 
+        [Documentation("Head z position")]
         public double z
         {
             get { return vuzix.Z; }

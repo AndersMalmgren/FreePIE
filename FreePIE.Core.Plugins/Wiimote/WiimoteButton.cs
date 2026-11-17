@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using FreePIE.Core.Contracts;
 using FreePIE.Core.Plugins.Strategies;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
+    [Documentation("The Wiimote buttons")]
     public class WiimoteButtonState : Subscribable
     {
         private IWiimoteData data;
@@ -17,11 +16,13 @@ namespace FreePIE.Core.Plugins.Wiimote
             buttonPressed = new GetPressedStrategy<WiimoteButtons>(button_down);
         }
 
+        [Documentation("True while the button is down")]
         public bool button_down(WiimoteButtons b)
         {
             return data.IsButtonPressed(b);
         }
 
+        [Documentation("True once when the button goes down, false until it has been released and pressed again")]
         public bool button_pressed(WiimoteButtons b)
         {
             return buttonPressed.IsPressed(b);
@@ -40,6 +41,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
     }
 
+    [Documentation("The Nunchuck buttons")]
     public class NunchuckButtonState
     {
         private IWiimoteData data;
@@ -49,6 +51,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.data = data;
         }
 
+        [Documentation("True while the button is down")]
         public bool button_down(NunchuckButtons b)
         {
             return data.IsNunchuckButtonPressed(b);
@@ -67,6 +70,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
     }
 
+    [Documentation("The guitar buttons")]
     public class GuitarButtonState
     {
         private IWiimoteData data;
@@ -76,6 +80,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.data = data;
         }
 
+        [Documentation("True while the button is down")]
         public bool button_down(GuitarButtons b)
         {
             return data.IsGuitarButtonPressed(b);
@@ -95,6 +100,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         }
     }
 
+    [Documentation("The Classic Controller buttons")]
     public class ClassicControllerButtonState
     {
         private IWiimoteData data;
@@ -104,6 +110,7 @@ namespace FreePIE.Core.Plugins.Wiimote
             this.data = data;
         }
 
+        [Documentation("True while the button is down")]
         public bool button_down(ClassicControllerButtons b)
         {
             return data.IsClassicControllerButtonPressed(b);

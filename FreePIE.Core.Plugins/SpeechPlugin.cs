@@ -140,6 +140,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "speech")]
+    [Documentation("Text to speech and speech recognition with the Windows speech engine")]
     public class SpeechGlobal
     {
         private readonly SpeechPlugin plugin;
@@ -149,28 +150,34 @@ namespace FreePIE.Core.Plugins
             this.plugin = plugin;
         }
 
+        [Documentation("Speaks the text")]
         public void say(string text)
         {
             plugin.Say(text);
         }
 
+        [Documentation("True while text is being spoken")]
         public bool speaking { get { return plugin.Speaking; } }
 
+        [Documentation("True once each time the phrase has been recognized with at least 90 percent confidence")]
         public bool said(string text)
         {
             return plugin.Said(text, 0.9f);
         }
 
+        [Documentation("True once each time the phrase has been recognized with at least the given confidence, 0 to 1")]
         public bool said(string text, float confidence)
         {
             return plugin.Said(text, confidence);
         }
 
+        [Documentation("Selects the voice used by say, see voices for the installed voices")]
         public void selectVoice(string name)
         {
             plugin.SelectVoice(name);
         }
 
+        [Documentation("Names of the installed voices")]
         public string[] voices => plugin.Voices;
     }
 }

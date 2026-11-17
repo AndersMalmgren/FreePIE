@@ -11,12 +11,18 @@ using vJoyInterfaceWrap;
 namespace FreePIE.Core.Plugins
 {
     [GlobalEnum]
+    [Documentation("Directions for vJoy digital POV hats")]
     public enum VJoyPov
     {
+        [Documentation("North")]
         Up = 0,
+        [Documentation("East")]
         Right = 1,
+        [Documentation("South")]
         Down = 2,
+        [Documentation("West")]
         Left = 3,
+        [Documentation("Centered")]
         Nil = -1
     }
 
@@ -195,9 +201,12 @@ namespace FreePIE.Core.Plugins
         }
     }
 
+    [Documentation("The installed vJoy version")]
     public class VjoyVersionGlobal
     {
+        [Documentation("Version of the vJoy driver")]
         public uint driver { get; private set; }
+        [Documentation("Version of the vJoy interface dll")]
         public uint api { get; private set; }
 
         public VjoyVersionGlobal(uint driver, uint api)
@@ -208,6 +217,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "vJoy")]
+    [Documentation("Emulates a vJoy virtual joystick, index by device, vJoy[0] is vJoy device 1")]
     public class VJoyGlobal
     {
         private readonly VJoyGlobalHolder holder;
@@ -217,82 +227,98 @@ namespace FreePIE.Core.Plugins
             this.holder = holder;
         }
 
+        [Documentation("Axes go from -axisMax to axisMax")]
         public int axisMax { get { return holder.AxisMax; }}
+        [Documentation("Maximum value of an analog POV hat, hundredths of a degree (35900)")]
         public int continuousPovMax { get { return VJoyGlobalHolder.ContinuousPovMax; } }
 
+        [Documentation("X axis, -axisMax to axisMax")]
         public int x
         {
             get { return holder.GetAxis(HID_USAGES.HID_USAGE_X); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_X); }
         }
 
+        [Documentation("Y axis, -axisMax to axisMax")]
         public int y
         {
             get { return holder.GetAxis(HID_USAGES.HID_USAGE_Y); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_Y); }
         }
 
+        [Documentation("Z axis, -axisMax to axisMax")]
         public int z
         {
             get { return holder.GetAxis(HID_USAGES.HID_USAGE_Z); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_Z); }
         }
 
+        [Documentation("X rotation axis, -axisMax to axisMax")]
         public int rx
         {
             get { return holder.GetAxis(HID_USAGES.HID_USAGE_RX); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_RX); }
         }
 
+        [Documentation("Y rotation axis, -axisMax to axisMax")]
         public int ry
         {
             get { return holder.GetAxis(HID_USAGES.HID_USAGE_RY); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_RY); }
         }
 
+        [Documentation("Z rotation axis, -axisMax to axisMax")]
         public int rz
         {
             get { return holder.GetAxis(HID_USAGES.HID_USAGE_RZ); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_RZ); }
         }
 
+        [Documentation("Slider axis, -axisMax to axisMax")]
         public int slider
         {
             get { return holder.GetAxis(HID_USAGES.HID_USAGE_SL0); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_SL0); }
         }
 
+        [Documentation("Dial axis, -axisMax to axisMax")]
         public int dial
         {
             get { return holder.GetAxis(HID_USAGES.HID_USAGE_SL1); }
             set { holder.SetAxis(value, HID_USAGES.HID_USAGE_SL1); }
         }
 
+        [Documentation("Presses or releases the button, buttons are numbered from 0")]
         public void setButton(int button, bool pressed)
         {
             holder.SetButton(button, pressed);
         }
 
+        [Documentation("Clicks the button, it is pressed now and released in the next iteration")]
         public void setPressed(int button)
         {
             holder.SetPressed(button);
         }
 
+        [Documentation("Clicks the button once each time state changes from false to true")]
         public void setPressed(int button, bool state)
         {
             holder.SetPressed(button, state);
         }
 
+        [Documentation("Sets the direction of a digital POV hat, hats are numbered from 0")]
         public void setDigitalPov(int pov, VJoyPov direction)
         {
             holder.SetDirectionalPov(pov, direction);
         }
 
+        [Documentation("Sets an analog POV hat in hundredths of a degree clockwise from north (0 to continuousPovMax), -1 centers it")]
         public void setAnalogPov(int pov, int value)
         {
             holder.SetContinuousPov(pov, value);
         }
 
+        [Documentation("The installed vJoy version")]
         public VjoyVersionGlobal version { get { return holder.Version; } }
     }
 }

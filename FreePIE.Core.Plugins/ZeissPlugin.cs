@@ -79,12 +79,16 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "cinemizer")]
+    [Documentation("Head tracking from Zeiss Cinemizer OLED video glasses with the head tracker")]
     public class ZeissGlobal : UpdateblePluginGlobal<ZeissPlugin>
     {
         public ZeissGlobal(ZeissPlugin plugin) : base(plugin){}
 
+        [Documentation("Head yaw")]
         public float yaw { get { return plugin.Euler.Yaw; } }
+        [Documentation("Head pitch")]
         public float pitch { get { return plugin.Euler.Pitch; } }
+        [Documentation("Head roll")]
         public float roll { get { return plugin.Euler.Roll; } }
     }
 }

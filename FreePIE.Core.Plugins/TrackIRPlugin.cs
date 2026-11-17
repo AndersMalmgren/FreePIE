@@ -92,11 +92,13 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "trackIR")]
+    [Documentation("Reads a TrackIR head tracker, or emulates one for games that use the TrackIR interface when the values are set")]
     public class TrackIRGlobal : UpdateblePluginGlobal<TrackIRPlugin>
     {
         public TrackIRGlobal(TrackIRPlugin plugin) : base(plugin)
         { }
 
+        [Documentation("Head yaw. Set it to emulate TrackIR")]
         public float yaw
         {
             get
@@ -107,6 +109,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.Yaw = value; }
         }
 
+        [Documentation("Head pitch. Set it to emulate TrackIR")]
         public float pitch
         {
             get
@@ -117,6 +120,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.Pitch = value; }
         }
 
+        [Documentation("Head roll. Set it to emulate TrackIR")]
         public float roll
         {
             get
@@ -127,6 +131,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.Roll = value; }
         }
 
+        [Documentation("Head x position. Set it to emulate TrackIR")]
         public float x
         {
             get
@@ -137,6 +142,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.X = value; }
         }
 
+        [Documentation("Head y position. Set it to emulate TrackIR")]
         public float y
         {
             get
@@ -147,6 +153,7 @@ namespace FreePIE.Core.Plugins
             set { plugin.Output.Y = value; }
         }
 
+        [Documentation("Head z position. Set it to emulate TrackIR")]
         public float z
         {
             get

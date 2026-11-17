@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using FreePIE.Core.Contracts;
 
 namespace FreePIE.Core.Plugins.Wiimote
 {
@@ -13,6 +11,7 @@ namespace FreePIE.Core.Plugins.Wiimote
         public Boolean IsGH3 { get; set; }
         public GuitarButtons Buttons { get; set; }
     }
+    [Documentation("The Guitar Hero touch bar")]
     public class TapBar
     {
         private double val;
@@ -20,22 +19,27 @@ namespace FreePIE.Core.Plugins.Wiimote
         {
             this.val = val;
         }
+        [Documentation("True while the green part of the bar is touched")]
         public Boolean isGreen()
         {
             return val >= 0x04 && val < 0x0A;
         }
+        [Documentation("True while the red part of the bar is touched")]
         public Boolean isRed()
         {
             return val >= 0x07 && val < 0x12;
         }
+        [Documentation("True while the yellow part of the bar is touched")]
         public Boolean isYellow()
         {
             return val >= 0x0C && val < 0x17;
         }
+        [Documentation("True while the blue part of the bar is touched")]
         public Boolean isBlue()
         {
             return val >= 0x14 && val < 0x18;
         }
+        [Documentation("True while the orange part of the bar is touched")]
         public Boolean isOrange()
         {
             return val >= 0x1A && val < 0x1F;

@@ -121,16 +121,19 @@ namespace FreePIE.Core.Plugins
     {
         protected DofGlobal(TPlugin plugin) : base(plugin){}
 
+        [Documentation("Yaw reported by the device")]
         public float yaw
         {
             get { return plugin.Data.Yaw; }
         }
 
+        [Documentation("Pitch reported by the device")]
         public float pitch
         {
             get { return plugin.Data.Pitch; }
         }
 
+        [Documentation("Roll reported by the device")]
         public float roll
         {
             get { return plugin.Data.Roll; }

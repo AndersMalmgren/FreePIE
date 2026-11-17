@@ -234,6 +234,7 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "mouse")]
+    [Documentation("Reads and emulates the mouse")]
     public class MouseGlobal
     {
         private readonly MousePlugin plugin;
@@ -243,79 +244,93 @@ namespace FreePIE.Core.Plugins
             this.plugin = plugin;
         } 
 
+        [Documentation("The value of one wheel step (120)")]
         public int wheelMax
         {
             get { return MousePlugin.WheelMax; }
         }
 
+        [Documentation("Horizontal movement since the last iteration. Set it to move the mouse")]
         public double deltaX
         {
             get { return plugin.DeltaX; }
             set { plugin.DeltaX = value; }
         }
 
+        [Documentation("Vertical movement since the last iteration. Set it to move the mouse")]
         public double deltaY
         {
             get { return plugin.DeltaY; }
             set { plugin.DeltaY = value; }
         }
 
+        [Documentation("Wheel movement since the last iteration, one step is wheelMax. Set it to scroll")]
         public int wheel
         {
             get { return plugin.Wheel; }
             set { plugin.Wheel = value; }
         }
 
+        [Documentation("True when the wheel was scrolled up one step. Set it to scroll up")]
         public bool wheelUp
         {
             get { return plugin.Wheel == wheelMax; }
             set { plugin.Wheel = value ? wheelMax : 0; }
         }
 
+        [Documentation("True when the wheel was scrolled down one step. Set it to scroll down")]
         public bool wheelDown
         {
             get { return plugin.Wheel == -wheelMax; }
             set { plugin.Wheel = value ? -wheelMax : 0; }
         }
 
+        [Documentation("True while the left button is down. Set it to press or release the button")]
         public bool leftButton
         {
             get { return plugin.IsButtonDown(0); }
             set { plugin.SetButtonPressed(0, value); }
         }
 
+        [Documentation("True while the middle button is down. Set it to press or release the button")]
         public bool middleButton
         {
             get { return plugin.IsButtonDown(2); }
             set { plugin.SetButtonPressed(2, value); }
         }
 
+        [Documentation("True while the right button is down. Set it to press or release the button")]
         public bool rightButton
         {
             get { return plugin.IsButtonDown(1); }
             set { plugin.SetButtonPressed(1, value); }
         }
 
+        [Documentation("True while the button is down. 0 = left, 1 = right, 2 = middle, 3 and 4 = extra buttons")]
         public bool getButton(int button)
         {
             return plugin.IsButtonDown(button);
         }
 
+        [Documentation("Presses or releases the button. 0 = left, 1 = right, 2 = middle, 3 and 4 = extra buttons")]
         public void setButton(int button, bool pressed)
         {
             plugin.SetButtonPressed(button, pressed);
         }
 
+        [Documentation("True once when the button goes down, false until it has been released and pressed again")]
         public bool getPressed(int button)
         {
             return plugin.IsButtonPressed(button);
         }
 
+        [Documentation("Clicks the button, it is pressed now and released in the next iteration")]
         public void setPressed(int button)
         {
             plugin.PressAndRelease(button);
         }
 
+        [Documentation("Clicks the button once each time state changes from false to true")]
         public void setPressed(int button, bool state)
         {
             plugin.PressAndRelease(button, state);

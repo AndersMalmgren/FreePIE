@@ -224,32 +224,50 @@ namespace FreePIE.Core.Plugins
     }
 
     [Global(Name = "android")]
+    [Documentation("Sensor data from the FreePIE Android IMU app over UDP, index by device, android[0] is the first phone")]
     public class AndroidGlobal : UpdateblePluginGlobal<AndroidGlobalHolder>
     {
         public AndroidGlobal(AndroidGlobalHolder plugin) : base(plugin) { }
 
+        [Documentation("Yaw in radians, fused from the raw sensors by FreePIE")]
         public double yaw { get { return plugin.Yaw; } }
+        [Documentation("Pitch in radians, fused from the raw sensors by FreePIE")]
         public double pitch { get { return plugin.Pitch; } }
+        [Documentation("Roll in radians, fused from the raw sensors by FreePIE")]
         public double roll { get { return plugin.Roll; } }
 
+        [Documentation("Yaw in radians from the Android orientation sensor")]
         public double googleYaw { get { return plugin.GoogleYaw; } }
+        [Documentation("Pitch in radians from the Android orientation sensor")]
         public double googlePitch { get { return plugin.GooglePitch; } }
+        [Documentation("Roll in radians from the Android orientation sensor")]
         public double googleRoll { get { return plugin.GoogleRoll; } }
+        [Documentation("Raw sensor data")]
         public RawGlobal raw { get { return plugin.Raw; }}
     }
 
+    [Documentation("Raw Android sensor data")]
     public class RawGlobal
     {
+        [Documentation("Accelerometer x in m/s2")]
         public double ax { get; internal set; }
+        [Documentation("Accelerometer y in m/s2")]
         public double ay { get; internal set; }
+        [Documentation("Accelerometer z in m/s2")]
         public double az { get; internal set; }
 
+        [Documentation("Gyroscope x in rad/s")]
         public double gx { get; internal set; }
+        [Documentation("Gyroscope y in rad/s")]
         public double gy { get; internal set; }
+        [Documentation("Gyroscope z in rad/s")]
         public double gz { get; internal set; }
 
+        [Documentation("Magnetometer x in microtesla")]
         public double mx { get; internal set; }
+        [Documentation("Magnetometer y in microtesla")]
         public double my { get; internal set; }
+        [Documentation("Magnetometer z in microtesla")]
         public double mz { get; internal set; }
     }
 }

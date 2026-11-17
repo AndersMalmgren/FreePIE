@@ -39,6 +39,7 @@ namespace FreePIE.Core.Plugins {
     }
 
     [Global(Name = "xbox360")]
+    [Documentation("Reads an Xbox 360 or other XInput controller, index by player, xbox360[0] is the first controller")]
     public class XBox360PluginGlobal
     {
         private Gamepad pad;
@@ -56,86 +57,103 @@ namespace FreePIE.Core.Plugins {
                 pad = controller.GetState().Gamepad;
         }
 
+        [Documentation("True while A is down")]
         public bool a
         {
             get { return ((pad.Buttons & GamepadButtonFlags.A) != 0); }
         }
 
+        [Documentation("True while B is down")]
         public bool b
         {
             get { return ((pad.Buttons & GamepadButtonFlags.B) != 0); }
         }
 
+        [Documentation("True while X is down")]
         public bool x
         {
             get { return ((pad.Buttons & GamepadButtonFlags.X) != 0); }
         }
 
+        [Documentation("True while Y is down")]
         public bool y
         {
             get { return ((pad.Buttons & GamepadButtonFlags.Y) != 0); }
         }
 
+        [Documentation("True while the left shoulder button is down")]
         public bool leftShoulder
         {
             get { return ((pad.Buttons & GamepadButtonFlags.LeftShoulder) != 0); }
         }
 
+        [Documentation("True while the right shoulder button is down")]
         public bool rightShoulder
         {
             get { return ((pad.Buttons & GamepadButtonFlags.RightShoulder) != 0); }
         }
 
+        [Documentation("True while Start is down")]
         public bool start
         {
             get { return ((pad.Buttons & GamepadButtonFlags.Start) != 0); }
         }
 
+        [Documentation("True while Back is down")]
         public bool back
         {
             get { return ((pad.Buttons & GamepadButtonFlags.Back) != 0); }
         }
 
+        [Documentation("True while the d-pad is pressed up")]
         public bool up
         {
             get { return ((pad.Buttons & GamepadButtonFlags.DPadUp) != 0); }
         }
 
+        [Documentation("True while the d-pad is pressed down")]
         public bool down
         {
             get { return ((pad.Buttons & GamepadButtonFlags.DPadDown) != 0); }
         }
 
+        [Documentation("True while the d-pad is pressed left")]
         public bool left
         {
             get { return ((pad.Buttons & GamepadButtonFlags.DPadLeft) != 0); }
         }
 
+        [Documentation("True while the d-pad is pressed right")]
         public bool right
         {
             get { return ((pad.Buttons & GamepadButtonFlags.DPadRight) != 0); }
         }
 
+        [Documentation("Left trigger, 0 to 1")]
         public double leftTrigger
         {
             get { return (pad.LeftTrigger/255.0); }
         }
 
+        [Documentation("Right trigger, 0 to 1")]
         public double rightTrigger
         {
             get { return (pad.RightTrigger/255.0); }
         }
 
+        [Documentation("True while the left stick is pressed in")]
         public bool leftThumb
         {
             get { return ((pad.Buttons & GamepadButtonFlags.LeftThumb) != 0); }
         }
 
+        [Documentation("True while the right stick is pressed in")]
         public bool rightThumb
         {
             get { return ((pad.Buttons & GamepadButtonFlags.RightThumb) != 0); }
         }
 
+        [Documentation("Left stick horizontal axis, -1 to 1")]
         public double leftStickX
         {
             get
@@ -147,6 +165,7 @@ namespace FreePIE.Core.Plugins {
             }
         }
 
+        [Documentation("Left stick vertical axis, -1 to 1, up is positive")]
         public double leftStickY
         {
             get
@@ -158,6 +177,7 @@ namespace FreePIE.Core.Plugins {
             }
         }
 
+        [Documentation("Right stick horizontal axis, -1 to 1")]
         public double rightStickX
         {
             get
@@ -169,6 +189,7 @@ namespace FreePIE.Core.Plugins {
             }
         }
 
+        [Documentation("Right stick vertical axis, -1 to 1, up is positive")]
         public double rightStickY
         {
             get
