@@ -113,6 +113,7 @@
     <Compile Include="ScriptEngine\CodeCompletion\InfoTransformHelper.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\ExpressionKind.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\ScriptInfoProvider.cs" />
+    <Compile Include="ScriptEngine\CodeCompletion\ScriptModelCache.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\ScriptTextHelper.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\ScriptTypeResolver.cs" />
     <Compile Include="ScriptEngine\CodeCompletion\SignatureInfo.cs" />

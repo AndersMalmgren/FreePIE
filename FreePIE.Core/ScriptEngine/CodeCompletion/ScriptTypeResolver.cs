@@ -43,7 +43,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         }
 
         // Names visible from the scope, using the same rules as Python (class scopes are only visible directly in the class body)
-        public IEnumerable<ExpressionInfo> GetVisibleNames(PythonScope scope)
+        public IEnumerable<ExpressionInfo> GetVisibleNames(PythonScope scope, Token partial)
         {
             var names = new Dictionary<string, ExpressionInfo>();
             var isFirst = true;
@@ -52,7 +52,7 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             {
                 if (isFirst || current.Kind != ScopeKind.Class)
                 {
-                    foreach (var name in current.BoundNames.Where(IsVisibleName).Where(n => !names.ContainsKey(n)))
+                    foreach (var name in current.BoundNames.Where(n => IsVisibleName(n) && IsPartialMatch(n, partial) && !names.ContainsKey(n)))
                         names[name] = CreateInfo(name, current.GetBindings(name), false);
                 }
 
@@ -60,6 +60,11 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             }
 
             return names.Values;
+        }
+
+        internal static bool IsPartialMatch(string name, Token partial)
+        {
+            return name.StartsWith(partial.Value, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static bool IsVisibleName(string name)
@@ -355,19 +360,18 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
 
             foreach (var c in Hierarchy)
             {
-                foreach (var name in c.BoundNames.Where(n => !members.ContainsKey(n)))
+                foreach (var name in c.BoundNames.Where(n => ScriptTypeResolver.IsPartialMatch(n, partial) && !members.ContainsKey(n)))
                     members[name] = Resolver.CreateInfo(name, c.GetBindings(name), isInstance);
 
                 if (!isInstance)
                     continue;
 
-                foreach (var name in c.AttributeNames.Where(n => !members.ContainsKey(n)))
+                foreach (var name in c.AttributeNames.Where(n => ScriptTypeResolver.IsPartialMatch(n, partial) && !members.ContainsKey(n)))
                     members[name] = Resolver.CreateInfo(name, c.GetAttributes(name), true);
             }
 
             return members.Values
                 .Where(i => showPrivate || !i.Name.StartsWith("__"))
-                .Where(i => ScriptInfoProvider.IsPartialMatch(i, partial))
                 .OrderBy(i => i.Name, StringComparer.OrdinalIgnoreCase);
         }
 

@@ -11,6 +11,12 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
     {
         // Suggestions for the expression ending at offset, the last token is the one being written
         IEnumerable<ExpressionInfo> AnalyzeExpression(string script, int offset, IList<Token> tokens);
+
+        // Starts analyzing the script in the background so that suggestions are ready when needed
+        void ScriptChanged(string script, int offset);
+
+        // Raised on a background thread when the script has been analyzed again, suggestions may have changed
+        event EventHandler ScriptAnalyzed;
     }
 
     // Combines information from the script itself (variables, functions, classes) with
@@ -28,16 +34,32 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         private readonly IRuntimeInfoProvider runtimeInfoProvider;
         private readonly IPythonRuntimeInfo pythonRuntimeInfo;
 
-        private string cachedScript;
-        private int cachedLineStart = -1;
-        private ScriptModel cachedModel;
+        private readonly ScriptModelCache modelCache;
 
         public ScriptInfoProvider(IRuntimeInfoProvider runtimeInfoProvider, IPythonRuntimeInfo pythonRuntimeInfo)
         {
             this.runtimeInfoProvider = runtimeInfoProvider;
             this.pythonRuntimeInfo = pythonRuntimeInfo;
+            modelCache = new ScriptModelCache();
+            modelCache.ModelUpdated += (sender, args) => OnScriptAnalyzed();
 
             ThreadPool.QueueUserWorkItem(x => WarmUp());
+        }
+
+        public event EventHandler ScriptAnalyzed;
+
+        // Parse on the calling thread instead of in the background, used by tests
+        public bool AnalyzeInBackground
+        {
+            get { return modelCache.AnalyzeInBackground; }
+            set { modelCache.AnalyzeInBackground = value; }
+        }
+
+        private void OnScriptAnalyzed()
+        {
+            var handler = ScriptAnalyzed;
+            if (handler != null)
+                handler(this, EventArgs.Empty);
         }
 
         // Creating the Python engine takes a while, do it before the user starts typing
@@ -53,6 +75,12 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
             { }
         }
 
+        public void ScriptChanged(string script, int offset)
+        {
+            script = script ?? string.Empty;
+            modelCache.Update(script, Math.Max(0, Math.Min(offset, script.Length)));
+        }
+
         public IEnumerable<ExpressionInfo> AnalyzeExpression(string script, int offset, IList<Token> tokens)
         {
             script = script ?? string.Empty;
@@ -66,12 +94,12 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
                 .ToList();
 
             int modelOffset;
-            var model = GetModel(script, offset, out modelOffset);
+            var model = modelCache.GetModel(script, offset, out modelOffset);
             var resolver = new ScriptTypeResolver(model, runtimeInfoProvider, pythonRuntimeInfo);
             var scope = model.GetScopeAt(modelOffset);
 
             if (!path.Any())
-                return resolver.GetVisibleNames(scope).Where(i => IsPartialMatch(i, partial))
+                return resolver.GetVisibleNames(scope, partial)
                     .Concat(EngineGlobals.Where(i => IsPartialMatch(i, partial)))
                     .Concat(runtimeInfoProvider.AnalyzeExpression(tokens))
                     .Concat(pythonRuntimeInfo.Builtins.Where(i => IsPartialMatch(i, partial)))
@@ -88,30 +116,6 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         internal static bool IsPartialMatch(ExpressionInfo info, Token partial)
         {
             return info.Name.StartsWith(partial.Value, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        // The line being edited is usually not valid Python, it's replaced with a statement of the same indentation
-        // so that the rest of the script parses and the scope of the line is kept
-        private ScriptModel GetModel(string script, int offset, out int modelOffset)
-        {
-            var lineStart = ScriptTextHelper.GetLineStart(script, offset);
-            var lineEnd = ScriptTextHelper.GetLineEnd(script, offset);
-            var line = script.Substring(lineStart, lineEnd - lineStart);
-            var indent = new string(line.TakeWhile(char.IsWhiteSpace).ToArray());
-
-            modelOffset = lineStart + indent.Length;
-
-            if (cachedModel != null && cachedScript == script && cachedLineStart == lineStart)
-                return cachedModel;
-
-            var isBlockHeader = ScriptTextHelper.StripComment(line).TrimEnd().EndsWith(":");
-            var replacement = indent + (isBlockHeader ? "if 1:" : "pass");
-
-            cachedModel = ScriptModel.ParseTolerant(script.Substring(0, lineStart) + replacement + script.Substring(lineEnd));
-            cachedScript = script;
-            cachedLineStart = lineStart;
-
-            return cachedModel;
         }
     }
 }

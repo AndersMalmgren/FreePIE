@@ -13,6 +13,16 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
         {
             this.parser = parser;
             this.infoProvider = infoProvider;
+            infoProvider.ScriptAnalyzed += (sender, args) => OnScriptAnalyzed();
+        }
+
+        public event EventHandler ScriptAnalyzed;
+
+        private void OnScriptAnalyzed()
+        {
+            var handler = ScriptAnalyzed;
+            if (handler != null)
+                handler(this, EventArgs.Empty);
         }
 
         public CodeCompletionResult GetSuggestionsForExpression(string script, int offset)
@@ -36,6 +46,11 @@ namespace FreePIE.Core.ScriptEngine.CodeCompletion
                 .GroupBy(i => i.Name)
                 .Select(g => g.First())
                 .OrderBy(i => i.Name, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public void ScriptChanged(string script, int offset)
+        {
+            infoProvider.ScriptChanged(script, offset);
         }
 
         public SignatureHelpResult GetSignatureHelp(string script, int offset)

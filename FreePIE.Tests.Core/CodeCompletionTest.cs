@@ -48,7 +48,7 @@ namespace FreePIE.Tests.Core
             invoker.Stub(x => x.ListAllGlobalEnumTypes()).Return(new Type[0]);
 
             var runtimeInfo = new RuntimeInfoProvider(invoker, new IGlobalProvider[] { new TestGlobalProvider() }, MockRepository.GenerateStub<IEventAggregator>());
-            var scriptInfo = new ScriptInfoProvider(runtimeInfo, new PythonRuntimeInfo(MockRepository.GenerateStub<IPaths>()));
+            var scriptInfo = new ScriptInfoProvider(runtimeInfo, new PythonRuntimeInfo(MockRepository.GenerateStub<IPaths>())) { AnalyzeInBackground = false };
 
             provider = new CodeCompletionProvider(new PythonScriptParser(invoker), scriptInfo);
         }
@@ -288,6 +288,31 @@ namespace FreePIE.Tests.Core
                 "axis = Axis(|");
 
             CollectionAssert.AreEqual(new[] { "speed" }, constructor.BestMatch.Parameters.ToList());
+        }
+
+        [TestMethod]
+        public void Script_is_analyzed_in_the_background_and_never_blocks()
+        {
+            var cache = new ScriptModelCache();
+            var analyzed = new System.Threading.AutoResetEvent(false);
+            cache.ModelUpdated += (sender, args) => analyzed.Set();
+
+            int offset;
+            var script = Script("a = 1", "x");
+            cache.Update(script, script.Length);
+
+            Assert.IsTrue(analyzed.WaitOne(5000));
+            var first = cache.GetModel(script, script.Length, out offset);
+            Assert.AreEqual(1, first.Module.GetBindings("a").Count);
+
+            var changed = Script("a = 1", "b = 2", "x");
+            var stale = cache.GetModel(changed, changed.Length, out offset);
+            Assert.AreSame(first, stale);
+
+            Assert.IsTrue(analyzed.WaitOne(5000));
+            var updated = cache.GetModel(changed, changed.Length, out offset);
+            Assert.AreNotSame(first, updated);
+            Assert.AreEqual(1, updated.Module.GetBindings("b").Count);
         }
 
         [TestMethod]
