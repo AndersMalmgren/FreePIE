@@ -36,7 +36,7 @@
             <h1 class="header"><a href="index.html">FreePIE</a></h1>
             <h2 class="header">Programmable Input Emulator</h2>
             <ul>
-                <li><a class="buttons download ga-track" target="_blank" href="https://github.com/AndersMalmgren/FreePIE/releases/download/1.11.724/FreePIE.1.11.724.0.msi">MSI v1.11.724.0</a></li>
+                <li><a class="buttons download ga-track" target="_blank" href="https://github.com/AndersMalmgren/FreePIE/releases/download/1.12.759/FreePIE.1.12.759.0.msi">MSI v1.12.759.0</a></li>
                 <li><a class="buttons github ga-track" target="_blank" href="https://github.com/AndersMalmgren/FreePIE">View On GitHub</a></li>
                 <li><a class="buttons samples" href="samples.html">Script examples</a></li>
             </ul>
@@ -94,6 +94,26 @@
 </ul>
 <h4>Version history</h4>
           
+<p>Changelog 1.12.759.0</p>
+<ul>
+    <li>Requires .NET Framework 4.8</li>
+    <li>Script debugger with breakpoints, stepping and value tooltips in the editor</li>
+    <li>Code completion based on the script AST, analyzed in the background while you type</li>
+    <li>Code completion shows documentation for plugin members</li>
+    <li>Create curves from Python with the new curve helper, including from a list of points</li>
+    <li>The curve editor can generate a Python script for a curve, curves can be saved without exiting FreePIE</li>
+    <li>Built-in FreePIE types can be imported into your own modules (call <code>import &lt;plugin-name&gt;</code> first, e.g. <code>import diagnostics</code>)</li>
+    <li>The current script directory is added to the Python path</li>
+    <li>Plugins can write warnings to the error window with <code>Console.Error.WriteLine</code></li>
+    <li>The speech plugin lists the installed voices (<code>speech.voices</code>)</li>
+    <li>64-bit version of freepie_io.dll</li>
+    <li>Script file path shown as tooltip</li>
+    <li>Fixed copy to clipboard throwing an error</li>
+    <li>Fixed the error window being cleared when the state of the active document changed</li>
+    <li>Fixed a crash on exit when the Hydra SDK was not fully initialized</li>
+    <li>Better logging of plugin load errors, and fixed logging of exceptions during startup</li>
+</ul>
+
 <p>Changelog 1.11.724.0</p>
 <ul>
     <li>Added support for the Wii Balanceboard</li>
