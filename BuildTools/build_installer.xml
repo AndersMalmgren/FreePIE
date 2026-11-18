@@ -1,88 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Start">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildInstaller">
   <PropertyGroup>
-    <InstallerTemp>$(InstallerTemp)</InstallerTemp>
-    <wix>$(WIX)\bin</wix>
-    <Lib>$(Lib)</Lib>
+    <Root>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</Root>
+    <InstallerTemp Condition="'$(InstallerTemp)' == ''">$(Root)\InstallerTemp</InstallerTemp>
+    <BuildDir Condition="'$(BuildDir)' == ''">$(Root)\Output</BuildDir>
+    <Lib Condition="'$(Lib)' == ''">$(Root)\Lib</Lib>
+    <WixBin Condition="'$(WixBin)' == ''">$([MSBuild]::EnsureTrailingSlash('$(WIX)'))bin\</WixBin>
   </PropertyGroup>
 
-  <Import Project="get_git_version.xml"/>
+  <Import Project="get_git_version.xml" />
 
-  <Target Name="Start">
-    <CallTarget Targets="DeleteInstallerTemp"/>
-    <CallTarget Targets="CreateInstallerTemp"/>
-    <CallTarget Targets="CreateFragment"/>
-    <CallTarget Targets="CopyMainDefinition"/>
-    <CallTarget Targets="CopyLicense"/>
-    <CallTarget Targets="CopyIcon"/>
-    <CallTarget Targets="CopyDependencies"/>
-    <CallTarget Targets="GetGitVersion"/>
-    <CallTarget Targets="Candle"/>
-    <CallTarget Targets="Light"/>
+  <Target Name="BuildInstaller" DependsOnTargets="CheckWix;Clean;CopyInstallerFiles;GetGitVersion;Harvest;Candle;Light" />
+
+  <Target Name="CheckWix">
+    <Error Text="WiX Toolset v3 not found in '$(WixBin)'. Install it or set the WIX environment variable." Condition="!Exists('$(WixBin)candle.exe')" />
+    <Error Text="'$(BuildDir)' does not exist, run build_output.xml first." Condition="!Exists('$(BuildDir)')" />
   </Target>
 
-  <Target Name="DeleteInstallerTemp">
-    <RemoveDir Directories="$(InstallerTemp)"/>
+  <Target Name="Clean">
+    <RemoveDir Directories="$(InstallerTemp)" />
   </Target>
 
-  <Target Name="CreateInstallerTemp">
-    <MakeDir Directories="$(InstallerTemp)"/>
-  </Target>
-
-  <Target Name="CreateFragment">
-    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WIX)\heat.exe&quot; dir ..\Output -sreg suppress registry harvesting -nologo -suid -srd -sfrag -ag -wx -dr INSTALLFOLDER -var var.OutputDir -cg Output -out ..\InstallerTemp\Output.wxs"/>
-  </Target>
-
-  <Target Name="CopyMainDefinition">
+  <Target Name="CopyInstallerFiles">
     <ItemGroup>
-      <MainFiles
-              Include="Main.wxs">
-      </MainFiles>
+      <InstallerFiles Include="$(MSBuildThisFileDirectory)Main.wxs;
+                               $(MSBuildThisFileDirectory)License.rtf;
+                               $(Root)\FreePIE.GUI\free-pie.ico;
+                               $(Lib)\VC++\*.msm" />
     </ItemGroup>
-    <Copy SourceFiles="@(MainFiles)" DestinationFiles="@(MainFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(InstallerFiles)" DestinationFolder="$(InstallerTemp)" />
   </Target>
 
-  <Target Name="CopyLicense">
-    <ItemGroup>
-      <LicenseFiles
-              Include="License.rtf">
-      </LicenseFiles>
-    </ItemGroup>
-    <Copy SourceFiles="@(LicenseFiles)" DestinationFiles="@(LicenseFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
-  </Target>
-
-  <Target Name="CopyIcon">
-    <ItemGroup>
-      <IconFiles
-              Include="..\FreePIE.Gui\free-pie.ico">
-      </IconFiles>
-    </ItemGroup>
-    <Copy SourceFiles="@(IconFiles)" DestinationFiles="@(IconFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
-  </Target>
-
-  <Target Name="CopyDependencies">
-    <ItemGroup>
-      <DependencyFiles
-              Include="$(Lib)\VC++\*.msm">
-      </DependencyFiles>
-    </ItemGroup>
-    <Copy SourceFiles="@(DependencyFiles)" DestinationFiles="@(DependencyFiles -> '$(InstallerTemp)\%(Filename)%(Extension)')"/>
-  </Target>
-  
-  <Target Name="GetGitVersion">
-    <GitVersion>
-      <Output PropertyName="GitCommitCount" TaskParameter="CommitCount" />        
-    </GitVersion>
-    <PropertyGroup>
-      <Version>$(MajorVersion).$(GitCommitCount).0</Version>
-    </PropertyGroup>
+  <Target Name="Harvest">
+    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WixBin)heat.exe&quot; dir &quot;$(BuildDir)&quot; -sreg -nologo -suid -srd -sfrag -ag -wx -dr INSTALLFOLDER -var var.OutputDir -cg Output -out Output.wxs" />
   </Target>
 
   <Target Name="Candle">
-    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WIX)\candle.exe&quot; -dOutputDir=&quot;..\Output&quot; -dVersion=&quot;$(Version)&quot; -dProductName=&quot;FreePIE&quot; $(InstallerTemp)\Main.wxs $(InstallerTemp)\Output.wxs"/>
+    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WixBin)candle.exe&quot; -nologo -ext WiXNetFxExtension -dOutputDir=&quot;$(BuildDir)&quot; -dVersion=&quot;$(Version)&quot; -dProductName=&quot;FreePIE&quot; Main.wxs Output.wxs" />
   </Target>
 
   <Target Name="Light">
-    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WIX)\light.exe&quot; -ext WixUIExtension -ext WiXNetFxExtension -out FreePIE.$(Version).msi $(InstallerTemp)\Main.wixobj $(InstallerTemp)\Output.wixobj"/>
+    <Exec WorkingDirectory="$(InstallerTemp)" Command="&quot;$(WixBin)light.exe&quot; -nologo -ext WixUIExtension -ext WiXNetFxExtension -out FreePIE.$(Version).msi Main.wixobj Output.wixobj" />
+    <Message Importance="high" Text="Installer: $(InstallerTemp)\FreePIE.$(Version).msi" />
   </Target>
 </Project>

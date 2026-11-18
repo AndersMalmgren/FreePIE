@@ -1,44 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <MajorVersion>1.11</MajorVersion>
+    <MajorVersion>1.12</MajorVersion>
   </PropertyGroup>
 
-  <UsingTask TaskName="GitVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
-    <ParameterGroup>
-      <CommitCount ParameterType="System.Int32" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <!--<Reference Include="" />-->
-      <Using Namespace="System"/>
-      <Using Namespace="System.Diagnostics"/>
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-var psi = new ProcessStartInfo("cmd", "/c git rev-list --count HEAD") {
-UseShellExecute = false,
-ErrorDialog = false,
-CreateNoWindow = false,
-WorkingDirectory = ".",
-RedirectStandardOutput = true,
-RedirectStandardError = true
-};
-
-string result;
-using (var p = Process.Start(psi)) {
-p.WaitForExit();
-if (p.ExitCode != 0) {
-Log.LogMessage("Could not get Git rev.number");
-CommitCount = 0;
-
-} else {
-using (var standardOutput = p.StandardOutput) {
-CommitCount = Int32.Parse(standardOutput.ReadToEnd());
-}
-}
-}
-]]>
-      </Code>
-    </Task>
-  </UsingTask>
+  <Target Name="GetGitVersion">
+    <!-- Run from the repository root so the git on PATH is used, not the old git.exe in BuildTools -->
+    <Exec Command="git rev-list --count HEAD" WorkingDirectory="$(MSBuildThisFileDirectory).." ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitCount" />
+      <Output TaskParameter="ExitCode" PropertyName="GitExitCode" />
+    </Exec>
+    <Warning Text="Could not get the git commit count, using 0" Condition="'$(GitExitCode)' != '0'" />
+    <PropertyGroup>
+      <GitCommitCount Condition="'$(GitExitCode)' != '0'">0</GitCommitCount>
+      <Version>$(MajorVersion).$(GitCommitCount).0</Version>
+    </PropertyGroup>
+  </Target>
 </Project>

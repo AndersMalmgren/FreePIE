@@ -1,102 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Start">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildOutput">
   <PropertyGroup>
-
-    <OutputTemp>$(OutputTemp)</OutputTemp>
-    <Lib>$(Lib)</Lib>
-    <Help>$(Help)</Help>  
-
+    <Root>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</Root>
+    <OutputTemp Condition="'$(OutputTemp)' == ''">$(Root)\OutputTemp</OutputTemp>
+    <BuildDir Condition="'$(BuildDir)' == ''">$(Root)\Output</BuildDir>
+    <Lib Condition="'$(Lib)' == ''">$(Root)\Lib</Lib>
+    <AndroidApk Condition="'$(AndroidApk)' == ''">$(Lib)\Android\com.freepie.android.imu.apk</AndroidApk>
+    <Help Condition="'$(Help)' == ''">$(Root)\FreePIE.Core.Plugins\Help</Help>
+    <!-- The pre/post build events copy into bin and regenerate VersionInfo.cs, this build does both itself -->
+    <ReleaseBuildProperties>Configuration=Release;PreBuildEvent=;PostBuildEvent=;SolutionDir=$(Root)\;OutDir=$(OutputTemp)\</ReleaseBuildProperties>
   </PropertyGroup>
 
-  <Target Name="Start">
-    <CallTarget Targets="DeleteOutput"/>
-    <CallTarget Targets="DeleteOutputTemp"/>
-    <CallTarget Targets="Build"/>
-    <CallTarget Targets="CopyOutputTemp"/>
-    <CallTarget Targets="BuildPlugins"/>
-    <CallTarget Targets="CopyPlugins"/>
-    <CallTarget Targets="CopyPython"/>
-    <CallTarget Targets="CopyHelp"/>
-    <CallTarget Targets="CopyDependecies"/>
-  </Target>
+  <Import Project="write_VersionInfo.xml" />
 
-  <Target Name="DeleteOutput">
-    <RemoveDir Directories="$(BuildDir)"/>
-  </Target>
+  <Target Name="BuildOutput" DependsOnTargets="Clean;WriteVersion;Build;CopyOutput;CopyPlugins;CopyPython;CopyHelp;CopyDependencies" />
 
-  <Target Name="DeleteOutputTemp">
-    <RemoveDir Directories="$(OutputTemp)"/>
+  <Target Name="Clean">
+    <RemoveDir Directories="$(BuildDir);$(OutputTemp)" />
   </Target>
 
   <Target Name="Build">
-    <MSBuild Projects="..\FreePIE.GUI\FreePIE.GUI.csproj" Properties="Configuration=Release;PreBuildEvent=;PostBuildEvent=;OutDir=$(OutputTemp)\"/>
+    <MSBuild Projects="$(Root)\FreePIE.GUI\FreePIE.GUI.csproj" Properties="$(ReleaseBuildProperties)" />
+    <MSBuild Projects="$(Root)\FreePIE.Core.Plugins\FreePIE.Core.Plugins.csproj" Properties="$(ReleaseBuildProperties)" />
   </Target>
 
-  <Target Name="BuildPlugins">
-    <MSBuild Projects="..\FreePIE.Core.Plugins\FreePIE.Core.Plugins.csproj" Properties="Configuration=Release;PreBuildEvent=;PostBuildEvent=;OutDir=$(OutputTemp)\"/>
-  </Target>
-
-  <Target Name="CopyOutputTemp">
-    <MakeDir Directories="$(BuildDir)"/>
+  <Target Name="CopyOutput">
     <ItemGroup>
-      <ReleaseFiles
-              Include="$(OutputTemp)\**\*.*;"
-              Exclude ="$(OutputTemp)\*.pdb;
-                        $(OutputTemp)\*.xml">
-      </ReleaseFiles>
+      <ReleaseFiles Include="$(OutputTemp)\**\*.*" Exclude="$(OutputTemp)\*.pdb;$(OutputTemp)\*.xml;$(OutputTemp)\FreePIE.Core.Plugins.dll" />
     </ItemGroup>
-    <Copy SourceFiles="@(ReleaseFiles)" DestinationFiles="@(ReleaseFiles -> '$(BuildDir)\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(ReleaseFiles)" DestinationFiles="@(ReleaseFiles->'$(BuildDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <Target Name="CopyPlugins">
-    <ItemGroup>
-      <PluginFiles
-              Include="$(OutputTemp)\FreePIE.Core.Plugins.dll">
-      </PluginFiles>
-    </ItemGroup>
-    <Copy SourceFiles="@(PluginFiles)" DestinationFiles="@(PluginFiles -> '$(BuildDir)\plugins\%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="$(OutputTemp)\FreePIE.Core.Plugins.dll" DestinationFolder="$(BuildDir)\plugins" />
   </Target>
 
   <Target Name="CopyPython">
     <ItemGroup>
-      <PythonFiles
-              Include="$(Lib)\IronPython\pylib\**\*.*;">
-      </PythonFiles>
+      <PythonFiles Include="$(Lib)\IronPython\pylib\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(PythonFiles)" DestinationFiles="@(PythonFiles -> '$(BuildDir)\pylib\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(PythonFiles)" DestinationFiles="@(PythonFiles->'$(BuildDir)\pylib\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <Target Name="CopyHelp">
     <ItemGroup>
-      <HelpFiles
-              Include="$(Help)\**\*.*">
-      </HelpFiles>
+      <HelpFiles Include="$(Help)\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(HelpFiles)" DestinationFiles="@(HelpFiles -> '$(BuildDir)\help\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(HelpFiles)" DestinationFiles="@(HelpFiles->'$(BuildDir)\help\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
-  <Target Name="CopyDependecies">
+  <Target Name="CopyDependencies">
     <ItemGroup>
-      <DependecieFiles
-              Include="$(Lib)\TrackIR\NPClient.dll;
-                      $(Lib)\Wiimote\*.*;
-                      $(Lib)\PPJoyWrapper\*.*;
-                      $(Lib)\SlimDX\*.*;
-                      $(Lib)\Sixense\*.dll;
-                      $(Lib)\piefreespace\*.dll;
-                      $(Lib)\Android\com.freepie.android.imu.apk;
-                      $(Lib)\FreeTrack\*.dll;
-                      $(Lib)\Zeiss\*.dll;
-                      $(Lib)\YEI3-Space\*.dll;
-                      $(Lib)\IO\Binaries\Release-DllMultiThreadRuntime\*.dll;
-                      $(Lib)\IO\Binaries\Release-DllMultiThreadRuntime-x64\*.dll;
-                      $(Lib)\OculusVR\Binaries\*.dll;
-                      $(Lib)\VJoy\*.dll;
-                      $(Lib)\Sixense\Emulation\Binary\*.dll;
-                      $(Lib)\Midi\*.dll;
-											$(Lib)\Tobii\*.dll">
-      </DependecieFiles>
+      <DependencyFiles Include="$(Lib)\TrackIR\NPClient.dll;
+                                $(Lib)\Wiimote\*.*;
+                                $(Lib)\PPJoyWrapper\*.*;
+                                $(Lib)\SlimDX\*.*;
+                                $(Lib)\Sixense\*.dll;
+                                $(Lib)\piefreespace\*.dll;
+                                $(Lib)\FreeTrack\*.dll;
+                                $(Lib)\Zeiss\*.dll;
+                                $(Lib)\YEI3-Space\*.dll;
+                                $(Lib)\IO\Binaries\Release-DllMultiThreadRuntime\*.dll;
+                                $(Lib)\IO\Binaries\Release-DllMultiThreadRuntime-x64\*.dll;
+                                $(Lib)\OculusVR\Binaries\*.dll;
+                                $(Lib)\VJoy\*.dll;
+                                $(Lib)\Sixense\Emulation\Binary\*.dll;
+                                $(Lib)\Midi\*.dll;
+                                $(Lib)\Tobii\*.dll" />
     </ItemGroup>
-    <Copy SourceFiles="@(DependecieFiles)" DestinationFiles="@(DependecieFiles -> '$(BuildDir)\%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(DependencyFiles)" DestinationFolder="$(BuildDir)" />
+    <!-- The apk is built from the Android project and is not checked in -->
+    <Warning Text="$(AndroidApk) not found, the installer will not include the Android app" Condition="!Exists('$(AndroidApk)')" />
+    <Copy SourceFiles="$(AndroidApk)" DestinationFolder="$(BuildDir)" Condition="Exists('$(AndroidApk)')" />
   </Target>
 </Project>

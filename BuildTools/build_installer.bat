@@ -1,9 +1,16 @@
-set PATH=%PATH%;C:\Program Files (x86)\MSBuild\14.0\Bin\amd64
+@echo off
+setlocal
+cd /d "%~dp0"
 
-rem go to current folder
-cd %~dp0
+set VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe
+for /f "usebackq delims=" %%i in (`"%VSWHERE%" -latest -prerelease -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe`) do set MSBUILD=%%i
+if not defined MSBUILD (
+    echo MSBuild not found, install Visual Studio 2022 or Build Tools for Visual Studio 2022.
+    goto end
+)
 
-msbuild write_VersionInfo.xml
-msbuild build_output.xml /property:OutputTemp=..\OutputTemp /property:BuildDir=..\Output /property:Lib=..\Lib /property:Help=..\FreePIE.Core.Plugins\Help
-msbuild build_installer.xml /property:InstallerTemp=..\InstallerTemp /property:Lib=..\Lib
+"%MSBUILD%" build_output.xml -nologo -v:minimal || goto end
+"%MSBUILD%" build_installer.xml -nologo -v:minimal || goto end
+
+:end
 pause

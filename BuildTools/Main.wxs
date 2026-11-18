@@ -7,8 +7,9 @@
       DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 
     <PropertyRef Id="NETFRAMEWORK45"/>
-    <Condition Message="This application requires .NET Framework 4.5. Please install the .NET Framework then run this installer again.">
-      <![CDATA[Installed OR NETFRAMEWORK45]]>
+    <!-- NETFRAMEWORK45 holds the .NET 4.x release number, 528040 is the first release of 4.8 -->
+    <Condition Message="This application requires .NET Framework 4.8. Please install the .NET Framework then run this installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK45 >= "#528040"]]>
     </Condition>
 
     <Media Id="1" Cabinet="$(var.ProductName).cab" EmbedCab="yes" />
