@@ -113,12 +113,14 @@
     <Compile Include="Common\AvalonDock\AutobinderTemplateSelector.cs" />
     <Compile Include="Common\AvalonDock\DocumentContext.cs" />
     <Compile Include="Common\AvalonEdit\BindableScriptEditor.cs" />
+    <Compile Include="Common\AvalonEdit\BreakpointConditionRequestedEventArgs.cs" />
     <Compile Include="Common\AvalonEdit\BreakpointMargin.cs" />
     <Compile Include="Common\AvalonEdit\DebuggerBackgroundRenderer.cs" />
     <Compile Include="Common\Caliburn\ActionMessageCommand.cs" />
     <Compile Include="Common\Caliburn\GestureMenuItem.cs" />
     <Compile Include="Common\Caliburn\InputBindingTrigger.cs" />
     <Compile Include="Common\CodeCompletion\CompletionItem.cs" />
+    <Compile Include="Common\CodeCompletion\ScriptCompletion.cs" />
     <Compile Include="Common\CommandLine\Commands\Command.cs" />
     <Compile Include="Common\CommandLine\Commands\FileCommand.cs" />
     <Compile Include="Common\CommandLine\Commands\RunCommand.cs" />
@@ -155,6 +157,10 @@
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Shells\AboutViewModel.cs" />
+    <Compile Include="Shells\BreakpointConditionView.xaml.cs">
+      <DependentUpon>BreakpointConditionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shells\BreakpointConditionViewModel.cs" />
     <Compile Include="Shells\Curves\CurveSettingsView.xaml.cs">
       <DependentUpon>CurveSettingsView.xaml</DependentUpon>
     </Compile>
@@ -229,6 +235,10 @@
     <Compile Include="Views\Script\ScriptEditorViewModel.cs" />
     <Compile Include="Views\Script\SignatureHelpViewModel.cs" />
     <Page Include="Shells\AboutView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Shells\BreakpointConditionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

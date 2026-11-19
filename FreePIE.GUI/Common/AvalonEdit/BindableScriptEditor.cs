@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Xml;
+using FreePIE.Core.ScriptEngine;
 using FreePIE.GUI.Shells;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
@@ -39,8 +40,20 @@ namespace FreePIE.GUI.Common.AvalonEdit
             HighlightingManager.Instance.RegisterHighlighting(languageName, new[] { fileExtension }, customHighlighting);
         }
 
+        private class BreakpointAnchor
+        {
+            public BreakpointAnchor(TextAnchor anchor, Breakpoint breakpoint)
+            {
+                Anchor = anchor;
+                Breakpoint = breakpoint;
+            }
+
+            public TextAnchor Anchor { get; private set; }
+            public Breakpoint Breakpoint { get; private set; }
+        }
+
         private readonly BreakpointMargin breakpointMargin;
-        private List<TextAnchor> breakpointAnchors = new List<TextAnchor>();
+        private List<BreakpointAnchor> breakpointAnchors = new List<BreakpointAnchor>();
         private bool updatingBreakpoints;
 
         public BindableScriptEditor()
@@ -56,7 +69,7 @@ namespace FreePIE.GUI.Common.AvalonEdit
             // The breakpoint margin is placed first, the line number margin is added when ShowLineNumbers is set
             Loaded += (sender, args) =>
             {
-                if (!TextArea.LeftMargins.Contains(breakpointMargin))
+                if (ShowBreakpointMargin && !TextArea.LeftMargins.Contains(breakpointMargin))
                     TextArea.LeftMargins.Insert(0, breakpointMargin);
             };
         }
@@ -69,29 +82,51 @@ namespace FreePIE.GUI.Common.AvalonEdit
             CreateBreakpointAnchors();
         }
 
+        public bool ShowBreakpointMargin { get; set; } = true;
+
+        public event EventHandler<BreakpointConditionRequestedEventArgs> BreakpointConditionRequested;
+
+        public Breakpoint GetBreakpoint(int lineNumber)
+        {
+            return Breakpoints != null ? Breakpoints.FirstOrDefault(b => b.LineNumber == lineNumber) : null;
+        }
+
         public bool HasBreakpoint(int lineNumber)
         {
-            return Breakpoints != null && Breakpoints.Contains(lineNumber);
+            return GetBreakpoint(lineNumber) != null;
         }
 
         public void ToggleBreakpoint(int lineNumber)
         {
-            if (Breakpoints != null && !Breakpoints.Remove(lineNumber))
-                Breakpoints.Add(lineNumber);
+            if (Breakpoints == null)
+                return;
+
+            var breakpoint = GetBreakpoint(lineNumber);
+            if (breakpoint != null)
+                Breakpoints.Remove(breakpoint);
+            else
+                Breakpoints.Add(new Breakpoint(lineNumber));
+        }
+
+        public void RequestBreakpointCondition(int lineNumber)
+        {
+            var handler = BreakpointConditionRequested;
+            if (handler != null)
+                handler(this, new BreakpointConditionRequestedEventArgs(lineNumber));
         }
 
         // Breakpoints follow their lines when the script is edited, anchors keep track of the lines
         private void CreateBreakpointAnchors()
         {
             breakpointAnchors = Breakpoints == null || Document == null
-                ? new List<TextAnchor>()
+                ? new List<BreakpointAnchor>()
                 : Breakpoints
-                    .Where(line => line >= 1 && line <= Document.LineCount)
-                    .Select(line =>
+                    .Where(b => b.LineNumber >= 1 && b.LineNumber <= Document.LineCount)
+                    .Select(b =>
                     {
-                        var anchor = Document.CreateAnchor(Document.GetLineByNumber(line).Offset);
+                        var anchor = Document.CreateAnchor(Document.GetLineByNumber(b.LineNumber).Offset);
                         anchor.MovementType = AnchorMovementType.AfterInsertion;
-                        return anchor;
+                        return new BreakpointAnchor(anchor, b);
                     })
                     .ToList();
         }
@@ -101,16 +136,22 @@ namespace FreePIE.GUI.Common.AvalonEdit
             if (Breakpoints == null || sender != Document)
                 return;
 
-            var lines = breakpointAnchors.Where(a => !a.IsDeleted).Select(a => a.Line).Distinct().ToList();
-            if (lines.SequenceEqual(Breakpoints))
+            // Breakpoints that did not move are kept, so an unchanged collection can be detected by reference
+            var moved = breakpointAnchors
+                .Where(a => !a.Anchor.IsDeleted)
+                .GroupBy(a => a.Anchor.Line)
+                .Select(g => g.First().Breakpoint.LineNumber == g.Key ? g.First().Breakpoint : new Breakpoint(g.Key, g.First().Breakpoint.Condition))
+                .ToList();
+
+            if (moved.SequenceEqual(Breakpoints))
                 return;
 
             updatingBreakpoints = true;
             try
             {
                 Breakpoints.Clear();
-                foreach (var line in lines)
-                    Breakpoints.Add(line);
+                foreach (var breakpoint in moved)
+                    Breakpoints.Add(breakpoint);
             }
             finally
             {
@@ -135,24 +176,24 @@ namespace FreePIE.GUI.Common.AvalonEdit
             TextArea.TextView.InvalidateLayer(KnownLayer.Background);
         }
 
-        public ObservableCollection<int> Breakpoints
+        public ObservableCollection<Breakpoint> Breakpoints
         {
-            get { return (ObservableCollection<int>)GetValue(BreakpointsProperty); }
+            get { return (ObservableCollection<Breakpoint>)GetValue(BreakpointsProperty); }
             set { SetValue(BreakpointsProperty, value); }
         }
 
         public static readonly DependencyProperty BreakpointsProperty = DependencyProperty.Register(
-            "Breakpoints", typeof(ObservableCollection<int>), typeof(BindableScriptEditor), new PropertyMetadata(null, OnBreakpointsChanged));
+            "Breakpoints", typeof(ObservableCollection<Breakpoint>), typeof(BindableScriptEditor), new PropertyMetadata(null, OnBreakpointsChanged));
 
         private static void OnBreakpointsChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var editor = sender as BindableScriptEditor;
 
-            var oldBreakpoints = e.OldValue as ObservableCollection<int>;
+            var oldBreakpoints = e.OldValue as ObservableCollection<Breakpoint>;
             if (oldBreakpoints != null)
                 oldBreakpoints.CollectionChanged -= editor.OnBreakpointsCollectionChanged;
 
-            var newBreakpoints = e.NewValue as ObservableCollection<int>;
+            var newBreakpoints = e.NewValue as ObservableCollection<Breakpoint>;
             if (newBreakpoints != null)
                 newBreakpoints.CollectionChanged += editor.OnBreakpointsCollectionChanged;
 

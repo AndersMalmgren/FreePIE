@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using FreePIE.GUI.Common.AvalonEdit;
 
 namespace FreePIE.GUI.Views.Script
 {
@@ -27,6 +28,7 @@ namespace FreePIE.GUI.Views.Script
 
             textEditor.MouseHover += OnMouseHover;
             textEditor.MouseHoverStopped += (sender, args) => valueTip.IsOpen = false;
+            textEditor.BreakpointConditionRequested += OnBreakpointConditionRequested;
 
             DataContextChanged += OnDataContextChanged;
             Unloaded += (sender, args) =>
@@ -56,6 +58,14 @@ namespace FreePIE.GUI.Views.Script
             valueTip.Content = valueDescription;
             valueTip.IsOpen = true;
             e.Handled = true;
+        }
+
+        // The dialog is opened after the mouse event, a modal dialog inside the mouse handler would leave the margin with the mouse captured
+        private void OnBreakpointConditionRequested(object sender, BreakpointConditionRequestedEventArgs e)
+        {
+            var model = DataContext as ScriptEditorViewModel;
+            if (model != null)
+                Dispatcher.BeginInvoke(new Action(() => Caliburn.Micro.Coroutine.BeginExecute(model.EditBreakpointCondition(e.LineNumber).GetEnumerator())));
         }
 
         private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)

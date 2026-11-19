@@ -6,13 +6,15 @@ using ICSharpCode.AvalonEdit.Rendering;
 
 namespace FreePIE.GUI.Common.AvalonEdit
 {
-    // Shows breakpoints and the line where the script is paused, clicking a line toggles its breakpoint
+    // Shows breakpoints and the line where the script is paused, clicking a line toggles its breakpoint and right clicking edits its condition
     public class BreakpointMargin : AbstractMargin
     {
         private const double MarginWidth = 16;
         private const double BreakpointRadius = 5.5;
+        private const double ConditionMarkSize = 3;
 
         private static readonly Brush BreakpointBrush = Freeze(new SolidColorBrush(Color.FromRgb(0xE5, 0x14, 0x00)));
+        private static readonly Pen ConditionPen = Freeze(new Pen(Brushes.White, 1.5));
         private static readonly Brush ExecutionLineBrush = Freeze(new SolidColorBrush(Color.FromRgb(0xFF, 0xD8, 0x00)));
         private static readonly Pen ExecutionLinePen = Freeze(new Pen(Brushes.DimGray, 1));
 
@@ -67,8 +69,17 @@ namespace FreePIE.GUI.Common.AvalonEdit
                 var lineNumber = line.FirstDocumentLine.LineNumber;
                 var center = new Point(MarginWidth / 2, line.VisualTop - textView.VerticalOffset + line.Height / 2);
 
-                if (editor.HasBreakpoint(lineNumber))
+                var breakpoint = editor.GetBreakpoint(lineNumber);
+                if (breakpoint != null)
+                {
                     drawingContext.DrawEllipse(BreakpointBrush, null, center, BreakpointRadius, BreakpointRadius);
+
+                    if (breakpoint.HasCondition)
+                    {
+                        drawingContext.DrawLine(ConditionPen, new Point(center.X - ConditionMarkSize, center.Y), new Point(center.X + ConditionMarkSize, center.Y));
+                        drawingContext.DrawLine(ConditionPen, new Point(center.X, center.Y - ConditionMarkSize), new Point(center.X, center.Y + ConditionMarkSize));
+                    }
+                }
 
                 if (lineNumber == editor.ExecutionLine)
                     drawingContext.DrawGeometry(ExecutionLineBrush, ExecutionLinePen, CreateArrow(center));
@@ -98,15 +109,33 @@ namespace FreePIE.GUI.Common.AvalonEdit
         {
             base.OnMouseLeftButtonDown(e);
 
-            var textView = TextView;
-            if (textView == null || !textView.VisualLinesValid)
-                return;
-
-            var line = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y + textView.VerticalOffset);
-            if (line != null)
-                editor.ToggleBreakpoint(line.FirstDocumentLine.LineNumber);
+            var lineNumber = GetLineNumber(e);
+            if (lineNumber.HasValue)
+                editor.ToggleBreakpoint(lineNumber.Value);
 
             e.Handled = true;
+        }
+
+        // Handled so the editor's context menu does not open
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseRightButtonUp(e);
+
+            var lineNumber = GetLineNumber(e);
+            if (lineNumber.HasValue)
+                editor.RequestBreakpointCondition(lineNumber.Value);
+
+            e.Handled = true;
+        }
+
+        private int? GetLineNumber(MouseEventArgs e)
+        {
+            var textView = TextView;
+            if (textView == null || !textView.VisualLinesValid)
+                return null;
+
+            var line = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y + textView.VerticalOffset);
+            return line != null ? line.FirstDocumentLine.LineNumber : (int?)null;
         }
     }
 }

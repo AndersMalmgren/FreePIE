@@ -250,12 +250,19 @@ namespace FreePIE.GUI.Views.Main.Menu
             ActiveScript.ToggleBreakpoint();
         }
 
+        public IEnumerable<IResult> EditBreakpointCondition()
+        {
+            return ActiveScript.EditBreakpointCondition();
+        }
+
         public void DeleteAllBreakpoints()
         {
             ActiveScript.DeleteAllBreakpoints();
         }
 
         public bool CanToggleBreakpoint => ActiveScript != null;
+
+        public bool CanEditBreakpointCondition => CanToggleBreakpoint;
 
         public bool CanDeleteAllBreakpoints => CanToggleBreakpoint;
 
@@ -314,6 +321,7 @@ namespace FreePIE.GUI.Views.Main.Menu
             PublishDebuggerStateChange();
             NotifyOfPropertyChange(() => CanStopScript);
             NotifyOfPropertyChange(() => CanToggleBreakpoint);
+            NotifyOfPropertyChange(() => CanEditBreakpointCondition);
             NotifyOfPropertyChange(() => CanDeleteAllBreakpoints);
             if(triggerScriptChangeEvent)
                 eventAggregator.Publish(new ScriptStateChangedEvent(scriptRunning, activeDocument?.Filename));

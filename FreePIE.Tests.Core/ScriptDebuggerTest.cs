@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using FreePIE.Core.Common.Events;
 using FreePIE.Core.Model.Events;
+using FreePIE.Core.ScriptEngine;
 using FreePIE.Core.ScriptEngine.Python;
 using Microsoft.Scripting.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,13 +13,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace FreePIE.Tests.Core
 {
     [TestClass]
-    public class ScriptDebuggerTest : IHandle<ScriptPausedEvent>
+    public class ScriptDebuggerTest : IHandle<ScriptPausedEvent>, IHandle<ScriptErrorEvent>
     {
         private const int Timeout = 5000;
 
         private ScriptEngine engine;
         private PythonScriptDebugger debugger;
         private BlockingCollection<int> pausedLines;
+        private BlockingCollection<ScriptErrorEvent> errors;
         private Thread thread;
         private string script;
         private ScriptScope scope;
@@ -28,6 +31,7 @@ namespace FreePIE.Tests.Core
             engine = IronPython.Hosting.Python.CreateEngine();
             scope = engine.CreateScope();
             pausedLines = new BlockingCollection<int>();
+            errors = new BlockingCollection<ScriptErrorEvent>();
 
             var eventAggregator = new EventAggregator();
             eventAggregator.Subscribe(this);
@@ -45,6 +49,21 @@ namespace FreePIE.Tests.Core
         public void Handle(ScriptPausedEvent message)
         {
             pausedLines.Add(message.LineNumber);
+        }
+
+        public void Handle(ScriptErrorEvent message)
+        {
+            errors.Add(message);
+        }
+
+        private void SetBreakpoints(params int[] lineNumbers)
+        {
+            SetBreakpoints(lineNumbers.Select(line => new Breakpoint(line)));
+        }
+
+        private void SetBreakpoints(IEnumerable<Breakpoint> breakpoints)
+        {
+            debugger.SetBreakpoints(breakpoints);
         }
 
         private static string Script(params string[] lines)
@@ -145,7 +164,7 @@ namespace FreePIE.Tests.Core
         public void Script_is_traced_while_there_are_breakpoints()
         {
             scope.SetVariable("traced", new IronPython.Runtime.List());
-            debugger.SetBreakpoints(new[] { 100 });
+            SetBreakpoints(100);
             Run(2, TraceRecordingScript);
             WaitForScript();
 
@@ -156,11 +175,11 @@ namespace FreePIE.Tests.Core
         public void Tracing_is_turned_off_when_breakpoints_are_removed()
         {
             scope.SetVariable("traced", new IronPython.Runtime.List());
-            debugger.SetBreakpoints(new[] { 1 });
+            SetBreakpoints(1);
             Run(2, TraceRecordingScript);
 
             Assert.AreEqual(1, NextPausedLine());
-            debugger.SetBreakpoints(new int[0]);
+            SetBreakpoints();
             debugger.Continue();
             WaitForScript();
 
@@ -170,7 +189,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Pauses_at_breakpoint_and_evaluates_locals()
         {
-            debugger.SetBreakpoints(new[] { 3 });
+            SetBreakpoints(3);
             Run(1, FunctionScript);
 
             Assert.AreEqual(3, NextPausedLine());
@@ -187,7 +206,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Pauses_at_breakpoint_every_execution()
         {
-            debugger.SetBreakpoints(new[] { 1 });
+            SetBreakpoints(1);
             Run(2, "x = 1");
 
             Assert.AreEqual(1, NextPausedLine());
@@ -200,7 +219,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Pauses_once_at_first_line()
         {
-            debugger.SetBreakpoints(new[] { 1 });
+            SetBreakpoints(1);
             Run(1, "import math", "x = 1");
 
             Assert.AreEqual(1, NextPausedLine());
@@ -213,7 +232,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Pauses_at_breakpoint_in_function_every_execution()
         {
-            debugger.SetBreakpoints(new[] { 2 });
+            SetBreakpoints(2);
             Run(3, FunctionScript);
 
             for (var i = 0; i < 3; i++)
@@ -228,7 +247,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Step_over_does_not_enter_functions()
         {
-            debugger.SetBreakpoints(new[] { 4 });
+            SetBreakpoints(4);
             Run(1, FunctionScript);
 
             Assert.AreEqual(4, NextPausedLine());
@@ -239,7 +258,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Step_into_enters_functions()
         {
-            debugger.SetBreakpoints(new[] { 4 });
+            SetBreakpoints(4);
             Run(1, FunctionScript);
 
             Assert.AreEqual(4, NextPausedLine());
@@ -252,7 +271,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Step_out_returns_to_caller()
         {
-            debugger.SetBreakpoints(new[] { 2 });
+            SetBreakpoints(2);
             Run(1, FunctionScript);
 
             Assert.AreEqual(2, NextPausedLine());
@@ -263,11 +282,11 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Step_over_last_line_pauses_at_next_execution()
         {
-            debugger.SetBreakpoints(new[] { 2 });
+            SetBreakpoints(2);
             Run(2, "x = 1", "y = 2");
 
             Assert.AreEqual(2, NextPausedLine());
-            debugger.SetBreakpoints(new int[0]);
+            SetBreakpoints();
             debugger.StepOver();
             Assert.AreEqual(1, NextPausedLine());
         }
@@ -309,7 +328,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Evaluates_members_and_constant_indexes()
         {
-            debugger.SetBreakpoints(new[] { 6 });
+            SetBreakpoints(6);
             Run(1,
                 "class A(object):",
                 "    def __init__(self):",
@@ -326,7 +345,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Evaluates_self_members_in_methods()
         {
-            debugger.SetBreakpoints(new[] { 4 });
+            SetBreakpoints(4);
             Run(1,
                 "class A(object):",
                 "    def __init__(self):",
@@ -341,7 +360,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Calls_are_not_evaluated()
         {
-            debugger.SetBreakpoints(new[] { 3 });
+            SetBreakpoints(3);
             Run(1,
                 "def f():",
                 "    return 1",
@@ -355,7 +374,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Names_that_are_not_assigned_yet_are_not_evaluated()
         {
-            debugger.SetBreakpoints(new[] { 1 });
+            SetBreakpoints(1);
             Run(1, "x = 1");
 
             Assert.AreEqual(1, NextPausedLine());
@@ -374,7 +393,7 @@ namespace FreePIE.Tests.Core
         [TestMethod]
         public void Stop_releases_a_paused_script()
         {
-            debugger.SetBreakpoints(new[] { 1 });
+            SetBreakpoints(1);
             Run(10, "x = 1");
 
             Assert.AreEqual(1, NextPausedLine());
@@ -382,6 +401,80 @@ namespace FreePIE.Tests.Core
             WaitForScript();
 
             Assert.IsFalse(debugger.IsPaused);
+        }
+
+        [TestMethod]
+        public void Conditional_breakpoint_pauses_only_when_the_condition_is_true()
+        {
+            scope.SetVariable("i", 0);
+            SetBreakpoints(new[] { new Breakpoint(1, "i == 2") });
+            Run(5, "i = i + 1");
+
+            Assert.AreEqual(1, NextPausedLine());
+            Assert.AreEqual(2, Variable("i"));
+            debugger.Continue();
+            WaitForScript();
+
+            Assert.AreEqual(0, pausedLines.Count);
+        }
+
+        [TestMethod]
+        public void Condition_is_evaluated_with_the_locals_of_the_function()
+        {
+            SetBreakpoints(new[] { new Breakpoint(2, "a == 4"), new Breakpoint(3, "b == 6") });
+            Run(1, FunctionScript);
+
+            Assert.AreEqual(3, NextPausedLine());
+            debugger.Continue();
+            WaitForScript();
+
+            Assert.AreEqual(0, pausedLines.Count);
+        }
+
+        [TestMethod]
+        public void Condition_that_can_not_be_evaluated_pauses_and_reports_a_warning()
+        {
+            SetBreakpoints(new[] { new Breakpoint(1, "undefined > 1") });
+            Run(1, "x = 1");
+
+            Assert.AreEqual(1, NextPausedLine());
+
+            ScriptErrorEvent error;
+            Assert.IsTrue(errors.TryTake(out error, Timeout));
+            Assert.AreEqual(ErrorLevel.Warning, error.Level);
+            Assert.AreEqual(1, error.LineNumber);
+        }
+
+        [TestMethod]
+        public void Condition_with_a_syntax_error_pauses()
+        {
+            SetBreakpoints(new[] { new Breakpoint(1, "x ==") });
+            Run(1, "x = 1");
+
+            Assert.AreEqual(1, NextPausedLine());
+        }
+
+        [TestMethod]
+        public void Functions_called_by_a_condition_are_not_traced()
+        {
+            SetBreakpoints(new[] { new Breakpoint(2), new Breakpoint(3, "f()") });
+            Run(1,
+                "def f():",
+                "    return True",
+                "x = f()");
+
+            Assert.AreEqual(3, NextPausedLine());
+            debugger.Continue();
+            Assert.AreEqual(2, NextPausedLine());
+            debugger.Continue();
+            WaitForScript();
+        }
+
+        [TestMethod]
+        public void Whitespace_condition_is_no_condition()
+        {
+            Assert.IsFalse(new Breakpoint(1, "  ").HasCondition);
+            Assert.AreEqual("x > 1", new Breakpoint(1, " x > 1 ").Condition);
         }
     }
 }

@@ -90,6 +90,7 @@
                 </common:GestureMenuItem>
                 <Separator/>
                 <common:GestureMenuItem x:Name="ToggleBreakpoint" Header="Toggle _Breakpoint" Key="F9"/>
+                <common:GestureMenuItem x:Name="EditBreakpointCondition" Header="Breakpoint Co_ndition..." Key="F9" Modifiers="Alt"/>
                 <common:GestureMenuItem x:Name="DeleteAllBreakpoints" Header="_Delete All Breakpoints" Key="F9" Modifiers="Ctrl+Shift"/>
             </MenuItem>
             <MenuItem Header="S_ettings">

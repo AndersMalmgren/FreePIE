@@ -166,6 +166,73 @@ namespace FreePIE.Tests.Core
             AssertDoesNotContain(outside, "value", "local");
         }
 
+        private IList<string> ConditionNames(int lineNumber, string condition, params string[] lines)
+        {
+            var conditionScript = new BreakpointConditionScript(Script(lines), lineNumber);
+            var offset = condition.IndexOf(Caret);
+            condition = condition.Remove(offset, 1);
+
+            return provider.GetSuggestionsForExpression(conditionScript.GetScript(condition), conditionScript.ToScriptOffset(offset))
+                .ExpressionInfos.Select(i => i.Name).ToList();
+        }
+
+        [TestMethod]
+        public void Breakpoint_condition_suggests_the_names_visible_at_the_breakpoint_line()
+        {
+            var names = ConditionNames(3, "val|",
+                "def update(value):",
+                "    local = 1",
+                "    return local",
+                "speed = 10");
+
+            AssertContains(names, "value");
+
+            var all = ConditionNames(3, "|",
+                "def update(value):",
+                "    local = 1",
+                "    return local",
+                "speed = 10");
+
+            AssertContains(all, "value", "local", "update", "speed", "testjoystick");
+        }
+
+        [TestMethod]
+        public void Breakpoint_condition_outside_a_function_does_not_suggest_its_locals()
+        {
+            var names = ConditionNames(3, "|",
+                "def update(value):",
+                "    return value",
+                "speed = 10");
+
+            AssertContains(names, "update", "speed");
+            AssertDoesNotContain(names, "value");
+        }
+
+        [TestMethod]
+        public void Breakpoint_condition_suggests_members()
+        {
+            var names = ConditionNames(1, "testjoystick[0].|", "x = 1");
+
+            AssertContains(names, "x", "y", "center");
+        }
+
+        [TestMethod]
+        public void Breakpoint_condition_is_placed_before_the_breakpoint_line_with_its_indentation()
+        {
+            var conditionScript = new BreakpointConditionScript(Script("if x:", "    y = 1"), 2);
+
+            Assert.AreEqual(Script("if x:", "    a > 1") + "\n    y = 1", conditionScript.GetScript("a > 1"));
+            Assert.AreEqual(2, conditionScript.ToConditionOffset(conditionScript.ToScriptOffset(2)));
+        }
+
+        [TestMethod]
+        public void Breakpoint_condition_after_the_last_line_is_placed_at_the_end()
+        {
+            var conditionScript = new BreakpointConditionScript("x = 1", 5);
+
+            Assert.AreEqual("x = 1\na", conditionScript.GetScript("a"));
+        }
+
         [TestMethod]
         public void Kind_and_description_are_set_for_script_names()
         {

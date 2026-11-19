@@ -6,7 +6,7 @@ namespace FreePIE.Core.ScriptEngine
     public interface IScriptDebugger
     {
         bool IsPaused { get; }
-        void SetBreakpoints(IEnumerable<int> lineNumbers);
+        void SetBreakpoints(IEnumerable<Breakpoint> breakpoints);
         void Continue();
         void StepInto();
         void StepOver();

@@ -7,6 +7,7 @@ using FreePIE.Core.Common.Events;
 using FreePIE.Core.Model.Events;
 using FreePIE.Core.ScriptEngine.Python.Ast;
 using IronPython.Compiler.Ast;
+using IronPython.Modules;
 using IronPython.Runtime;
 using IronPython.Runtime.Exceptions;
 using IronPython.Runtime.Operations;
@@ -20,6 +21,7 @@ namespace FreePIE.Core.ScriptEngine.Python
     {
         private const string ScriptFileName = "<string>";
         private const string ModuleCodeName = "<module>";
+        private const string ConditionFileName = "<breakpoint condition>";
         private const int EvaluateTimeout = 1000;
         private const int MaxValueLength = 500;
 
@@ -29,6 +31,18 @@ namespace FreePIE.Core.ScriptEngine.Python
             Into,
             Over,
             Out
+        }
+
+        // Conditions are compiled by the script thread the first time the breakpoint is reached
+        private class ActiveBreakpoint
+        {
+            public ActiveBreakpoint(Breakpoint breakpoint)
+            {
+                Breakpoint = breakpoint;
+            }
+
+            public Breakpoint Breakpoint { get; private set; }
+            public FunctionCode CompiledCondition { get; set; }
         }
 
         private readonly IEventAggregator eventAggregator;
@@ -44,7 +58,7 @@ namespace FreePIE.Core.ScriptEngine.Python
         private TraceBackFrame moduleStartFrame;
         private bool tracing;
 
-        private volatile HashSet<int> breakpoints = new HashSet<int>();
+        private volatile Dictionary<int, ActiveBreakpoint> breakpoints = new Dictionary<int, ActiveBreakpoint>();
         private volatile StepMode stepMode;
         private volatile bool traceChanged;
         private volatile bool stopped;
@@ -101,9 +115,11 @@ namespace FreePIE.Core.ScriptEngine.Python
             IronPython.Hosting.Python.SetTrace(engine, enable ? trace : null);
         }
 
-        public void SetBreakpoints(IEnumerable<int> lineNumbers)
+        public void SetBreakpoints(IEnumerable<Breakpoint> breakpoints)
         {
-            breakpoints = new HashSet<int>(lineNumbers);
+            this.breakpoints = breakpoints
+                .GroupBy(b => b.LineNumber)
+                .ToDictionary(g => g.Key, g => new ActiveBreakpoint(g.First()));
             traceChanged = true;
         }
 
@@ -234,12 +250,36 @@ namespace FreePIE.Core.ScriptEngine.Python
             var mode = stepMode;
             var depth = mode == StepMode.Over || mode == StepMode.Out ? GetDepth(frame) : 0;
 
-            if (breakpoints.Contains(lineNumber)
-                || mode == StepMode.Into
+            ActiveBreakpoint breakpoint;
+
+            if (mode == StepMode.Into
                 || (mode == StepMode.Over && depth <= stepDepth)
-                || (mode == StepMode.Out && depth < stepDepth))
+                || (mode == StepMode.Out && depth < stepDepth)
+                || (breakpoints.TryGetValue(lineNumber, out breakpoint) && IsConditionMet(breakpoint, frame, lineNumber)))
             {
                 Pause(frame, lineNumber);
+            }
+        }
+
+        // Runs inside the trace callback, IronPython does not trace code that is called from there
+        private bool IsConditionMet(ActiveBreakpoint breakpoint, TraceBackFrame frame, int lineNumber)
+        {
+            var condition = breakpoint.Breakpoint.Condition;
+            if (condition == null)
+                return true;
+
+            try
+            {
+                if (breakpoint.CompiledCondition == null)
+                    breakpoint.CompiledCondition = (FunctionCode)Builtin.compile(DefaultContext.Default, condition, ConditionFileName, "eval", null, null);
+
+                return PythonOps.IsTrue(Builtin.eval(DefaultContext.Default, breakpoint.CompiledCondition, (PythonDictionary)frame.f_globals, frame.f_locals));
+            }
+            catch (Exception e)
+            {
+                // Breaks like Visual Studio does, a condition with an error would otherwise silently disable the breakpoint
+                eventAggregator.Publish(new ScriptErrorEvent(ErrorLevel.Warning, string.Format("Breakpoint condition '{0}' could not be evaluated: {1}", condition, e.Message), lineNumber));
+                return true;
             }
         }
 

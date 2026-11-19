@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Globalization;
 using System.Linq;
 using FreePIE.Core.Common;
 using FreePIE.Core.Common.Events;
 using FreePIE.Core.ScriptEngine;
-using FreePIE.Core.ScriptEngine.CodeCompletion;
 using FreePIE.GUI.CodeCompletion;
-using FreePIE.GUI.CodeCompletion.Event.Actions;
 using FreePIE.GUI.Common.AvalonEdit;
 using FreePIE.GUI.Common.CodeCompletion;
 using FreePIE.GUI.Events;
+using FreePIE.GUI.Result;
+using FreePIE.GUI.Shells;
 using FreePIE.GUI.Views.Main;
 
 namespace FreePIE.GUI.Views.Script
@@ -21,24 +20,25 @@ namespace FreePIE.GUI.Views.Script
         private readonly IEventAggregator eventAggregator;
         private readonly ICodeCompletionProvider provider;
         private readonly FileSystem fileSystem;
+        private readonly IResultFactory resultFactory;
 
-        public ScriptEditorViewModel(IEventAggregator eventAggregator, ICodeCompletionProvider provider, CompletionPopupViewModel completionModel, FileSystem fileSystem)
+        public ScriptEditorViewModel(IEventAggregator eventAggregator, ICodeCompletionProvider provider, CompletionPopupViewModel completionModel, FileSystem fileSystem, IResultFactory resultFactory)
         {
             this.eventAggregator = eventAggregator;
             this.provider = provider;
             this.fileSystem = fileSystem;
+            this.resultFactory = resultFactory;
             Replacer = new Replacer();
             CompletionWindow = completionModel;
             SignatureHelp = new SignatureHelpViewModel();
-            Breakpoints = new Caliburn.Micro.BindableCollection<int>();
+            Breakpoints = new Caliburn.Micro.BindableCollection<Breakpoint>();
             Breakpoints.CollectionChanged += OnBreakpointsChanged;
             eventAggregator.Subscribe(this);
             provider.ScriptAnalyzed += (sender, args) => Caliburn.Micro.Execute.BeginOnUIThread(OnScriptAnalyzed);
-            completionModel.Observers.Add(new PopupStateAction(OnCompletionPopupStateChanged));
-            completionModel.Observers.Add(new OpenOnWriteAction(IsBeginningOfExpression));
-            completionModel.Observers.Add(new CloseOnSteppingIntoEndOfExpression(() => provider.IsBeginningOfExpression(Script, CaretPosition)));
-            completionModel.Observers.Add(new CloseOnWritingEndOfExpression(IsEndOfExpression));
+            completion = new ScriptCompletion(provider, completionModel, () => script, () => caretPosition, OnInsertion);
         }
+
+        private readonly ScriptCompletion completion;
         
         private static int untitledIndex;
         private int untitledId;
@@ -54,40 +54,10 @@ namespace FreePIE.GUI.Views.Script
             return this;
         }
 
-        private bool IsBeginningOfExpression(char nextChar)
-        {
-            var caret = CaretPosition;
-            var scriptWithNextChar = (Script ?? string.Empty).Insert(CaretPosition, nextChar.ToString(CultureInfo.InvariantCulture));
-            caret++;
-            var isBeginning = provider.IsBeginningOfExpression(Script, CaretPosition) || provider.IsBeginningOfExpression(scriptWithNextChar, caret);
-
-            // The popup is only shown if there are suggestions, so they are needed before it opens
-            if (isBeginning)
-                UpdateCompletionItems();
-
-            return isBeginning;
-        }
-
-        private void OnCompletionPopupStateChanged(bool isOpen)
-        {
-            isCompletionOpen = isOpen;
-
-            if (isOpen)
-                UpdateCompletionItems();
-        }
-
-        // The script has been analyzed in the background, suggestions may include new names
         private void OnScriptAnalyzed()
         {
-            if (isCompletionOpen)
-                UpdateCompletionItems(true);
-
+            completion.ScriptAnalyzed();
             UpdateSignatureHelp();
-        }
-
-        private bool IsEndOfExpression(char nextChar)
-        {
-            return provider.IsEndOfExpressionDelimiter(nextChar);
         }
 
         public CompletionPopupViewModel CompletionWindow { get; set; }
@@ -120,7 +90,7 @@ namespace FreePIE.GUI.Views.Script
             }
         }
 
-        public Caliburn.Micro.BindableCollection<int> Breakpoints { get; private set; }
+        public Caliburn.Micro.BindableCollection<Breakpoint> Breakpoints { get; private set; }
 
         private int executionLine;
         // The line where the script is paused, 0 when it's not paused
@@ -134,13 +104,55 @@ namespace FreePIE.GUI.Views.Script
             }
         }
 
+        private int CaretLineNumber
+        {
+            get
+            {
+                var text = script ?? string.Empty;
+                return text.Take(Math.Min(caretPosition, text.Length)).Count(c => c == '\n') + 1;
+            }
+        }
+
+        private Breakpoint GetBreakpoint(int lineNumber)
+        {
+            return Breakpoints.FirstOrDefault(b => b.LineNumber == lineNumber);
+        }
+
         public void ToggleBreakpoint()
         {
-            var text = script ?? string.Empty;
-            var lineNumber = text.Take(Math.Min(caretPosition, text.Length)).Count(c => c == '\n') + 1;
+            var lineNumber = CaretLineNumber;
+            var breakpoint = GetBreakpoint(lineNumber);
 
-            if (!Breakpoints.Remove(lineNumber))
-                Breakpoints.Add(lineNumber);
+            if (breakpoint != null)
+                Breakpoints.Remove(breakpoint);
+            else
+                Breakpoints.Add(new Breakpoint(lineNumber));
+        }
+
+        public IEnumerable<Caliburn.Micro.IResult> EditBreakpointCondition()
+        {
+            return EditBreakpointCondition(CaretLineNumber);
+        }
+
+        // Creates the breakpoint if the line has none, like Visual Studio
+        public IEnumerable<Caliburn.Micro.IResult> EditBreakpointCondition(int lineNumber)
+        {
+            var existing = GetBreakpoint(lineNumber);
+            var dialog = resultFactory.ShowDialog<BreakpointConditionViewModel>()
+                .Configure(m => m.Init(lineNumber, existing != null ? existing.Condition : null, script));
+
+            yield return dialog;
+
+            if (!dialog.Model.IsAccepted)
+                yield break;
+
+            var breakpoint = new Breakpoint(lineNumber, dialog.Model.Condition);
+            var index = Breakpoints.IndexOf(GetBreakpoint(lineNumber));
+
+            if (index >= 0)
+                Breakpoints[index] = breakpoint;
+            else
+                Breakpoints.Add(breakpoint);
         }
 
         public void DeleteAllBreakpoints()
@@ -187,58 +199,11 @@ namespace FreePIE.GUI.Views.Script
 
                 caretPosition = value;
 
-                // Suggestions are only calculated while they are shown, it's too expensive to do on every keystroke
-                if (isCompletionOpen)
-                    UpdateCompletionItems();
+                completion.CaretChanged();
 
                 UpdateSignatureHelp();
                 NotifyOfPropertyChange(() => CaretPosition);
             }
-        }
-
-        private bool isCompletionOpen;
-        private string completionScript;
-        private int completionCaret = -1;
-        private IList<ExpressionInfo> completionInfos;
-
-        private void UpdateCompletionItems(bool force = false)
-        {
-            var isSamePosition = ReferenceEquals(completionScript, script) && completionCaret == caretPosition;
-            if (!force && isSamePosition)
-                return;
-
-            completionScript = script;
-            completionCaret = caretPosition;
-
-            var codeResults = provider.GetSuggestionsForExpression(script, caretPosition);
-
-            // Rebuilding the list is expensive in WPF and the background analysis often finds the same suggestions again
-            var infos = codeResults.ExpressionInfos.ToList();
-            var isSame = isSamePosition && IsSameSuggestions(completionInfos, infos);
-            completionInfos = infos;
-            if (isSame)
-                return;
-
-            var suggestions = infos.Select(x =>
-                new CompletionItem(x, codeResults.ActiveToken.Value, codeResults.ReplaceRange, script, OnInsertion));
-
-            CompletionWindow.CompletionItems.Clear();
-            CompletionWindow.CompletionItems.AddRange(suggestions);
-            if (CompletionWindow.CompletionItems.Any())
-                CompletionWindow.SelectedCompletionItem = GetBestMatch(CompletionWindow.CompletionItems, codeResults.ActiveToken.Value);
-        }
-
-        private static bool IsSameSuggestions(IList<ExpressionInfo> previous, IList<ExpressionInfo> current)
-        {
-            return previous != null && previous.Count == current.Count && previous.Zip(current, (a, b) => a.Name == b.Name && a.Kind == b.Kind && a.Description == b.Description).All(same => same);
-        }
-
-        // Prefer the suggestion with the same casing as what has been written (axis before Axis)
-        private static ICompletionItem GetBestMatch(IList<ICompletionItem> items, string token)
-        {
-            return items.FirstOrDefault(i => i.Name == token)
-                   ?? items.FirstOrDefault(i => i.Name.StartsWith(token, StringComparison.Ordinal))
-                   ?? items.First();
         }
 
         private void UpdateSignatureHelp()
