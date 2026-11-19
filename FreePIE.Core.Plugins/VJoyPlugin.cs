@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.Ffb;
 using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.Strategies;
 using PPJoy;
@@ -54,6 +55,7 @@ namespace FreePIE.Core.Plugins
         public override void DoBeforeNextExecute()
         {
             holders.ForEach(h => h.SendPressed());
+            holders.ForEach(h => h.PumpFfb());
         }
 
         public override string FriendlyName
@@ -74,6 +76,7 @@ namespace FreePIE.Core.Plugins
         public const int ContinuousPovMax = 35900;
         
         private readonly SetPressedStrategy setPressedStrategy;
+        private FfbSourceGlobal ffb;
 
         public VJoyGlobalHolder(uint index)
         {
@@ -195,9 +198,35 @@ namespace FreePIE.Core.Plugins
 
         public VjoyVersionGlobal Version { get; private set; }
 
+        public FfbSourceGlobal Ffb
+        {
+            get
+            {
+                if (ffb != null)
+                    return ffb;
+
+                if (!joystick.IsDeviceFfb(Index))
+                    throw new Exception(string.Format("Force feedback is not enabled for vJoy device {0}, enable it in vJoyConf", Index));
+
+                var source = new FfbSource();
+                VJoyFfbReader.Register(Index, source);
+
+                return ffb = new FfbSourceGlobal(source);
+            }
+        }
+
+        public void PumpFfb()
+        {
+            if (ffb != null)
+                ffb.Pump();
+        }
+
         public void Dispose()
         {
-            joystick.RelinquishVJD(Index);   
+            if (ffb != null)
+                VJoyFfbReader.Unregister(Index);
+
+            joystick.RelinquishVJD(Index);
         }
     }
 
@@ -320,5 +349,8 @@ namespace FreePIE.Core.Plugins
 
         [Documentation("The installed vJoy version")]
         public VjoyVersionGlobal version { get { return holder.Version; } }
+
+        [Documentation("Force feedback sent by games to this device, it must be enabled in vJoyConf")]
+        public FfbSourceGlobal ffb { get { return holder.Ffb; } }
     }
 }
