@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.Ffb;
 using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.Strategies;
 using Nefarius.ViGEm.Client;
@@ -119,6 +120,9 @@ namespace FreePIE.Core.Plugins {
         private bool virtualStateChanged;
         private ushort virtualButtons;
 
+        private RumbleFfbDevice rumbleDevice;
+        private XBox360FfbGlobal ffbGlobal;
+
         public XBox360PluginGlobal(UserIndex index, Func<IXbox360Controller> createVirtualController)
         {
             controller = new Controller(index);
@@ -135,15 +139,75 @@ namespace FreePIE.Core.Plugins {
 
             setPressedStrategy.Do();
             SubmitVirtualState();
+
+            if (ffbGlobal != null)
+            {
+                ffbGlobal.Pump();
+                ffbGlobal.Flush();
+                rumbleDevice.Render();
+            }
         }
 
         public void Dispose()
         {
+            if (rumbleDevice != null)
+                rumbleDevice.Dispose();
+
             if (virtualController == null)
                 return;
 
             virtualController.Disconnect();
             virtualController = null;
+        }
+
+        private void SetVibration(double large, double small)
+        {
+            if (!controller.IsConnected)
+                return;
+
+            controller.SetVibration(new Vibration
+            {
+                LeftMotorSpeed = (ushort) Math.Round(large * ushort.MaxValue),
+                RightMotorSpeed = (ushort) Math.Round(small * ushort.MaxValue)
+            });
+        }
+
+        private FfbSource CreateFfbSource()
+        {
+            var source = new FfbSource();
+            var started = false;
+
+            // Raised on a ViGEm thread, the source queues it for the script thread
+            VirtualController.FeedbackReceived += (sender, e) =>
+            {
+                source.UpdateEffect(0, effect =>
+                {
+                    effect.type = FfbEffectType.Rumble;
+                    effect.largeMotor = e.LargeMotor / 255.0;
+                    effect.smallMotor = e.SmallMotor / 255.0;
+                });
+
+                if (started)
+                    return;
+
+                started = true;
+                source.StartEffect(0, 1, false);
+            };
+
+            return source;
+        }
+
+        [Documentation("Rumble of the controller, it can rumble the physical controller and forward rumble from games to the emulated controller")]
+        public XBox360FfbGlobal ffb
+        {
+            get
+            {
+                if (ffbGlobal != null)
+                    return ffbGlobal;
+
+                rumbleDevice = new RumbleFfbDevice(SetVibration);
+                return ffbGlobal = new XBox360FfbGlobal(rumbleDevice, CreateFfbSource);
+            }
         }
 
         private bool IsDown(XBox360Button button)

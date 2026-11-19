@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using FreePIE.Core.Contracts;
+using FreePIE.Core.Plugins.Ffb;
 using FreePIE.Core.Plugins.Globals;
 using FreePIE.Core.Plugins.Strategies;
 using SlimDX.DirectInput;
@@ -47,6 +48,7 @@ namespace FreePIE.Core.Plugins
         public override void DoBeforeNextExecute()
         {
             devices.ForEach(d => d.Reset());
+            devices.ForEach(d => d.FlushFfb());
         }
 
         public override string FriendlyName
@@ -60,6 +62,8 @@ namespace FreePIE.Core.Plugins
         private readonly Joystick joystick;
         private JoystickState state;
         private readonly GetPressedStrategy<int> getPressedStrategy;
+        private DirectInputFfbDevice ffbDevice;
+        private FfbSinkGlobal ffb;
 
         public Device(Joystick joystick)
         {
@@ -70,6 +74,9 @@ namespace FreePIE.Core.Plugins
 
         public void Dispose()
         {
+            if (ffbDevice != null)
+                ffbDevice.Dispose();
+
             joystick.Dispose();
         }
 
@@ -78,9 +85,27 @@ namespace FreePIE.Core.Plugins
             get { return state ?? (state = joystick.GetCurrentState()); }
         }
 
+        public FfbSinkGlobal Ffb
+        {
+            get
+            {
+                if (ffb != null)
+                    return ffb;
+
+                ffbDevice = new DirectInputFfbDevice(joystick);
+                return ffb = new FfbSinkGlobal(ffbDevice);
+            }
+        }
+
         public void Reset()
         {
             state = null;
+        }
+
+        public void FlushFfb()
+        {
+            if (ffb != null)
+                ffb.Flush();
         }
 
         public void SetRange(int lowerRange, int upperRange)
@@ -115,6 +140,9 @@ namespace FreePIE.Core.Plugins
         }
 
         private JoystickState State { get { return device.State; } }
+
+        [Documentation("Force feedback of the device")]
+        public FfbSinkGlobal ffb { get { return device.Ffb; } }
 
         [Documentation("Sets the range of the axes, the default is -1000 to 1000")]
         public void setRange(int lowerRange, int upperRange)
