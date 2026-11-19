@@ -53,6 +53,9 @@
       <HintPath>..\Lib\Tobii\EyeXFramework.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Nefarius.ViGEm.Client, Version=1.21.256.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nefarius.ViGEm.Client.1.21.256\lib\netstandard2.0\Nefarius.ViGEm.Client.dll</HintPath>
+    </Reference>
     <Reference Include="PPJoyWrapper">
       <HintPath>..\Lib\PPJoyWrapper\PPJoyWrapper.dll</HintPath>
     </Reference>
@@ -171,6 +174,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Help\FreePIE.Core.Plugins.HydraPlugin.rtf" />
     <None Include="Help\FreePIE.Core.Plugins.AndroidPlugin.rtf" />
     <None Include="Help\FreePIE.Core.Plugins.PPJoyPlugin.rtf" />
