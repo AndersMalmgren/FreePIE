@@ -26,6 +26,10 @@ namespace FreePIE.Core.Plugins.Wiimote
             {
                 stopwatch.Stop();
                 SamplePeriod = 1 / (float)(samples / stopwatch.Elapsed.TotalSeconds);
+
+                //Reset number of samples to zero after every update.
+                samples = 0;
+
                 return true;
             }
 
