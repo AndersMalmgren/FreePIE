@@ -72,7 +72,8 @@ xcopy /S /I "$(SolutionDir)\Lib\IronPython\pylib\*" "$(TargetDir)pylib\"
 copy "$(SolutionDir)\Lib\Wiimote\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\PPJoyWrapper\*.*" "$(TargetDir)"
 copy "$(SolutionDir)\Lib\SlimDX\*.*" "$(TargetDir)"
-copy "$(SolutionDir)\Lib\piefreespace\*.dll" "$(TargetDir)"</PostBuildEvent>
+copy "$(SolutionDir)\Lib\piefreespace\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\ViGEm\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
