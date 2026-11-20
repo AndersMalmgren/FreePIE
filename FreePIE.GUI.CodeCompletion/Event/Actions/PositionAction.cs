@@ -24,6 +24,11 @@ namespace FreePIE.GUI.CodeCompletion.Event.Actions
             if (last.Type == EventType.SelectionChanged && view.IsOpen)
                 return;
 
+            // The caret rectangle is relative to the editor, without a target the popup is placed relative
+            // to its parent, which only lines up when the editor fills the parent
+            if (view.PlacementTarget == null)
+                view.PlacementTarget = view.Target.UIElement;
+
             Rect rect = view.Target.GetVisualPosition();
             view.PlacementRectangle = rect.IsEmpty ? default(Rect) : new Rect(CalculatePoint(rect, view), new Size(rect.Width, rect.Height));
         }
