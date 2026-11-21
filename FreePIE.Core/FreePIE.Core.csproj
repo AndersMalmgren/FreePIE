@@ -146,6 +146,7 @@
     <Compile Include="ScriptEngine\Python\NeedIndexerRewriter.cs" />
     <Compile Include="ScriptEngine\Python\PythonRuntimeInfo.cs" />
     <Compile Include="ScriptEngine\Python\Ast\EvaluableExpressionFinder.cs" />
+    <Compile Include="ScriptEngine\Python\Ast\NameReferenceFinder.cs" />
     <Compile Include="ScriptEngine\Python\Ast\PythonAstParser.cs" />
     <Compile Include="ScriptEngine\Python\Ast\PythonScope.cs" />
     <Compile Include="ScriptEngine\Python\Ast\ScriptEdit.cs" />
