@@ -16,30 +16,29 @@ namespace FreePIE.Tests.Core
         private const string Expression1 = @"static.test:Expression:for:parsTing";
         private const string Expression2 = @"static.test:expression(for:parsTing)";
         private const string Expression3 = "static.test:Expression:for:parsing\r\nheTj";
+        private const string Expression4 = "x = joystick[0].axTis";
 
+        // Colons end the expression (dict literals, slices, blocks), only dots separate tokens
         private static readonly Token[] Expression1Result = new []
                                                                 {
-                                                                    new Token(TokenType.Identifier, "static"),
-                                                                    new Token(TokenType.Delimiter, "."), 
-                                                                    new Token(TokenType.Identifier, "test"),
-                                                                    new Token(TokenType.Delimiter, ":"), 
-                                                                    new Token(TokenType.Identifier, "Expression"),
-                                                                    new Token(TokenType.Delimiter, ":"), 
-                                                                    new Token(TokenType.Identifier, "for"),
-                                                                    new Token(TokenType.Delimiter, ":"), 
-                                                                    new Token(TokenType.Identifier, "pars") 
+                                                                    new Token(TokenType.Identifier, "pars")
                                                                 };
 
         private static readonly Token[] Expression2Result = new []
                                                                 {
-                                                                    new Token(TokenType.Identifier, "for"),
-                                                                    new Token(TokenType.Delimiter, ":"), 
-                                                                    new Token(TokenType.Identifier, "pars") 
+                                                                    new Token(TokenType.Identifier, "pars")
                                                                 };
 
         private static readonly Token[] Expression3Result = new []
                                                                 {
                                                                     new Token(TokenType.Identifier, "he")
+                                                                };
+
+        private static readonly Token[] Expression4Result = new []
+                                                                {
+                                                                    new Token(TokenType.Identifier, "joystick[0]"),
+                                                                    new Token(TokenType.Delimiter, "."),
+                                                                    new Token(TokenType.Identifier, "ax")
                                                                 };
 
         [TestMethod]
@@ -66,6 +65,12 @@ namespace FreePIE.Tests.Core
                       Expression3.IndexOf('T'),
                       Expression3Result,
                       new Range(36, 2));
+
+            TestTokens(parser,
+                       Expression4,
+                       Expression4.IndexOf('T'),
+                       Expression4Result,
+                       new Range(16, 2));
         }
 
         public void TestTokens(IScriptParser parser, string expression, int index, Token[] resultTokens, Range range)

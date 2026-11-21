@@ -101,7 +101,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>md "$(TargetDir)plugins"
-copy "$(TargetDir)FreePIE.Core.Plugins.dll" "$(TargetDir)plugins\FreePIE.Core.Plugins.dll"</PostBuildEvent>
+copy "$(TargetDir)FreePIE.Core.Plugins.dll" "$(TargetDir)plugins\FreePIE.Core.Plugins.dll"
+copy "$(SolutionDir)\Lib\Midi\*.dll" "$(TargetDir)"
+copy "$(SolutionDir)\Lib\Tobii\*.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
